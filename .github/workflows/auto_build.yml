@@ -40,8 +40,7 @@ jobs:
       
       # Step4 - Upload Build File
       - name: Upload Build File
-      - uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v3
         with:
           name: Build-Android
           path: build
-출처: https://dev-junwoo.tistory.com/149 [개발초보 JW의 성장일기:티스토리]

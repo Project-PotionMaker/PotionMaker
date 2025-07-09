@@ -6,9 +6,8 @@ on:
 permissions: write-all
   
 jobs:
-  #Job 설정
-  buildForAndroid: 
-    name: Build Android🛸🛸🛸
+  buildForWindows: 
+    name: Build Windows🪟🪟🪟
     runs-on: ubuntu-latest
     steps:
 
@@ -36,11 +35,11 @@ jobs:
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
-          targetPlatform: Android
+          targetPlatform: StandaloneWindows64
       
       # Step4 - Upload Build File
       - name: Upload Build File
         uses: actions/upload-artifact@v3
         with:
-          name: Build-Android
-          path: build
+          name: Build-Windows
+          path: build/StandaloneWindows64

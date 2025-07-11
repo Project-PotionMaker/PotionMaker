@@ -6,7 +6,7 @@ public class ServingPhase : BasePhase
     public event Action OnServingPhaseEntered;
     public event Action OnServingPhaseExited;
 
-    private const float INIT_TIMER = 60f;
+    private const float INIT_TIMER = 20f;
     [SerializeField]
     private float _currentTime;
     public float CurrentTime { get => _currentTime; set => _currentTime = value; }
@@ -22,6 +22,7 @@ public class ServingPhase : BasePhase
     {
         base.EnterPhase();
         _currentTime = INIT_TIMER;
+        _remainCustomers = 0;
         OnServingPhaseEntered?.Invoke();
     }
 

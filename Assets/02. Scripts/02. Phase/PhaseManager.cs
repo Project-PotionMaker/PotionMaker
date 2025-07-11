@@ -65,6 +65,4 @@ public class PhaseManager : MonoBehaviourSingleton<PhaseManager>
         _currentPhase = nextPhase;
         _currentPhase.EnterPhase();
     }
-
-
 }

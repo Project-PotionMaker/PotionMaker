@@ -7,11 +7,11 @@ public class PotionIDTrie
     private class Node
     {
         // 숫자 0~9(10개) + 문자 A~D(4개) = 총 14개
-        public Node[] children = new Node[14];
-        public bool isEndOfId = false;
+        public Node[] Children = new Node[14];
+        public bool IsEndOfId = false;
     }
 
-    private Node root = new Node();
+    private Node _root = new Node();
 
     // 0~9 → 0~9, A~D → 10~13
     private int CharToIndex(char ch)
@@ -59,18 +59,18 @@ public class PotionIDTrie
             Debug.LogError($"포션 ID 형식이 올바르지 않습니다 (예: 1234AB, 5678ABC): {id}");
             return;
         }
-        Node current = root;
+        Node current = _root;
 
         foreach (char ch in id)
         {
             int index = CharToIndex(ch);
-            if (current.children[index] == null)
+            if (current.Children[index] == null)
             {
-                current.children[index] = new Node();
+                current.Children[index] = new Node();
             }
-            current = current.children[index];
+            current = current.Children[index];
         }
-        current.isEndOfId = true;
+        current.IsEndOfId = true;
     }
 
     public bool Exists(string id)
@@ -80,19 +80,19 @@ public class PotionIDTrie
             return false;
         }
 
-        Node current = root;
+        Node current = _root;
 
         foreach (char ch in id)
         {
             int index = CharToIndex(ch);
-            if (current.children[index] == null)
+            if (current.Children[index] == null)
             {
                 return false;
             }
-            current = current.children[index];
+            current = current.Children[index];
         }
 
-        return current.isEndOfId;
+        return current.IsEndOfId;
     }
 
     public bool HasPrefix(string prefix)
@@ -102,16 +102,16 @@ public class PotionIDTrie
             return false;
         }
 
-        Node current = root;
+        Node current = _root;
 
         foreach (char ch in prefix)
         {
             int index = CharToIndex(ch);
-            if (current.children[index] == null)
+            if (current.Children[index] == null)
             {
                 return false;
             }
-            current = current.children[index];
+            current = current.Children[index];
         }
 
         return true;
@@ -120,7 +120,7 @@ public class PotionIDTrie
     public void PrintAll()
     {
         List<string> results = new List<string>();
-        DFS(root, "", results);
+        DFS(_root, "", results);
         
         foreach (var id in results)
         {
@@ -130,17 +130,17 @@ public class PotionIDTrie
 
     private void DFS(Node node, string prefix, List<string> results)
     {
-        if (node.isEndOfId)
+        if (node.IsEndOfId)
         {
             results.Add(prefix);
         }
 
         for (int i = 0; i < 14; i++)
         {
-            if (node.children[i] != null)
+            if (node.Children[i] != null)
             {
                 char ch = (i < 10) ? (char)('0' + i) : (char)('A' + (i - 10));
-                DFS(node.children[i], prefix + ch, results);
+                DFS(node.Children[i], prefix + ch, results);
             }
         }
     }

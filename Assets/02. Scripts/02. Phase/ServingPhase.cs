@@ -36,7 +36,7 @@ public class ServingPhase : BasePhase
         {
             if(_remainCustomers == 0) 
             {
-                PhaseManager.Instance.TransitionPhase(PhaseManager.Instance.EndingPhase);
+                PhaseManager.Instance.TransitionPhase(EPhaseType.EndingPhase);
                 return;
             }
         }

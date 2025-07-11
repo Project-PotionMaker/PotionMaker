@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,12 +14,7 @@ public class PhaseManager : MonoBehaviourSingleton<PhaseManager>
 {
     private BasePhase _currentPhase;
     public BasePhase CurrentPhase { get => _currentPhase; set => _currentPhase = value; }
-    private BasePhase _preparingPhase;
-    public BasePhase PreparingPhase { get => _preparingPhase; set => _preparingPhase = value; }
-    private BasePhase _servingPhase;
-    public BasePhase ServingPhase { get => _servingPhase; set => _servingPhase = value; }
-    private BasePhase _endingPhase;
-    public BasePhase EndingPhase { get => _endingPhase; set => _endingPhase = value; }
+    private Dictionary<EPhaseType, BasePhase> _phaseDictionary;
 
     [SerializeField]
     private int _day;
@@ -44,25 +40,25 @@ public class PhaseManager : MonoBehaviourSingleton<PhaseManager>
         {
             //저장 데이터에서 _day를 불러오기
         }
-        _preparingPhase = new PreparingPhase();
-        _servingPhase = new ServingPhase();
-        _endingPhase = new EndingPhase();
-        _currentPhase = _preparingPhase;
+        _phaseDictionary = new Dictionary<EPhaseType, BasePhase>
+        {
+            { EPhaseType.PreparingPhase, new PreparingPhase() },
+            { EPhaseType.ServingPhase, new ServingPhase() },
+            { EPhaseType.EndingPhase, new EndingPhase() },
+        };
+        _currentPhase = _phaseDictionary[EPhaseType.PreparingPhase];
         _currentPhase.EnterPhase();
     }
 
-    public void TransitionPhase(BasePhase nextPhase)
+    public void TransitionPhase(EPhaseType nextPhase)
     {
-        if (_currentPhase != null)
-        {
-            _currentPhase.ExitPhase();
-        }
-        if (_currentPhase is EndingPhase && nextPhase is PreparingPhase)
+        _currentPhase?.ExitPhase();
+        if (_currentPhase is EndingPhase && _phaseDictionary[nextPhase] is PreparingPhase)
         {
             _day++;
             OnDayPassed?.Invoke();
         }
-        _currentPhase = nextPhase;
+        _currentPhase = _phaseDictionary[nextPhase];
         _currentPhase.EnterPhase();
     }
 }

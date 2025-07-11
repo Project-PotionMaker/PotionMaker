@@ -6,25 +6,25 @@ public class PotionIDTrie
 {
     private class Node
     {
-        // ¼ıÀÚ 0~9(10°³) + ¹®ÀÚ A~D(4°³) = ÃÑ 14°³
+        // ìˆ«ì 0~9(10ê°œ) + ë¬¸ì A~D(4ê°œ) = ì´ 14ê°œ
         public Node[] children = new Node[14];
         public bool isEndOfId = false;
     }
 
     private Node root = new Node();
 
-    // 0~9 ¡æ 0~9, A~D ¡æ 10~13
+    // 0~9 â†’ 0~9, A~D â†’ 10~13
     private int CharToIndex(char ch)
     {
-        if (ch >= '0' && ch <= '9')
+        if ('0' <= ch && ch <= '9')
         {
             return ch - '0';
         }
-        if (ch >= 'A' && ch <= 'D')
+        if ('A' <= ch && ch <= 'D')
         {
             return 10 + (ch - 'A');
         }
-        throw new ArgumentException($"À¯È¿ÇÏÁö ¾ÊÀº ¹®ÀÚÀÔ´Ï´Ù: {ch}");
+        throw new ArgumentException($"ìœ íš¨í•˜ì§€ ì•Šì€ ë¬¸ìì…ë‹ˆë‹¤: {ch}");
     }
 
     private bool IsValidFormat(string id)
@@ -56,7 +56,7 @@ public class PotionIDTrie
     {
         if (!IsValidFormat(id))
         {
-            Debug.LogError($"Æ÷¼Ç ID Çü½ÄÀÌ ¿Ã¹Ù¸£Áö ¾Ê½À´Ï´Ù (¿¹: 1234AB, 5678ABC): {id}");
+            Debug.LogError($"í¬ì…˜ ID í˜•ì‹ì´ ì˜¬ë°”ë¥´ì§€ ì•ŠìŠµë‹ˆë‹¤ (ì˜ˆ: 1234AB, 5678ABC): {id}");
             return;
         }
         Node current = root;
@@ -85,7 +85,7 @@ public class PotionIDTrie
         foreach (char ch in id)
         {
             int index = CharToIndex(ch);
-            if (index < 0 || 14 <= index || current.children[index] == null)
+            if (current.children[index] == null)
             {
                 return false;
             }
@@ -107,7 +107,7 @@ public class PotionIDTrie
         foreach (char ch in prefix)
         {
             int index = CharToIndex(ch);
-            if (index < 0 || index >= 14 || current.children[index] == null)
+            if (current.children[index] == null)
             {
                 return false;
             }

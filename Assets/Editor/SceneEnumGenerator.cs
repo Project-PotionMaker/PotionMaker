@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SceneEnumGenerator : MonoBehaviour
 {
-    private const string _directory = "Assets/00. Main/02. Scripts/02-01. Common/Enum";
+    private const string _directory = "Assets/02. Scripts/02-01. Common/Enum";
     private const string _enumFilePath = _directory + "/ESceneNames.cs";
 
     [MenuItem("Tools/Generate Scene Enum")]

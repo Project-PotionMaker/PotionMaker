@@ -3,9 +3,6 @@ using System;
 
 public class ServingPhase : BasePhase
 {
-    public event Action OnServingPhaseEntered;
-    public event Action OnServingPhaseExited;
-
     private const float INIT_TIMER = 20f;
     [SerializeField]
     private float _currentTime;
@@ -20,10 +17,9 @@ public class ServingPhase : BasePhase
     }
     public override void EnterPhase()
     {
-        base.EnterPhase();
         _currentTime = INIT_TIMER;
         _remainCustomers = 0;
-        OnServingPhaseEntered?.Invoke();
+        base.EnterPhase();
     }
 
     public override void Update(float deltaTime)
@@ -50,6 +46,5 @@ public class ServingPhase : BasePhase
     public override void ExitPhase()
     {
         base.ExitPhase();
-        OnServingPhaseExited?.Invoke();
     }
 }

@@ -529,10 +529,10 @@ public partial class DataExporterEditor
         if (IsVertical(tableName) == false)
         {
             sb.AppendLine($"    #region {tableName}");
-            sb.AppendLine($"    private List<{tableName}Data> {tableName}List = null;");
-            sb.AppendLine($"    private Dictionary<int, {tableName}Data> {tableName}Table = null;");
+            sb.AppendLine($"    private ReadOnlyList<{tableName}Data> {tableName}List = null;");
+            sb.AppendLine($"    private ReadOnlyDictionary<int, {tableName}Data> {tableName}Table = null;");
             sb.AppendLine();
-            sb.AppendLine($"    public List<{tableName}Data> Get{tableName}DataList()");
+            sb.AppendLine($"    public ReadOnlyList<{tableName}Data> Get{tableName}DataList()");
             sb.AppendLine("    {");
             sb.AppendLine($"        return {tableName}List;");
             sb.AppendLine("    }");
@@ -618,8 +618,8 @@ public partial class DataExporterEditor
             sb.AppendLine();
             sb.AppendLine("        Reader.Close();");
             sb.AppendLine();
-            sb.AppendLine($"        {tableName}List = new List<{tableName}Data>({lowerCamel}List);");
-            sb.AppendLine($"        {tableName}Table = new Dictionary<int, {tableName}Data>({lowerCamel}Table);");
+            sb.AppendLine($"        {tableName}List = new ReadOnlyList<{tableName}Data>({lowerCamel}List);");
+            sb.AppendLine($"        {tableName}Table = new ReadOnlyDictionary<int, {tableName}Data>({lowerCamel}Table);");
             sb.AppendLine("    }");
             sb.AppendLine();
         }

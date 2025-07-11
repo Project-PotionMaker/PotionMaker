@@ -7,10 +7,10 @@ using UnityEngine;
 public partial class DataTable
 {
     #region Potion
-    private List<PotionData> PotionList = null;
-    private Dictionary<int, PotionData> PotionTable = null;
+    private ReadOnlyList<PotionData> PotionList = null;
+    private ReadOnlyDictionary<int, PotionData> PotionTable = null;
 
-    public List<PotionData> GetPotionDataList()
+    public ReadOnlyList<PotionData> GetPotionDataList()
     {
         return PotionList;
     }
@@ -34,10 +34,10 @@ public partial class DataTable
     }
     #endregion
     #region Ingredient
-    private List<IngredientData> IngredientList = null;
-    private Dictionary<int, IngredientData> IngredientTable = null;
+    private ReadOnlyList<IngredientData> IngredientList = null;
+    private ReadOnlyDictionary<int, IngredientData> IngredientTable = null;
 
-    public List<IngredientData> GetIngredientDataList()
+    public ReadOnlyList<IngredientData> GetIngredientDataList()
     {
         return IngredientList;
     }
@@ -61,10 +61,10 @@ public partial class DataTable
     }
     #endregion
     #region Output
-    private List<OutputData> OutputList = null;
-    private Dictionary<int, OutputData> OutputTable = null;
+    private ReadOnlyList<OutputData> OutputList = null;
+    private ReadOnlyDictionary<int, OutputData> OutputTable = null;
 
-    public List<OutputData> GetOutputDataList()
+    public ReadOnlyList<OutputData> GetOutputDataList()
     {
         return OutputList;
     }
@@ -88,10 +88,10 @@ public partial class DataTable
     }
     #endregion
     #region Machine
-    private List<MachineData> MachineList = null;
-    private Dictionary<int, MachineData> MachineTable = null;
+    private ReadOnlyList<MachineData> MachineList = null;
+    private ReadOnlyDictionary<int, MachineData> MachineTable = null;
 
-    public List<MachineData> GetMachineDataList()
+    public ReadOnlyList<MachineData> GetMachineDataList()
     {
         return MachineList;
     }
@@ -187,8 +187,8 @@ public partial class DataTable
 
         Reader.Close();
 
-        PotionList = new List<PotionData>(potionList);
-        PotionTable = new Dictionary<int, PotionData>(potionTable);
+        PotionList = new ReadOnlyList<PotionData>(potionList);
+        PotionTable = new ReadOnlyDictionary<int, PotionData>(potionTable);
     }
 
     private void LoadIngredientData(byte[] bytes)
@@ -218,8 +218,8 @@ public partial class DataTable
 
         Reader.Close();
 
-        IngredientList = new List<IngredientData>(ingredientList);
-        IngredientTable = new Dictionary<int, IngredientData>(ingredientTable);
+        IngredientList = new ReadOnlyList<IngredientData>(ingredientList);
+        IngredientTable = new ReadOnlyDictionary<int, IngredientData>(ingredientTable);
     }
 
     private void LoadOutputData(byte[] bytes)
@@ -249,8 +249,8 @@ public partial class DataTable
 
         Reader.Close();
 
-        OutputList = new List<OutputData>(outputList);
-        OutputTable = new Dictionary<int, OutputData>(outputTable);
+        OutputList = new ReadOnlyList<OutputData>(outputList);
+        OutputTable = new ReadOnlyDictionary<int, OutputData>(outputTable);
     }
 
     private void LoadMachineData(byte[] bytes)
@@ -280,8 +280,8 @@ public partial class DataTable
 
         Reader.Close();
 
-        MachineList = new List<MachineData>(machineList);
-        MachineTable = new Dictionary<int, MachineData>(machineTable);
+        MachineList = new ReadOnlyList<MachineData>(machineList);
+        MachineTable = new ReadOnlyDictionary<int, MachineData>(machineTable);
     }
 
 }

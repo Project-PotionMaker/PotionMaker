@@ -15,6 +15,7 @@ public class PhaseManager : MonoBehaviourSingleton<PhaseManager>
     private BasePhase _currentPhase;
     public BasePhase CurrentPhase { get => _currentPhase; set => _currentPhase = value; }
     private Dictionary<EPhaseType, BasePhase> _phaseDictionary;
+    public Dictionary<EPhaseType, BasePhase> PhaseDictionary { get => _phaseDictionary;}
 
     [SerializeField]
     private int _day;

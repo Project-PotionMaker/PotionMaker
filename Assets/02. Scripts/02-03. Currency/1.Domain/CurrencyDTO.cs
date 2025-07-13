@@ -1,6 +1,3 @@
-using UnityEngine;
-using VInspector.Libs;
-
 public class CurrencyDTO
 {
     public readonly int Value;

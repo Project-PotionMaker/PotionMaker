@@ -1,4 +1,4 @@
-using UnityEngine.UIElements.Experimental;
+using System;
 
 public class Currency
 {
@@ -12,20 +12,16 @@ public class Currency
 
     public void SetCurrency(int value)
     {
-        if(value < 0)
-        {
-            throw new System.Exception("Can't set value less than zero");
-        }
         _value = value;
     }
-    public void AddCurrency(int addedValue)
+    public void AddCurrency(int value)
     {
-        if(addedValue <= 0)
+        if(value <= 0)
         {
             throw new System.Exception("Can't add zero or less");
         }
 
-        _value += addedValue;
+        _value += value;
     }
 
     public bool TrySubtractCurrency(int subtractedValue)
@@ -35,7 +31,7 @@ public class Currency
             throw new System.Exception("Can't subtract zero or less");
         }
 
-        if(_value < subtractedValue)
+        if( _value < subtractedValue)
         {
             return false;
         }

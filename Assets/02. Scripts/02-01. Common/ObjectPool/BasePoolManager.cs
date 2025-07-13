@@ -2,9 +2,11 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 using Photon.Pun;
+using System.Threading.Tasks;
+using Unity.VisualScripting;
 
 [RequireComponent(typeof(PhotonView))]
-public abstract class BasePoolManager<TEnum, TPoolInfo> : MonoBehaviourSingleton<BasePoolManager<TEnum, TPoolInfo>>, IPunPrefabPool
+public abstract class BasePoolManager<TEnum, TPoolInfo> : MonoBehaviourSingleton<BasePoolManager<TEnum, TPoolInfo>>
     where TEnum : Enum
     where TPoolInfo : BasePoolInfo<TEnum>
 {
@@ -15,60 +17,79 @@ public abstract class BasePoolManager<TEnum, TPoolInfo> : MonoBehaviourSingleton
     private BaseFactory _factory;
 
     private PhotonView _photonView;
-    // PoolList의 타입별 시작 위치
-    private Dictionary<TEnum, int> _startIndexDictionary = new Dictionary<TEnum, int>();
 
+    // PoolList의 타입별 정보 저장
+    private Dictionary<TEnum, TPoolInfo> _poolInfoDictionary = new Dictionary<TEnum, TPoolInfo>();
 
     protected override void Awake()
     {
         base.Awake();
         
         _photonView = GetComponent<PhotonView>();
-        Initialize();
     }
 
-    private void Initialize()
+    private async void Start()
     {
-        _poolInfoList.Sort((a, b) => a.Type.CompareTo(b.Type));
-
-        int index = 0;
-
-        foreach (TPoolInfo info in _poolInfoList)
+        if (PhotonNetwork.IsMasterClient)
         {
-            for (int i = 0; i < info.InitCount; i++)
-            {
-                info.PoolQueue.Enqueue(CreateNewObject(info));
-            }
-
-            if (!_startIndexDictionary.ContainsKey(info.Type))
-            {
-                _startIndexDictionary[info.Type] = index;
-            }
-            
-            index++;
+            await InitializeAsync();
         }
     }
 
-    private GameObject CreateNewObject(TPoolInfo info)
+    private async Task InitializeAsync()
     {
-        GameObject newObject = _factory.Create(info.AddressableKey);
-        newObject.SetActive(false);
+        // 딕셔너리 초기화
+        foreach (TPoolInfo info in _poolInfoList)
+        {
+            _poolInfoDictionary[info.Type] = info;
+        }
+
+        // 초기 오브젝트 생성
+        foreach (TPoolInfo info in _poolInfoList)
+        {
+            await CreateInitialObjects(info);
+        }
+    }
+
+    private async Task CreateInitialObjects(TPoolInfo info)
+    {
+        for (int i = 0; i < info.InitCount; i++)
+        {
+            GameObject newObject = await CreateNewObjectAsync(info);
+            if (newObject != null)
+            {
+                info.PoolQueue.Enqueue(newObject);
+            }
+        }
+    }
+
+    private async Task<GameObject> CreateNewObjectAsync(TPoolInfo info)
+    {
+        GameObject newObject = await _factory.RequestCreateAsync(info.AddressableKey);
+        if (newObject != null)
+        {
+            newObject.SetActive(false);
+            if (info.Container != null)
+            {
+                newObject.transform.SetParent(info.Container);
+            }
+        }
         return newObject;
     }
 
+
+
     private TPoolInfo GetPoolByType(TEnum type)
     {
-        if (!_startIndexDictionary.ContainsKey(type))
+        if (_poolInfoDictionary.TryGetValue(type, out TPoolInfo info))
         {
-            return null;
+            return info;
         }
 
-        int startIndex = _startIndexDictionary[type];
-        return _poolInfoList[startIndex];
+        return null;
     }
 
-    [PunRPC]
-    public GameObject GetObject(TEnum type)
+    public async Task<GameObject> GetObjectAsync(TEnum type)
     {
         TPoolInfo info = GetPoolByType(type);
         if (info == null) return null;
@@ -80,19 +101,34 @@ public abstract class BasePoolManager<TEnum, TPoolInfo> : MonoBehaviourSingleton
         }
         else
         {
-            obj = CreateNewObject(info);
+            obj = await CreateNewObjectAsync(info);
         }
+
+        PhotonView targetPhotonView = obj.GetComponent<PhotonView>();
+        if (targetPhotonView == null) return null;
+
+        int targetViewID = targetPhotonView.ViewID;
         
         if (PhotonNetwork.IsMasterClient)
         {
-            SetObjectActive(obj, true);
+            OnObjectActivated(targetViewID);
         }
         else
         {
-            _photonView.RPC(nameof(SetObjectActive), RpcTarget.MasterClient, true);
+            _photonView.RPC(nameof(OnObjectActivated), RpcTarget.MasterClient, targetViewID);
         }
         
         return obj;
+    }
+
+    [PunRPC]
+    private void OnObjectActivated(int viewID)
+    {
+        PhotonView pv = PhotonView.Find(viewID);
+        if (pv != null)
+        {
+            pv.gameObject.SetActive(true);
+        }
     }
 
     public void ReturnObject(GameObject obj, TEnum type)
@@ -101,30 +137,29 @@ public abstract class BasePoolManager<TEnum, TPoolInfo> : MonoBehaviourSingleton
         if (info == null) return;
 
         info.PoolQueue.Enqueue(obj);
-        
+
+        PhotonView targetPhotonView = obj.GetComponent<PhotonView>();
+        if (targetPhotonView == null) return;
+
+        int targetViewID = targetPhotonView.ViewID;
+
         if (PhotonNetwork.IsMasterClient)
         {
-            SetObjectActive(obj, false);
+            OnObjectDeactivated(targetViewID);
         }
         else
         {
-            _photonView.RPC(nameof(SetObjectActive), RpcTarget.MasterClient, false);
+            _photonView.RPC(nameof(OnObjectDeactivated), RpcTarget.MasterClient, targetViewID);
         }
     }
 
     [PunRPC]
-    private void SetObjectActive(GameObject target, bool isActive)
+    private void OnObjectDeactivated(int viewID)
     {
-        target.SetActive(isActive);
-    }
-
-    public GameObject Instantiate(string prefabId, Vector3 position, Quaternion rotation)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Destroy(GameObject gameObject)
-    {
-        throw new NotImplementedException();
+        PhotonView pv = PhotonView.Find(viewID);
+        if (pv != null)
+        {
+            pv.gameObject.SetActive(false);
+        }
     }
 }

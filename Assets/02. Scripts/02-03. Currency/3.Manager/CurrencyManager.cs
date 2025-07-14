@@ -28,30 +28,30 @@ public class CurrencyManager : MonoBehaviourSingleton<CurrencyManager>
     }
 
     [PunRPC]
-    public void RequestAddCurrency(int value)
+    public void RequestAddCurrency(int addendValue)
     {
         if (!PhotonNetwork.IsMasterClient)
         {
-            _photonView.RPC(nameof(RequestAddCurrency), RpcTarget.MasterClient, value);
+            _photonView.RPC(nameof(RequestAddCurrency), RpcTarget.MasterClient, addendValue);
             return;
         }
 
-        AddCurrency(value);
+        AddCurrency(addendValue);
     }
 
-    private void AddCurrency(int value)
+    private void AddCurrency(int addendValue)
     {
         if (!PhotonNetwork.IsMasterClient)
         {
             throw new Exception("Only the Master Client may Add currency directly. Use 'RequestAddCurrency' instead.");
         }
-        _coin.AddCurrency(value);
+        _coin.AddCurrency(addendValue);
         OnDataChanged?.Invoke();
 
         _photonView.RPC(nameof(SetCurrency), RpcTarget.Others, _coin.Value);
     }
 
-    public bool TrySubtractCurrency(int value)
+    public bool TrySubtractCurrency(int subtrahendValue)
     {
         if (!PhotonNetwork.IsMasterClient)
         {
@@ -61,7 +61,7 @@ public class CurrencyManager : MonoBehaviourSingleton<CurrencyManager>
                                 "\n ->   CurrencyManager.TrySubtractCurrency()");
         }
 
-        bool result = _coin.TrySubtractCurrency(value);
+        bool result = _coin.TrySubtractCurrency(subtrahendValue);
 
         if (result)
         {

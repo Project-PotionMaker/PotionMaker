@@ -14,28 +14,28 @@ public class Currency
     {
         _value = value;
     }
-    public void AddCurrency(int value)
+    public void AddCurrency(int addendValue)
     {
-        if(value <= 0)
+        if(addendValue <= 0)
         {
             throw new System.Exception("Can't add zero or less");
         }
 
-        _value += value;
+        _value += addendValue;
     }
 
-    public bool TrySubtractCurrency(int subtractedValue)
+    public bool TrySubtractCurrency(int subtrahendValue)
     {
-        if(subtractedValue <= 0)
+        if(subtrahendValue <= 0)
         {
             throw new System.Exception("Can't subtract zero or less");
         }
 
-        if( _value < subtractedValue)
+        if( _value < subtrahendValue)
         {
             return false;
         }
-        _value -= subtractedValue;
+        _value -= subtrahendValue;
         return true;
     }
 

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 using UnityEngine.UIElements;
@@ -113,6 +113,45 @@ public partial class DataExporterEditor : EditorWindow
         exportButton.name = "ExportButton";
         exportButton.text = "Export";
         actionArea.Add(exportButton);
+        #endregion
+
+        #region Enum Area
+
+        Func<VisualElement> makeItem_enum = () => new Label();
+        Action<VisualElement, int> bindItem_enum = (e, i) =>
+        {
+            Label label = e as Label;
+            if (EnumInfos[i].EnumMembers.Count > 0)
+            {
+                label.text = $"{EnumInfos[i].EnumName} ({EnumInfos[i].EnumMembers.Count})";
+            }
+            else
+            {
+                label.text = EnumInfos[i].EnumName;
+            }
+        };
+
+        var enumBox = new Box();
+        enumBox.name = "EnumArea";
+        enumBox.StretchToParentSize();
+        enumBox.style.marginTop = 20;
+        enumBox.style.borderTopLeftRadius = 5;
+        enumBox.style.borderTopRightRadius = 5;
+        enumBox.style.borderBottomLeftRadius = 5;
+        enumBox.style.borderBottomRightRadius = 5;
+        enumBox.style.backgroundColor = new Color(0.35f, 0.35f, 0.35f);
+        enumArea.Add(enumBox);
+
+        var enumView = new ListView();
+        enumView.itemsSource = EnumInfos;
+        enumView.fixedItemHeight = 16;
+        enumView.makeItem = makeItem_enum;
+        enumView.bindItem = bindItem_enum;
+        enumView.selectionType = SelectionType.Multiple;
+        enumView.style.flexGrow = 1.0f;
+        enumBox.Add(enumView);
+        EnumView = enumView;
+
         #endregion
 
         #region Table Area

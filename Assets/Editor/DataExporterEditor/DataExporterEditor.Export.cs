@@ -1,4 +1,4 @@
-﻿using Google.Apis.Sheets.v4;
+using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
 using System;
 using System.Collections.Generic;
@@ -10,8 +10,10 @@ using UnityEditor;
 
 public partial class DataExporterEditor
 {
-    // WAK_ZA_DataTable 파일의 시트 ID. (주소창에 있음)
+    // DataTable 파일의 시트 ID. (주소창에 있음)
     private const string TABLE_SHEET_ID = "1WcIaE0G7hHmEo11Md4f7UrV5qTRnj-gzJqj3BgUfaiU";
+    // Enum 파일의 시트 ID. (주소창에 있음)
+    private const string ENUM_SHEET_ID = "1aPyotqOArWprxWc-LUXVB9utwIKHdBtPPbmgNWjpfL4";
 
     // 클라이언트 Output 경로.
     private const string CLIENT_SCRIPT = "Assets/02. Scripts/02-01. Common/Data";
@@ -26,6 +28,9 @@ public partial class DataExporterEditor
 
     // 테이블 정보.
     private List<TableInfo> TableInfos = new List<TableInfo>();
+
+    // Enum 정보.
+    private List<EnumInfo> EnumInfos = new List<EnumInfo>();
 
     private string ServerPath
     {
@@ -130,11 +135,36 @@ public partial class DataExporterEditor
         }
         RefreshTableNames();
         LogMessage($"[IMPORT] {requestTable.Sheets.Count}개의 table sheet가 존재합니다.");
+
+        var requestEnum = service.Spreadsheets.Get(ENUM_SHEET_ID).Execute();
+        EnumInfos.Clear();
+        foreach (Sheet sheet in requestEnum.Sheets)
+        {
+            string sheetName = sheet.Properties.Title;
+            string[] split = sheetName.Split('_');
+
+            EnumInfo enumInfo = CreateInstance<EnumInfo>();
+            enumInfo.EnumName = split[0];
+            enumInfo.SheetName = sheet.Properties.Title;
+            enumInfo.IsAddMax = split.Length == 2 && split[1].Equals("M") == true;
+            EnumInfos.Add(enumInfo);
+        }
+        RefreshEnumNames();
+        LogMessage($"[IMPORT] {requestEnum.Sheets.Count}개의 enum sheet가 존재합니다.");
+
+        LogMessage("================================================", false);
     }
 
     private async void Export()
     {
         var service = SheetConnect.Connect("ExporterEditor");
+
+        #region Enum 멤버 초기화
+        for (int i = 0; i < EnumInfos.Count; ++i)
+        {
+            EnumInfos[i]?.EnumMembers.Clear();
+        }
+        #endregion
 
         #region 서버용 경로 확인
         // 서버용 데이터 매니저 생성.
@@ -186,10 +216,43 @@ public partial class DataExporterEditor
         #endregion
 
         #region 데이터 스크립트 및 파일 추출
+        for (int i = 0; i < EnumInfos.Count; ++i)
+        {
+            if (EnumInfos[i].EnumMembers.Count == 0)
+            {
+                SendRequestEnum(service, EnumInfos[i]);
+            }
+            RefreshEnumNames();
+        }
+
         for (int i = 0; i < TableInfos.Count; ++i)
         {
             if (TableInfos[i].IsApply == true)
             {
+                // #region Enum 로드 및 추출.
+                // // 필요한 Enum만 로드.
+                // for (int ii = 0; ii < TableInfos[i].Headers.Count; ++ii)
+                // {
+                //     Header header = TableInfos[i].Headers[ii];
+                //     if (header.VariableType.StartsWith("e") == true)
+                //     {
+                //         EnumInfo enumInfo = EnumInfos.Find(x => x.EnumName.Equals(header.VariableType) == true);
+                //         if (enumInfo == null)
+                //         {
+                //             LogErrorMessage($"[ENUM] {header.VariableType} 이름을 가진 Enum을 찾을 수 없습니다.");
+                //             return;
+                //         }
+
+                //         // 이미 로드한 Enum일 경우 다시 로드하지 않음. (Enum 멤버 초기화는 Export 시도시마다 함)
+                //         if (enumInfo.EnumMembers.Count == 0)
+                //         {
+                //             SendRequestEnum(service, enumInfo);
+                //         }
+                //     }
+                // }
+                // RefreshEnumNames();
+                // #endregion
+
                 if (IsApplyClient == true && TableInfos[i].IsUseClient == true)
                 {
                     if (IsBinaryOnly == false)
@@ -206,12 +269,19 @@ public partial class DataExporterEditor
                         ExportBinary_Vertical(TableInfos[i]);
                     }
                 }
+
                 await Task.Delay(1);
             }
         }
         LogMessage("================================================", false);
         #endregion
 
+        #region Enum 파일 추출
+        if (IsApplyClient == true)
+        {
+            ExportEnumDef();
+        }
+        #endregion
 
         AssetDatabase.Refresh();
         LogMessage("================================================", false);
@@ -246,6 +316,27 @@ public partial class DataExporterEditor
         {
             LogErrorMessage($"[LOAD] {tableInfo.TableName}Data 로드에 실패하였습니다.");
 
+            string message = e.Message;
+            if (message.Length > 500)
+            {
+                message = e.Message.Substring(0, 500);
+            }
+            LogErrorMessage($"[LOAD]{message}");
+        }
+    }
+
+    private void SendRequestEnum(SheetsService service, EnumInfo enumInfo)
+    {
+        try
+        {
+            var request = service.Spreadsheets.Values.Get(ENUM_SHEET_ID, enumInfo.SheetName + "!A1:C");
+            var requestValue = request.Execute().Values;
+            SheetToEnum(enumInfo, requestValue);
+            LogMessage($"[LOAD] {enumInfo.EnumName} 로드.");
+        }
+        catch (Exception e)
+        {
+            LogErrorMessage($"[LOAD] {enumInfo.EnumName} 로드에 실패하였습니다.");
             string message = e.Message;
             if (message.Length > 500)
             {
@@ -295,6 +386,20 @@ public partial class DataExporterEditor
         tableInfo.Headers = headers;
         tableInfo.ListHeaders = listHeaders;
     }
+
+    private void SheetToEnum(EnumInfo enumInfo, IList<IList<object>> value)
+    {
+        // 모든 데이터 멤버로 등록.
+        for (int row = 0; row < value.Count; ++row)
+        {
+            EnumMember member = new EnumMember();
+            member.Value = int.Parse(value[row][0].ToString());
+            member.MemberName = value[row][1].ToString();
+            member.Description = value[row][2].ToString();
+            enumInfo.EnumMembers.Add(member);
+        }
+    }
+
     #endregion
 
     #region %%%Data.cs 파일
@@ -747,8 +852,75 @@ public partial class DataExporterEditor
     private byte[] GetBytes(string typeName, string value)
     {
         TypeCode type = ExporterEditor.GetTypeCode(typeName);
+
+        if (type == TypeCode.Empty)
+        {
+            var enumData = EnumInfos.Find((x) => x.EnumName.Equals(typeName) == true);
+            if (enumData == null)
+            {
+                LogErrorMessage($"[CONVERT] Enum:{typeName} 찾을 수 없습니다.");
+                return null;
+            }
+
+            var memberData = enumData.EnumMembers.Find((x) => x.MemberName.Equals(value) == true);
+            if (memberData == null)
+            {
+                LogErrorMessage($"[CONVERT] Enum:{typeName}의 {value} 항목을 찾을 수 없습니다.");
+                return null;
+            }
+
+            value = memberData.Value.ToString();
+            type = TypeCode.Int32;
+        }
+
         return ExporterEditor.GetBytes(type, value);
     }
 
+    #endregion
+
+    #region EnumDef.cs 파일
+    private void ExportEnumDef()
+    {
+        StringBuilder sb = new StringBuilder();
+        string fileText = ""; // "// 툴에서 자동으로 생성하는 소스 파일입니다. 수정하지 마세요!";
+
+        sb.Clear();
+        sb.AppendLine("// 툴에서 자동으로 생성하는 소스 파일입니다. 수정하지 마세요!");
+
+        for (int i = 0; i < EnumInfos.Count; ++i)
+        {
+            // 멤버 정보가 있는 Enum만 업데이트.
+            if (EnumInfos[i].EnumMembers.Count == 0)
+            {
+                continue;
+            }
+
+            EnumInfo enumInfo = EnumInfos[i];
+
+            sb.AppendLine($"public enum {EnumInfos[i].EnumName}");
+            sb.AppendLine("{");
+            for (int ii = 0; ii < EnumInfos[i].EnumMembers.Count; ++ii)
+            {
+                EnumMember member = EnumInfos[i].EnumMembers[ii];
+                sb.AppendLine($"    ///<summary>{member.Description}</summary>");
+                sb.AppendLine($"    {member.MemberName} = {member.Value},");
+            }
+
+            if (EnumInfos[i].IsAddMax == true)
+            {
+                sb.AppendLine();
+                sb.AppendLine("    Max");
+            }
+
+            sb.AppendLine("}");
+            sb.AppendLine();
+
+            fileText = sb.ToString();
+        }
+
+        UnityEngine.Debug.Log(string.Format("{0}", fileText));
+        File.WriteAllText($"{CLIENT_SCRIPT}/EnumDef.cs", fileText);
+        LogMessage($"[C#] EnumDef.cs 파일을 저장하였습니다.");
+    }
     #endregion
 }

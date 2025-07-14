@@ -11,19 +11,38 @@ public class MachineData
     ///<summary>이름</summary>
     public readonly string Name;
 
-    ///<summary>기구 설명</summary>
-    public readonly string Description;
+    ///<summary>이름 TID</summary>
+    public readonly int Name_LocalizationTID;
+
+    ///<summary>기구 설명 TID</summary>
+    public readonly int Description_LocalizationTID;
+
+    ///<summary>힌트 TID</summary>
+    public readonly int Hint_LocalizationTID;
 
     ///<summary>기구 코드</summary>
     public readonly char MachineCode;
+
+    ///<summary>가로 길이</summary>
+    public readonly int Width;
+
+    ///<summary>세로 길이</summary>
+    public readonly int Length;
+
+    ///<summary>구역 타입</summary>
+    public readonly EAreaType AreaType;
 
     public MachineData(BinaryReader reader)
     {
         TID = reader.ReadInt32();
         int name = reader.ReadInt32();
         Name = Encoding.UTF8.GetString(reader.ReadBytes(name));
-        int description = reader.ReadInt32();
-        Description = Encoding.UTF8.GetString(reader.ReadBytes(description));
+        Name_LocalizationTID = reader.ReadInt32();
+        Description_LocalizationTID = reader.ReadInt32();
+        Hint_LocalizationTID = reader.ReadInt32();
         MachineCode = reader.ReadChar();
+        Width = reader.ReadInt32();
+        Length = reader.ReadInt32();
+        AreaType = (EAreaType)reader.ReadInt32();
     }
 }

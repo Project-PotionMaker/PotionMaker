@@ -151,7 +151,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CellSize: 1
   GridSize: {x: 10, y: 10}
-  Origin: {x: -5, y: 0, z: -5}
+  Origin: {x: 0, y: 0, z: 0}
 --- !u!114 &84351118
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -166,12 +166,91 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _allAreaDefinitionList:
   - AreaType: 1
-    GridPositions:
+    GridPositionList:
+    - {x: -5, y: 0, z: -5}
+    - {x: -5, y: 0, z: -4}
+    - {x: -5, y: 0, z: -3}
+    - {x: -5, y: 0, z: -2}
+    - {x: -5, y: 0, z: -1}
+    - {x: -4, y: 0, z: -5}
+    - {x: -4, y: 0, z: -4}
+    - {x: -4, y: 0, z: -3}
+    - {x: -4, y: 0, z: -2}
+    - {x: -4, y: 0, z: -1}
+    - {x: -3, y: 0, z: -5}
+    - {x: -3, y: 0, z: -4}
+    - {x: -3, y: 0, z: -3}
+    - {x: -3, y: 0, z: -2}
+    - {x: -3, y: 0, z: -1}
+    - {x: -2, y: 0, z: -5}
+    - {x: -2, y: 0, z: -4}
+    - {x: -2, y: 0, z: -3}
+    - {x: -2, y: 0, z: -2}
+    - {x: -2, y: 0, z: -1}
+    - {x: -1, y: 0, z: -5}
+    - {x: -1, y: 0, z: -4}
+    - {x: -1, y: 0, z: -3}
+    - {x: -1, y: 0, z: -2}
+    - {x: -1, y: 0, z: -1}
+    - {x: 0, y: 0, z: -5}
+    - {x: 0, y: 0, z: -4}
+    - {x: 0, y: 0, z: -3}
+    - {x: 0, y: 0, z: -2}
+    - {x: 0, y: 0, z: -1}
+    - {x: 1, y: 0, z: -5}
+    - {x: 1, y: 0, z: -4}
+    - {x: 1, y: 0, z: -3}
+    - {x: 1, y: 0, z: -2}
+    - {x: 1, y: 0, z: -1}
+    - {x: 2, y: 0, z: -5}
+    - {x: 2, y: 0, z: -4}
+    - {x: 2, y: 0, z: -3}
+    - {x: 2, y: 0, z: -2}
+    - {x: 2, y: 0, z: -1}
+    - {x: 3, y: 0, z: -5}
+    - {x: 3, y: 0, z: -4}
+    - {x: 3, y: 0, z: -3}
+    - {x: 3, y: 0, z: -2}
+    - {x: 3, y: 0, z: -1}
+    - {x: 4, y: 0, z: -5}
+    - {x: 4, y: 0, z: -4}
+    - {x: 4, y: 0, z: -3}
+    - {x: 4, y: 0, z: -2}
+    - {x: 4, y: 0, z: -1}
+  - AreaType: 2
+    GridPositionList:
+    - {x: -5, y: 0, z: 0}
+    - {x: -5, y: 0, z: 1}
+    - {x: -5, y: 0, z: 2}
+    - {x: -5, y: 0, z: 3}
+    - {x: -5, y: 0, z: 4}
+    - {x: -4, y: 0, z: 0}
+    - {x: -4, y: 0, z: 1}
+    - {x: -4, y: 0, z: 2}
+    - {x: -4, y: 0, z: 3}
+    - {x: -4, y: 0, z: 4}
+    - {x: -3, y: 0, z: 0}
+    - {x: -3, y: 0, z: 1}
+    - {x: -3, y: 0, z: 2}
+    - {x: -3, y: 0, z: 3}
+    - {x: -3, y: 0, z: 4}
+    - {x: -2, y: 0, z: 0}
+    - {x: -2, y: 0, z: 1}
+    - {x: -2, y: 0, z: 2}
+    - {x: -2, y: 0, z: 3}
+    - {x: -2, y: 0, z: 4}
+    - {x: -1, y: 0, z: 0}
+    - {x: -1, y: 0, z: 1}
+    - {x: -1, y: 0, z: 2}
+    - {x: -1, y: 0, z: 3}
+    - {x: -1, y: 0, z: 4}
     - {x: 0, y: 0, z: 0}
     - {x: 0, y: 0, z: 1}
     - {x: 0, y: 0, z: 2}
     - {x: 0, y: 0, z: 3}
     - {x: 0, y: 0, z: 4}
+  - AreaType: 3
+    GridPositionList:
     - {x: 1, y: 0, z: 0}
     - {x: 1, y: 0, z: 1}
     - {x: 1, y: 0, z: 2}
@@ -192,85 +271,6 @@ MonoBehaviour:
     - {x: 4, y: 0, z: 2}
     - {x: 4, y: 0, z: 3}
     - {x: 4, y: 0, z: 4}
-    - {x: 5, y: 0, z: 0}
-    - {x: 5, y: 0, z: 1}
-    - {x: 5, y: 0, z: 2}
-    - {x: 5, y: 0, z: 3}
-    - {x: 5, y: 0, z: 4}
-    - {x: 6, y: 0, z: 0}
-    - {x: 6, y: 0, z: 1}
-    - {x: 6, y: 0, z: 2}
-    - {x: 6, y: 0, z: 3}
-    - {x: 6, y: 0, z: 4}
-    - {x: 7, y: 0, z: 0}
-    - {x: 7, y: 0, z: 1}
-    - {x: 7, y: 0, z: 2}
-    - {x: 7, y: 0, z: 3}
-    - {x: 7, y: 0, z: 4}
-    - {x: 0, y: 0, z: 5}
-    - {x: 1, y: 0, z: 5}
-    - {x: 2, y: 0, z: 5}
-    - {x: 3, y: 0, z: 5}
-    - {x: 4, y: 0, z: 5}
-    - {x: 5, y: 0, z: 5}
-    - {x: 6, y: 0, z: 5}
-    - {x: 7, y: 0, z: 5}
-    - {x: 8, y: 0, z: 0}
-    - {x: 8, y: 0, z: 1}
-    - {x: 8, y: 0, z: 2}
-    - {x: 8, y: 0, z: 3}
-    - {x: 8, y: 0, z: 4}
-    - {x: 8, y: 0, z: 5}
-    - {x: 9, y: 0, z: 0}
-    - {x: 9, y: 0, z: 1}
-    - {x: 9, y: 0, z: 2}
-    - {x: 9, y: 0, z: 3}
-    - {x: 9, y: 0, z: 4}
-    - {x: 9, y: 0, z: 5}
-  - AreaType: 2
-    GridPositions:
-    - {x: 0, y: 0, z: 6}
-    - {x: 0, y: 0, z: 7}
-    - {x: 0, y: 0, z: 8}
-    - {x: 0, y: 0, z: 9}
-    - {x: 1, y: 0, z: 6}
-    - {x: 1, y: 0, z: 7}
-    - {x: 1, y: 0, z: 8}
-    - {x: 1, y: 0, z: 9}
-    - {x: 2, y: 0, z: 6}
-    - {x: 2, y: 0, z: 7}
-    - {x: 2, y: 0, z: 8}
-    - {x: 2, y: 0, z: 9}
-    - {x: 3, y: 0, z: 6}
-    - {x: 3, y: 0, z: 7}
-    - {x: 3, y: 0, z: 8}
-    - {x: 3, y: 0, z: 9}
-    - {x: 4, y: 0, z: 6}
-    - {x: 4, y: 0, z: 7}
-    - {x: 4, y: 0, z: 8}
-    - {x: 4, y: 0, z: 9}
-    - {x: 5, y: 0, z: 6}
-    - {x: 5, y: 0, z: 7}
-    - {x: 5, y: 0, z: 8}
-    - {x: 5, y: 0, z: 9}
-    - {x: 6, y: 0, z: 6}
-    - {x: 6, y: 0, z: 7}
-    - {x: 6, y: 0, z: 8}
-    - {x: 6, y: 0, z: 9}
-  - AreaType: 3
-    GridPositions:
-    - {x: 7, y: 0, z: 6}
-    - {x: 7, y: 0, z: 7}
-    - {x: 7, y: 0, z: 8}
-    - {x: 7, y: 0, z: 9}
-    - {x: 8, y: 0, z: 6}
-    - {x: 8, y: 0, z: 7}
-    - {x: 8, y: 0, z: 8}
-    - {x: 8, y: 0, z: 9}
-    - {x: 9, y: 0, z: 6}
-    - {x: 9, y: 0, z: 7}
-    - {x: 9, y: 0, z: 8}
-    - {x: 9, y: 0, z: 9}
 --- !u!4 &84351119
 Transform:
   m_ObjectHideFlags: 0
@@ -280,7 +280,7 @@ Transform:
   m_GameObject: {fileID: 84351116}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1794.99, y: 100, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1436,7 +1436,7 @@ Camera:
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
-  orthographic: 1
+  orthographic: 0
   orthographic size: 5
   m_Depth: -1
   m_CullingMask:
@@ -1461,8 +1461,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1449249179}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 12.43, z: 0}
+  m_LocalRotation: {x: 0.41154596, y: 0.013123267, z: -0.0059266603, w: 0.91127527}
+  m_LocalPosition: {x: -0.49576443, y: 5.707295, z: -7.2867203}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

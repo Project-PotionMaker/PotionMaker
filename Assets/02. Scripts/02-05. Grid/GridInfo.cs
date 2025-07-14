@@ -25,13 +25,15 @@ public class GridInfo : MonoBehaviour
     {
         float worldX = Origin.x + (gridPos.x * CellSize) + (CellSize / 2f);
         float worldZ = Origin.z + (gridPos.z * CellSize) + (CellSize / 2f);
+
+        Debug.Log(gridPos + " " + new Vector3(worldX, Origin.y, worldZ));
         return new Vector3(worldX, Origin.y, worldZ); // Y는 Plane의 Y좌표
     }
 
     // 그리드 좌표가 유효한지 확인
     public bool IsValidGridPosition(Vector3Int gridPos)
     {
-        return gridPos.x >= 0 && gridPos.x < GridSize.x &&
-               gridPos.z >= 0 && gridPos.z < GridSize.y;
+        return gridPos.x >= -GridSize.x / 2 && gridPos.x < GridSize.x / 2 &&
+               gridPos.z >= -GridSize.y / 2 && gridPos.z < GridSize.y / 2;
     }
 }

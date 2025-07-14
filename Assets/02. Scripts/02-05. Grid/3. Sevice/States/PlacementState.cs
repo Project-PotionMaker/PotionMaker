@@ -59,6 +59,7 @@ public class PlacementState : IBuildingState
         Debug.Log("수정 필요");
 
         EAreaType type = DataTable.Instance.GetMachineData(TID).AreaType;
+        Debug.Log(DataTable.Instance.GetMachineData(TID).Name);
         return _gridData.CanPlaceObjectAt(gridPosition, Vector2Int.one, type);
     }
 

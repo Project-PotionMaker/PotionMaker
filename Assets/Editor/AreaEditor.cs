@@ -57,7 +57,7 @@ public class AreaEditor : Editor
                                             "Clear All", "Cancel"))
             {
                 _gridLayout.GetType().GetField("_allAreaDefinitionList", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-                           .SetValue(_gridLayout, new List<Layout.AreaDefinition>());
+                           .SetValue(_gridLayout, new List<AreaDefinition>());
                 EditorUtility.SetDirty(_gridLayout);
                 Debug.Log("All areas cleared.");
             }
@@ -150,7 +150,7 @@ public class AreaEditor : Editor
     private void DrawDefinedAreas()
     {
         // 리플렉션을 사용하여 private 필드에 접근
-        List<Layout.AreaDefinition> allAreaDefinitions = (List<Layout.AreaDefinition>)_gridLayout.GetType().GetField("_allAreaDefinitionList", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(_gridLayout);
+        List<AreaDefinition> allAreaDefinitions = (List<AreaDefinition>)_gridLayout.GetType().GetField("_allAreaDefinitionList", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(_gridLayout);
 
         if (allAreaDefinitions == null) return;
 
@@ -160,7 +160,7 @@ public class AreaEditor : Editor
             Color areaColor = GetColorForAreaType(areaDef.AreaType);
             Handles.color = areaColor;
 
-            foreach (var pos in areaDef.GridPositions)
+            foreach (var pos in areaDef.GridPositionList)
             {
                 Vector3 worldCenter = _gridInfo.GridToWorld(pos);
                 // BoxHandles.DrawWireCube 대신 Handles.CubeHandleCap 사용 (Solid)
@@ -189,13 +189,13 @@ public class AreaEditor : Editor
         Undo.RecordObject(_gridLayout, eraseMode ? "Erase Area" : "Draw Area");
 
         // 리플렉션을 사용하여 private 필드에 접근
-        List<Layout.AreaDefinition> allAreaDefinitions = (List<Layout.AreaDefinition>)_gridLayout.GetType().GetField("_allAreaDefinitionList", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(_gridLayout);
+        List<AreaDefinition> allAreaDefinitions = (List<AreaDefinition>)_gridLayout.GetType().GetField("_allAreaDefinitionList", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(_gridLayout);
 
         // 현재 선택된 구역 타입에 해당하는 AreaDefinition을 찾거나 새로 생성
-        Layout.AreaDefinition currentAreaDef = allAreaDefinitions.Find(def => def.AreaType == _selectedAreaType);
+        AreaDefinition currentAreaDef = allAreaDefinitions.Find(def => def.AreaType == _selectedAreaType);
         if (currentAreaDef == null && !eraseMode) // 지우기 모드가 아니면서 해당 타입의 정의가 없으면 새로 생성
         {
-            currentAreaDef = new Layout.AreaDefinition { AreaType = _selectedAreaType, GridPositions = new List<Vector3Int>() };
+            currentAreaDef = new AreaDefinition { AreaType = _selectedAreaType, GridPositionList = new List<Vector3Int>() };
             allAreaDefinitions.Add(currentAreaDef);
         }
 
@@ -215,7 +215,7 @@ public class AreaEditor : Editor
                     // CTRL (지우기) 모드: 모든 구역 정의에서 해당 위치를 제거
                     foreach (var def in allAreaDefinitions)
                     {
-                        def.GridPositions.Remove(pos);
+                        def.GridPositionList.Remove(pos);
                     }
                 }
                 else
@@ -225,19 +225,19 @@ public class AreaEditor : Editor
                     {
                         if (def.AreaType != _selectedAreaType)
                         {
-                            def.GridPositions.Remove(pos);
+                            def.GridPositionList.Remove(pos);
                         }
                     }
-                    if (currentAreaDef != null && !currentAreaDef.GridPositions.Contains(pos))
+                    if (currentAreaDef != null && !currentAreaDef.GridPositionList.Contains(pos))
                     {
-                        currentAreaDef.GridPositions.Add(pos);
+                        currentAreaDef.GridPositionList.Add(pos);
                     }
                 }
             }
         }
 
         // 빈 구역 정의 제거
-        allAreaDefinitions.RemoveAll(def => def.GridPositions.Count == 0);
+        allAreaDefinitions.RemoveAll(def => def.GridPositionList.Count == 0);
 
         // 변경 사항을 저장하도록 유니티에 알림
         EditorUtility.SetDirty(_gridLayout);

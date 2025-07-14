@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 public class GridData
 {
@@ -47,15 +48,20 @@ public class GridData
 
     public bool CanPlaceObjectAt(Vector3Int gridPosition, Vector2Int objectSize, EAreaType StructureType)
     {
+        Debug.Log(gridPosition);
         List<Vector3Int> positionToOccupyList = CalculatePositions(gridPosition, objectSize);
         foreach(Vector3Int pos in positionToOccupyList)
         {
-            if (_placedObjectDict.ContainsKey(pos) ||
-                _availableAreaDict[pos] != StructureType)
+            if (_placedObjectDict.ContainsKey(pos))
             {
                 return false;
             }
         }
+        if (_availableAreaDict.ContainsKey(gridPosition) && _availableAreaDict[gridPosition] != StructureType)
+        {
+            return false;
+        }
+
         return true;
     }
 

@@ -17,6 +17,12 @@ public class MachineData
     ///<summary>기구 코드</summary>
     public readonly char MachineCode;
 
+    ///<summary>가로 길이</summary>
+    public readonly int Width;
+
+    ///<summary>세로 길이</summary>
+    public readonly int Length;
+
     public MachineData(BinaryReader reader)
     {
         TID = reader.ReadInt32();
@@ -25,5 +31,7 @@ public class MachineData
         int description = reader.ReadInt32();
         Description = Encoding.UTF8.GetString(reader.ReadBytes(description));
         MachineCode = reader.ReadChar();
+        Width = reader.ReadInt32();
+        Length = reader.ReadInt32();
     }
 }

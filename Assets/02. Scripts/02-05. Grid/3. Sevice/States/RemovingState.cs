@@ -6,17 +6,17 @@ public class RemovingState : IBuildingState
     private int _gameObjectIndex = -1;
     private Grid _grid;
     private PreviewSystem _previewSystem;
-    private GridTest_GridData _furnitureData;
-    private ObjectPlacer _objectPlacer;
+    private GridData _gridData;
+    private PlaceSystem _objectPlacer;
 
     public RemovingState(Grid grid,
                          PreviewSystem previewSystem,
-                         GridTest_GridData furnitureData,
-                         ObjectPlacer objectPlacer)
+                         GridData gridData,
+                         PlaceSystem objectPlacer)
     {
         _grid = grid;
         _previewSystem = previewSystem;
-        _furnitureData = furnitureData;
+        _gridData = gridData;
         _objectPlacer = objectPlacer;
 
         _previewSystem.StartShowingRemovePreview();
@@ -29,10 +29,12 @@ public class RemovingState : IBuildingState
 
     public void OnAction(Vector3Int gridPosition)
     {
-        GridTest_GridData selectedData = null;
-        if(_furnitureData.CanPlaceObjectAt(gridPosition, Vector2Int.one) == false)
+        GridData selectedData = null;
+        //ÌÖåÏä§Ìä∏Ïö©
+        Debug.Log("ÌÖåÏä§Ìä∏");
+        if(_gridData.CanPlaceObjectAt(gridPosition, Vector2Int.one, EAreaType.Kitchen) == false)
         {
-            selectedData = _furnitureData;
+            selectedData = _gridData;
         }
 
         if(ReferenceEquals(selectedData, null))
@@ -41,7 +43,7 @@ public class RemovingState : IBuildingState
         }
         else
         {
-            _gameObjectIndex = selectedData.getRepresentationIndex(gridPosition);
+            _gameObjectIndex = selectedData.GetRepresentationIndex(gridPosition);
             if(_gameObjectIndex == -1)
             {
                 return;
@@ -62,7 +64,10 @@ public class RemovingState : IBuildingState
 
     private bool CheckIfSelectionIsValid(Vector3Int gridPosition)
     {
-        // ∞¯∞£¿Ã æ¯æÓæﬂ ªË¡¶
-        return !_furnitureData.CanPlaceObjectAt(gridPosition, Vector2Int.one);
+        // Í≥µÍ∞ÑÏù¥ ÏóÜÏñ¥Ïïº ÏÇ≠Ï†ú
+
+        //ÌÖåÏä§Ìä∏Ïö©
+        Debug.Log("ÌÖåÏä§Ìä∏");
+        return !_gridData.CanPlaceObjectAt(gridPosition, Vector2Int.one, EAreaType.Kitchen);
     }
 }

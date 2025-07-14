@@ -1,71 +1,70 @@
-using Google.Apis.Sheets.v4.Data;
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using UnityEditor.Rendering;
 using UnityEngine;
-using Color = UnityEngine.Color;
+using VInspector;
 
-public class PlacementSystem : MonoBehaviour
+public class GridManager : MonoBehaviourSingleton<GridManager>
 {
+    [Foldout("Hierarchy")]
     [SerializeField]
     private Grid _grid;
+#if UNITY_EDITOR
+    // 추후 삭제 (인풋매니저)
     [SerializeField]
     private GridTest_InputManager _inputManager;
-
-    [SerializeField]
-    private GridTest_ObjectDatabaseSO _database;
-
+#endif
     [SerializeField]
     private GameObject _gridVisualization;
-
-    // floor가 database의 0번째일때 사용하기 위한 변수
-    private GridTest_GridData _floorData;
-    private GridTest_GridData _furnitureData;
 
     [SerializeField]
     private PreviewSystem _previewSystem;
 
-    private Vector3Int lastDetectedPosition = Vector3Int.zero;
-
     [SerializeField]
-    private PlaceSystem _objectPlacer;
+    private PlaceSystem _objectPlacer = new();
 
+    private Layout _layout;
+
+    private GridData _gridData;
+    private Vector3Int _lastDetectedPosition = Vector3Int.zero;
     private IBuildingState _buildingState;
+    // private GridRepository _repository;
 
     private void Start()
     {
         StopPlacement();
-        _floorData = new();
-        _furnitureData = new();
+        _layout = GameObject.FindGameObjectWithTag("Layout").GetComponent<Layout>();
+        _gridData = new GridData(_layout.GetAvailableAreaDict());
     }
 
     private void Update()
     {
-        if (ReferenceEquals(_buildingState, null))
+        if(ReferenceEquals(_buildingState, null))
         {
             return;
         }
 
+        // inputManager 테스트 코드
         Vector3 mousePosition = _inputManager.GetSelectedMapPosition();
         Vector3Int gridPosition = _grid.WorldToCell(mousePosition);
-        if(lastDetectedPosition != gridPosition)
+        if (_lastDetectedPosition != gridPosition)
         {
             _buildingState.UpdateState(gridPosition);
-            lastDetectedPosition = gridPosition;
+            _lastDetectedPosition = gridPosition;
         }
     }
 
-    public void StartPlacement(int id)
+    public void StartPlacement(int tid)
     {
         StopPlacement();
         _gridVisualization.SetActive(true);
-        //_buildingState = new PlacementState(id,
-        //                                    _grid,
-        //                                    _previewSystem,
-        //                                    _database,
-        //                                    _furnitureData,
-        //                                    _objectPlacer);
+        Debug.Log("그리드데이터 고정시킴");
+        _buildingState = new PlacementState(tid,
+                                            _grid,
+                                            _previewSystem,
+                                            _gridData,
+                                            _objectPlacer);
+
+        // 테스트 코드
         _inputManager.OnClicked += PlaceStructure;
         _inputManager.OnExit += StopPlacement;
     }
@@ -74,31 +73,27 @@ public class PlacementSystem : MonoBehaviour
     {
         StopPlacement();
         _gridVisualization.SetActive(true);
-        //_buildingState = new RemovingState(_grid,
-        //                                   _previewSystem,
-        //                                   _furnitureData,
-        //                                   _objectPlacer);
+        Debug.Log("그리드데이터 고정시킴");
+        _buildingState = new RemovingState(_grid,
+                                           _previewSystem,
+                                           _gridData,
+                                           _objectPlacer);
         _inputManager.OnClicked += PlaceStructure;
         _inputManager.OnExit += StopPlacement;
     }
+
     private void PlaceStructure()
     {
         if (_inputManager.IsPointerOverUI())
         {
             return;
         }
+
         Vector3 mousePosition = _inputManager.GetSelectedMapPosition();
         Vector3Int gridPosition = _grid.WorldToCell(mousePosition);
 
         _buildingState.OnAction(gridPosition);
     }
-
-    //private bool CheckPlacementValidity(Vector3Int gridPosition, int selectedObjectDBIndex)
-    //{
-    //    GridTest_GridData selectedData = _database.ObjectsDataList[selectedObjectDBIndex].ID == 0 ? _floorData : _furnitureData;
-
-    //    return selectedData.CanPlaceObjectAt(gridPosition, _database.ObjectsDataList[selectedObjectDBIndex].Size);
-    //}
 
     private void StopPlacement()
     {
@@ -106,11 +101,12 @@ public class PlacementSystem : MonoBehaviour
         {
             return;
         }
+
         _gridVisualization.SetActive(false);
         _buildingState.EndState();
         _inputManager.OnClicked -= PlaceStructure;
         _inputManager.OnExit -= StopPlacement;
-        lastDetectedPosition = Vector3Int.zero;
+        _lastDetectedPosition = Vector3Int.zero;
         _buildingState = null;
     }
 }

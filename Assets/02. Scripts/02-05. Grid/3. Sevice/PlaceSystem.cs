@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-public class ObjectPlacer : MonoBehaviour
+public class PlaceSystem
+
 {
     private List<GameObject> _placedGameObjectList = new();
 
     public int PlaceObject(GameObject prefab, Vector3 position)
     {
-        GameObject newObject = Instantiate(prefab);
+        Debug.Log("인스턴스화 포톤네트워크에서 필요");
+        GameObject newObject = GameObject.Instantiate(prefab);
         newObject.transform.position = position;
         _placedGameObjectList.Add(newObject);
 
@@ -22,7 +24,7 @@ public class ObjectPlacer : MonoBehaviour
         {
             return;
         }
-        Destroy(_placedGameObjectList[gameObjectIndex]);
+        GameObject.Destroy(_placedGameObjectList[gameObjectIndex]);
         _placedGameObjectList[gameObjectIndex] = null;
     }
 }

@@ -21,11 +21,12 @@ public enum EPotionType
 
 public enum EAreaType
 {
+    None = 0,
     ///<summary>홀</summary>
-    Hall = 0,
+    Hall = 1,
     ///<summary>주방</summary>
-    Kitchen = 1,
+    Kitchen = 2,
     ///<summary>창고</summary>
-    Storage = 2,
+    Storage = 3,
 }
 

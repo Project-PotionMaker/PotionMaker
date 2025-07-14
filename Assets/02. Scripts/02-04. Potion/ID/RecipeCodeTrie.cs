@@ -44,7 +44,7 @@ public class RecipeCodeTrie
 
         for (int i = 4; i < id.Length; i++)
         {
-            if (id[i] < 'A' || '9' < id[i])
+            if (id[i] < 'A' || 'D' < id[i])
             {
                 return false;
             }

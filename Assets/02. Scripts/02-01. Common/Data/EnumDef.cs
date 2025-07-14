@@ -11,6 +11,22 @@ public enum ESaveType
     Day = 3,
 }
 
+public enum EPhaseType
+{
+    ///<summary>영업준비시간</summary>
+    PreparingPhase = 0,
+    ///<summary>영업시간</summary>
+    ServingPhase = 1,
+    ///<summary>영업종료</summary>
+    EndingPhase = 2,
+}
+
+public enum ENPCType
+{
+    ///<summary>일반손님</summary>
+    Customer = 0,
+}
+
 public enum EPotionType
 {
     ///<summary>활력</summary>

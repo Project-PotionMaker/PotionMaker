@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System;
 
 public class ServingPhase : BasePhase
@@ -7,9 +7,8 @@ public class ServingPhase : BasePhase
     [SerializeField]
     private float _currentTime;
     public float CurrentTime { get => _currentTime; set => _currentTime = value; }
-    [SerializeField]
-    private int _remainCustomers;
-    public int RemainCustomers { get => _remainCustomers; set => _remainCustomers = value; }
+
+    private bool _timesUp = false;
 
     public ServingPhase()
     {
@@ -18,7 +17,7 @@ public class ServingPhase : BasePhase
     public override void EnterPhase()
     {
         _currentTime = INIT_TIMER;
-        _remainCustomers = 0;
+        _timesUp = false;
         base.EnterPhase();
     }
 
@@ -30,15 +29,23 @@ public class ServingPhase : BasePhase
 
         if (_currentTime <= 0)
         {
-            if(_remainCustomers == 0) 
+            if(_timesUp == false)
             {
-                PhaseManager.Instance.TransitionPhase(EPhaseType.EndingPhase);
+                _timesUp = true;
+                CustomerManager.Instance.ReturnAllCustomerFromLine(); // 대기열에 있는 손님들을 모두 반환
+            }
+            if (CustomerManager.Instance.RemainCustomers == 0) 
+            {
+                if(PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase)
+                {
+                    PhaseManager.Instance.TransitionPhase(EPhaseType.EndingPhase);
+                }
                 return;
             }
         }
         else
         {
-            //TODO : NPC 시스템과 연동해 손님이 오게 만들기
+            CustomerManager.Instance.InviteCustomer(deltaTime); // 손님 초대
         }
 
     }

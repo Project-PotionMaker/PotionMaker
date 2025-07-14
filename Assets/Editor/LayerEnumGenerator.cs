@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class LayerEnumGenerator : MonoBehaviour
 {
-    private const string _directory = "Assets/00. Main/02. Scripts/02-01. Common/Enum";
+    private const string _directory = "Assets/02. Scripts/02-01. Common/Enum";
     private const string _layerEnumFilePath = _directory + "/ELayers.cs";
 
     [MenuItem("Tools/Generate Layer Enum")]

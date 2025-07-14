@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 using Unity.VisualScripting;
 
 [RequireComponent(typeof(PhotonView))]
-public abstract class BasePoolManager<TEnum, TPoolInfo> : MonoBehaviourSingleton<BasePoolManager<TEnum, TPoolInfo>>
+public class BasePoolManager<TEnum, TPoolInfo> : MonoBehaviourSingleton<BasePoolManager<TEnum, TPoolInfo>>
     where TEnum : Enum
     where TPoolInfo : BasePoolInfo<TEnum>
 {
-    [Header("Ç® ¼¼ÆÃ")]
+    [Header("í’€ ì„¸íŒ…")]
     [SerializeField]
     private List<TPoolInfo> _poolInfoList;
     [SerializeField]
@@ -18,7 +18,7 @@ public abstract class BasePoolManager<TEnum, TPoolInfo> : MonoBehaviourSingleton
 
     private PhotonView _photonView;
 
-    // PoolListÀÇ Å¸ÀÔº° Á¤º¸ ÀúÀå
+    // PoolListì˜ íƒ€ì…ë³„ ì •ë³´ ì €ì¥
     private Dictionary<TEnum, TPoolInfo> _poolInfoDictionary = new Dictionary<TEnum, TPoolInfo>();
 
     protected override void Awake()
@@ -38,13 +38,13 @@ public abstract class BasePoolManager<TEnum, TPoolInfo> : MonoBehaviourSingleton
 
     private async Task InitializeAsync()
     {
-        // µñ¼Å³Ê¸® ÃÊ±âÈ­
+        // ë”•ì…”ë„ˆë¦¬ ì´ˆê¸°í™”
         foreach (TPoolInfo info in _poolInfoList)
         {
             _poolInfoDictionary[info.Type] = info;
         }
 
-        // ÃÊ±â ¿ÀºêÁ§Æ® »ı¼º
+        // ì´ˆê¸° ì˜¤ë¸Œì íŠ¸ ìƒì„±
         foreach (TPoolInfo info in _poolInfoList)
         {
             await CreateInitialObjects(info);

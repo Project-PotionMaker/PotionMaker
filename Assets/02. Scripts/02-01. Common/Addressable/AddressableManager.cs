@@ -18,21 +18,7 @@ public class AddressableManager : MonoBehaviourSingleton<AddressableManager>
 
         Debug.Log($"로드된 에셋명: {asset.name}");
         return asset;
-    }
-
-    public async Task<List<T>> LoadAssetsByFolder<T>(string folderKey) where T : Object
-    {
-        AsyncOperationHandle<IList<T>> handle = Addressables.LoadAssetsAsync<T>(folderKey, null);
-        IList<T> assets = await handle.Task;
-        List<T> result = new List<T>(assets);
-
-        foreach (var asset in assets)
-        {
-            Debug.Log($"폴더[{folderKey}]에서 로드된 에셋명: {asset.name}");
-        }
-        return result;
-    }
-
+    } 
     public async Task<List<T>> LoadAssetsByLabel<T>(string label) where T : Object
     {
         AsyncOperationHandle<IList<T>> handle = Addressables.LoadAssetsAsync<T>(label, null);
@@ -41,7 +27,7 @@ public class AddressableManager : MonoBehaviourSingleton<AddressableManager>
 
         foreach (var asset in assets)
         {
-            Debug.Log($"라벨[{label}]에서 로드된 에셋명: {asset.name}");
+            Debug.Log($"라벨[{label}] 기반으로 로드된 에셋명: {asset.name}");
         }
         return result;
     }

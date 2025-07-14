@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PotionIDTrie
+public class RecipeCodeTrie
 {
     private class Node
     {

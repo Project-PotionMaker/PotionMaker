@@ -2,21 +2,21 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class IDVerifier : MonoBehaviour
+public class RecipeCodeVerifier : MonoBehaviour
 {
-    private PotionIDTrie _potionIdTrie;
-    public PotionIDTrie PotionIdTrie => _potionIdTrie;
+    private RecipeCodeTrie _potionIdTrie;
+    public RecipeCodeTrie PotionIdTrie => _potionIdTrie;
 
     private void Awake()
     {
-        _potionIdTrie = new PotionIDTrie();
+        _potionIdTrie = new RecipeCodeTrie();
     }
 
     public bool IsValidProcess(string id)
     {
         if (string.IsNullOrEmpty(id))
         {
-            Debug.LogWarning("ID°¡ nullÀÌ°Å³ª ºñ¾î ÀÖ½À´Ï´Ù.");
+            Debug.LogWarning("IDê°€ nullì´ê±°ë‚˜ ë¹„ì–´ ìˆìŠµë‹ˆë‹¤.");
             return false;
         }
         if (_potionIdTrie.HasPrefix(id))
@@ -31,7 +31,7 @@ public class IDVerifier : MonoBehaviour
     {
         if (string.IsNullOrEmpty(id))
         {
-            Debug.LogWarning("ID°¡ nullÀÌ°Å³ª ºñ¾î ÀÖ½À´Ï´Ù.");
+            Debug.LogWarning("IDê°€ nullì´ê±°ë‚˜ ë¹„ì–´ ìˆìŠµë‹ˆë‹¤.");
             return false;
         }
 

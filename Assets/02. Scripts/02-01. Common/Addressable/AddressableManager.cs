@@ -11,38 +11,37 @@ public class AddressableManager : MonoBehaviourSingleton<AddressableManager>
         base.Awake();
     }
 
-    public async Task<GameObject> LoadPrefab(string addressableKey)
+    public async Task<T> LoadAsset<T>(string key) where T : Object
     {
-        AsyncOperationHandle<GameObject> handle = Addressables.LoadAssetAsync<GameObject>(addressableKey);
-        GameObject prefab = await handle.Task;
-        Debug.Log($"원격 저장소에서 로드한 프리팹명 : {prefab.name}");
-        return prefab;
+        AsyncOperationHandle<T> handle = Addressables.LoadAssetAsync<T>(key);
+        T asset = await handle.Task;
+
+        Debug.Log($"로드된 에셋명: {asset.name}");
+        return asset;
     }
 
-    public async Task<List<GameObject>> LoadPrefabsByFolder(string folderKey)
+    public async Task<List<T>> LoadAssetsByFolder<T>(string folderKey) where T : Object
     {
-        List<GameObject> result = new List<GameObject>();
-        AsyncOperationHandle<IList<GameObject>> handle = Addressables.LoadAssetsAsync<GameObject>(folderKey, null);
-        IList<GameObject> prefabs = await handle.Task;
+        AsyncOperationHandle<IList<T>> handle = Addressables.LoadAssetsAsync<T>(folderKey, null);
+        IList<T> assets = await handle.Task;
+        List<T> result = new List<T>(assets);
 
-        foreach (var prefab in prefabs)
+        foreach (var asset in assets)
         {
-            Debug.Log($"업로드된 폴더[{folderKey}]에서 로드한 프리팹명 : {prefab.name}");
-            result.Add(prefab);
+            Debug.Log($"폴더[{folderKey}]에서 로드된 에셋명: {asset.name}");
         }
         return result;
     }
 
-    public async Task<List<GameObject>> LoadPrefabsByLabel(string label)
+    public async Task<List<T>> LoadAssetsByLabel<T>(string label) where T : Object
     {
-        List<GameObject> result = new List<GameObject>();
-        AsyncOperationHandle<IList<GameObject>> handle = Addressables.LoadAssetsAsync<GameObject>(label, null);
-        IList<GameObject> prefabs = await handle.Task;
+        AsyncOperationHandle<IList<T>> handle = Addressables.LoadAssetsAsync<T>(label, null);
+        IList<T> assets = await handle.Task;
+        List<T> result = new List<T>(assets);
 
-        foreach (var prefab in prefabs)
+        foreach (var asset in assets)
         {
-            Debug.Log($"라벨[{label}]로 로드한 프리팹명 : {prefab.name}");
-            result.Add(prefab);
+            Debug.Log($"라벨[{label}]에서 로드된 에셋명: {asset.name}");
         }
         return result;
     }

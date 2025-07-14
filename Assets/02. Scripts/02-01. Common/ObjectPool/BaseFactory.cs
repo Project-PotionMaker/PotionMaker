@@ -13,7 +13,7 @@ public class BaseFactory : MonoBehaviourPun
         }
         else
         {
-            // ¸¶½ºÅÍ Å¬¶óÀÌ¾ğÆ®¿¡°Ô »ı¼º ¿äÃ»
+            // ë§ˆìŠ¤í„° í´ë¼ì´ì–¸íŠ¸ì—ê²Œ ìƒì„± ìš”ì²­
             photonView.RPC(nameof(CreateRPC), RpcTarget.MasterClient, addressableKey);
             return null;
         }
@@ -26,9 +26,11 @@ public class BaseFactory : MonoBehaviourPun
     }
 
     private async Task<GameObject> CreateAsync(string addressableKey)
+
     {
         var handle = Addressables.LoadAssetAsync<GameObject>(addressableKey);
         GameObject prefab = await handle.Task;
+        Debug.Log(prefab.name);
 
         if (prefab != null)
         {
@@ -37,7 +39,7 @@ public class BaseFactory : MonoBehaviourPun
         }
 
 
-        Debug.LogError($"ÇÁ¸®ÆÕÀÌ ¾ø½À´Ï´Ù. Å°: {addressableKey}");
+        Debug.LogError($"í”„ë¦¬íŒ¹ì´ ì—†ìŠµë‹ˆë‹¤. í‚¤: {addressableKey}");
         return null;
     }
 }

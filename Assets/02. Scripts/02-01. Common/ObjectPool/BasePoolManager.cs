@@ -28,15 +28,15 @@ public class BasePoolManager<TEnum, TPoolInfo> : MonoBehaviourSingleton<BasePool
         _photonView = GetComponent<PhotonView>();
     }
 
-    private async void Start()
-    {
-        if (PhotonNetwork.IsMasterClient)
-        {
-            await InitializeAsync();
-        }
-    }
+    //private async void Start()
+    //{
+    //    if (PhotonNetwork.IsMasterClient)
+    //    {
+    //        await InitializeAsync();
+    //    }
+    //}
 
-    private async Task InitializeAsync()
+    public async Task InitializeAsync()
     {
         // 딕셔너리 초기화
         foreach (TPoolInfo info in _poolInfoList)

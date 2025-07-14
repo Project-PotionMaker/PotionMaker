@@ -4,7 +4,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-public class AddressableManager : MonoBehaviourSingleton<AddressableManager>
+public class AssetManager : MonoBehaviourSingleton<AssetManager>
 {
     protected override void Awake()
     {

@@ -5,7 +5,7 @@ using System;
 using Photon.Pun;
 public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
 {
-    private Dictionary<int, LinkedList<GameObject>> _potionOrderMap; // 주문표
+    private Dictionary<int, LinkedList<GameObject>> _potionOrderMap; // 주문표, 중간 삭제가 가능한 큐
     private Queue<GameObject> _potionOrderLine; // 손님이 줄을 서는 대기열
     private PhotonView _photonView;
 
@@ -145,7 +145,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         }
         else
         {
-            _potionOrderMap[customer.GetComponent<Customer>().RequestedPotionTID].RemoveFirst();// 손님이 홀에 있다면 포션 큐에서 제거
+            _potionOrderMap[customer.GetComponent<Customer>().RequestedPotionTID].Remove(customer);// 손님이 홀에 있다면 포션 큐에서 제거
         }
         _photonView.RPC(nameof(RPC_PutOutCustomer), RpcTarget.All, customer.GetComponent<PhotonView>().ViewID);
         _lostCustomerCount++;
@@ -203,7 +203,6 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
     {
         GameObject customer = PhotonView.Find(viewID)?.gameObject;
         //TODO : 손님 오브젝트를 건물 밖으로 내보내기
-        // 건물 밖에 나가면 NPC가 직접 ReturnCustomer(this.gameObject);
     }
 
     public void ReturnCustomer(GameObject customer)

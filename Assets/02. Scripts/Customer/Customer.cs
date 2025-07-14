@@ -16,4 +16,12 @@ public class Customer : MonoBehaviour
         };
         PhotonNetwork.LocalPlayer.SetCustomProperties(props);
     }
+
+    public void OnCustomerOut()
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            CustomerManager.Instance.ReturnCustomer(this.gameObject);
+        }
+    }
 }

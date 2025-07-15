@@ -1,9 +1,60 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class StructureManager : MonoBehaviourSingleton<StructureManager>
 {
+    private const string ADDRESSABLE_KEY_PREFIX = "Prefab_Structure_";
+    public async Task<GameObject> CreateStructure(int structureTID)
+    {
+        GameObject prefab = await AssetManager.Instance.LoadAsset<GameObject>($"{ADDRESSABLE_KEY_PREFIX}{structureTID}");
+        if(prefab == null )
+        {
+            return null;
+        }
+
+        // 포톤네트워크로 생성 + 오브젝트풀 고려
+        GameObject instance = Instantiate(prefab);
+        StructureData data = DataTable.Instance.GetStructureData(structureTID);
+        switch (data.StructureType)
+        {
+            case EStructureType.Machine:
+                MachineData machineData = DataTable.Instance.GetMachineData(data.TypeTID);
+                instance.GetComponent<Machine>().Init(machineData);
+                break;
+            case EStructureType.Furniture:
+                FurnitureData furnitureData = DataTable.Instance.GetFurnitureData(data.TypeTID);
+                instance.GetComponent<Furniture>().Init(furnitureData);
+                break;
+            case EStructureType.None:
+                Destroy(instance);
+                return null;
+        }
+
+        return instance;
+    }
+
+    public bool TryDeleteStructure(GameObject structureObject)
+    {
+        if(structureObject == null)
+        {
+            return false;
+        }
+
+        // 추가 처리사항 있으면 여기서 ㄱㄱ
+        Destroy(structureObject);
+        return true;
+    }
+
+    public async Task<GameObject> GetStructurePrefab(int structureTID)
+    {
+        GameObject prefab = await AssetManager.Instance.LoadAsset<GameObject>($"{ADDRESSABLE_KEY_PREFIX}{structureTID}");
+        return prefab;
+    }
+
+
+
 
     //테스트용 코드입니다.
     [SerializeField]
@@ -41,15 +92,4 @@ public class StructureManager : MonoBehaviourSingleton<StructureManager>
         return null;
     }
 
-    //여기서부터 ㄹㅇ
-
-    public void CreateStructure(int tid)
-    {
-        // 인터넷용으로 변경 필요
-    }
-
-    public void DeleteStructure(GameObject structureObject)
-    {
-
-    }
 }

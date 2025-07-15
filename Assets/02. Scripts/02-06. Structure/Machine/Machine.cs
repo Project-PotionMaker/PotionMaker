@@ -5,13 +5,18 @@ using UnityEngine;
 public class Machine : MonoBehaviour
 {
     private MachineData _data;
-    public MachineData Data { get => _data; private set => _data = value; }
+    public MachineData Data => _data;
 
     private float _currentProgress;
 
     private bool _isStarted;
 
     private List<int> InputTIDList;
+
+    public void Init(MachineData data)
+    {
+        _data = data;
+    }
 
     public bool TryInput(int tid, EInputType inputType)
     {

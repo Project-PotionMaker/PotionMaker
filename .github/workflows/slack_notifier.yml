@@ -1,0 +1,62 @@
+name: Notify Slack on Pull Request Activity
+
+on:
+  pull_request:
+    types: [opened, reopened, closed]
+    branches:
+      - '**'
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  notify-slack:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send Slack Notification on PR Event
+        if: github.event_name == 'pull_request' && github.event.action != 'closed'
+        run: |
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          PR_URL="${{ github.event.pull_request.html_url }}"
+          PR_AUTHOR="${{ github.event.pull_request.user.login }}"
+
+          curl -X POST \
+               -H 'Content-type: application/json' \
+               --data '{
+                 "text": "📢 *PR이 게시되었습니다.*\n*제목 :* '"${PR_TITLE}"' (#'"${PR_NUMBER}"')\n*작성자 :* '"${PR_AUTHOR}"'\n*링크 :* '"${PR_URL}"'"
+               }' \
+               ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Send Slack Notification on PR Review
+        if: github.event_name == 'pull_request_review'
+        run: |
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          PR_URL="${{ github.event.pull_request.html_url }}"
+          PR_AUTHOR="${{ github.event.pull_request.user.login }}"
+          REVIEWER="${{ github.event.review.user.login }}"
+          STATE="${{ github.event.review.state }}"
+          BODY="${{ github.event.review.body }}"
+
+          curl -X POST \
+               -H 'Content-type: application/json' \
+               --data '{
+                 "text": "✅ *PR에 리뷰가 달렸습니다.*\n*리뷰어:* '"${REVIEWER}"'\n*상태:* '"${STATE}"'\n*PR 제목:* '"${PR_TITLE}"'\n*작성자:* '"${PR_AUTHOR}"'\n*링크:* '"${PR_URL}"'\n*내용:* '"${BODY}"'"
+               }' \
+               ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Send Slack Notification on PR Merge
+        if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
+        run: |
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          PR_URL="${{ github.event.pull_request.html_url }}"
+          PR_AUTHOR="${{ github.event.pull_request.user.login }}"
+          MERGED_BY="${{ github.event.pull_request.merged_by.login }}"
+
+          curl -X POST \
+               -H 'Content-type: application/json' \
+               --data '{
+                 "text": "🎉 *PR이 메인에 머지되었습니다.*\n*제목 :* '"${PR_TITLE}"' (#'"${PR_NUMBER}"')\n*작성자 :* '"${PR_AUTHOR}"'\n*머지한 사람 :* '"${MERGED_BY}"'\n*링크 :* '"${PR_URL}"'"
+               }' \
+               ${{ secrets.SLACK_WEBHOOK_URL }}

@@ -39,7 +39,7 @@ public class Sales
         {
             _salesVolumeDict.Add(potionType, 0);
         }
-        _salesVolumeDict[potionType]++;
+        ++_salesVolumeDict[potionType];
         _dailySales += price;
         _totalSales += price;
     }

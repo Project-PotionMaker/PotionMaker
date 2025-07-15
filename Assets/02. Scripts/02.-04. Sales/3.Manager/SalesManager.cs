@@ -19,7 +19,7 @@ public class SalesManager : MonoBehaviourSingleton<SalesManager>
 
     private void Start()
     {
-        PhaseManager.Instance.OnDayPassed += OnDayPassed;
+        PhaseManager.Instance.OnDayPassed += ResetDailySales;
     }
     public void InitSalesManager()
     {
@@ -85,7 +85,7 @@ public class SalesManager : MonoBehaviourSingleton<SalesManager>
         _photonView.RPC(nameof(SetSales), info.Sender, salesJson);
     }
 
-    public void OnDayPassed()
+    public void ResetDailySales()
     {
         if (!PhotonNetwork.IsMasterClient)
         {

@@ -21,7 +21,7 @@ public class SalesRPCData
         TotalSales = salesDTO.TotalSales;
         DailySales = salesDTO.DailySales;
 
-        SalesVolumeKeyValueList = new List<SalesVolumeKeyValue>();
+        SalesVolumeKeyValueList = new List<SalesVolumeKeyValue>(salesDTO.SalesVolumeDict.Count);
         foreach (var keyValuePair in salesDTO.SalesVolumeDict)
         {
             SalesVolumeKeyValueList.Add(new SalesVolumeKeyValue

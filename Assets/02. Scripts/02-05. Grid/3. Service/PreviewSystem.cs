@@ -8,16 +8,20 @@ public class PreviewSystem : MonoBehaviour
     [SerializeField]
     private GameObject _cellIndicator;
     private GameObject _previewObject;
+    private Renderer[] _previewObjectRenderers;
 
     [SerializeField]
-    private Material _previewMaterialsPrefab;
-    private Material _previewMaterialInstance;
+    private Material _previewMaterial;
+    private MaterialPropertyBlock _previewMaterialPropertyBlock;
 
     private Renderer _cellIndicatorRenderer;
+    private MaterialPropertyBlock _cellIndicatorPropertyBlock;
 
     private void Start()
     {
-        _previewMaterialInstance = new Material(_previewMaterialsPrefab);
+        _previewMaterialPropertyBlock = new MaterialPropertyBlock();
+        _cellIndicatorPropertyBlock = new MaterialPropertyBlock();
+
         _cellIndicator.gameObject.SetActive(false);
         _cellIndicatorRenderer = _cellIndicator.GetComponentInChildren<Renderer>();
     }
@@ -25,6 +29,7 @@ public class PreviewSystem : MonoBehaviour
     public void StartShowingPlacementPreview(GameObject prefab, Vector2Int size)
     {
         _previewObject = Instantiate(prefab);
+
         PreparePreview(_previewObject);
         PrepareCursor(size);
         _cellIndicator.SetActive(true);
@@ -41,13 +46,13 @@ public class PreviewSystem : MonoBehaviour
 
     private void PreparePreview(GameObject previewObject)
     {
-        Renderer[] renderers = previewObject.GetComponentsInChildren<Renderer>();
-        foreach(Renderer renderer in renderers)
+        _previewObjectRenderers = previewObject.GetComponentsInChildren<Renderer>();
+        foreach (Renderer renderer in _previewObjectRenderers)
         {
             Material[] materials = renderer.materials;
             for(int i = 0; i < materials.Length; i++)
             {
-                materials[i] = _previewMaterialInstance;
+                materials[i] = _previewMaterial;
             }
             renderer.materials = materials;
         }
@@ -88,13 +93,20 @@ public class PreviewSystem : MonoBehaviour
     {
         Color c = validity ? Color.white : Color.red;
         c.a = 0.5f;
-        _previewMaterialInstance.color = c;
+
+        foreach (Renderer renderer in _previewObjectRenderers)
+        {
+            _previewMaterialPropertyBlock.SetColor("_Color", c);
+            renderer.SetPropertyBlock(_previewMaterialPropertyBlock);
+        }
     }
+
     private void ApplyFeedbackToCursor(bool validity)
     {
         Color c = validity ? Color.white : Color.red;
         c.a = 0.5f;
-        _cellIndicatorRenderer.material.color = c;
+        _cellIndicatorPropertyBlock.SetColor("_BaseColor", c);
+        _cellIndicatorRenderer.SetPropertyBlock(_cellIndicatorPropertyBlock);
     }
 
     public void StartShowingRemovePreview()

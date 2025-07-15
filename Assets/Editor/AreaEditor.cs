@@ -16,9 +16,6 @@ public class AreaEditor : Editor
     private int _toolbarIndex = 0;
     private string[] _toolbarNames;
 
-    private Color _handleColor = new Color(0, 0.8f, 1f, 0.5f); // 에디터 핸들 색상
-    private Color _activeDrawColor = new Color(0.2f, 1f, 0.2f, 0.3f); // 드래그 시 임시 영역 색상
-
     private void OnEnable()
     {
         _gridLayout = (Layout)target;
@@ -90,7 +87,7 @@ public class AreaEditor : Editor
             }
 
             // 드로잉 중인 셀 강조 표시
-            DrawCellHighlight(currentGridPos, Color.yellow);
+            DrawCellHighlight(currentGridPos, ObjectColors.AreaHandleColor);
 
             // SHIFT 또는 CTRL 키를 누른 상태에서 드래그 처리
             if (guiEvent.type == EventType.MouseDown && guiEvent.button == 0 && (guiEvent.shift || guiEvent.control))
@@ -108,7 +105,7 @@ public class AreaEditor : Editor
             else if (guiEvent.type == EventType.MouseDrag && guiEvent.button == 0 && _isDrawing)
             {
                 // 드래그 중인 임시 영역 그리기
-                DrawTempArea(_startGridPos, currentGridPos, _activeDrawColor);
+                DrawTempArea(_startGridPos, currentGridPos, ObjectColors.AreaActiveDrawColor);
                 SceneView.RepaintAll(); // 씬 뷰 강제 업데이트
             }
         }
@@ -174,10 +171,10 @@ public class AreaEditor : Editor
     {
         switch (type)
         {
-            case EAreaType.Hall: return new Color(0, 1, 0, 0.3f);    // 초록
-            case EAreaType.Kitchen: return new Color(1, 0.5f, 0, 0.3f); // 주황
-            case EAreaType.Storage: return new Color(0.5f, 0.5f, 0.5f, 0.3f); // 회색
-            default: return new Color(1, 1, 1, 0.1f); // 기본
+            case EAreaType.Hall: return ObjectColors.AreaGreenColor;    // 초록
+            case EAreaType.Kitchen: return ObjectColors.AreaOrangeColor; // 주황
+            case EAreaType.Storage: return ObjectColors.AreaGrayColor; // 회색
+            default: return ObjectColors.AreaDefaultColor; // 기본
         }
     }
 

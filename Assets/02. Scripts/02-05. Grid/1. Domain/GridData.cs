@@ -67,11 +67,11 @@ public class GridData
 
     public int GetRepresentationIndex(Vector3Int gridPosition)
     {
-        if(_placedObjectDict.ContainsKey(gridPosition) == false)
+        if(_placedObjectDict.TryGetValue(gridPosition, out Placement value))
         {
-            return -1;
+            return value.PlacedObjectIndex;
         }
-        return _placedObjectDict[gridPosition].PlacedObjectIndex;
+        return -1;
     }
 
     public void RemoveObjectAt(Vector3Int gridPosition)

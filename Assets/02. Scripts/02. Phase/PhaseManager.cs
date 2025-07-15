@@ -1,14 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
-public enum EPhaseType
-{
-    PreparingPhase,
-    ServingPhase,
-    EndingPhase
-}
 
 public class PhaseManager : MonoBehaviourSingleton<PhaseManager>    
 {

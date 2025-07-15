@@ -87,6 +87,33 @@ public partial class DataTable
         }
     }
     #endregion
+    #region Structure
+    private ReadOnlyList<StructureData> StructureList = null;
+    private ReadOnlyDictionary<int, StructureData> StructureTable = null;
+
+    public ReadOnlyList<StructureData> GetStructureDataList()
+    {
+        return StructureList;
+    }
+
+    public StructureData GetStructureData(int key)
+    {
+        if (key == 0)
+        {
+            return null;
+        }
+
+        if (StructureTable.TryGetValue(key, out StructureData retVal) == true)
+        {
+            return retVal;
+        }
+        else
+        {
+            Debug.LogError($"Can not find UniqueID of StructureData: <{key}>");
+            return null;
+        }
+    }
+    #endregion
     #region Machine
     private ReadOnlyList<MachineData> MachineList = null;
     private ReadOnlyDictionary<int, MachineData> MachineTable = null;
@@ -110,6 +137,33 @@ public partial class DataTable
         else
         {
             Debug.LogError($"Can not find UniqueID of MachineData: <{key}>");
+            return null;
+        }
+    }
+    #endregion
+    #region Furniture
+    private ReadOnlyList<FurnitureData> FurnitureList = null;
+    private ReadOnlyDictionary<int, FurnitureData> FurnitureTable = null;
+
+    public ReadOnlyList<FurnitureData> GetFurnitureDataList()
+    {
+        return FurnitureList;
+    }
+
+    public FurnitureData GetFurnitureData(int key)
+    {
+        if (key == 0)
+        {
+            return null;
+        }
+
+        if (FurnitureTable.TryGetValue(key, out FurnitureData retVal) == true)
+        {
+            return retVal;
+        }
+        else
+        {
+            Debug.LogError($"Can not find UniqueID of FurnitureData: <{key}>");
             return null;
         }
     }
@@ -139,9 +193,21 @@ public partial class DataTable
             loadedCount++;
         });
         allCount++;
+        GetBytes_FromResources("Structure", (bytes) =>
+        {
+            LoadStructureData(bytes);
+            loadedCount++;
+        });
+        allCount++;
         GetBytes_FromResources("Machine", (bytes) =>
         {
             LoadMachineData(bytes);
+            loadedCount++;
+        });
+        allCount++;
+        GetBytes_FromResources("Furniture", (bytes) =>
+        {
+            LoadFurnitureData(bytes);
             loadedCount++;
         });
 
@@ -156,8 +222,12 @@ public partial class DataTable
         LoadIngredientData(ingredientBytes);
         byte[] outputBytes = GetBytes_ForEditor("OutputData");
         LoadOutputData(outputBytes);
+        byte[] structureBytes = GetBytes_ForEditor("StructureData");
+        LoadStructureData(structureBytes);
         byte[] machineBytes = GetBytes_ForEditor("MachineData");
         LoadMachineData(machineBytes);
+        byte[] furnitureBytes = GetBytes_ForEditor("FurnitureData");
+        LoadFurnitureData(furnitureBytes);
     }
 
     private void LoadPotionData(byte[] bytes)
@@ -253,6 +323,37 @@ public partial class DataTable
         OutputTable = new ReadOnlyDictionary<int, OutputData>(outputTable);
     }
 
+    private void LoadStructureData(byte[] bytes)
+    {
+        List<StructureData> structureList = new List<StructureData>();
+        Dictionary<int, StructureData> structureTable = new Dictionary<int, StructureData>();
+
+        Reader = new BinaryReader(new MemoryStream(bytes));
+
+        while (Reader.BaseStream.Position < bytes.Length)
+        {
+            StructureData data = new StructureData(Reader);
+            if (structureTable.ContainsKey(data.TID) == true)
+            {
+                Debug.LogError("The duplicate TID: " + data.TID + " in Structure");
+                continue;
+            }
+            else if (data.TID == 0)
+            {
+                Debug.LogError("TID is 0 in Structure");
+                continue;
+            }
+
+            structureList.Add(data);
+            structureTable.Add(data.TID, data);
+        }
+
+        Reader.Close();
+
+        StructureList = new ReadOnlyList<StructureData>(structureList);
+        StructureTable = new ReadOnlyDictionary<int, StructureData>(structureTable);
+    }
+
     private void LoadMachineData(byte[] bytes)
     {
         List<MachineData> machineList = new List<MachineData>();
@@ -282,6 +383,37 @@ public partial class DataTable
 
         MachineList = new ReadOnlyList<MachineData>(machineList);
         MachineTable = new ReadOnlyDictionary<int, MachineData>(machineTable);
+    }
+
+    private void LoadFurnitureData(byte[] bytes)
+    {
+        List<FurnitureData> furnitureList = new List<FurnitureData>();
+        Dictionary<int, FurnitureData> furnitureTable = new Dictionary<int, FurnitureData>();
+
+        Reader = new BinaryReader(new MemoryStream(bytes));
+
+        while (Reader.BaseStream.Position < bytes.Length)
+        {
+            FurnitureData data = new FurnitureData(Reader);
+            if (furnitureTable.ContainsKey(data.TID) == true)
+            {
+                Debug.LogError("The duplicate TID: " + data.TID + " in Furniture");
+                continue;
+            }
+            else if (data.TID == 0)
+            {
+                Debug.LogError("TID is 0 in Furniture");
+                continue;
+            }
+
+            furnitureList.Add(data);
+            furnitureTable.Add(data.TID, data);
+        }
+
+        Reader.Close();
+
+        FurnitureList = new ReadOnlyList<FurnitureData>(furnitureList);
+        FurnitureTable = new ReadOnlyDictionary<int, FurnitureData>(furnitureTable);
     }
 
 }

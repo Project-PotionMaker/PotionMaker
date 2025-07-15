@@ -2,20 +2,24 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Photon.Pun;
 
 public class PhaseManager : MonoBehaviourSingleton<PhaseManager>    
 {
     private BasePhase _currentPhase;
     public BasePhase CurrentPhase { get => _currentPhase; set => _currentPhase = value; }
     private Dictionary<EPhaseType, BasePhase> _phaseDictionary;
+    public Dictionary<EPhaseType, BasePhase> PhaseDictionary { get => _phaseDictionary; set => _phaseDictionary = value; }
 
     [SerializeField]
     private int _day;
     public int Day { get => _day; set => _day = value; }
     public event Action OnDayPassed;
+    PhotonView _photonView;
 
     private void Start()
     {
+        _photonView = GetComponent<PhotonView>();
         InitPhase();
     }
 
@@ -44,6 +48,15 @@ public class PhaseManager : MonoBehaviourSingleton<PhaseManager>
     }
 
     public void TransitionPhase(EPhaseType nextPhase)
+    {
+        if(PhotonNetwork.IsMasterClient == false)
+        {
+            return;
+        }
+        _photonView.RPC(nameof(RPC_TransitionPhase), RpcTarget.All, nextPhase);
+    }
+    [PunRPC]
+    public void RPC_TransitionPhase(EPhaseType nextPhase)
     {
         _currentPhase?.ExitPhase();
         if (_currentPhase is EndingPhase && _phaseDictionary[nextPhase] is PreparingPhase)

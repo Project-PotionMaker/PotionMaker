@@ -17,8 +17,9 @@ public class PhaseManager : MonoBehaviourSingleton<PhaseManager>
     public event Action OnDayPassed;
     PhotonView _photonView;
 
-    private void Start()
+    protected override void Awake()
     {
+        base.Awake();
         _photonView = GetComponent<PhotonView>();
         InitPhase();
     }

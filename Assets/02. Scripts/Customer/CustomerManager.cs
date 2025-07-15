@@ -79,6 +79,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
             return;
         } 
         _inviteTimer = _inviteCoolTime;
+        Debug.Log("손님 초대");
         CustomerPoolManager.Instance.GetObjectAsync(0);
         RemainCustomers++;
     }
@@ -89,6 +90,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         Customer customer = photonView.GetComponent<Customer>();
         customer.transform.position = _shopEntry.position; // 손님을 상점 입구에 생성
         _customerLiner.NewCustomerLining(customer);
+        _orderHandler.PotionOrderLine.Enqueue(customer);
     }
 
     public void OnArrivedLine(Customer customer)
@@ -97,7 +99,6 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         {
             return;
         }
-        _orderHandler.PotionOrderLine.Enqueue(customer);
         PhotonView customerView = _orderHandler.PotionOrderLine.Peek().GetComponent<PhotonView>();
         //TODO : 접수대에 손님을 등록 (접수 가능 상태)
     }

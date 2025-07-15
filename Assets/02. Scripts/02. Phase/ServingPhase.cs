@@ -30,6 +30,7 @@ public class ServingPhase : BasePhase
         {
             if(_timesUp == false)
             {
+                Debug.Log("타임업! 손님들을 모두 반환합니다.");
                 _timesUp = true;
                 CustomerManager.Instance.OnLastOrderTime(); // 대기열에 있는 손님들을 모두 반환
             }

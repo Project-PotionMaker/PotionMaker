@@ -23,12 +23,6 @@ public class MachineData
     ///<summary>기구 코드</summary>
     public readonly char MachineCode;
 
-    ///<summary>가로 길이</summary>
-    public readonly int Width;
-
-    ///<summary>세로 길이</summary>
-    public readonly int Length;
-
     ///<summary>구역 타입</summary>
     public readonly EAreaType AreaType;
 
@@ -41,8 +35,6 @@ public class MachineData
         Description_LocalizationTID = reader.ReadInt32();
         Hint_LocalizationTID = reader.ReadInt32();
         MachineCode = reader.ReadChar();
-        Width = reader.ReadInt32();
-        Length = reader.ReadInt32();
         AreaType = (EAreaType)reader.ReadInt32();
     }
 }

@@ -23,39 +23,44 @@ public class TestSpawner : MonoBehaviour
         }
     }
 
-    public async void RequestCreate(ETestType type)
+    public void RequestCreate(ETestType type)
     {
         if (!PhotonNetwork.IsMasterClient)
         {
             _photonView.RPC(nameof(Create), RpcTarget.MasterClient, type);
             return;
         }
+        Photon.Realtime.Player sender = PhotonNetwork.LocalPlayer;
+        int timestamp = PhotonNetwork.ServerTimestamp;
 
-        await Create(type);
-    }
-
-    public async Task<GameObject> Create(ETestType type)
-    {
-        GameObject newObject = await TestFactory.Instance.CreateAsync(type, transform.position, transform.rotation);
-        return newObject;
+        Create(type, new PhotonMessageInfo(sender, timestamp, _photonView));
     }
 
     [PunRPC]
-    public async void Create(ETestType type, PhotonMessageInfo info)
+    public void Create(ETestType type, PhotonMessageInfo info)
     {
+        Debug.Log(PhotonNetwork.MasterClient.NickName);
         if (!PhotonNetwork.IsMasterClient)
         {
             return;
         }
 
-        GameObject newObject = await Create(type);
+        GameObject newObject = TestFactory.Instance.Create(type, transform.position, transform.rotation);
         PhotonView targetPhotonView = newObject.GetComponent<PhotonView>();
         if (targetPhotonView == null)
         {
             return;
         }
 
-        _photonView.RPC(nameof(Response), info.Sender, targetPhotonView.ViewID);
+        int viewID = targetPhotonView.ViewID;
+        if (info.Sender.IsMasterClient)
+        {
+            Response(viewID);
+        }
+        else
+        {
+            _photonView.RPC(nameof(Response), info.Sender, viewID);
+        }
     }
 
     [PunRPC]

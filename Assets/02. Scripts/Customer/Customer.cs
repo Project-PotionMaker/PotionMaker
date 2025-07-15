@@ -17,6 +17,11 @@ public class Customer : MonoBehaviour
     {
         _photonView = GetComponent<PhotonView>();
     }
+    private void OnEnable()
+    {
+        _lastTarget = Vector3.zero;
+        //_requestedPotionTID = RandomPotion();
+    }
 
     private void Update()
     {

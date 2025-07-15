@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 
 using Photon.Pun;
+using UnityEditor;
 public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
 {
     //접수 받기, 포션 제공하기만 클라이언트에서 마스터에게 요청 가능
@@ -28,6 +29,9 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
 
     //TODO : 임시 포지션, Layout에서 가져오는 것으로 변경 필요
     [SerializeField]
+    private Transform _shopEntry;
+    public Transform ShopEntry { get => _shopEntry; set => _shopEntry = value; }
+    [SerializeField]
     private Transform _hallEntry; // 줄 이탈 초기위치
     public Transform HallEntry { get => _hallEntry; set => _hallEntry = value; }
     [SerializeField]
@@ -41,14 +45,17 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
     public Transform ExitDoor { get => _exitDoor; set => _exitDoor = value; }
 
     // 이벤트는 필요시 추가
-
-    private void Start()
+    protected override void Awake()
     {
+        base.Awake(); 
         _photonView = GetComponent<PhotonView>();
         _orderHandler = new OrderHandler();
         _customerLiner = new CustomerLiner();
         _orderHandler.Init();
         _lostCustomerCount = 0;
+    }
+    private void Start()
+    {
         PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseEntered += SetLists;
     }
     public void SetLists()
@@ -71,7 +78,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         } 
         _inviteTimer = _inviteCoolTime;
         Customer customer = (await CustomerPoolManager.Instance.GetObjectAsync(ENPCType.Customer)).GetComponent<Customer>();
-        _orderHandler.PotionOrderLine.Enqueue(customer);
+        customer.transform.position = _shopEntry.position; // 손님을 상점 입구에 생성
         _customerLiner.NewCustomerLining(customer);
         RemainCustomers++;
     }
@@ -82,13 +89,9 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         {
             return;
         }
-        if (customer == null)
-        {
-            return;
-        }
-        
+        _orderHandler.PotionOrderLine.Enqueue(customer);
         PhotonView customerView = _orderHandler.PotionOrderLine.Peek().GetComponent<PhotonView>();
-        //TODO : 접수대에 손님을 등록
+        //TODO : 접수대에 손님을 등록 (접수 가능 상태)
     }
 
     public void RegisterOrder() // 플레이어가 접수를 받으면 호출

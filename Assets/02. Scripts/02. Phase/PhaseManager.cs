@@ -17,8 +17,9 @@ public class PhaseManager : MonoBehaviourSingleton<PhaseManager>
     public int Day { get => _day; set => _day = value; }
     public event Action OnDayPassed;
 
-    private void Start()
+    protected override void Awake()
     {
+        base.Awake();
         InitPhase();
     }
 

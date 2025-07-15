@@ -12,8 +12,6 @@ public class CustomerLiner // 접수대 앞에 물리적으로 줄 세우는 컴
         {
             return; // 마스터 클라이언트만 호출 가능
         }
-        int viewID = customer.GetComponent<PhotonView>().ViewID;
-
         int index = CustomerManager.Instance.OrderHandler.PotionOrderLine.Count;
         customer.MoveTo(GetLinePosition(index));
     }
@@ -24,6 +22,7 @@ public class CustomerLiner // 접수대 앞에 물리적으로 줄 세우는 컴
         {
             return; // 마스터 클라이언트만 호출 가능
         }
+        Debug.Log("ReLining customers in the Waiting Line.");
         Queue<Customer> line = CustomerManager.Instance.OrderHandler.PotionOrderLine;
         Customer[] lineArray = line.ToArray();
         if (line == null || line.Count == 0)

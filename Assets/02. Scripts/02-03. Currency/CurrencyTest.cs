@@ -22,6 +22,15 @@ public class CurrencyTest : MonoBehaviourPunCallbacks
         {
             CurrencyManager.Instance.PhotonView.RPC(nameof(CurrencyManager.SetCurrency), RpcTarget.All, 9999);
         }
+
+        if (Input.GetKeyDown(KeyCode.Alpha9))
+        {
+            SalesManager.Instance.RequestSell(EPotionType.Vitality, 1);
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha0))
+        {
+            SalesManager.Instance.RequestSell(EPotionType.Life, 10);
+        }
     }
 
     public override void OnConnectedToMaster()
@@ -37,5 +46,6 @@ public class CurrencyTest : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         CurrencyManager.Instance.InitCurrencyManager();
+        SalesManager.Instance.InitSalesManager();
     }
 }

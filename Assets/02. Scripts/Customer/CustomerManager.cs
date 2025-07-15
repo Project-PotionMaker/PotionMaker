@@ -5,43 +5,55 @@ using System;
 using Photon.Pun;
 public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
 {
-    private Dictionary<int, LinkedList<GameObject>> _potionOrderMap; // 주문표, 중간 삭제가 가능한 큐
-    private Queue<GameObject> _potionOrderLine; // 손님이 줄을 서는 대기열
-    private PhotonView _photonView;
+    //접수 받기, 포션 제공하기만 클라이언트에서 마스터에게 요청 가능
+    //나머지는 마스터에서만 호출 가능
 
-    [SerializeField]
+    private CustomerLiner _customerLiner; // 손님 줄을 물리적으로 관리하는 컴포넌트
+    public CustomerLiner CustomerLiner { get => _customerLiner; set => _customerLiner = value; }
+    private OrderHandler _orderHandler; // 주문을 처리하는 컴포넌트
+    public OrderHandler OrderHandler { get => _orderHandler; set => _orderHandler = value; }
+    private PhotonView _photonView;
     private int _lostCustomerCount;
     public int LostCustomerCount { get => _lostCustomerCount; set => _lostCustomerCount = value; }
 
-    private const int MAX_CUSTOMER_LOST = 5;
-    private float _inviteTimer = 0f; // 손님 초대 타이머
+    [SerializeField]
+    private int _maxCustomerLost = 5;
+    public int MaxCustomerLost { get => _maxCustomerLost; set => _maxCustomerLost = value; }
     [SerializeField]
     private float _inviteCoolTime;
     public float InviteCoolTime{ get => _inviteCoolTime; set => _inviteCoolTime = value; }
+    private float _inviteTimer = 0f; // 손님 초대 타이머
     private int _remainCustomers;
     public int RemainCustomers { get => _remainCustomers; set => _remainCustomers = value; }
 
+    //TODO : 임시 포지션, Layout에서 가져오는 것으로 변경 필요
+    [SerializeField]
+    private Transform _hallEntry; // 줄 이탈 초기위치
+    public Transform HallEntry { get => _hallEntry; set => _hallEntry = value; }
+    [SerializeField]
+    private Transform _servingCounter; // 포션을 제공하는 판매대 위치
+    public Transform ServingCounter { get => _servingCounter; set => _servingCounter = value; }
+    [SerializeField]
+    private Transform _counterLocation; // 접수대 위치
+    public Transform CounterLocation { get => _counterLocation; set => _counterLocation = value; }
+    [SerializeField]
+    private Transform _exitDoor; // 손님이 나가는 문 위치
+    public Transform ExitDoor { get => _exitDoor; set => _exitDoor = value; }
 
-    public event Action<GameObject> OnCustomerLost; // 인내심 바닥날 때 호출
-    public event Action<int> OnPotionServed; // 포션을 내놓았을 때
-    public event Action<GameObject> OnCustomerBuyed; // 손님이 포션을 구매했을 때 호출
-    public event Action OnCustomerIn; // 플레이어가 접수를 받았을 때 호출
-    public event Action OnCustomerOut; // 손님이 건물 밖으로 나갔을 때 호출
+    // 이벤트는 필요시 추가
 
     private void Start()
     {
-        _potionOrderMap = new Dictionary<int, LinkedList<GameObject>>();
-        _potionOrderLine = new Queue<GameObject>();
-        //TODO : CustomerPool초기화
-
+        _photonView = GetComponent<PhotonView>();
+        _orderHandler = new OrderHandler();
+        _customerLiner = new CustomerLiner();
+        _orderHandler.Init();
         _lostCustomerCount = 0;
         PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseEntered += SetLists;
     }
     public void SetLists()
     {
-        //TODO : 풀 초기화
-        _potionOrderMap.Clear();
-        _potionOrderLine.Clear();
+        _orderHandler.SetLists();
         _inviteTimer = _inviteCoolTime;
         _remainCustomers = 0;
     }
@@ -58,13 +70,13 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
             return;
         } 
         _inviteTimer = _inviteCoolTime;
-        GameObject customer = await CustomerPoolManager.Instance.GetObjectAsync(ENPCType.Customer);
-        //TODO : NPC 시스템과 연동해 손님이 접수대에 오게 만들기
-        _potionOrderLine.Enqueue(customer);
+        Customer customer = (await CustomerPoolManager.Instance.GetObjectAsync(ENPCType.Customer)).GetComponent<Customer>();
+        _orderHandler.PotionOrderLine.Enqueue(customer);
+        _customerLiner.NewCustomerLining(customer);
         RemainCustomers++;
-        OnCustomerIn?.Invoke();
     }
-    public void OnArrivedLine(GameObject customer)
+
+    public void OnArrivedLine(Customer customer)
     {
         if (!PhotonNetwork.IsMasterClient)
         {
@@ -75,20 +87,11 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
             return;
         }
         
-        PhotonView customerView = _potionOrderLine.Peek().GetComponent<PhotonView>();
-        _photonView.RPC(nameof(RPC_EnableCustomerInteraction), RpcTarget.All, customerView.ViewID);
-    }
-    [PunRPC]
-    private void RPC_EnableCustomerInteraction(int viewID)
-    {
-        GameObject customer = PhotonView.Find(viewID)?.gameObject;
-        if (customer == null) return;
-
-        Customer head = customer.GetComponent<Customer>();
-        head.SetCanInteract(true);
+        PhotonView customerView = _orderHandler.PotionOrderLine.Peek().GetComponent<PhotonView>();
+        //TODO : 접수대에 손님을 등록
     }
 
-    public void RegisterOrder() // 손님이 주문을 요청할 때 호출
+    public void RegisterOrder() // 플레이어가 접수를 받으면 호출
     {
         if (PhotonNetwork.IsMasterClient)
         {
@@ -106,112 +109,98 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
     }
     private void RegisterOrderInternal()
     {
-        if (_potionOrderLine.Count == 0)
+        if (_orderHandler.PotionOrderLine.Count == 0)
         {
             return;
         }
-        GameObject customer = _potionOrderLine.Dequeue();
+        Customer customer = _orderHandler.PotionOrderLine.Dequeue();
         int potionTID = customer.GetComponent<Customer>().RequestedPotionTID;
 
-        if (!_potionOrderMap.ContainsKey(potionTID))
-        {
-            _potionOrderMap[potionTID] = new LinkedList<GameObject>();
-        }
-        _potionOrderMap[potionTID].AddLast(customer);
-
-        // 연출 동기화
-        PhotonView pv = customer.GetComponent<PhotonView>();
-        _photonView.RPC(nameof(RPC_OnOrderRegistered), RpcTarget.Others, pv.ViewID, potionTID);
+        _orderHandler.AddOrder(potionTID, customer);
+        customer.MoveTo(_hallEntry.position);
+        _customerLiner.ReLining(); // 줄 다시 세우기
     }
 
-    [PunRPC]
-    private void RPC_OnOrderRegistered(int viewID, int potionTID)
-    {
-        GameObject customer = PhotonView.Find(viewID).gameObject;
-        customer.GetComponent<Customer>().SetCanInteract(true);
-        //TODO : NPC Hall로 돌려보내기
-    }
-
-    public void LostCustomer(GameObject customer) // 인내심이 바닥나면 호출
+    public void LostCustomer(Customer customer) // 인내심이 바닥나면 호출
     {
         if(PhotonNetwork.IsMasterClient == false)
         {
             return;
         }
-        OnCustomerLost?.Invoke(customer);
-        if (_potionOrderLine != null && _potionOrderLine.Contains(customer))
-        {
-            _potionOrderLine.Dequeue(); // 손님이 줄에 있다면 줄에서 제거
-        }
-        else
-        {
-            _potionOrderMap[customer.GetComponent<Customer>().RequestedPotionTID].Remove(customer);// 손님이 홀에 있다면 포션 큐에서 제거
-        }
-        _photonView.RPC(nameof(RPC_PutOutCustomer), RpcTarget.All, customer.GetComponent<PhotonView>().ViewID);
+        _orderHandler.RemoveAnywhere(customer); // 주문 목록에서 손님 제거
+        _customerLiner.PutOutCustomer(customer); // 손님을 나가게 하기
         _lostCustomerCount++;
-        if(_lostCustomerCount >= MAX_CUSTOMER_LOST)
+        if(_lostCustomerCount >= _maxCustomerLost)
         {
             PhaseManager.Instance.TransitionPhase(EPhaseType.EndingPhase);
         }
     }
 
+    public void ServePotion(int potionTID)// 판매대에 올려놓으면 호출
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            ServePotionInternal(potionTID); 
+        }
+        else
+        {
+            _photonView.RPC(nameof(RPC_ServePotion), RpcTarget.MasterClient, potionTID);
+        }
+    }
+    [PunRPC]
+    public void RPC_ServePotion(int potionTID)
+    {
+        ServePotionInternal(potionTID);
+    }
 
-    public void ServePotion(int potionTID) // 판매대에 올려놓으면 호출
+    public void ServePotionInternal(int potionTID)
     {
         if (PhotonNetwork.IsMasterClient == false)
         {
             return;
         }
-        if (!_potionOrderMap.ContainsKey(potionTID) || _potionOrderMap[potionTID].Count == 0)
+        if (!_orderHandler.PotionOrderMap.ContainsKey(potionTID) || _orderHandler.PotionOrderMap[potionTID].Count == 0)
         {
             Debug.Log($"No customers in hall for potion TID: {potionTID}");
             return; // 해당 TID의 손님이 없으면 실패
         }
-        OnPotionServed?.Invoke(potionTID);
-        //TODO : 손님을 판매대로 이동시키기
+        Customer customer = _orderHandler.PotionOrderMap[potionTID].First.Value;
+        customer.GetComponent<Customer>().MoveTo(_servingCounter.position); // 손님을 판매대 위치로 이동
         //TODO : 가져가기 전까지 포션 상호작용 불가로 만들기
     }
 
-    public void ServedSuccess(int potionTID) // 손님이 판매대에 도착하면 호출 
+    public void OnServedSuccess(int potionTID) // 손님이 판매대에 도착하면 호출 
     {
         if (PhotonNetwork.IsMasterClient == false)
         {
             return;
         }
         //TODO : 구매 성공, Currency 증가
-        OnCustomerBuyed?.Invoke(_potionOrderMap[potionTID].First.Value);
-        GameObject customer = _potionOrderMap[potionTID].First.Value;
-        _potionOrderMap[potionTID].RemoveFirst(); // 손님 제거
-        _photonView.RPC(nameof(RPC_PutOutCustomer), RpcTarget.All, customer.GetComponent<PhotonView>().ViewID);
+        Customer customer = _orderHandler.PotionOrderMap[potionTID].First.Value;
+        _orderHandler.PotionOrderMap[potionTID].RemoveFirst(); // 손님 제거
+        _customerLiner.PutOutCustomer(customer); // 손님을 나가게 하기
     }
 
-    public void ReturnAllCustomerFromLine() //영업시간 종료되면 호출
+    public void OnLastOrderTime() //영업시간 종료되면 호출
     {
         if (PhotonNetwork.IsMasterClient == false)
         {
             return;
         }
-        while (_potionOrderLine != null && _potionOrderLine.Count > 0)
+        while (_orderHandler.PotionOrderLine != null && _orderHandler.PotionOrderLine.Count > 0)
         {
-            GameObject customer = _potionOrderLine.Dequeue();
-            _photonView.RPC(nameof(RPC_PutOutCustomer), RpcTarget.All, customer.GetComponent<PhotonView>().ViewID);
+            Customer customer = _orderHandler.PotionOrderLine.Dequeue();
+            _customerLiner.PutOutCustomer(customer);
         }
     }
 
-    [PunRPC]
-    public void RPC_PutOutCustomer(int viewID) // (마스터만 호출)
-    {
-        GameObject customer = PhotonView.Find(viewID)?.gameObject;
-        //TODO : 손님 오브젝트를 건물 밖으로 내보내기
-    }
-
-    public void ReturnCustomer(GameObject customer)
+    public void ReturnCustomer(Customer customer) // 손님이 출구에 도착하면 호출
     {
         if(PhotonNetwork.IsMasterClient == false)
         {
             return;
         }
-        CustomerPoolManager.Instance.ReturnObject(customer,ENPCType.Customer);
+        CustomerPoolManager.Instance.ReturnObject(customer.gameObject,ENPCType.Customer);
         RemainCustomers--;
     }
 }

@@ -32,14 +32,11 @@ public class ServingPhase : BasePhase
             if(_timesUp == false)
             {
                 _timesUp = true;
-                CustomerManager.Instance.ReturnAllCustomerFromLine(); // 대기열에 있는 손님들을 모두 반환
+                CustomerManager.Instance.OnLastOrderTime(); // 대기열에 있는 손님들을 모두 반환
             }
             if (CustomerManager.Instance.RemainCustomers == 0) 
             {
-                if(PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase)
-                {
-                    PhaseManager.Instance.TransitionPhase(EPhaseType.EndingPhase);
-                }
+                PhaseManager.Instance.TransitionPhase(EPhaseType.EndingPhase);
                 return;
             }
         }

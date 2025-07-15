@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Text;
 using UnityEditor;
@@ -53,21 +54,26 @@ public class AddressableEnumGenerator
 
     private static string MakeEnumName(string address)
     {
-        // 공백은 _로, 영숫자와 _만 남기고 제거, 숫자 시작 시 _ 붙임
-        var cleaned = address.Replace(" ", "_");
-        StringBuilder builder = new StringBuilder();
-        foreach (var c in cleaned)
+        // 1. 빈 문자열 체크
+        if (string.IsNullOrWhiteSpace(address))
         {
-            if (char.IsLetterOrDigit(c) || c == '_')
-                builder.Append(c);
+            throw new ArgumentException("주소가 비어있거나 공백입니다.");
         }
 
-        if (builder.Length == 0)
-            return "_EmptyAddress";
+        // 2. 숫자로 시작하는지 확인
+        if (char.IsDigit(address[0]))
+        {
+            throw new ArgumentException("주소는 숫자로 시작할 수 없습니다: " + address);
+        }
 
-        if (char.IsDigit(builder[0]))
-            builder.Insert(0, '_');
-
-        return builder.ToString();
+        // 3. 유효하지 않은 문자 체크 (영문자/숫자/_만 허용, 공백도 허용 안 함)
+        foreach (char c in address)
+        {
+            if (!(char.IsLetterOrDigit(c) || c == '_'))
+            {
+                throw new ArgumentException($"주소에 유효하지 않은 문자가 포함되어 있습니다: '{c}' in \"{address}\"");
+            }
+        }
+        return address;
     }
 }

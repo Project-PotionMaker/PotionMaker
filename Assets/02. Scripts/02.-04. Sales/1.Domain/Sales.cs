@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 public class Sales
@@ -23,10 +24,10 @@ public class Sales
             _salesVolumeDict = salesVolumeDict;
         }
     }
-    public int GetTotalSalesVolumeDictionary()
+    public int GetTotalSalesVolume()
     {
         int sum = 0;
-        foreach (int n in _salesVolumeDict.Keys)
+        foreach (int n in _salesVolumeDict.Values)
         {
             sum += n;
         }
@@ -46,6 +47,26 @@ public class Sales
 
     public void SetSales(int totalSales, int dailySales, Dictionary<EPotionType, int> salesVolumeDict)
     {
+        if(totalSales < 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(totalSales),
+                totalSales,
+                $"{nameof(totalSales)} must be zero or greater");
+        }
+        if (dailySales < 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(dailySales),
+                dailySales,
+                $"{nameof(dailySales)} must be zero or greater");
+        }
+        if (ReferenceEquals(salesVolumeDict, null))
+        {
+            throw new ArgumentNullException(
+                nameof(salesVolumeDict),
+                $"{nameof(salesVolumeDict)} must not be null");
+        }
         _totalSales = totalSales;
         _dailySales = dailySales;
         _salesVolumeDict = salesVolumeDict;

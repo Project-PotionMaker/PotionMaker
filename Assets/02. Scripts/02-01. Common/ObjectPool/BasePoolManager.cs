@@ -154,7 +154,7 @@ public class BasePoolManager<TEnum, TPoolInfo> : MonoBehaviourSingleton<BasePool
     }
 
     [PunRPC]
-    private void GetObjectFromPool(int typeInt)
+    public void GetObjectFromPool(int typeInt)
     {
         TEnum type = (TEnum)Enum.ToObject(typeof(TEnum), typeInt);
         TPoolInfo info = GetPoolByType(type);
@@ -172,7 +172,7 @@ public class BasePoolManager<TEnum, TPoolInfo> : MonoBehaviourSingleton<BasePool
     }
 
     [PunRPC]
-    private void GetObjectFromPoolWithViewID(int viewID, int typeInt)
+    public void GetObjectFromPoolWithViewID(int viewID, int typeInt)
     {
         TEnum type = (TEnum)Enum.ToObject(typeof(TEnum), typeInt);
         TPoolInfo info = GetPoolByType(type);
@@ -209,14 +209,14 @@ public class BasePoolManager<TEnum, TPoolInfo> : MonoBehaviourSingleton<BasePool
     }
 
     [PunRPC]
-    private void ReturnObjectMaster(int viewID, int typeInt)
+    public void ReturnObjectMaster(int viewID, int typeInt)
     {
         TEnum type = (TEnum)Enum.ToObject(typeof(TEnum), typeInt);
         _photonView.RPC(nameof(ReturnObjectToPool), RpcTarget.All, viewID, typeInt);
     }
 
     [PunRPC]
-    private void ReturnObjectToPool(int viewID, int typeInt)
+    public void ReturnObjectToPool(int viewID, int typeInt)
     {
         TEnum type = (TEnum)Enum.ToObject(typeof(TEnum), typeInt);
         TPoolInfo info = GetPoolByType(type);

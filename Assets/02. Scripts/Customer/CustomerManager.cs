@@ -57,8 +57,9 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
     {
         _photonView = GetComponent<PhotonView>();
         PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseEntered += SetLists;
-        CustomerPoolManager.Instance.ObjectSpawnedActions.Add(ENPCType.Customer, OnCustomerIn); // 손님이 생성되면 호출
-        //CustomerPoolManager.Instance.ObjectSpawnedActions[ENPCType.Customer] += OnCustomerIn; // 손님이 생성되면 호출
+        CustomerPoolManager.Instance.ObjectSpawnedActions.TryAdd(ENPCType.Customer, null);
+        CustomerPoolManager.Instance.ObjectSpawnedActions[ENPCType.Customer] += OnCustomerIn;
+
     }
     public void SetLists()
     {
@@ -86,11 +87,12 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
 
     public void OnCustomerIn(int viewID)
     {
+        Debug.Log($"손님 생성: {viewID}");
         PhotonView photonView = PhotonView.Find(viewID);
         Customer customer = photonView.GetComponent<Customer>();
         customer.transform.position = _shopEntry.position; // 손님을 상점 입구에 생성
-        _customerLiner.NewCustomerLining(customer);
         _orderHandler.PotionOrderLine.Enqueue(customer);
+        _customerLiner.NewCustomerLining(customer);
     }
 
     public void OnArrivedLine(Customer customer)

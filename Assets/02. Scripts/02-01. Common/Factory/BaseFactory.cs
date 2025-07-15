@@ -24,7 +24,7 @@ public class BaseFactory<TEnum, TFactoryInfo> : MonoBehaviourSingleton<BaseFacto
        // _photonView = GetComponent<PhotonView>();
     }
 
-    private void Start()
+    private async void Start()
     {
         PhotonNetwork.PrefabPool = this;
         foreach (TFactoryInfo info in _factoryInfoList)
@@ -36,10 +36,22 @@ public class BaseFactory<TEnum, TFactoryInfo> : MonoBehaviourSingleton<BaseFacto
             }
 
             _addressableKeyCache[info.Type] = info.AddressableKey;
+
+            GameObject prefab = await AssetManager.Instance.LoadAsset<GameObject>(info.AddressableKey);
+
+            if (prefab != null)
+            {
+                _prefabCache[info.AddressableKey] = prefab; // 이름 기준으로 캐싱
+            }
+            else
+            {
+                Debug.LogError($"프리팹이 없습니다. 키: {info.AddressableKey}");
+                continue;
+            }
         }
     }
 
-    public async Task<GameObject> CreateAsync(TEnum type, Vector3 position, Quaternion rotation)
+    public GameObject Create(TEnum type, Vector3 position, Quaternion rotation)
     {
         if (!_addressableKeyCache.ContainsKey(type))
         {
@@ -50,17 +62,7 @@ public class BaseFactory<TEnum, TFactoryInfo> : MonoBehaviourSingleton<BaseFacto
 
         if (!_prefabCache.ContainsKey(addressableKey))
         {
-            GameObject prefab = await AssetManager.Instance.LoadAsset<GameObject>(addressableKey);
-
-            if (prefab != null)
-            {
-                _prefabCache[addressableKey] = prefab; // 이름 기준으로 캐싱
-            }
-            else
-            {
-                Debug.LogError($"프리팹이 없습니다. 키: {addressableKey}");
-                return null;
-            }
+            Debug.LogError($"Addressable 로드한 프리팹 중에 없습니다. 키: {addressableKey}");
         }
         
         // PhotonNetwork.Instantiate는 prefab.name을 사용해야 하므로 캐시도 이름 기준

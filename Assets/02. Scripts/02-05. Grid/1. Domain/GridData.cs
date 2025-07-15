@@ -49,7 +49,6 @@ public class GridData
 
     public bool CanPlaceObjectAt(Vector3Int gridPosition, Vector2Int objectSize, EAreaType StructureType)
     {
-        Debug.Log(gridPosition);
         List<Vector3Int> positionToOccupyList = CalculatePositions(gridPosition, objectSize);
         foreach(Vector3Int pos in positionToOccupyList)
         {

@@ -2,7 +2,8 @@ using UnityEngine;
 
 public enum EAddressableTest
 {
-    AddressablePrefab,
+    AddressablePrefab1,
+    AddressablePrefab2,
     AddressableScene
 }
 

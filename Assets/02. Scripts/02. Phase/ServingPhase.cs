@@ -26,7 +26,6 @@ public class ServingPhase : BasePhase
         base.Update(deltaTime);
         _currentTime = Mathf.Max(0,_currentTime-deltaTime);
         //TODO : HUD 상단의 타이머와 연동
-
         if (_currentTime <= 0)
         {
             if(_timesUp == false)

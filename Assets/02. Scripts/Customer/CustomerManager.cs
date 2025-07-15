@@ -48,7 +48,6 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
     protected override void Awake()
     {
         base.Awake(); 
-        _photonView = GetComponent<PhotonView>();
         _orderHandler = new OrderHandler();
         _customerLiner = new CustomerLiner();
         _orderHandler.Init();
@@ -56,6 +55,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
     }
     private void Start()
     {
+        _photonView = GetComponent<PhotonView>();
         PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseEntered += SetLists;
     }
     public void SetLists()

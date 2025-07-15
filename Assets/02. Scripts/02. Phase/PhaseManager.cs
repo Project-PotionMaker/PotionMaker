@@ -21,6 +21,7 @@ public class PhaseManager : MonoBehaviourSingleton<PhaseManager>
     {
         base.Awake();
         InitPhase();
+        _photonView = GetComponent<PhotonView>();
     }
 
     private void Update()

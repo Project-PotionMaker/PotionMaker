@@ -36,8 +36,8 @@ public class BaseFactory : MonoBehaviourPun, IPunPrefabPool
     {
         if (!_prefabCache.ContainsKey(addressableKey))
         {
-            var handle = Addressables.LoadAssetAsync<GameObject>(addressableKey);
-            GameObject prefab = await handle.Task;
+            GameObject prefab = await AssetManager.Instance.LoadAsset<GameObject>(addressableKey);
+
             if (prefab != null)
             {
                 _prefabCache[addressableKey] = prefab; // 이름 기준으로 캐싱

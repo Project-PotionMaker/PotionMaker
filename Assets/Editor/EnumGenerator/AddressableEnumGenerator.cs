@@ -52,28 +52,23 @@ public class AddressableEnumGenerator
         UnityEngine.Debug.Log($"Addressable enum generated at {_addressableEnumFilePath}");
     }
 
-    private static string MakeEnumName(string address)
+    private static string MakeEnumName(string addressableKey)
     {
-        // 1. 빈 문자열 체크
-        if (string.IsNullOrWhiteSpace(address))
+        if (string.IsNullOrWhiteSpace(addressableKey))
         {
-            throw new ArgumentException("주소가 비어있거나 공백입니다.");
+            throw new ArgumentException("키가 비어있거나 공백입니다.");
         }
-
-        // 2. 숫자로 시작하는지 확인
-        if (char.IsDigit(address[0]))
+        if (char.IsDigit(addressableKey[0]))
         {
-            throw new ArgumentException("주소는 숫자로 시작할 수 없습니다: " + address);
+            throw new ArgumentException("키는 숫자로 시작할 수 없습니다: " + addressableKey);
         }
-
-        // 3. 유효하지 않은 문자 체크 (영문자/숫자/_만 허용, 공백도 허용 안 함)
-        foreach (char c in address)
+        foreach (char c in addressableKey)
         {
             if (!(char.IsLetterOrDigit(c) || c == '_'))
             {
-                throw new ArgumentException($"주소에 유효하지 않은 문자가 포함되어 있습니다: '{c}' in \"{address}\"");
+                throw new ArgumentException($"키에 유효하지 않은 문자가 포함되어 있습니다: '{c}' in \"{addressableKey}\"");
             }
         }
-        return address;
+        return addressableKey;
     }
 }

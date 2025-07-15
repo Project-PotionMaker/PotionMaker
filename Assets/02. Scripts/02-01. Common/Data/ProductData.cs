@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-public class MachineData
+public class ProductData
 {
     ///<summary>TID</summary>
     public readonly int TID;
@@ -11,34 +11,26 @@ public class MachineData
     ///<summary>이름</summary>
     public readonly string Name;
 
+    ///<summary>상품 타입</summary>
+    public readonly EProductType ProductType;
+
     ///<summary>이름 TID</summary>
     public readonly int Name_LocalizationTID;
 
-    ///<summary>기구 설명 TID</summary>
+    ///<summary>설명 TID</summary>
     public readonly int Description_LocalizationTID;
 
-    ///<summary>힌트 TID</summary>
-    public readonly int Hint_LocalizationTID;
+    ///<summary>가격</summary>
+    public readonly int Price;
 
-    ///<summary>기구 코드</summary>
-    public readonly char MachineCode;
-
-    ///<summary>구역 타입</summary>
-    public readonly EAreaType AreaType;
-
-    ///<summary>최대 입력 개수</summary>
-    public readonly int MaxInputCount;
-
-    public MachineData(BinaryReader reader)
+    public ProductData(BinaryReader reader)
     {
         TID = reader.ReadInt32();
         int name = reader.ReadInt32();
         Name = Encoding.UTF8.GetString(reader.ReadBytes(name));
+        ProductType = (EProductType)reader.ReadInt32();
         Name_LocalizationTID = reader.ReadInt32();
         Description_LocalizationTID = reader.ReadInt32();
-        Hint_LocalizationTID = reader.ReadInt32();
-        MachineCode = reader.ReadChar();
-        AreaType = (EAreaType)reader.ReadInt32();
-        MaxInputCount = reader.ReadInt32();
+        Price = reader.ReadInt32();
     }
 }

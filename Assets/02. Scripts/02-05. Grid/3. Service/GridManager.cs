@@ -8,11 +8,10 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
     [Foldout("Hierarchy")]
     [SerializeField]
     private Grid _grid;
-#if UNITY_EDITOR
     // 추후 삭제 (인풋매니저)
     [SerializeField]
     private GridTest_InputManager _inputManager;
-#endif
+
     [SerializeField]
     private GameObject _gridVisualization;
 

@@ -20,6 +20,9 @@ public class OutputData
     ///<summary>재료2 TID</summary>
     private readonly int Ingredient2TID;
 
+    ///<summary>사용 가능한 기구 TID</summary>
+    public readonly int AvailableMachineTID;
+
     ///<summary>IngredientTID 리스트</summary>
     public readonly List<int> IngredientTIDList = new List<int>();
     public OutputData(BinaryReader reader)
@@ -31,6 +34,7 @@ public class OutputData
         ColorCode = Encoding.UTF8.GetString(reader.ReadBytes(colorcode));
         Ingredient1TID = reader.ReadInt32();
         Ingredient2TID = reader.ReadInt32();
+        AvailableMachineTID = reader.ReadInt32();
 
         LinkTable();
     }

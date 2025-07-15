@@ -11,6 +11,16 @@ public enum ESaveType
     Day = 3,
 }
 
+public enum EProductType
+{
+    ///<summary>조리 기구</summary>
+    Machine = 0,
+    ///<summary>가구</summary>
+    Furniture = 1,
+    ///<summary>이사</summary>
+    HouseMoving = 2,
+}
+
 public enum EPhaseType
 {
     ///<summary>영업준비시간</summary>
@@ -57,6 +67,16 @@ public enum EIngredientType
     Animals = 2,
     ///<summary>결정</summary>
     Crystals = 3,
+}
+
+public enum EInputType
+{
+    ///<summary>없음</summary>
+    None = 0,
+    ///<summary>출력물</summary>
+    Output = 1,
+    ///<summary>재료</summary>
+    Ingredient = 2,
 }
 
 public enum EStructureType

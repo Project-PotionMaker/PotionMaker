@@ -9,7 +9,7 @@ public class AreaEditor : Editor
     private Layout _gridLayout;
     private GridInfo _gridInfo;
 
-    private EAreaType _selectedAreaType = EAreaType.Hall; // 현재 선택된 구역 타입
+    private EAreaType _selectedAreaType = EAreaType.None; // 현재 선택된 구역 타입
     private bool _isDrawing = false; // 드래그 중인지 여부
     private Vector3Int _startGridPos; // 드래그 시작 그리드 좌표
 
@@ -19,7 +19,7 @@ public class AreaEditor : Editor
     private Color _handleColor = new Color(0, 0.8f, 1f, 0.5f); // 에디터 핸들 색상
     private Color _activeDrawColor = new Color(0.2f, 1f, 0.2f, 0.3f); // 드래그 시 임시 영역 색상
 
-    void OnEnable()
+    private void OnEnable()
     {
         _gridLayout = (Layout)target;
         _gridInfo = _gridLayout.GetComponent<GridInfo>();
@@ -64,7 +64,7 @@ public class AreaEditor : Editor
         }
     }
 
-    void OnSceneGUI()
+    private void OnSceneGUI()
     {
         if (_gridInfo == null || _gridLayout == null) return;
 

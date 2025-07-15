@@ -1,21 +1,21 @@
-﻿using UnityEditor;
+using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
 
 public class WallGeneratorEditorWindow : EditorWindow
 {
-    private int startX = 0;
-    private int startY = 0;
-    private int width = 5;
-    private int height = 5;
+    private int _startX = 0;
+    private int _startY = 0;
+    private int _width = 5;
+    private int _height = 5;
 
-    private GameObject wallPrefab;
-    private GameObject wallsParent;
+    private GameObject _wallPrefab;
+    private GameObject _wallsParent;
 
     private const float CELL_SIZE = 1f;
 
-    private GameObject selectedPlane;
-    private bool useSelectedPlane = false;
+    private GameObject _selectedPlane;
+    private bool _useSelectedPlane = false;
 
     [MenuItem("Tools/1x1 Wall Generator (Rotation Fixed)")] // 메뉴 이름 변경
     public static void ShowWindow()
@@ -28,66 +28,66 @@ public class WallGeneratorEditorWindow : EditorWindow
         GUILayout.Label("1x1 Wall Generator Settings", EditorStyles.boldLabel);
 
         EditorGUILayout.Space();
-        wallPrefab = (GameObject)EditorGUILayout.ObjectField("Wall Prefab", wallPrefab, typeof(GameObject), false);
-        if (wallPrefab == null)
+        _wallPrefab = (GameObject)EditorGUILayout.ObjectField("Wall Prefab", _wallPrefab, typeof(GameObject), false);
+        if (_wallPrefab == null)
         {
             EditorGUILayout.HelpBox("벽으로 사용할 프리팹을 할당해주세요. (피벗이 중앙에 있는 오브젝트 권장)", MessageType.Warning);
         }
 
         EditorGUILayout.Space();
-        wallsParent = (GameObject)EditorGUILayout.ObjectField("Walls Parent Object (Optional)", wallsParent, typeof(GameObject), true);
-        if (wallsParent == null)
+        _wallsParent = (GameObject)EditorGUILayout.ObjectField("Walls Parent Object (Optional)", _wallsParent, typeof(GameObject), true);
+        if (_wallsParent == null)
         {
             EditorGUILayout.HelpBox("생성된 벽들을 묶을 부모 오브젝트를 지정할 수 있습니다. 비워두면 씬의 루트에 'GeneratedWalls'로 생성됩니다.", MessageType.Info);
         }
 
         EditorGUILayout.Space();
         GUILayout.Label("Grid Area Definition", EditorStyles.boldLabel);
-        useSelectedPlane = EditorGUILayout.Toggle("Use Selected Plane as Area", useSelectedPlane);
+        _useSelectedPlane = EditorGUILayout.Toggle("Use Selected Plane as Area", _useSelectedPlane);
 
-        if (useSelectedPlane)
+        if (_useSelectedPlane)
         {
             GameObject currentSelection = Selection.activeGameObject;
             if (currentSelection != null && currentSelection.GetComponent<MeshFilter>() != null &&
                 currentSelection.GetComponent<MeshFilter>().sharedMesh != null &&
                 currentSelection.GetComponent<MeshFilter>().sharedMesh.name == "Plane")
             {
-                selectedPlane = currentSelection;
-                EditorGUILayout.ObjectField("Detected Plane", selectedPlane, typeof(GameObject), true);
+                _selectedPlane = currentSelection;
+                EditorGUILayout.ObjectField("Detected Plane", _selectedPlane, typeof(GameObject), true);
                 EditorGUILayout.HelpBox("선택된 Plane의 경계를 기준으로 벽이 생성됩니다.", MessageType.Info);
             }
             else
             {
-                selectedPlane = null;
+                _selectedPlane = null;
                 EditorGUILayout.HelpBox("Plane 오브젝트를 선택해주세요. (또는 'Use Selected Plane' 해제)", MessageType.Warning);
             }
         }
         else
         {
             GUILayout.Label("Manual Grid Area (Inside)", EditorStyles.boldLabel);
-            startX = EditorGUILayout.IntField("Start X (Grid Coord)", startX);
-            startY = EditorGUILayout.IntField("Start Y (Grid Coord)", startY);
-            width = EditorGUILayout.IntField("Width (Cells)", width);
-            height = EditorGUILayout.IntField("Height (Cells)", height);
+            _startX = EditorGUILayout.IntField("Start X (Grid Coord)", _startX);
+            _startY = EditorGUILayout.IntField("Start Y (Grid Coord)", _startY);
+            _width = EditorGUILayout.IntField("Width (Cells)", _width);
+            _height = EditorGUILayout.IntField("Height (Cells)", _height);
 
-            width = Mathf.Max(1, width);
-            height = Mathf.Max(1, height);
+            _width = Mathf.Max(1, _width);
+            _height = Mathf.Max(1, _height);
         }
 
         EditorGUILayout.Space();
         if (GUILayout.Button("Generate Outer Walls"))
         {
-            if (wallPrefab == null)
+            if (_wallPrefab == null)
             {
                 EditorUtility.DisplayDialog("경고", "벽 프리팹을 할당해주세요!", "확인");
                 return;
             }
 
-            if (useSelectedPlane)
+            if (_useSelectedPlane)
             {
-                if (selectedPlane != null)
+                if (_selectedPlane != null)
                 {
-                    GenerateWallsAroundPlane(selectedPlane);
+                    GenerateWallsAroundPlane(_selectedPlane);
                 }
                 else
                 {
@@ -110,10 +110,10 @@ public class WallGeneratorEditorWindow : EditorWindow
     {
         ClearAllWalls();
 
-        if (wallsParent == null)
+        if (_wallsParent == null)
         {
-            wallsParent = new GameObject("GeneratedWalls");
-            Undo.RegisterCreatedObjectUndo(wallsParent, "Create Walls Parent");
+            _wallsParent = new GameObject("GeneratedWalls");
+            Undo.RegisterCreatedObjectUndo(_wallsParent, "Create Walls Parent");
         }
 
         Renderer planeRenderer = plane.GetComponent<Renderer>();
@@ -141,12 +141,12 @@ public class WallGeneratorEditorWindow : EditorWindow
     {
         ClearAllWalls();
 
-        if (wallsParent == null)
+        if (_wallsParent == null)
         {
-            wallsParent = new GameObject("GeneratedWalls");
-            Undo.RegisterCreatedObjectUndo(wallsParent, "Create Walls Parent");
+            _wallsParent = new GameObject("GeneratedWalls");
+            Undo.RegisterCreatedObjectUndo(_wallsParent, "Create Walls Parent");
         }
-        GenerateWallsCommonLogic(startX, startY, width, height);
+        GenerateWallsCommonLogic(_startX, _startY, _width, _height);
     }
 
     private void GenerateWallsCommonLogic(int currentStartX, int currentStartY, int currentWidth, int currentHeight)
@@ -204,11 +204,11 @@ public class WallGeneratorEditorWindow : EditorWindow
 
     private GameObject InstantiateAndParentWall(Vector3 position, Quaternion rotation)
     {
-        GameObject wall = (GameObject)PrefabUtility.InstantiatePrefab(wallPrefab);
+        GameObject wall = (GameObject)PrefabUtility.InstantiatePrefab(_wallPrefab);
         wall.transform.position = position;
         wall.transform.rotation = rotation;
 
-        Undo.SetTransformParent(wall.transform, wallsParent.transform, "Parent Wall");
+        Undo.SetTransformParent(wall.transform, _wallsParent.transform, "Parent Wall");
         return wall;
     }
 
@@ -231,10 +231,10 @@ public class WallGeneratorEditorWindow : EditorWindow
 
     private void ClearAllWalls()
     {
-        if (wallsParent != null)
+        if (_wallsParent != null)
         {
-            Undo.DestroyObjectImmediate(wallsParent);
-            wallsParent = null;
+            Undo.DestroyObjectImmediate(_wallsParent);
+            _wallsParent = null;
         }
         GameObject existingParent = GameObject.Find("GeneratedWalls");
         if (existingParent != null)
@@ -262,17 +262,17 @@ public class WallGeneratorEditorWindow : EditorWindow
 
     private void OnSceneGUI(SceneView sceneView)
     {
-        int drawStartX = startX;
-        int drawStartY = startY;
-        int drawWidth = width;
-        int drawHeight = height;
+        int drawStartX = _startX;
+        int drawStartY = _startY;
+        int drawWidth = _width;
+        int drawHeight = _height;
 
         int drawEndX;
         int drawEndY;
 
-        if (useSelectedPlane && selectedPlane != null)
+        if (_useSelectedPlane && _selectedPlane != null)
         {
-            Renderer planeRenderer = selectedPlane.GetComponent<Renderer>();
+            Renderer planeRenderer = _selectedPlane.GetComponent<Renderer>();
             if (planeRenderer != null)
             {
                 Bounds bounds = planeRenderer.bounds;

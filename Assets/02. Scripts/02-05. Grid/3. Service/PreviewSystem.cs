@@ -97,7 +97,7 @@ public class PreviewSystem : MonoBehaviour
         _cellIndicatorRenderer.material.color = c;
     }
 
-    internal void StartShowingRemovePreview()
+    public void StartShowingRemovePreview()
     {
         _cellIndicator.SetActive(true);
         PrepareCursor(Vector2Int.one);

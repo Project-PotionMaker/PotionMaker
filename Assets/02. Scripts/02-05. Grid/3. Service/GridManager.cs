@@ -57,7 +57,6 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
     {
         StopPlacement();
         _gridVisualization.SetActive(true);
-        Debug.Log("그리드데이터 고정시킴");
         _buildingState = new PlacementState(tid,
                                             _grid,
                                             _previewSystem,
@@ -73,7 +72,6 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
     {
         StopPlacement();
         _gridVisualization.SetActive(true);
-        Debug.Log("그리드데이터 고정시킴");
         _buildingState = new RemovingState(_grid,
                                            _previewSystem,
                                            _gridData,

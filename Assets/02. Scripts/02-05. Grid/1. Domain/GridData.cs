@@ -29,7 +29,8 @@ public class GridData
             {
                 throw new Exception($"이미 이 위치에 오브젝트가 있습니다. {pos}");
             }
-            _placedObjectDict[pos] = placement;
+
+            _placedObjectDict.TryAdd(pos, placement);
         }
     }
 
@@ -80,5 +81,10 @@ public class GridData
         {
             _placedObjectDict.Remove(pos);
         }
+    }
+
+    public GridDataDTO ToDTO()
+    {
+        return new GridDataDTO(_placedObjectDict, _availableAreaDict);
     }
 }

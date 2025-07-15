@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,5 +19,10 @@ public class Placement
         OccupiedPositionList = occupiedPositionList;
         TID = tid;
         PlacedObjectIndex = placedObjectIndex;
+    }
+
+    public PlacementDTO ToDTO()
+    {
+        return new PlacementDTO(OccupiedPositionList, TID, PlacedObjectIndex);
     }
 }

@@ -46,6 +46,7 @@ public class PlacementState : IBuildingState
 
         // 사이즈 고정됨 수정 필요
         Debug.Log("수정 필요");
+
         _gridData.AddObjectAt(gridPosition,
                                  Vector2Int.one,
                                  _tid,

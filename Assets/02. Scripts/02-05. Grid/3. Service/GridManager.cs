@@ -57,13 +57,13 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
     {
         StopPlacement();
         _gridVisualization.SetActive(true);
-        _buildingState = new PlacementState(tid,
+        StructureData data = DataTable.Instance.GetStructureData(tid);
+        _buildingState = new PlacementState(data,
                                             _grid,
                                             _previewSystem,
                                             _gridData,
                                             _objectPlacer);
 
-        // 테스트 코드
         _inputManager.OnClicked += PlaceStructure;
         _inputManager.OnExit += StopPlacement;
     }

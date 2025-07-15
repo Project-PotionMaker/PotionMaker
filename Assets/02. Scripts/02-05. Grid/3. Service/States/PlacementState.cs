@@ -2,29 +2,30 @@ using UnityEngine;
 
 public class PlacementState : IBuildingState
 {
-    private int _tid;
+    private StructureData _data;
     private Grid _grid;
     private PreviewSystem _previewSystem;
     private GridData _gridData;
     private PlaceSystem _objectPlacer;
+    private Vector2Int _size;
 
-    public PlacementState(int tid,
+    public PlacementState(StructureData data,
                           Grid grid,
                           PreviewSystem previewSystem,
                           GridData gridData,
                           PlaceSystem objectPlacer)
     {
-        _tid = tid;
+        _data = data;
         _grid = grid;
         _previewSystem = previewSystem;
         _gridData = gridData;
         _objectPlacer = objectPlacer;
 
-        // 사이즈 고정됨 수정 필요
-        Debug.Log("수정 필요");
+        _size = new Vector2Int(data.Width, data.Length);
+
         _previewSystem.StartShowingPlacementPreview(
-            MachineManager.Instance.GetMachinePrefab(tid),
-            Vector2Int.one);
+            MachineManager.Instance.GetMachinePrefab(data.TID),
+            _size);
     }
 
     public void EndState()
@@ -34,39 +35,33 @@ public class PlacementState : IBuildingState
 
     public void OnAction(Vector3Int gridPosition)
     {
-        bool placementValidity = CheckPlacementValidity(gridPosition, _tid);
+        bool placementValidity = CheckPlacementValidity(gridPosition);
         if (placementValidity == false)
         {
             return;
         }
 
+        // MachineManager 말고 StructureManager에서 가져와야됨
+        Debug.Log("수정필요ㅕ");
         int index = _objectPlacer.PlaceObject(
-            MachineManager.Instance.GetMachinePrefab(_tid),
+            MachineManager.Instance.GetMachinePrefab(_data.TID),
             _grid.CellToWorld(gridPosition));
 
-        // 사이즈 고정됨 수정 필요
-        Debug.Log("수정 필요");
-
         _gridData.AddObjectAt(gridPosition,
-                                 Vector2Int.one,
-                                 _tid,
+                                 _size,
+                                 _data.TID,
                                  index);
         _previewSystem.UpdatePosition(_grid.CellToWorld(gridPosition), false);
     }
 
-    private bool CheckPlacementValidity(Vector3Int gridPosition, int TID)
+    private bool CheckPlacementValidity(Vector3Int gridPosition)
     {
-        // 사이즈 + 데이터테이블 고정됨 수정 필요
-        Debug.Log("수정 필요");
-
-        EAreaType type = DataTable.Instance.GetMachineData(TID).AreaType;
-        Debug.Log(DataTable.Instance.GetMachineData(TID).Name);
-        return _gridData.CanPlaceObjectAt(gridPosition, Vector2Int.one, type);
+        return _gridData.CanPlaceObjectAt(gridPosition, _size, _data.AreaType);
     }
 
     public void UpdateState(Vector3Int gridPosition)
     {
-        bool placementValidity = CheckPlacementValidity(gridPosition, _tid);
+        bool placementValidity = CheckPlacementValidity(gridPosition);
 
         _previewSystem.UpdatePosition(_grid.CellToWorld(gridPosition), placementValidity);
     }

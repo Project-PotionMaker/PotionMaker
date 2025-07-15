@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-public class MachineData
+public class FurnitureData
 {
     ///<summary>TID</summary>
     public readonly int TID;
@@ -20,13 +20,10 @@ public class MachineData
     ///<summary>힌트 TID</summary>
     public readonly int Hint_LocalizationTID;
 
-    ///<summary>기구 코드</summary>
-    public readonly char MachineCode;
-
     ///<summary>구역 타입</summary>
     public readonly EAreaType AreaType;
 
-    public MachineData(BinaryReader reader)
+    public FurnitureData(BinaryReader reader)
     {
         TID = reader.ReadInt32();
         int name = reader.ReadInt32();
@@ -34,7 +31,6 @@ public class MachineData
         Name_LocalizationTID = reader.ReadInt32();
         Description_LocalizationTID = reader.ReadInt32();
         Hint_LocalizationTID = reader.ReadInt32();
-        MachineCode = reader.ReadChar();
         AreaType = (EAreaType)reader.ReadInt32();
     }
 }

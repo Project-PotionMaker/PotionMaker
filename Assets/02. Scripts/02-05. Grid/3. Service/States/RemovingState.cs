@@ -8,6 +8,7 @@ public class RemovingState : IBuildingState
     private PreviewSystem _previewSystem;
     private GridData _gridData;
     private PlaceSystem _objectPlacer;
+    private Vector2Int _size;
 
     public RemovingState(Grid grid,
                          PreviewSystem previewSystem,
@@ -29,26 +30,18 @@ public class RemovingState : IBuildingState
 
     public void OnAction(Vector3Int gridPosition)
     {
-        GridData selectedData = null;
-        //테스트용
-        Debug.Log("테스트");
-        if(_gridData.CanPlaceObjectAt(gridPosition, Vector2Int.one, EAreaType.Kitchen) == false)
-        {
-            selectedData = _gridData;
-        }
-
-        if(ReferenceEquals(selectedData, null))
+        if(ReferenceEquals(_gridData, null))
         {
             return;
         }
         else
         {
-            _gameObjectIndex = selectedData.GetRepresentationIndex(gridPosition);
+            _gameObjectIndex = _gridData.GetRepresentationIndex(gridPosition);
             if(_gameObjectIndex == -1)
             {
                 return;
             }
-            selectedData.RemoveObjectAt(gridPosition);
+            _gridData.RemoveObjectAt(gridPosition);
             _objectPlacer.RemoveObjectAt(_gameObjectIndex);
         }
 
@@ -65,9 +58,6 @@ public class RemovingState : IBuildingState
     private bool CheckIfSelectionIsValid(Vector3Int gridPosition)
     {
         // 공간이 없어야 삭제
-
-        //테스트용
-        Debug.Log("테스트");
-        return !_gridData.CanPlaceObjectAt(gridPosition, Vector2Int.one, EAreaType.Kitchen);
+        return !_gridData.CanPlaceObjectAt(gridPosition, Vector2Int.one, EAreaType.None);
     }
 }

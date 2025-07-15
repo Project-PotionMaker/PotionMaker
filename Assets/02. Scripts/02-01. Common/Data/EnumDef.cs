@@ -47,3 +47,25 @@ public enum EAreaType
     Storage = 3,
 }
 
+public enum EIngredientType
+{
+    ///<summary>없음</summary>
+    None = 0,
+    ///<summary>식물</summary>
+    Plants = 1,
+    ///<summary>동물</summary>
+    Animals = 2,
+    ///<summary>결정</summary>
+    Crystals = 3,
+}
+
+public enum EStructureType
+{
+    ///<summary>없음</summary>
+    None = 0,
+    ///<summary>머신</summary>
+    Machine = 1,
+    ///<summary>가구</summary>
+    Furniture = 2,
+}
+

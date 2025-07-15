@@ -11,17 +11,20 @@ public class PotionData
     ///<summary>포션 이름</summary>
     public readonly string Name;
 
-    ///<summary>티어</summary>
-    public readonly int Tier;
+    ///<summary>이름 TID</summary>
+    public readonly int Name_TID;
 
     ///<summary>능력 설명</summary>
-    public readonly string AbilityDescription;
+    public readonly int Ability_LocalizationTID;
 
     ///<summary>향 설명</summary>
-    public readonly string FlavorDescription;
+    public readonly int Flavor_LocalizationTID;
 
     ///<summary>특징 설명</summary>
-    public readonly string FeatureDescription;
+    public readonly int Feature_LocalizationTID;
+
+    ///<summary>티어</summary>
+    public readonly int Tier;
 
     ///<summary>재료1TID</summary>
     private readonly int Ingredient1TID;
@@ -42,13 +45,11 @@ public class PotionData
         TID = reader.ReadInt32();
         int name = reader.ReadInt32();
         Name = Encoding.UTF8.GetString(reader.ReadBytes(name));
+        Name_TID = reader.ReadInt32();
+        Ability_LocalizationTID = reader.ReadInt32();
+        Flavor_LocalizationTID = reader.ReadInt32();
+        Feature_LocalizationTID = reader.ReadInt32();
         Tier = reader.ReadInt32();
-        int abilitydescription = reader.ReadInt32();
-        AbilityDescription = Encoding.UTF8.GetString(reader.ReadBytes(abilitydescription));
-        int flavordescription = reader.ReadInt32();
-        FlavorDescription = Encoding.UTF8.GetString(reader.ReadBytes(flavordescription));
-        int featuredescription = reader.ReadInt32();
-        FeatureDescription = Encoding.UTF8.GetString(reader.ReadBytes(featuredescription));
         Ingredient1TID = reader.ReadInt32();
         Ingredient2TID = reader.ReadInt32();
         Ingredient3TID = reader.ReadInt32();

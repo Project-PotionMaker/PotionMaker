@@ -30,7 +30,7 @@ public class GridData
                 throw new Exception($"이미 이 위치에 오브젝트가 있습니다. {pos}");
             }
 
-            _placedObjectDict.TryAdd(pos, placement);
+            _placedObjectDict[pos] = placement;
         }
     }
 

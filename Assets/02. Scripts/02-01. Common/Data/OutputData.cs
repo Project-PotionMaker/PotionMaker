@@ -21,10 +21,19 @@ public class OutputData
     private readonly int Ingredient2TID;
 
     ///<summary>사용 가능한 기구 TID</summary>
-    public readonly int AvailableMachineTID;
+    private readonly int AvailableMachineTID1;
+
+    ///<summary>사용 가능한 기구 TID</summary>
+    private readonly int AvailableMachineTID2;
+
+    ///<summary>사용 가능한 기구 TID</summary>
+    private readonly int AvailableMachineTID3;
 
     ///<summary>IngredientTID 리스트</summary>
     public readonly List<int> IngredientTIDList = new List<int>();
+
+    ///<summary>AvailableMachineTID 리스트</summary>
+    public readonly List<int> AvailableMachineTIDList = new List<int>();
     public OutputData(BinaryReader reader)
     {
         TID = reader.ReadInt32();
@@ -34,7 +43,9 @@ public class OutputData
         ColorCode = Encoding.UTF8.GetString(reader.ReadBytes(colorcode));
         Ingredient1TID = reader.ReadInt32();
         Ingredient2TID = reader.ReadInt32();
-        AvailableMachineTID = reader.ReadInt32();
+        AvailableMachineTID1 = reader.ReadInt32();
+        AvailableMachineTID2 = reader.ReadInt32();
+        AvailableMachineTID3 = reader.ReadInt32();
 
         LinkTable();
     }
@@ -43,5 +54,8 @@ public class OutputData
     {
         IngredientTIDList.Add(Ingredient1TID);
         IngredientTIDList.Add(Ingredient2TID);
+        AvailableMachineTIDList.Add(AvailableMachineTID1);
+        AvailableMachineTIDList.Add(AvailableMachineTID2);
+        AvailableMachineTIDList.Add(AvailableMachineTID3);
     }
 }

@@ -7,7 +7,7 @@ public class BasePoolInfo<TEnum> where TEnum : Enum
 {
     public TEnum Type;
     public int InitCount;
-    public EAddressables AddressableKeyEnum;
+    public EAddressableKeys AddressableKeyEnum;
     public string AddressableKey => AddressableKeyEnum.ToString();
     public Transform Container;
 

@@ -7,8 +7,6 @@ public class BasePoolInfo<TEnum> where TEnum : Enum
 {
     public TEnum Type;
     public int InitCount;
-    public EAddressableKeys AddressableKeyEnum;
-    public string AddressableKey => AddressableKeyEnum.ToString();
     public Transform Container;
 
     public Queue<GameObject> PoolQueue = new Queue<GameObject>();

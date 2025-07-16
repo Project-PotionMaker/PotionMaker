@@ -128,6 +128,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 300594688}
+  - component: {fileID: 300594690}
+  - component: {fileID: 300594689}
   m_Layer: 0
   m_Name: TestContainer
   m_TagString: Untagged
@@ -150,7 +152,41 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &390869523
+--- !u!114 &300594689
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 300594687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 024cb5fafaf8c6842a95f00948f4f488, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &300594690
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 300594687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 2
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
+--- !u!1 &312682170
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -158,7 +194,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 390869525}
+  - component: {fileID: 312682172}
+  - component: {fileID: 312682171}
   m_Layer: 0
   m_Name: PhotonServerManager
   m_TagString: Untagged
@@ -166,16 +203,28 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &390869525
+--- !u!114 &312682171
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 312682170}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5489584463e365f4b8f1796984b476a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &312682172
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 390869523}
+  m_GameObject: {fileID: 312682170}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.9452257, y: 2.0981362, z: -3.5396705}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -329,7 +378,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1042080482}
   - component: {fileID: 1042080484}
-  - component: {fileID: 1042080483}
   - component: {fileID: 1042080485}
   m_Layer: 0
   m_Name: PoolTest
@@ -353,18 +401,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1042080483
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1042080481}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9788c0c539a4e0d40bff1e8e7fa322f8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1042080484
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -396,21 +432,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 1042080481}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0ecf1757215eea141b7b9c09de22155d, type: 3}
+  m_Script: {fileID: 11500000, guid: 73b017fa994e8a6449db9eea948042f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _dontDestroy: 0
   _lazyInitialization: 0
-  _poolInfoList:
+  _factoryInfoList:
   - Type: 0
-    InitCount: 10
     AddressableKeyEnum: 0
-    Container: {fileID: 300594688}
   - Type: 1
-    InitCount: 5
     AddressableKeyEnum: 2
-    Container: {fileID: 300594688}
-  _factory: {fileID: 1042080483}
 --- !u!1 &2038968713
 GameObject:
   m_ObjectHideFlags: 0
@@ -540,5 +571,5 @@ SceneRoots:
   - {fileID: 2038968715}
   - {fileID: 1042080482}
   - {fileID: 300594688}
-  - {fileID: 390869525}
   - {fileID: 590930952}
+  - {fileID: 312682172}

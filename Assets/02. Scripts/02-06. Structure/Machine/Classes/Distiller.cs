@@ -5,7 +5,7 @@ public class Distiller : Machine
 {
     public override bool TryInput(int tid, EInputType inputType)
     {
-        if (_isFinished || InputTIDList.Contains(tid))
+        if (_isProcessFinished || InputTIDList.Contains(tid))
         {
             return false;
         }
@@ -21,14 +21,14 @@ public class Distiller : Machine
             return false;
         }
 
-        if (_isStarted)
+        if (_isProcessStarted)
         {
-            _isStarted = false;
+            _isProcessStarted = false;
             StopAllCoroutines();
         }
         else
         {
-            _isStarted = true;
+            _isProcessStarted = true;
             StartCoroutine(Interact_Coroutine());
         }
         return true;
@@ -42,21 +42,21 @@ public class Distiller : Machine
             yield return null;
         }
 
-        _isFinished = true;
+        _isProcessFinished = true;
     }
 
     public override GameObject TakeOutput()
     {
-        if (_isFinished)
+        if (_isProcessFinished)
         {
-            // 아웃풋매니저에서 StructureManger처럼 풀에서 가져와서 새로운 아웃풋 생성
-
+            GameObject output = OutputManager.Instance.CreateOutput(InputTIDList);
             _leftOutputAmount--;
             if(_leftOutputAmount <= 0)
             {
                 ClearMachine();
             }
-            // return ~~;
+
+            return output;
         }
 
         return null;

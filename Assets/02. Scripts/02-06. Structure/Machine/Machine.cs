@@ -26,8 +26,8 @@ public abstract class Machine : MonoBehaviour, IItemContainer, IInteractable
     {
         InputTIDList.Clear();
         _leftOutputAmount = _data.OutputAmount;
-        _isFinished = false;
-        _isStarted = false;
+        _isProcessFinished = false;
+        _isProcessStarted = false;
         _currentProgress = 0f;
     }
 
@@ -36,7 +36,7 @@ public abstract class Machine : MonoBehaviour, IItemContainer, IInteractable
 
     public virtual bool CanInteract()
     {
-        if(InputTIDList.Count == _data.MaxInputCount && _isFinished == false)
+        if(InputTIDList.Count == _data.MaxInputCount && _isProcessFinished == false)
         {
             return true;
         }

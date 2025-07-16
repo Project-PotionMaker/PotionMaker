@@ -3,6 +3,7 @@ public enum EAddressables
 {
     Prefab_Structure_10000,
     Prefab_AddressableTest1,
+    Prefab_Player,
     Prefab_AddressableTest2,
     Prefab_CustomerNPC,
 }

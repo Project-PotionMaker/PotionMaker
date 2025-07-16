@@ -11,6 +11,16 @@ public enum ESaveType
     Day = 3,
 }
 
+public enum EProductType
+{
+    ///<summary>조리 기구</summary>
+    Machine = 0,
+    ///<summary>가구</summary>
+    Furniture = 1,
+    ///<summary>이사</summary>
+    HouseMoving = 2,
+}
+
 public enum EPhaseType
 {
     ///<summary>영업준비시간</summary>
@@ -57,6 +67,42 @@ public enum EIngredientType
     Animals = 2,
     ///<summary>결정</summary>
     Crystals = 3,
+}
+
+public enum EInputType
+{
+    ///<summary>없음</summary>
+    None = 0,
+    ///<summary>재료</summary>
+    Ingredient = 1,
+    ///<summary>결과물</summary>
+    Output = 2,
+    ///<summary>가루</summary>
+    MortarOutput = 3,
+    ///<summary>분쇄물</summary>
+    GrinderOutput = 4,
+    ///<summary>추출물</summary>
+    HeatingPotOutput = 5,
+    ///<summary>증류원액</summary>
+    DistillerOutput = 6,
+    ///<summary>냉각물</summary>
+    CoolerOutput = 7,
+    ///<summary>포션</summary>
+    BottlerOutput = 8,
+}
+
+public enum EInteractType
+{
+    ///<summary>없음</summary>
+    None = 0,
+    ///<summary>반복 클릭</summary>
+    ClickRepeatly = 1,
+    ///<summary>계속 누르기</summary>
+    KeepPressing = 2,
+    ///<summary>한번 누르기</summary>
+    ClickOnce = 3,
+    ///<summary>누르면 자동 진행</summary>
+    AutoProgress = 4,
 }
 
 public enum EStructureType

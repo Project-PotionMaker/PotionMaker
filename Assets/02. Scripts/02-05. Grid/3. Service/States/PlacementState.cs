@@ -24,7 +24,7 @@ public class PlacementState : IBuildingState
         _size = new Vector2Int(data.Width, data.Length);
 
         _previewSystem.StartShowingPlacementPreview(
-            MachineManager.Instance.GetMachinePrefab(data.TID),
+            StructureManager.Instance.GetMachinePrefab(data.TID),
             _size);
     }
 
@@ -44,7 +44,7 @@ public class PlacementState : IBuildingState
         // MachineManager 말고 StructureManager에서 가져와야됨
         Debug.Log("수정필요ㅕ");
         int index = _objectPlacer.PlaceObject(
-            MachineManager.Instance.GetMachinePrefab(_data.TID),
+            StructureManager.Instance.GetMachinePrefab(_data.TID),
             _grid.CellToWorld(gridPosition));
 
         _gridData.AddObjectAt(gridPosition,

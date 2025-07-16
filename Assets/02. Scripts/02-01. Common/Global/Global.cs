@@ -10,7 +10,5 @@ public class Global : MonoBehaviourSingleton<Global>
     {
         yield return DataTable.Instance.Load_Routine();
         OnDataLoaded?.Invoke();
-
-        Debug.Log(DataTable.Instance.GetMachineData(10000).MachineCode);
     }
 }

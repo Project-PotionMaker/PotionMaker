@@ -94,7 +94,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         Customer customer = photonView.GetComponent<Customer>();
         customer.transform.position = _shopEntry.position; // 손님을 상점 입구에 생성
         _orderHandler.PotionOrderLine.Enqueue(customer);
-        _lineHandler.NewCustomerLining(customer);
+        _lineHandler.ReLining();
     }
 
     public void OnArrivedLine(Customer customer)
@@ -192,6 +192,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
             return;
         }
         //TODO : 구매 성공, Currency 증가
+        Debug.Log($"Potion served successfully for TID: {potionTID}");
         Customer customer = _orderHandler.PotionOrderMap[potionTID].First.Value;
         _orderHandler.PotionOrderMap[potionTID].RemoveFirst(); // 손님 제거
         _lineHandler.PutOutCustomer(customer); // 손님을 나가게 하기

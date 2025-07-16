@@ -9,8 +9,8 @@ public abstract class Machine : MonoBehaviour, IItemContainer, IInteractable
 
     protected float _currentProgress;
     protected int _leftOutputAmount;
-    protected bool _isFinished;
-    protected bool _isStarted;
+    protected bool _isProcessFinished;
+    protected bool _isProcessStarted;
 
     protected List<int> InputTIDList;
 

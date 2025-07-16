@@ -89,6 +89,8 @@ public enum EInputType
     CoolerOutput = 7,
     ///<summary>포션</summary>
     Potion = 8,
+    ///<summary>실패 결과물</summary>
+    FailureOutput = 9,
 }
 
 public enum EMachineMeshType
@@ -135,7 +137,9 @@ public enum ECustomerStateType
     AtHall = 1,
     ///<summary>이동중</summary>
     Moving = 2,
+    ///<summary>포션받기</summary>
+    AtCounter = 3,
     ///<summary>퇴장</summary>
-    Out = 3,
+    Out = 4,
 }
 

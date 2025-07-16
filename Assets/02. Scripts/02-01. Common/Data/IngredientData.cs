@@ -11,11 +11,17 @@ public class IngredientData
     ///<summary>이름</summary>
     public readonly string Name;
 
-    ///<summary>장소 설명</summary>
-    public readonly string PlaceDescription;
+    ///<summary>이름 TID</summary>
+    public readonly int Name_LocalizationTID;
+
+    ///<summary>특징 설명</summary>
+    public readonly int Feature_LocalizationTID;
 
     ///<summary>세부 설명</summary>
-    public readonly string DetailDescription;
+    public readonly int Detail_LocalizationTID;
+
+    ///<summary>재료 타입</summary>
+    public readonly EIngredientType IngredientType;
 
     ///<summary>사용 가능한 기구 TID</summary>
     public readonly int AvailableMachineTID;
@@ -25,10 +31,10 @@ public class IngredientData
         TID = reader.ReadInt32();
         int name = reader.ReadInt32();
         Name = Encoding.UTF8.GetString(reader.ReadBytes(name));
-        int placedescription = reader.ReadInt32();
-        PlaceDescription = Encoding.UTF8.GetString(reader.ReadBytes(placedescription));
-        int detaildescription = reader.ReadInt32();
-        DetailDescription = Encoding.UTF8.GetString(reader.ReadBytes(detaildescription));
+        Name_LocalizationTID = reader.ReadInt32();
+        Feature_LocalizationTID = reader.ReadInt32();
+        Detail_LocalizationTID = reader.ReadInt32();
+        IngredientType = (EIngredientType)reader.ReadInt32();
         AvailableMachineTID = reader.ReadInt32();
     }
 }

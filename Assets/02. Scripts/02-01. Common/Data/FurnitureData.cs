@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-public class MachineData
+public class FurnitureData
 {
     ///<summary>TID</summary>
     public readonly int TID;
@@ -20,28 +20,10 @@ public class MachineData
     ///<summary>힌트 TID</summary>
     public readonly int Hint_LocalizationTID;
 
-    ///<summary>기구 코드</summary>
-    public readonly char MachineCode;
-
     ///<summary>구역 타입</summary>
     public readonly EAreaType AreaType;
 
-    ///<summary>최대 입력 개수</summary>
-    public readonly int MaxInputCount;
-
-    ///<summary>최대 진행도</summary>
-    public readonly float MaxProgress;
-
-    ///<summary>틱당 진행도 (속도)</summary>
-    public readonly float ProgressPerTick;
-
-    ///<summary>출력 개수</summary>
-    public readonly int OutputAmount;
-
-    ///<summary>상호작용 타입</summary>
-    public readonly EInteractType InteractType;
-
-    public MachineData(BinaryReader reader)
+    public FurnitureData(BinaryReader reader)
     {
         TID = reader.ReadInt32();
         int name = reader.ReadInt32();
@@ -49,12 +31,6 @@ public class MachineData
         Name_LocalizationTID = reader.ReadInt32();
         Description_LocalizationTID = reader.ReadInt32();
         Hint_LocalizationTID = reader.ReadInt32();
-        MachineCode = reader.ReadChar();
         AreaType = (EAreaType)reader.ReadInt32();
-        MaxInputCount = reader.ReadInt32();
-        MaxProgress = reader.ReadSingle();
-        ProgressPerTick = reader.ReadSingle();
-        OutputAmount = reader.ReadInt32();
-        InteractType = (EInteractType)reader.ReadInt32();
     }
 }

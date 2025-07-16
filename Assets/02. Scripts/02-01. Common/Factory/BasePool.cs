@@ -136,7 +136,7 @@ public class BasePool<TEnum, TPoolInfo>
     }
 
     [PunRPC]
-    public void GetObjectFromPool(int typeInt)
+    private void GetObjectFromPool(int typeInt)
     {
         TEnum type = (TEnum)Enum.ToObject(typeof(TEnum), typeInt);
         TPoolInfo info = GetPoolByType(type);
@@ -154,7 +154,7 @@ public class BasePool<TEnum, TPoolInfo>
     }
 
     [PunRPC]
-    public void GetObjectFromPoolWithViewID(int viewID, int typeInt)
+    private void GetObjectFromPoolWithViewID(int viewID, int typeInt)
     {
         TEnum type = (TEnum)Enum.ToObject(typeof(TEnum), typeInt);
         TPoolInfo info = GetPoolByType(type);
@@ -191,14 +191,14 @@ public class BasePool<TEnum, TPoolInfo>
     }
 
     [PunRPC]
-    public void ReturnObjectMaster(int viewID, int typeInt)
+    private void ReturnObjectMaster(int viewID, int typeInt)
     {
         TEnum type = (TEnum)Enum.ToObject(typeof(TEnum), typeInt);
         _photonView.RPC(nameof(ReturnObjectToPool), RpcTarget.All, viewID, typeInt);
     }
 
     [PunRPC]
-    public void ReturnObjectToPool(int viewID, int typeInt)
+    private void ReturnObjectToPool(int viewID, int typeInt)
     {
         TEnum type = (TEnum)Enum.ToObject(typeof(TEnum), typeInt);
         TPoolInfo info = GetPoolByType(type);

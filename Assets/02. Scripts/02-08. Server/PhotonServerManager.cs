@@ -61,7 +61,7 @@ public class PhotonServerManager : MonoBehaviourPunCallbacks
     }
 
     // 방에 입장한 후 호출되는 함수
-    public async override void OnJoinedRoom()
+    public override void OnJoinedRoom()
     {
         Debug.Log($"방 입장 : {PhotonNetwork.CurrentRoom.Name}");
         Debug.Log($"플레이어 : {PhotonNetwork.CurrentRoom.PlayerCount}명");

@@ -47,13 +47,16 @@ public class AddressableEnumGenerator
             foreach (var entry in group.entries)
             {
                 if (string.IsNullOrEmpty(entry.address))
+                {
                     continue;
-
+                }
                 try
                 {
                     string enumName = MakeEnumName(entry.address);
                     if (usedKeyNames.Add(enumName))
+                    {
                         keyBuilder.AppendLine($"    {enumName},");
+                    }
                 }
                 catch (ArgumentException e)
                 {
@@ -66,13 +69,16 @@ public class AddressableEnumGenerator
         foreach (var label in settings.GetLabels())
         {
             if (string.IsNullOrWhiteSpace(label))
+            {
                 continue;
-
+            }
             try
             {
                 string enumName = MakeEnumName(label);
                 if (usedLabelNames.Add(enumName))
+                {
                     labelBuilder.AppendLine($"    {enumName},");
+                }
             }
             catch (ArgumentException e)
             {
@@ -95,23 +101,37 @@ public class AddressableEnumGenerator
     private static string MakeEnumName(string raw)
     {
         if (string.IsNullOrWhiteSpace(raw))
+        {
             throw new ArgumentException("키가 비어있거나 공백입니다.");
-
+        }
         var cleaned = raw.Replace(" ", "_");
 
         StringBuilder builder = new StringBuilder();
         foreach (var c in cleaned)
         {
             if (char.IsLetterOrDigit(c) || c == '_')
+            {
                 builder.Append(c);
+            }
+                
         }
 
         if (builder.Length == 0)
+        {
             throw new ArgumentException("유효한 문자가 없습니다: " + raw);
-
+        }
         if (char.IsDigit(builder[0]))
+        {
             builder.Insert(0, '_');
+        }
 
-        return builder.ToString();
+        string result = builder.ToString();
+        if (CSharpKeywordUtility.IsCSharpKeyword(result))
+        {
+            result = char.ToUpper(result[0]) + result.Substring(1);
+        }
+        return result;
     }
 }
+
+

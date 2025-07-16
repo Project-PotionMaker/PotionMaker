@@ -1,33 +1,36 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
-
 using Photon.Pun;
 using UnityEditor;
+using VInspector;
 public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
 {
     //접수 받기, 포션 제공하기만 클라이언트에서 마스터에게 요청 가능
     //나머지는 마스터에서만 호출 가능
 
-    private CustomerLiner _customerLiner; // 손님 줄을 물리적으로 관리하는 컴포넌트
-    public CustomerLiner CustomerLiner { get => _customerLiner; set => _customerLiner = value; }
-    private OrderHandler _orderHandler; // 주문을 처리하는 컴포넌트
-    public OrderHandler OrderHandler { get => _orderHandler; set => _orderHandler = value; }
+    private CustomerLineHandler _lineHandler; // 손님 줄을 물리적으로 관리하는 컴포넌트
+    public CustomerLineHandler LineHandler { get => _lineHandler; set => _lineHandler = value; }
+    private CustomerOrderHandler _orderHandler; // 주문을 처리하는 컴포넌트
+    public CustomerOrderHandler OrderHandler { get => _orderHandler; set => _orderHandler = value; }
     private PhotonView _photonView;
     private int _lostCustomerCount;
     public int LostCustomerCount { get => _lostCustomerCount; set => _lostCustomerCount = value; }
 
+    [Foldout("Ints")]
     [SerializeField]
     private int _maxCustomerLost = 5;
     public int MaxCustomerLost { get => _maxCustomerLost; set => _maxCustomerLost = value; }
+    [Foldout("Floats")]
     [SerializeField]
     private float _inviteCoolTime;
     public float InviteCoolTime{ get => _inviteCoolTime; set => _inviteCoolTime = value; }
     private float _inviteTimer = 0f; // 손님 초대 타이머
     private int _remainCustomers;
     public int RemainCustomers { get => _remainCustomers; set => _remainCustomers = value; }
-
-    //TODO : 임시 포지션, Layout에서 가져오는 것으로 변경 필요
+ 
+    [Foldout("Hierarchy")]
+    [Header("임시 포지션")]    //TODO : 임시 포지션, Layout에서 가져오는 것으로 변경 필요
     [SerializeField]
     private Transform _shopEntry;
     public Transform ShopEntry { get => _shopEntry; set => _shopEntry = value; }
@@ -48,8 +51,8 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
     protected override void Awake()
     {
         base.Awake(); 
-        _orderHandler = new OrderHandler();
-        _customerLiner = new CustomerLiner();
+        _orderHandler = new CustomerOrderHandler();
+        _lineHandler = new CustomerLineHandler();
         _orderHandler.Init();
         _lostCustomerCount = 0;
     }
@@ -92,7 +95,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         Customer customer = photonView.GetComponent<Customer>();
         customer.transform.position = _shopEntry.position; // 손님을 상점 입구에 생성
         _orderHandler.PotionOrderLine.Enqueue(customer);
-        _customerLiner.NewCustomerLining(customer);
+        _lineHandler.NewCustomerLining(customer);
     }
 
     public void OnArrivedLine(Customer customer)
@@ -132,7 +135,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
 
         _orderHandler.AddOrder(potionTID, customer);
         customer.MoveTo(_hallEntry.position);
-        _customerLiner.ReLining(); // 줄 다시 세우기
+        _lineHandler.ReLining(); // 줄 다시 세우기
     }
 
     public void LostCustomer(Customer customer) // 인내심이 바닥나면 호출
@@ -142,7 +145,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
             return;
         }
         _orderHandler.RemoveAnywhere(customer); // 주문 목록에서 손님 제거
-        _customerLiner.PutOutCustomer(customer); // 손님을 나가게 하기
+        _lineHandler.PutOutCustomer(customer); // 손님을 나가게 하기
         _lostCustomerCount++;
         if(_lostCustomerCount >= _maxCustomerLost)
         {
@@ -179,7 +182,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
             return; // 해당 TID의 손님이 없으면 실패
         }
         Customer customer = _orderHandler.PotionOrderMap[potionTID].First.Value;
-        customer.GetComponent<Customer>().MoveTo(_servingCounter.position); // 손님을 판매대 위치로 이동
+        customer.MoveTo(_servingCounter.position); // 손님을 판매대 위치로 이동
         //TODO : 가져가기 전까지 포션 상호작용 불가로 만들기
     }
 
@@ -192,7 +195,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         //TODO : 구매 성공, Currency 증가
         Customer customer = _orderHandler.PotionOrderMap[potionTID].First.Value;
         _orderHandler.PotionOrderMap[potionTID].RemoveFirst(); // 손님 제거
-        _customerLiner.PutOutCustomer(customer); // 손님을 나가게 하기
+        _lineHandler.PutOutCustomer(customer); // 손님을 나가게 하기
     }
 
     public void OnLastOrderTime() //영업시간 종료되면 호출
@@ -204,7 +207,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         while (_orderHandler.PotionOrderLine != null && _orderHandler.PotionOrderLine.Count > 0)
         {
             Customer customer = _orderHandler.PotionOrderLine.Dequeue();
-            _customerLiner.PutOutCustomer(customer);
+            _lineHandler.PutOutCustomer(customer);
         }
     }
 

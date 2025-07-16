@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
+using VInspector;
 
 public class PhaseManager : MonoBehaviourSingleton<PhaseManager>    
 {
@@ -11,7 +12,6 @@ public class PhaseManager : MonoBehaviourSingleton<PhaseManager>
     private Dictionary<EPhaseType, BasePhase> _phaseDictionary;
     public Dictionary<EPhaseType, BasePhase> PhaseDictionary { get => _phaseDictionary; set => _phaseDictionary = value; }
 
-    [SerializeField]
     private int _day;
     public int Day { get => _day; set => _day = value; }
     public event Action OnDayPassed;

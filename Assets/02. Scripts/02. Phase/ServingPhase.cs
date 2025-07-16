@@ -4,7 +4,6 @@ using System;
 public class ServingPhase : BasePhase
 {
     private const float INIT_TIMER = 20f;
-    [SerializeField]
     private float _currentTime;
     public float CurrentTime { get => _currentTime; set => _currentTime = value; }
 

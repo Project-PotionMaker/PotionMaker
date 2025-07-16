@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using Photon.Pun;
 
-public class CustomerLiner // 접수대 앞에 물리적으로 줄 세우는 컴포넌트
+public class CustomerLineHandler // 접수대 앞에 물리적으로 줄 세우는 컴포넌트
 {
     private Vector3 _spacing = new Vector3(1, 0, 0); // 손님 줄 사이의 간격, 임시값
 

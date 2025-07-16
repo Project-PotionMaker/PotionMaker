@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class OrderHandler
+public class CustomerOrderHandler
 {
     private Dictionary<int, LinkedList<Customer>> _potionOrderMap; // 주문표, 중간 삭제가 가능한 큐
     public Dictionary<int, LinkedList<Customer>> PotionOrderMap { get => _potionOrderMap; set => _potionOrderMap = value; }

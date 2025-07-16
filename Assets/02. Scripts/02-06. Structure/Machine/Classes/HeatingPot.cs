@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class Distiller : Machine
+public class HeatingPot : Machine
 {
     //public override bool TryInput(int tid, EInputType inputType)
     //{
@@ -19,7 +19,7 @@ public class Distiller : Machine
 
     //public override bool TryInteract()
     //{
-    //    if(CanInteract() == false)
+    //    if (CanInteract() == false)
     //    {
     //        return false;
     //    }
@@ -39,7 +39,7 @@ public class Distiller : Machine
 
     //public IEnumerator Interact_Coroutine()
     //{
-    //    while(_currentProgress <= Data.MaxProgress)
+    //    while (_currentProgress <= Data.MaxProgress)
     //    {
     //        _currentProgress += Data.ProgressPerTick * Time.deltaTime;
     //        yield return null;
@@ -54,7 +54,7 @@ public class Distiller : Machine
     //    {
     //        GameObject output = OutputManager.Instance.CreateOutput(InputTIDList, EInputType.Output);
     //        _leftOutputAmount--;
-    //        if(_leftOutputAmount <= 0)
+    //        if (_leftOutputAmount <= 0)
     //        {
     //            ClearMachine();
     //        }
@@ -64,6 +64,4 @@ public class Distiller : Machine
 
     //    return null;
     //}
-
-
 }

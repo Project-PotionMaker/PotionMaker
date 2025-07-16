@@ -20,6 +20,8 @@ public class Customer : MonoBehaviour
     private bool _endureanceLosing = false; // 인내심 감소 중인지 여부
     private bool _hasArrived = true; // 도착 여부
     private float _endurancLoseSpeed = 1f;
+    private int _priorityOffset;
+    public int PriorityOffset { get => _priorityOffset; set => _priorityOffset = value; } // 우선순위 편향
 
     private void Awake()
     {
@@ -78,9 +80,10 @@ public class Customer : MonoBehaviour
 
     private void SetPriority(Vector3 target)
     {
+        //TODO : Layout에서 우선순위 설정 정보 가져오기
         if (_lastTarget == CustomerManager.Instance.CounterLocation.position)
         {
-            _navMeshAgent.avoidancePriority = 40; // 줄에 서 있는 손님은 우선순위가 낮음
+            _navMeshAgent.avoidancePriority = 60; // 줄에 서 있는 손님은 우선순위가 낮음
         }
         else if (_lastTarget == CustomerManager.Instance.ServingCounter.position)
         {
@@ -88,8 +91,9 @@ public class Customer : MonoBehaviour
         }
         else if (_lastTarget == CustomerManager.Instance.ExitDoor.position)
         {
-            _navMeshAgent.avoidancePriority = 20; // 나가는 문에 있는 손님은 우선순위가 가장 높음
+            _navMeshAgent.avoidancePriority = 0; // 나가는 문에 있는 손님은 우선순위가 가장 높음
         }
+        _navMeshAgent.avoidancePriority += _priorityOffset; // 우선순위 편향 적용
     }
 
     private void ArriveCheck()
@@ -98,18 +102,22 @@ public class Customer : MonoBehaviour
         {
             return; // 마스터 클라이언트만 이동 가능
         }
-        if(!_navMeshAgent.pathPending && _navMeshAgent.remainingDistance<0.1f)
+        if(!_navMeshAgent.pathPending && _navMeshAgent.remainingDistance<1f)
         {
-            _hasArrived = true; // 도착 여부를 true로 설정
-            _navMeshAgent.isStopped = true; // 이동을 멈춤
-            _navMeshAgent.ResetPath(); // 경로를 초기화
-            OnArrived(); // 목표 위치에 도착했을 때 호출
+            if(_lastTarget == CustomerManager.Instance.ExitDoor.position || _navMeshAgent.remainingDistance < 0.1f)
+            {//출구는 1f로, 나머지는 0.1f로 도착 체크
+                _hasArrived = true; // 도착 여부를 true로 설정
+                _navMeshAgent.isStopped = true; // 이동을 멈춤
+                _navMeshAgent.ResetPath(); // 경로를 초기화
+                OnArrived(); // 목표 위치에 도착했을 때 호출
+            }
         }
     }
 
     public void OnArrived()
     {
         //TODO : 이동이 끝났을 때 호출
+        //TODO : Layout에서 목적지 정보 가져오게 수정
         if (!PhotonNetwork.IsMasterClient)
         {
             return; // 마스터 클라이언트만 호출 가능

@@ -27,7 +27,8 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
     private float _inviteTimer = 0f; // 손님 초대 타이머
     private int _remainCustomers;
     public int RemainCustomers { get => _remainCustomers; set => _remainCustomers = value; }
- 
+    private int _inviteIndex = 0;
+
     [Foldout("Hierarchy")]
     [Header("임시 포지션")]    //TODO : 임시 포지션, Layout에서 가져오는 것으로 변경 필요
     [SerializeField]
@@ -68,6 +69,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         _orderHandler.SetLists();
         _inviteTimer = _inviteCoolTime;
         _remainCustomers = 0;
+        _inviteIndex = 0;
     }
 
     public void InviteCustomer(float deltaTime)
@@ -87,6 +89,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         OnCustomerIn(customer.GetComponent<PhotonView>().ViewID); //TODO : PoolManager완성 후 수정
         //CustomerPool.Instance.GetObjectAsync(0);
         RemainCustomers++;
+        _inviteIndex++;
     }
 
     public void OnCustomerIn(int viewID)
@@ -95,6 +98,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         PhotonView photonView = PhotonView.Find(viewID);
         Customer customer = photonView.GetComponent<Customer>();
         customer.transform.position = _shopEntry.position; // 손님을 상점 입구에 생성
+        customer.PriorityOffset = _inviteIndex*5; // 우선순위 편향 설정
         _orderHandler.PotionOrderLine.Enqueue(customer);
         _lineHandler.ReLining();
     }

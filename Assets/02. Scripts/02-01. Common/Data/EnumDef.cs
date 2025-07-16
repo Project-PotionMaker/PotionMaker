@@ -87,6 +87,8 @@ public enum EInputType
     DistillerOutput = 6,
     ///<summary>냉각물</summary>
     CoolerOutput = 7,
+    ///<summary>포션</summary>
+    Potion = 8,
 }
 
 public enum EMachineMeshType

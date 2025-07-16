@@ -26,6 +26,21 @@ public class MachineData
     ///<summary>구역 타입</summary>
     public readonly EAreaType AreaType;
 
+    ///<summary>최대 입력 개수</summary>
+    public readonly int MaxInputCount;
+
+    ///<summary>최대 진행도</summary>
+    public readonly float MaxProgress;
+
+    ///<summary>틱당 진행도 (속도)</summary>
+    public readonly float ProgressPerTick;
+
+    ///<summary>출력 개수</summary>
+    public readonly int OutputAmount;
+
+    ///<summary>상호작용 타입</summary>
+    public readonly EInteractType InteractType;
+
     public MachineData(BinaryReader reader)
     {
         TID = reader.ReadInt32();
@@ -36,5 +51,10 @@ public class MachineData
         Hint_LocalizationTID = reader.ReadInt32();
         MachineCode = reader.ReadChar();
         AreaType = (EAreaType)reader.ReadInt32();
+        MaxInputCount = reader.ReadInt32();
+        MaxProgress = reader.ReadSingle();
+        ProgressPerTick = reader.ReadSingle();
+        OutputAmount = reader.ReadInt32();
+        InteractType = (EInteractType)reader.ReadInt32();
     }
 }

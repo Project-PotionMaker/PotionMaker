@@ -1,0 +1,17 @@
+using UnityEngine;
+
+public class PlayerReadyAbility : PlayerAbility
+{
+    private bool _isReady = false;
+
+    private void Start()
+    {
+        InputManager.Instance.OnReadyEvent += Ready;
+    }
+
+    private void Ready()
+    {
+        _isReady = !_isReady;
+        Debug.Log($"Ready : {_isReady}");
+    }
+}

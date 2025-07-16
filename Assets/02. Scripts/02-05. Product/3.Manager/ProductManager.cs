@@ -136,7 +136,7 @@ public class ProductManager : MonoBehaviourSingleton<ProductManager>
     {
         if (!info.Sender.IsMasterClient)
         {
-            throw new Exception("Product must be Set by the Master Client");
+            throw new InvalidOperationException("Product must be Set by the Master Client");
         }
         Product targetProduct = _productListDict.SelectMany(keyValuePair => keyValuePair.Value).FirstOrDefault(product => product.Data.TID == productTID);
         targetProduct.SetProduct(isUnlocked);

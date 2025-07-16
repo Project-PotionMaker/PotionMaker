@@ -1,0 +1,45 @@
+using Unity.VisualScripting;
+using UnityEngine;
+
+public class PlayerInteractAbility : MonoBehaviour
+{
+    private bool _isInteract = false;
+
+    private void Start()
+    {
+        _isInteract = false;
+
+        InputManager.Instance.OnInteractChanged += ChangeInteractState;
+    }
+
+    private void Update()
+    {
+        if (_isInteract)
+        {
+            Debug.Log("Interacting");
+        }
+    }
+
+    private void ChangeInteractState(bool isInteract)
+    {
+        _isInteract = isInteract;
+        if (isInteract)
+        {
+            StartInteract();
+        }
+        else
+        {
+            EndInteract();
+        }
+    }
+
+    private void StartInteract()
+    {
+        Debug.Log("StartInteract");
+    }
+
+    private void EndInteract()
+    {
+        Debug.Log("EndInteract");
+    }
+}

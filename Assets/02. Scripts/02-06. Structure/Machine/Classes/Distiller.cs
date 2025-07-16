@@ -49,7 +49,7 @@ public class Distiller : Machine
     {
         if (_isProcessFinished)
         {
-            GameObject output = OutputManager.Instance.CreateOutput(InputTIDList);
+            GameObject output = OutputManager.Instance.CreateOutput(InputTIDList, EInputType.Output);
             _leftOutputAmount--;
             if(_leftOutputAmount <= 0)
             {

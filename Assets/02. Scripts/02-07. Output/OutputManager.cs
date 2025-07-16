@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class OutputManager : MonoBehaviourSingleton<OutputManager>
 {
-    public GameObject CreateOutput(List<int> inputTIDList)
+    public GameObject CreateOutput(List<int> TIDList, EInputType type)
     {
         return null;
     }

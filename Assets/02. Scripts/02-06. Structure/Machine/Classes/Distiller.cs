@@ -11,6 +11,8 @@ public class Distiller : Machine
         }
 
         InputTIDList.Add(tid);
+
+        ChangeMesh(1);
         return true;
     }
 
@@ -42,6 +44,7 @@ public class Distiller : Machine
             yield return null;
         }
 
+        ChangeMesh(2);
         _isProcessFinished = true;
     }
 

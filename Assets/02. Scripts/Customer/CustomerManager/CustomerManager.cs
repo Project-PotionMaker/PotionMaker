@@ -4,7 +4,6 @@ using System;
 using Photon.Pun;
 using UnityEditor;
 using VInspector;
-
 public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
 {
     //접수 받기, 포션 제공하기만 클라이언트에서 마스터에게 요청 가능
@@ -42,14 +41,11 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
     private Transform _servingCounter; // 포션을 제공하는 판매대 위치
     public Transform ServingCounter { get => _servingCounter; set => _servingCounter = value; }
     [SerializeField]
-    private Transform _lineLocation; // 접수대 위치
-    public Transform LineLocation { get => _lineLocation; set => _lineLocation = value; }
+    private Transform _counterLocation; // 접수대 위치
+    public Transform CounterLocation { get => _counterLocation; set => _counterLocation = value; }
     [SerializeField]
     private Transform _exitDoor; // 손님이 나가는 문 위치
     public Transform ExitDoor { get => _exitDoor; set => _exitDoor = value; }
-
-    private Dictionary<ECustomerStateType, Vector3> _locationDictionary;
-    public Dictionary<ECustomerStateType, Vector3> LocationDictionary { get => _locationDictionary; set => _locationDictionary = value; }
 
     // 이벤트는 필요시 추가
     protected override void Awake()
@@ -59,13 +55,6 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         _lineHandler = new CustomerLineHandler();
         _orderHandler.Init();
         _lostCustomerCount = 0;
-        _locationDictionary = new Dictionary<ECustomerStateType, Vector3>
-        {
-            { ECustomerStateType.AtLine,_lineLocation.position},
-            { ECustomerStateType.AtHall,_hallEntry.position},
-            { ECustomerStateType.AtCounter,_servingCounter.position},
-            { ECustomerStateType.Out,_exitDoor.position}
-        };
     }
     private void Start()
     {

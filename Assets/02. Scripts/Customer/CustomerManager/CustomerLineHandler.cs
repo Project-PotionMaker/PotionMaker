@@ -37,7 +37,7 @@ public class CustomerLineHandler // 접수대 앞에 물리적으로 줄 세우�
 
     private Vector3 GetLinePosition(int index)
     {
-        return CustomerManager.Instance.LineLocation.position + (index * _spacing);
+        return CustomerManager.Instance.CounterLocation.position + (index * _spacing);
     }
 
     public void ResetLocation()

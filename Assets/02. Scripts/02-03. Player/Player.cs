@@ -23,7 +23,7 @@ public class Player : MonoBehaviour
             return ability as T;
         }
 
-        // 게이른 초기화/로딩 -> 처음에 곧바로 초기화/로딩을 하는게 아니라
+        // 게으른 초기화/로딩 -> 처음에 곧바로 초기화/로딩을 하는게 아니라
         //                      필요할 때만 하는 뒤로 미루는 기법
         ability = GetComponent<T>();
 

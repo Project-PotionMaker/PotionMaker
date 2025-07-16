@@ -82,7 +82,7 @@ public class PhotonServerManager : MonoBehaviourPunCallbacks
         // 프리펩이 Resources폴더에 있어야됨.
         // PhotonNetwork.Instantiate("Player", GameManager.Instance.GetPlayerSpawnPoint(), Quaternion.identity);
         
-        await CustomerPoolManager.Instance.InitializeAsync();
+        //await CustomerPoolManager.Instance.InitializeAsync();
     }
 
     // 방 입장에 실패하면 호출되는 함수

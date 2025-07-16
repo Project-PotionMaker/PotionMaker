@@ -1,6 +1,7 @@
 using UnityEngine;
 using Photon.Pun;
 using Unity.VisualScripting;
+using UnityEngine.AI;
 
 public class Customer : MonoBehaviour
 {
@@ -8,8 +9,8 @@ public class Customer : MonoBehaviour
     public int RequestedPotionTID { get => _requestedPotionTID; set=> _requestedPotionTID = value; } // 요청한 포션 ID
 
     private PhotonView _photonView;
+    private NavMeshAgent _navMeshAgent;
 
-    private Vector3 _currentTarget;
     private Vector3 _lastTarget;
 
     private float _enduranceGauge;
@@ -17,12 +18,13 @@ public class Customer : MonoBehaviour
     private const float HALL_ENDURANCE = 30f;
     private const float LINE_ENDURANCE = 30f;
     private bool _endureanceLosing = false; // 인내심 감소 중인지 여부
-
+    private bool _hasArrived = true; // 도착 여부
     private float _endurancLoseSpeed = 1f;
 
     private void Awake()
     {
         _photonView = GetComponent<PhotonView>();
+        _navMeshAgent = GetComponent<NavMeshAgent>();
     }
     private void OnEnable()
     {
@@ -33,7 +35,10 @@ public class Customer : MonoBehaviour
     private void Update()
     {
         Waiting();
-        Move();
+        if(_hasArrived == false)
+        {
+            ArriveCheck();
+        }
     }
 
     private void Waiting()
@@ -62,28 +67,42 @@ public class Customer : MonoBehaviour
             _endureanceLosing = true;
             _enduranceGauge = LINE_ENDURANCE; // 줄에 도착하면 인내심 게이지 초기화
         }
-        //TODO : target의 Transform.position으로 천천히 이동
-        // 정확히 도착 안 해도 근처 가면 OnArrived() 호출되게 하기
 
-        _currentTarget = target; // 현재 목표 위치 업데이트
+        _hasArrived = false; // 이동 시작 시 도착 여부 초기화
+        _navMeshAgent.SetDestination(target); // NavMeshAgent를 사용하여 이동
+        _navMeshAgent.isStopped = false; // 이동을 시작
+        SetPriority(target); // 우선순위 설정
         _lastTarget = target;
         Debug.Log("Customer moved to: " + target);
     }
 
-    private void Move()
+    private void SetPriority(Vector3 target)
+    {
+        if (_lastTarget == CustomerManager.Instance.CounterLocation.position)
+        {
+            _navMeshAgent.avoidancePriority = 40; // 줄에 서 있는 손님은 우선순위가 낮음
+        }
+        else if (_lastTarget == CustomerManager.Instance.ServingCounter.position)
+        {
+            _navMeshAgent.avoidancePriority = 30; // 포션 제공대에 있는 손님은 우선순위가 높음
+        }
+        else if (_lastTarget == CustomerManager.Instance.ExitDoor.position)
+        {
+            _navMeshAgent.avoidancePriority = 20; // 나가는 문에 있는 손님은 우선순위가 가장 높음
+        }
+    }
+
+    private void ArriveCheck()
     {
         if(!PhotonNetwork.IsMasterClient)
         {
             return; // 마스터 클라이언트만 이동 가능
         }
-        if (_currentTarget == Vector3.zero)
+        if(!_navMeshAgent.pathPending && _navMeshAgent.remainingDistance<0.1f)
         {
-            return; // 목표 위치가 설정되지 않은 경우 이동하지 않음
-        }
-        transform.position = Vector3.MoveTowards(transform.position, _currentTarget, Time.deltaTime * 2f); // 2f는 이동 속도
-        if(Vector3.Distance(transform.position, _currentTarget) < 0.1f)
-        {
-            _currentTarget = Vector3.zero; // 이동 완료 후 목표 위치 초기화
+            _hasArrived = true; // 도착 여부를 true로 설정
+            _navMeshAgent.isStopped = true; // 이동을 멈춤
+            _navMeshAgent.ResetPath(); // 경로를 초기화
             OnArrived(); // 목표 위치에 도착했을 때 호출
         }
     }

@@ -4,7 +4,7 @@ using Photon.Pun;
 
 public class CustomerLineHandler // 접수대 앞에 물리적으로 줄 세우는 컴포넌트
 {
-    private Vector3 _spacing = new Vector3(1, 0, 0); // 손님 줄 사이의 간격, 임시값
+    private Vector3 _spacing = new Vector3(1.5f, 0, 0); // 손님 줄 사이의 간격, 임시값
 
     public void ReLining() // 앞 손님 빠지면 줄 다시 세우기
     {

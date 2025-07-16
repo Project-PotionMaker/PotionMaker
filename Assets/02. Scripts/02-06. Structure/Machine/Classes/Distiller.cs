@@ -5,9 +5,7 @@ public class Distiller : Machine
 {
     public override bool TryInput(int tid, EInputType inputType)
     {
-        if (InputTIDList.Count >= Data.MaxInputCount
-            || _isFinished
-            || InputTIDList.Contains(tid))
+        if (_isFinished || InputTIDList.Contains(tid))
         {
             return false;
         }

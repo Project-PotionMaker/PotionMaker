@@ -18,7 +18,11 @@ public class Currency
     {
         if(addendValue <= 0)
         {
-            throw new System.Exception("Can't add zero or less");
+            throw new System.ArgumentOutOfRangeException
+                (
+                nameof(addendValue),
+                addendValue,
+                $"{nameof(addendValue)} must be greater than zero");
         }
 
         _value += addendValue;
@@ -26,12 +30,16 @@ public class Currency
 
     public bool TrySubtractCurrency(int subtrahendValue)
     {
-        if(subtrahendValue <= 0)
+        if (subtrahendValue <= 0)
         {
-            throw new System.Exception("Can't subtract zero or less");
+            throw new System.ArgumentOutOfRangeException
+                (
+                nameof(subtrahendValue),
+                subtrahendValue,
+                $"{nameof(subtrahendValue)} must be greater than zero");
         }
 
-        if( _value < subtrahendValue)
+        if ( _value < subtrahendValue)
         {
             return false;
         }

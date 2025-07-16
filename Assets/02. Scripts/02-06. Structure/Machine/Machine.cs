@@ -2,48 +2,48 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Machine : MonoBehaviour
+public abstract class Machine : MonoBehaviour, IItemContainer, IInteractable
 {
     private MachineData _data;
     public MachineData Data => _data;
 
-    private float _currentProgress;
+    protected float _currentProgress;
+    protected int _leftOutputAmount;
+    protected bool _isFinished;
+    protected bool _isStarted;
 
-    private bool _isStarted;
+    protected List<int> InputTIDList;
 
-    private List<int> InputTIDList;
-
-    public void Init(MachineData data)
+    public virtual void Init(MachineData data)
     {
         _data = data;
+        InputTIDList = new List<int>();
+
+        ClearMachine();
     }
 
-    public bool TryInput(int tid, EInputType inputType)
+    public virtual void ClearMachine()
     {
-        if (InputTIDList.Count >= _data.MaxInputCount || _isStarted || InputTIDList.Contains(tid))
-        {
-            return false;
-        }
-        return true;
+        InputTIDList.Clear();
+        _leftOutputAmount = _data.OutputAmount;
+        _isFinished = false;
+        _isStarted = false;
+        _currentProgress = 0f;
     }
 
-    // MachineManager에서 플레이어의 입력을 받고 작업 수행
-    public bool TryProgress()
+    // 절구나 분쇄기를 제외하면 재료들은 아예 못들어가기도 하고, 다른 상황도 생길 수 있으므로 각자 처리 필요
+    public abstract bool TryInput(int tid, EInputType inputType);
+
+    public virtual bool CanInteract()
     {
-        if(InputTIDList.Count != _data.MaxInputCount)
+        if(InputTIDList.Count == _data.MaxInputCount && _isFinished == false)
         {
-            return false;
+            return true;
         }
-
-
-        return true;
+        return false;
     }
 
-    //private IEnumerator Progress_Coroutine()
-    //{
+    public abstract bool TryInteract();
 
-    //}
-
-    // 마지막 출력물은 OutputManager.Instance.GetOutput(int machineTID)로 여기의 TID를 주면 Output DataSheet에서 출력물 가져오기
-    // 아직 시트에 이 내용은 없습니다.
+    public abstract GameObject TakeOutput();
 }

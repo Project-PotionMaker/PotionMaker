@@ -2,10 +2,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
+using Photon.Pun;
 
 public class StructureManager : MonoBehaviourSingleton<StructureManager>
 {
     private const string ADDRESSABLE_KEY_PREFIX = "Prefab_Structure_";
+
     public async Task<GameObject> CreateStructure(int structureTID)
     {
         GameObject prefab = await AssetManager.Instance.LoadAsset<GameObject>($"{ADDRESSABLE_KEY_PREFIX}{structureTID}");
@@ -56,39 +58,39 @@ public class StructureManager : MonoBehaviourSingleton<StructureManager>
 
 
 
-    //테스트용 코드입니다.
-    [SerializeField]
-    private List<MachineEntry> _machinePrefabEntryList;
+    ////테스트용 코드입니다.
+    //[SerializeField]
+    //private List<MachineEntry> _machinePrefabEntryList;
 
     private Dictionary<int, GameObject> _machinePrefabDict;
 
-    protected override void Awake()
-    {
-        base.Awake();
+    //protected override void Awake()
+    //{
+    //    base.Awake();
 
-        if (_machinePrefabEntryList == null || _machinePrefabEntryList.Count == 0)
-        {
-            _machinePrefabDict = new Dictionary<int, GameObject>();
-            return;
-        }
+    //    if (_machinePrefabEntryList == null || _machinePrefabEntryList.Count == 0)
+    //    {
+    //        _machinePrefabDict = new Dictionary<int, GameObject>();
+    //        return;
+    //    }
 
-        try
-        {
-            _machinePrefabDict = _machinePrefabEntryList.ToDictionary(entry => entry.TID, entry => entry.Prefab);
-        }
-        catch (System.ArgumentException ex)
-        {
-            Debug.LogError($"Duplicate TID found in MachinePrefabEntries: {ex.Message}");
-        }
-        Debug.Log($"MachineManager: Initialized with {_machinePrefabDict.Count} machines.");
-    }
+    //    try
+    //    {
+    //        _machinePrefabDict = _machinePrefabEntryList.ToDictionary(entry => entry.TID, entry => entry.Prefab);
+    //    }
+    //    catch (System.ArgumentException ex)
+    //    {
+    //        Debug.LogError($"Duplicate TID found in MachinePrefabEntries: {ex.Message}");
+    //    }
+    //    Debug.Log($"MachineManager: Initialized with {_machinePrefabDict.Count} machines.");
+    //}
 
     public GameObject GetMachinePrefab(int tid)
     {
-        if (_machinePrefabDict.TryGetValue(tid, out GameObject prefab))
-        {
-            return prefab;
-        }
+        //if (_machinePrefabDict.TryGetValue(tid, out GameObject prefab))
+        //{
+        //    return prefab;
+        //}
         return null;
     }
 

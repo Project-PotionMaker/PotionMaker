@@ -23,6 +23,9 @@ public class ProductData
     ///<summary>가격</summary>
     public readonly int Price;
 
+    ///<summary>구조물 TID</summary>
+    public readonly int StructureTID;
+
     public ProductData(BinaryReader reader)
     {
         TID = reader.ReadInt32();
@@ -32,5 +35,6 @@ public class ProductData
         Name_LocalizationTID = reader.ReadInt32();
         Description_LocalizationTID = reader.ReadInt32();
         Price = reader.ReadInt32();
+        StructureTID = reader.ReadInt32();
     }
 }

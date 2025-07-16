@@ -17,14 +17,13 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
     private int _lostCustomerCount;
     public int LostCustomerCount { get => _lostCustomerCount; set => _lostCustomerCount = value; }
 
-    [Foldout("Ints")]
+    [Foldout("Customer")]
     [SerializeField]
     private int _maxCustomerLost = 5;
     public int MaxCustomerLost { get => _maxCustomerLost; set => _maxCustomerLost = value; }
-    [Foldout("Floats")]
     [SerializeField]
     private float _inviteCoolTime;
-    public float InviteCoolTime{ get => _inviteCoolTime; set => _inviteCoolTime = value; }
+    public float InviteCoolTime { get => _inviteCoolTime; set => _inviteCoolTime = value; }
     private float _inviteTimer = 0f; // 손님 초대 타이머
     private int _remainCustomers;
     public int RemainCustomers { get => _remainCustomers; set => _remainCustomers = value; }

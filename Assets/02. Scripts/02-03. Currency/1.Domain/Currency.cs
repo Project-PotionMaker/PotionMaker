@@ -7,18 +7,34 @@ public class Currency
 
     public Currency(int value = 0)
     {
+        if (value < 0)
+        {
+            throw new ArgumentOutOfRangeException
+                (
+                nameof(value),
+                value,
+                $"{nameof(value)} must be zero or greater");
+        }
         _value = value;
     }
 
     public void SetCurrency(int value)
     {
+        if (value < 0)
+        {
+            throw new ArgumentOutOfRangeException
+                (
+                nameof(value),
+                value,
+                $"{nameof(value)} must be zero or greater");
+        }
         _value = value;
     }
     public void AddCurrency(int addendValue)
     {
         if(addendValue <= 0)
         {
-            throw new System.ArgumentOutOfRangeException
+            throw new ArgumentOutOfRangeException
                 (
                 nameof(addendValue),
                 addendValue,
@@ -32,7 +48,7 @@ public class Currency
     {
         if (subtrahendValue <= 0)
         {
-            throw new System.ArgumentOutOfRangeException
+            throw new ArgumentOutOfRangeException
                 (
                 nameof(subtrahendValue),
                 subtrahendValue,

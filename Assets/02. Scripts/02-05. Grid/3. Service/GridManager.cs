@@ -11,7 +11,6 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
     // 추후 삭제 (인풋매니저)
     [SerializeField]
     private GridTest_InputManager _inputManager;
-
     [SerializeField]
     private GameObject _gridVisualization;
 

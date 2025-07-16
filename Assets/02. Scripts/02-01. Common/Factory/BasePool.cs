@@ -3,18 +3,15 @@ using System.Collections.Generic;
 using System;
 using Photon.Pun;
 using System.Threading.Tasks;
-using Unity.VisualScripting;
 
 [RequireComponent(typeof(PhotonView))]
-public class BasePoolManager<TEnum, TPoolInfo> : MonoBehaviourSingleton<BasePoolManager<TEnum, TPoolInfo>>
+public class BasePool<TEnum, TPoolInfo>
     where TEnum : Enum
     where TPoolInfo : BasePoolInfo<TEnum>
 {
     [Header("풀 세팅")]
     [SerializeField]
     private List<TPoolInfo> _poolInfoList;
-    [SerializeField]
-    private BaseFactory _factory;
 
     private PhotonView _photonView;
 
@@ -23,21 +20,6 @@ public class BasePoolManager<TEnum, TPoolInfo> : MonoBehaviourSingleton<BasePool
 
     // 오브젝트 반환 시 콜백을 위한 이벤트
     public Dictionary<TEnum, Action<int>> ObjectSpawnedActions = new Dictionary<TEnum, Action<int>>();
-
-    protected override void Awake()
-    {
-        base.Awake();
-        
-        _photonView = GetComponent<PhotonView>();
-    }
-
-    //private async void Start()
-    //{
-    //    if (PhotonNetwork.IsMasterClient)
-    //    {
-    //        await InitializeAsync();
-    //    }
-    //}
 
     public async Task InitializeAsync()
     {
@@ -61,7 +43,7 @@ public class BasePoolManager<TEnum, TPoolInfo> : MonoBehaviourSingleton<BasePool
     {
         for (int i = 0; i < info.InitCount; i++)
         {
-            GameObject newObject = await CreateNewObjectAsync(info);
+            GameObject newObject = await CreateNewObjectAsync(info, string.Empty);
             if (newObject != null)
             {
                 PhotonView targetPhotonView = newObject.GetComponent<PhotonView>();
@@ -74,20 +56,20 @@ public class BasePoolManager<TEnum, TPoolInfo> : MonoBehaviourSingleton<BasePool
         }
     }
 
-    private async Task<GameObject> CreateNewObjectAsync(TPoolInfo info)
+    private async Task<GameObject> CreateNewObjectAsync(TPoolInfo info, string addressableKey)
     {
-        GameObject newObject = await _factory.RequestCreateAsync(info.AddressableKey);
-        if (newObject != null)
+        GameObject newobject = await AssetManager.Instance.LoadAsset<GameObject>(addressableKey); ;
+        if (newobject != null)
         {
             if (info.Container != null)
             {
-                newObject.transform.SetParent(info.Container);
+                newobject.transform.SetParent(info.Container);
             }
 
-            newObject.SetActive(false);
+            newobject.SetActive(false);
         }
 
-        return newObject;
+        return newobject;
     }
 
     [PunRPC]
@@ -137,7 +119,7 @@ public class BasePoolManager<TEnum, TPoolInfo> : MonoBehaviourSingleton<BasePool
 
         if (info.PoolQueue.Count <= 0)
         {
-            GameObject newObject = await CreateNewObjectAsync(info);
+            GameObject newObject = await CreateNewObjectAsync(info, string.Empty);
             if (newObject != null)
             {
                 PhotonView targetPhotonView = newObject.GetComponent<PhotonView>();

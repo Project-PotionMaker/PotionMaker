@@ -59,8 +59,8 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
     {
         _photonView = GetComponent<PhotonView>();
         PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseEntered += SetLists;
-        CustomerPoolManager.Instance.ObjectSpawnedActions.TryAdd(ENPCType.Customer, null);
-        CustomerPoolManager.Instance.ObjectSpawnedActions[ENPCType.Customer] += OnCustomerIn;
+        //CustomerPool.Instance.ObjectSpawnedActions.TryAdd(ENPCType.Customer, null);
+        //CustomerPool.Instance.ObjectSpawnedActions[ENPCType.Customer] += OnCustomerIn;
 
     }
     public void SetLists()
@@ -83,7 +83,9 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         } 
         _inviteTimer = _inviteCoolTime;
         Debug.Log("손님 초대");
-        CustomerPoolManager.Instance.GetObjectAsync(0);
+        GameObject customer = CustomerFactory.Instance.Create(ENPCType.Customer,Vector3.zero,Quaternion.identity); // TODO : PoolManager완성 후 수정
+        OnCustomerIn(customer.GetComponent<PhotonView>().ViewID); //TODO : PoolManager완성 후 수정
+        //CustomerPool.Instance.GetObjectAsync(0);
         RemainCustomers++;
     }
 
@@ -216,7 +218,8 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         {
             return;
         }
-        CustomerPoolManager.Instance.ReturnObject(customer.gameObject,ENPCType.Customer);
+        CustomerFactory.Instance.Return(customer.gameObject); // TODO : PoolManager완성 후 수정
+        //CustomerPool.Instance.ReturnObject(customer.gameObject,ENPCType.Customer);
         RemainCustomers--;
     }
 }

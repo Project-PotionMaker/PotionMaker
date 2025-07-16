@@ -114,33 +114,6 @@ public partial class DataTable
         }
     }
     #endregion
-    #region Input
-    private ReadOnlyList<InputData> InputList = null;
-    private ReadOnlyDictionary<int, InputData> InputTable = null;
-
-    public ReadOnlyList<InputData> GetInputDataList()
-    {
-        return InputList;
-    }
-
-    public InputData GetInputData(int key)
-    {
-        if (key == 0)
-        {
-            return null;
-        }
-
-        if (InputTable.TryGetValue(key, out InputData retVal) == true)
-        {
-            return retVal;
-        }
-        else
-        {
-            Debug.LogError($"Can not find UniqueID of InputData: <{key}>");
-            return null;
-        }
-    }
-    #endregion
     #region Structure
     private ReadOnlyList<StructureData> StructureList = null;
     private ReadOnlyDictionary<int, StructureData> StructureTable = null;
@@ -253,12 +226,6 @@ public partial class DataTable
             loadedCount++;
         });
         allCount++;
-        GetBytes_FromResources("Input", (bytes) =>
-        {
-            LoadInputData(bytes);
-            loadedCount++;
-        });
-        allCount++;
         GetBytes_FromResources("Structure", (bytes) =>
         {
             LoadStructureData(bytes);
@@ -290,8 +257,6 @@ public partial class DataTable
         LoadOutputData(outputBytes);
         byte[] productBytes = GetBytes_ForEditor("ProductData");
         LoadProductData(productBytes);
-        byte[] inputBytes = GetBytes_ForEditor("InputData");
-        LoadInputData(inputBytes);
         byte[] structureBytes = GetBytes_ForEditor("StructureData");
         LoadStructureData(structureBytes);
         byte[] machineBytes = GetBytes_ForEditor("MachineData");
@@ -422,37 +387,6 @@ public partial class DataTable
 
         ProductList = new ReadOnlyList<ProductData>(productList);
         ProductTable = new ReadOnlyDictionary<int, ProductData>(productTable);
-    }
-
-    private void LoadInputData(byte[] bytes)
-    {
-        List<InputData> inputList = new List<InputData>();
-        Dictionary<int, InputData> inputTable = new Dictionary<int, InputData>();
-
-        Reader = new BinaryReader(new MemoryStream(bytes));
-
-        while (Reader.BaseStream.Position < bytes.Length)
-        {
-            InputData data = new InputData(Reader);
-            if (inputTable.ContainsKey(data.TID) == true)
-            {
-                Debug.LogError("The duplicate TID: " + data.TID + " in Input");
-                continue;
-            }
-            else if (data.TID == 0)
-            {
-                Debug.LogError("TID is 0 in Input");
-                continue;
-            }
-
-            inputList.Add(data);
-            inputTable.Add(data.TID, data);
-        }
-
-        Reader.Close();
-
-        InputList = new ReadOnlyList<InputData>(inputList);
-        InputTable = new ReadOnlyDictionary<int, InputData>(inputTable);
     }
 
     private void LoadStructureData(byte[] bytes)

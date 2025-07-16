@@ -51,7 +51,7 @@ public class Distiller : Machine
     {
         if (_isFinished)
         {
-            // 아웃풋매니저에서 StructureManger처럼 새로운 아웃풋 생성
+            // 아웃풋매니저에서 StructureManger처럼 풀에서 가져와서 새로운 아웃풋 생성
 
             _leftOutputAmount--;
             if(_leftOutputAmount <= 0)

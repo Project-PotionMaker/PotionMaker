@@ -32,6 +32,9 @@ public class MachineData
     ///<summary>최대 진행도</summary>
     public readonly float MaxProgress;
 
+    ///<summary>틱당 진행도 (속도)</summary>
+    public readonly float ProgressPerTick;
+
     ///<summary>출력 개수</summary>
     public readonly int OutputAmount;
 
@@ -50,6 +53,7 @@ public class MachineData
         AreaType = (EAreaType)reader.ReadInt32();
         MaxInputCount = reader.ReadInt32();
         MaxProgress = reader.ReadSingle();
+        ProgressPerTick = reader.ReadSingle();
         OutputAmount = reader.ReadInt32();
         InteractType = (EInteractType)reader.ReadInt32();
     }

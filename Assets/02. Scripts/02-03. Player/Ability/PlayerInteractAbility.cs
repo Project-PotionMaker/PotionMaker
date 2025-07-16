@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerInteractAbility : MonoBehaviour
@@ -7,8 +6,6 @@ public class PlayerInteractAbility : MonoBehaviour
 
     private void Start()
     {
-        _isInteract = false;
-
         InputManager.Instance.OnInteractChanged += ChangeInteractState;
     }
 

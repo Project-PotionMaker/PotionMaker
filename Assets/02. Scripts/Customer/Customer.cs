@@ -48,6 +48,10 @@ public class Customer : MonoBehaviour
 
     public void MoveTo(Vector3 target)
     {
+        if(PhotonNetwork.IsMasterClient == false)
+        {
+            return; // 마스터 클라이언트만 이동 가능
+        }
         if (target == CustomerManager.Instance.HallEntry.position)
         {
             _endureanceLosing = true;
@@ -77,7 +81,7 @@ public class Customer : MonoBehaviour
             return; // 목표 위치가 설정되지 않은 경우 이동하지 않음
         }
         transform.position = Vector3.MoveTowards(transform.position, _currentTarget, Time.deltaTime * 2f); // 2f는 이동 속도
-        if(Vector3.Distance(transform.position, _currentTarget) < 0.01f)
+        if(Vector3.Distance(transform.position, _currentTarget) < 0.1f)
         {
             _currentTarget = Vector3.zero; // 이동 완료 후 목표 위치 초기화
             OnArrived(); // 목표 위치에 도착했을 때 호출

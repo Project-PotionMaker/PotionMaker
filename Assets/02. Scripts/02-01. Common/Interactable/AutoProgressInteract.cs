@@ -5,7 +5,7 @@ public class AutoProgressInteract : IMachineInteractable
 {
     public virtual bool CanInteract(Machine machine)
     {
-        if (machine.InputTIDList.Count == _data.MaxInputCount && _isProcessFinished == false)
+        if (machine.InputTIDList.Count == machine.Data.MaxInputCount && machine.IsProcessFinished == false)
         {
             return true;
         }
@@ -20,27 +20,28 @@ public class AutoProgressInteract : IMachineInteractable
             return false;
         }
 
-        if (_isProcessStarted)
+        if (machine.IsProcessStarted)
         {
-            _isProcessStarted = false;
-            StopAllCoroutines();
+            machine.IsProcessStarted = false;
+            machine.StopAllCoroutines();
         }
         else
         {
-            _isProcessStarted = true;
+            machine.IsProcessStarted = true;
            machine.StartCoroutine(Interact_Coroutine(machine));
         }
+
         return true;
     }
 
     public IEnumerator Interact_Coroutine(Machine machine)
     {
-        while (_currentProgress <= Data.MaxProgress)
+        while (machine.CurrentProgress <= machine.Data.MaxProgress)
         {
-            _currentProgress += Data.ProgressPerTick * Time.deltaTime;
+            machine.CurrentProgress += machine.Data.ProgressPerTick * Time.deltaTime;
             yield return null;
         }
 
-        _isProcessFinished = true;
+        machine.IsProcessFinished = true;
     }
 }

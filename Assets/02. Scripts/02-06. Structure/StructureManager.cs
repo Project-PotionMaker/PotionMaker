@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using Photon.Pun;
+using Unity.VisualScripting;
 
 public class StructureManager : MonoBehaviourSingleton<StructureManager>
 {
@@ -23,7 +24,8 @@ public class StructureManager : MonoBehaviourSingleton<StructureManager>
         {
             case EStructureType.Machine:
                 MachineData machineData = DataTable.Instance.GetMachineData(data.TypeTID);
-                instance.GetComponent<Machine>().Init(machineData);
+                IMachineInteractable machineInteractable = GetMachineInteractableComponent(machineData.InteractType);
+                instance.GetComponent<Machine>().Init(machineData, machineInteractable);
                 break;
             case EStructureType.Furniture:
                 FurnitureData furnitureData = DataTable.Instance.GetFurnitureData(data.TypeTID);
@@ -55,8 +57,22 @@ public class StructureManager : MonoBehaviourSingleton<StructureManager>
         return prefab;
     }
 
+    private IMachineInteractable GetMachineInteractableComponent(EInteractType interactType)
+    {
+        switch (interactType)
+        {
+            case EInteractType.KeepPressing:
+                break;
+            case EInteractType.AutoProgress:
+                return new AutoProgressInteract();
+            case EInteractType.ClickRepeatly:
+                break;
+            case EInteractType.ClickOnce:
+                break;
+        }
 
-
+        return null;
+    }
 
     ////테스트용 코드입니다.
     //[SerializeField]

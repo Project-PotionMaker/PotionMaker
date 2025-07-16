@@ -17,7 +17,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
     private int _lostCustomerCount;
     public int LostCustomerCount { get => _lostCustomerCount; set => _lostCustomerCount = value; }
 
-    [Foldout("Customer")]
+    [Foldout("Inspector")]
     [SerializeField]
     private int _maxCustomerLost = 5;
     public int MaxCustomerLost { get => _maxCustomerLost; set => _maxCustomerLost = value; }

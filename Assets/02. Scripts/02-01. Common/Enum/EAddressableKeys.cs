@@ -2,6 +2,6 @@
 public enum EAddressableKeys
 {
     Prefab_AddressableTest1,
-    Assets01_ScenesAddressableTestScene_CMGunity,
     Prefab_AddressableTest2,
+    Prefab_CustomerNPC,
 }

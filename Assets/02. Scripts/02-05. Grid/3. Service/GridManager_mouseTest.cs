@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using VInspector;
 
-public class GridManager : MonoBehaviourSingleton<GridManager>
+public class GridManager_mouseTest : MonoBehaviourSingleton<GridManager_mouseTest>
 {
     [Foldout("Hierarchy")]
     [SerializeField]
@@ -50,24 +50,6 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
             _lastDetectedPosition = gridPosition;
         }
     }
-
-    //public bool CanInteract(Vector3 targetPosition)
-    //{
-
-    //}
-
-    //public bool TryPickupStructure(Vector3 targetPosition)
-    //{
-
-    //}
-
-    //public bool TryDropStructure(Vector3 targetPosition)
-    //{
-    //    Vector3Int gridPosition = _grid.WorldToCell(targetPosition);
-
-    //    _buildingState.OnAction(gridPosition);
-    //}
-
     public void StartPlacement(int tid)
     {
         StopPlacement();

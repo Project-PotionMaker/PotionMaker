@@ -2,6 +2,7 @@ using Photon.Pun;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class ProductManager : MonoBehaviourPunCallbacksSingleton<ProductManager>
@@ -64,7 +65,7 @@ public class ProductManager : MonoBehaviourPunCallbacksSingleton<ProductManager>
         _photonView.RPC(nameof(RequestBuy), RpcTarget.MasterClient, productType, productID);
     }
     [PunRPC]
-    public void RequestBuy(EProductType productType, int productID, PhotonMessageInfo info)
+    public async void RequestBuy(EProductType productType, int productID, PhotonMessageInfo info)
     {
         if (!PhotonNetwork.IsMasterClient)
         {
@@ -73,12 +74,12 @@ public class ProductManager : MonoBehaviourPunCallbacksSingleton<ProductManager>
         }
 
         Product product = _productListDict[productType].Find(product => product.Data.TID == productID);
-        bool result = TryBuy(product);
+        bool result = await TryBuy(product);
 
         _photonView.RPC(nameof(ShowResultUI), info.Sender, result);
     }
 
-    private bool TryBuy(Product product)
+    private async Task<bool> TryBuy(Product product)
     {
         if (!CurrencyManager.Instance.TrySubtractCurrency(product.Data.Price))
         {
@@ -95,6 +96,9 @@ public class ProductManager : MonoBehaviourPunCallbacksSingleton<ProductManager>
                           $"상품번호: {product.Data.TID}\n" +
                           $"상품이름: {product.Data.Name}\n" +
                           $"상품가격: {product.Data.Price}");
+
+                GameObject structure = await StructureManager.Instance.CreateStructure(product.Data.StructureTID);
+                structure.transform.position = Vector3.zero;
                 break;
             }
             case EProductType.HouseMoving:

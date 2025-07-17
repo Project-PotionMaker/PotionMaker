@@ -15,6 +15,24 @@ public class PlayerPickupAbility : PlayerAbility
         InputManager.Instance.OnPickupEvent += OnPickupInput;
     }
 
+    private void Update()
+    {
+        if (!_photonView.IsMine)
+        {
+            return;
+        }
+
+        if( _heldItem != null)
+        {
+            Vector3 targetPosition = transform.position + transform.forward * 0.5f;
+            GridManager.Instance.UpdateState(targetPosition);
+        }
+        else
+        {
+            CheckCanPickUp();
+        }
+    }
+
     private void OnPickupInput()
     {
         if (_heldItem == null)
@@ -42,12 +60,29 @@ public class PlayerPickupAbility : PlayerAbility
 
     private void TryPutDown()
     {
-        Debug.Log("Put Down");
-        _heldItem.transform.SetParent(null);
         Vector3 targetPosition = transform.position + transform.forward * 0.5f;
-        GridManager.Instance.TryDrop(targetPosition);
+        if (GridManager.Instance.TryDrop(targetPosition))
+        {
+            Debug.Log("Put Down");
+            _heldItem.transform.SetParent(null);
 
-        _heldItem = null;
+            _heldItem = null;
+        }
+    }
+
+    private bool CheckCanPickUp()
+    {
+        if (_heldItem != null)
+        {
+            return false;
+        }
+
+        Vector3 targetPosition = transform.position + transform.forward * 0.5f;
+        if (GridManager.Instance.CanInteract(targetPosition))
+        {
+            return true;
+        }
+        return false;
     }
 
     private GameObject FindFrontPickupItem()

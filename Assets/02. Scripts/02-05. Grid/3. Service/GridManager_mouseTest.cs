@@ -87,7 +87,7 @@ public class GridManager_mouseTest : MonoBehaviourSingleton<GridManager_mouseTes
         Vector3 mousePosition = _inputManager.GetSelectedMapPosition();
         Vector3Int gridPosition = _grid.WorldToCell(mousePosition);
 
-        _buildingState.OnAction(gridPosition);
+        _buildingState.TryAction(gridPosition);
     }
 
     private void StopPlacement()

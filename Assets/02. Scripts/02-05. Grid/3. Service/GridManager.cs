@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using VInspector;
 
@@ -31,14 +32,14 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
         _gridData = new GridData(_layout.GetAvailableAreaDict());
     }
 
-    private void Update()
+    public void UpdateState(Vector3 targetPosition)
     {
         if (ReferenceEquals(_buildingState, null))
         {
             return;
         }
 
-        Vector3Int gridPosition = _grid.WorldToCell(mousePosition);
+        Vector3Int gridPosition = GetGridPosition(targetPosition);
         if (_lastDetectedPosition != gridPosition)
         {
             _buildingState.UpdateState(gridPosition);
@@ -46,9 +47,15 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
         }
     }
 
+    private Vector3Int GetGridPosition(Vector3 targetPosition)
+    {
+        targetPosition = new Vector3(targetPosition.x, 0, targetPosition.z);
+        return _grid.WorldToCell(targetPosition);
+    }
+
     public bool CanInteract(Vector3 targetPosition)
     {
-        Vector3Int gridPosition = _grid.WorldToCell(targetPosition);
+        Vector3Int gridPosition = GetGridPosition(targetPosition);
         int index = _gridData.GetRepresentationIndex(gridPosition);
         return index == -1 ? false : true;
     }
@@ -64,9 +71,13 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
 
     public bool TryDrop(Vector3 targetPosition)
     {
-        Vector3Int gridPosition = _grid.WorldToCell(targetPosition);
+        Vector3Int gridPosition = GetGridPosition(targetPosition);
+        if (_buildingState.TryAction(gridPosition))
+        {
+            StopPlacement();
+            return true;
+        }
 
-        _buildingState.OnAction(gridPosition);
         return false;
     }
 
@@ -81,7 +92,7 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
         StopPlacement();
         _gridVisualization.SetActive(true);
 
-        Vector3Int gridPosition = _grid.WorldToCell(targetPosition);
+        Vector3Int gridPosition = GetGridPosition(targetPosition);
         Placement placement = _gridData.GetPlacement(gridPosition);
         GameObject structure = _objectPlacer.GetGameObject(placement.PlacedObjectIndex);
         _objectPlacer.RemoveObjectAt(placement.PlacedObjectIndex);
@@ -112,8 +123,7 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
                                             _previewSystem,
                                             _gridData,
                                             _objectPlacer);
-        _buildingState.OnAction(_grid.WorldToCell(position));
-        StopPlacement();
+        PlaceStructure(position);
     }
 
     //public void StartRemoving()
@@ -130,11 +140,12 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
 
     private void PlaceStructure(Vector3 position)
     {
-        Vector3Int gridPosition = _grid.WorldToCell(position);
+        Vector3Int gridPosition = GetGridPosition(position);
 
-        _buildingState.OnAction(gridPosition);
-
-        StopPlacement();
+        if (_buildingState.TryAction(gridPosition))
+        {
+            StopPlacement();
+        }
     }
 
     private void StopPlacement()
@@ -146,8 +157,6 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
 
         _gridVisualization.SetActive(false);
         _buildingState.EndState();
-        //_inputManager.OnClicked -= PlaceStructure;
-        _inputManager.OnExit -= StopPlacement;
         _lastDetectedPosition = Vector3Int.zero;
         _buildingState = null;
     }

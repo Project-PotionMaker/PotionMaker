@@ -36,12 +36,12 @@ public class PlacementState : IBuildingState
         _previewSystem.StopShowingPreview();
     }
 
-    public void OnAction(Vector3Int gridPosition)
+    public bool TryAction(Vector3Int gridPosition)
     {
         bool placementValidity = CheckPlacementValidity(gridPosition);
         if (placementValidity == false)
         {
-            return;
+            return false;
         }
 
         int index = _objectPlacer.PlaceObject(
@@ -54,6 +54,7 @@ public class PlacementState : IBuildingState
                                  _data.TID,
                                  index);
         _previewSystem.UpdatePosition(_grid.CellToWorld(gridPosition), false);
+        return true;
     }
 
     private bool CheckPlacementValidity(Vector3Int gridPosition)

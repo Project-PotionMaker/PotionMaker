@@ -88,7 +88,21 @@ public enum EInputType
     ///<summary>냉각물</summary>
     CoolerOutput = 7,
     ///<summary>포션</summary>
-    BottlerOutput = 8,
+    Potion = 8,
+    ///<summary>실패 결과물</summary>
+    FailureOutput = 9,
+}
+
+public enum EMachineMeshType
+{
+    ///<summary>없음</summary>
+    None = 0,
+    ///<summary>동작 전</summary>
+    Ready = 1,
+    ///<summary>동작 중</summary>
+    Run = 2,
+    ///<summary>끝</summary>
+    Done = 3,
 }
 
 public enum EInteractType
@@ -113,5 +127,17 @@ public enum EStructureType
     Machine = 1,
     ///<summary>가구</summary>
     Furniture = 2,
+}
+
+public enum ECustomerStateType
+{
+    ///<summary>줄 서기</summary>
+    Lining = 0,
+    ///<summary>기다리기</summary>
+    Waiting = 1,
+    ///<summary>챙기기</summary>
+    PickingUp = 2,
+    ///<summary>나가기</summary>
+    Leaving = 3,
 }
 

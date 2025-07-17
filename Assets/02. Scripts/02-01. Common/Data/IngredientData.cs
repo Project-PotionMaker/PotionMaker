@@ -26,6 +26,9 @@ public class IngredientData
     ///<summary>사용 가능한 기구 TID</summary>
     public readonly int AvailableMachineTID;
 
+    ///<summary>레시피 코드</summary>
+    public readonly string RecipCode;
+
     public IngredientData(BinaryReader reader)
     {
         TID = reader.ReadInt32();
@@ -36,5 +39,7 @@ public class IngredientData
         Detail_LocalizationTID = reader.ReadInt32();
         IngredientType = (EIngredientType)reader.ReadInt32();
         AvailableMachineTID = reader.ReadInt32();
+        int recipcode = reader.ReadInt32();
+        RecipCode = Encoding.UTF8.GetString(reader.ReadBytes(recipcode));
     }
 }

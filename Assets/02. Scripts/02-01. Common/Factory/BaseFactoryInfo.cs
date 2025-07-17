@@ -6,7 +6,7 @@ using UnityEngine;
 public class BaseFactoryInfo<TEnum> where TEnum : Enum
 {
     public TEnum Type;
-    public EAddressables AddressableKeyEnum;
+    public EAddressableKeys AddressableKeyEnum;
     public string AddressableKey => AddressableKeyEnum.ToString();
 }
 

@@ -131,15 +131,13 @@ public enum EStructureType
 
 public enum ECustomerStateType
 {
-    ///<summary>줄 (주문대기)</summary>
-    AtLine = 0,
-    ///<summary>홀 (포션대기)</summary>
-    AtHall = 1,
-    ///<summary>이동중</summary>
-    Moving = 2,
-    ///<summary>포션받기</summary>
-    AtCounter = 3,
-    ///<summary>퇴장</summary>
-    Out = 4,
+    ///<summary>줄 서기</summary>
+    Lining = 0,
+    ///<summary>기다리기</summary>
+    Waiting = 1,
+    ///<summary>챙기기</summary>
+    PickingUp = 2,
+    ///<summary>나가기</summary>
+    Leaving = 3,
 }
 

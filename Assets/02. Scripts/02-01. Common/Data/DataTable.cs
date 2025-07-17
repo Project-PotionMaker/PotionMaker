@@ -195,6 +195,33 @@ public partial class DataTable
         }
     }
     #endregion
+    #region Layout
+    private ReadOnlyList<LayoutData> LayoutList = null;
+    private ReadOnlyDictionary<int, LayoutData> LayoutTable = null;
+
+    public ReadOnlyList<LayoutData> GetLayoutDataList()
+    {
+        return LayoutList;
+    }
+
+    public LayoutData GetLayoutData(int key)
+    {
+        if (key == 0)
+        {
+            return null;
+        }
+
+        if (LayoutTable.TryGetValue(key, out LayoutData retVal) == true)
+        {
+            return retVal;
+        }
+        else
+        {
+            Debug.LogError($"Can not find UniqueID of LayoutData: <{key}>");
+            return null;
+        }
+    }
+    #endregion
 
     public IEnumerator LoadRoutine()
     {
@@ -243,6 +270,12 @@ public partial class DataTable
             LoadFurnitureData(bytes);
             loadedCount++;
         });
+        allCount++;
+        GetBytes_FromResources("Layout", (bytes) =>
+        {
+            LoadLayoutData(bytes);
+            loadedCount++;
+        });
 
         yield return new WaitUntil(() => allCount == loadedCount);
     }
@@ -263,6 +296,8 @@ public partial class DataTable
         LoadMachineData(machineBytes);
         byte[] furnitureBytes = GetBytes_ForEditor("FurnitureData");
         LoadFurnitureData(furnitureBytes);
+        byte[] layoutBytes = GetBytes_ForEditor("LayoutData");
+        LoadLayoutData(layoutBytes);
     }
 
     private void LoadPotionData(byte[] bytes)
@@ -480,6 +515,37 @@ public partial class DataTable
 
         FurnitureList = new ReadOnlyList<FurnitureData>(furnitureList);
         FurnitureTable = new ReadOnlyDictionary<int, FurnitureData>(furnitureTable);
+    }
+
+    private void LoadLayoutData(byte[] bytes)
+    {
+        List<LayoutData> layoutList = new List<LayoutData>();
+        Dictionary<int, LayoutData> layoutTable = new Dictionary<int, LayoutData>();
+
+        Reader = new BinaryReader(new MemoryStream(bytes));
+
+        while (Reader.BaseStream.Position < bytes.Length)
+        {
+            LayoutData data = new LayoutData(Reader);
+            if (layoutTable.ContainsKey(data.TID) == true)
+            {
+                Debug.LogError("The duplicate TID: " + data.TID + " in Layout");
+                continue;
+            }
+            else if (data.TID == 0)
+            {
+                Debug.LogError("TID is 0 in Layout");
+                continue;
+            }
+
+            layoutList.Add(data);
+            layoutTable.Add(data.TID, data);
+        }
+
+        Reader.Close();
+
+        LayoutList = new ReadOnlyList<LayoutData>(layoutList);
+        LayoutTable = new ReadOnlyDictionary<int, LayoutData>(layoutTable);
     }
 
 }

@@ -5,6 +5,13 @@ using UnityEngine.UI;
 using Photon.Pun;
 using VInspector;
 
+//public enum EPhaseType
+//{
+//    PreparingPhase,
+//    ServingPhase,
+//    EndingPhase
+//}
+
 public class PhaseManager : MonoBehaviourSingleton<PhaseManager>    
 {
     private BasePhase _currentPhase;

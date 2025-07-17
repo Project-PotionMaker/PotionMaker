@@ -4,25 +4,27 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class SalesManager : MonoBehaviourSingleton<SalesManager>
+public class SalesManager : MonoBehaviourPunCallbacksSingleton<SalesManager>
 {
     private PhotonView _photonView;
     public PhotonView PhotonView => _photonView;
     private Sales _sales;
     public SalesDTO Sales => _sales.ToDTO();
 
-    protected override void Awake()
-    {
-        _sales = new Sales(0);
-        _photonView = GetComponent<PhotonView>();
-    }
-
     private void Start()
     {
         PhaseManager.Instance.OnDayPassed += ResetDailySales;
     }
-    public void InitSalesManager()
+
+    public override void OnJoinedRoom()
     {
+        InitSalesManager();
+    }
+
+    private void InitSalesManager()
+    {
+        _sales = new Sales(0);
+        _photonView = GetComponent<PhotonView>();
         RequestUpdateSales();
     }
 

@@ -2,10 +2,9 @@ using Photon.Pun;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using UnityEngine;
 
-public class ProductManager : MonoBehaviourSingleton<ProductManager>
+public class ProductManager : MonoBehaviourPunCallbacksSingleton<ProductManager>
 {
     private PhotonView _photonView;
     public PhotonView PhotonView => _photonView;
@@ -20,10 +19,15 @@ public class ProductManager : MonoBehaviourSingleton<ProductManager>
 
     private void Start()
     {
-        InitProductManager();
+        Global.Instance.OnDataLoaded += InitProductManager;
     }
-    public async void InitProductManager()
+    private void InitProductManager()
     {
+        if (!PhotonNetwork.InRoom)
+        {
+            return;
+        }
+
         _photonView = GetComponent<PhotonView>();
         _productListDict = new Dictionary<EProductType, List<Product>>()
         {
@@ -32,17 +36,21 @@ public class ProductManager : MonoBehaviourSingleton<ProductManager>
             { EProductType.HouseMoving, new List<Product>() },
         };
 
-        while (DataTable.Instance.GetProductDataList() == null || !PhotonNetwork.InRoom)
-        {
-            // Todo: 뭔가 잘못된 경우에 대비?
-            await Task.Delay(100);
-        }
-
         LoadProductData();
         RequestUpdateProducts();
     }
 
-    public void LoadProductData()
+    public override void OnJoinedRoom()
+    {
+        if (!Global.Instance.IsDataLoaded)
+        {
+            return;
+        }
+
+        InitProductManager();
+    }
+
+    private void LoadProductData()
     {
         ReadOnlyList<ProductData> productDataList = DataTable.Instance.GetProductDataList();
         foreach (ProductData productData in productDataList)

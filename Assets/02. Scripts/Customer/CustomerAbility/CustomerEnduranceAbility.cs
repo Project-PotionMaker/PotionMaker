@@ -5,11 +5,13 @@ using ExitGames.Client.Photon;
 public class CustomerEnduranceAbility : MonoBehaviour
 {
     Customer _owner; // Customer 컴포넌트
-    private const float LINE_ENDURANCE = 5f;
-    private const float HALL_ENDURANCE = 5f;
+    private const float LINE_ENDURANCE = 10f;
+    private const float HALL_ENDURANCE = 10f;
     private float _currentEndurance; // 현재 인내심
     public float CurrentEndurance    {get => _currentEndurance; set => _currentEndurance = value; } // 현재 인내심
-    
+    private float _enduranceRate;
+    public float EnduranceRate { get => _enduranceRate; set => _enduranceRate = value; } // 인내심 회복 속도
+
     private float _loseEnduranceSpeed = 1f; // 인내심 감소 속도
     public float LoseEnduranceSpeed { get => _loseEnduranceSpeed; set => _loseEnduranceSpeed = value; } // 인내심 감소 속도
 
@@ -61,6 +63,15 @@ public class CustomerEnduranceAbility : MonoBehaviour
         {
             _currentEndurance = Mathf.Max(_currentEndurance -_loseEnduranceSpeed * Time.deltaTime,0); // 인내심 감소
         }
+
+        if(_owner.CurrentState == ECustomerStateType.Lining)
+        {
+            _enduranceRate = _currentEndurance /LINE_ENDURANCE; // 인내심 비율 계산
+        }else if (_owner.CurrentState == ECustomerStateType.Waiting)
+        {
+            _enduranceRate = _currentEndurance / HALL_ENDURANCE; // 인내심 비율 계산
+        }
+
         SyncToCustomProperties(); // 인내심을 커스텀 프로퍼티에 동기화
     }
     private void SyncToCustomProperties()
@@ -69,16 +80,16 @@ public class CustomerEnduranceAbility : MonoBehaviour
 
         var hash = new Hashtable
         {
-            { "Endurance", _currentEndurance }
+            { "EnduranceRate", _enduranceRate }
         };
         _owner.PhotonView.Owner.SetCustomProperties(hash);
     }
 
     private void TrySyncFromProperties()
     {
-        if (_owner.PhotonView.Owner.CustomProperties.TryGetValue("Endurance", out object value))
+        if (_owner.PhotonView.Owner.CustomProperties.TryGetValue("EnduranceRate", out object value))
         {
-            _currentEndurance = (float)(double)value;
+            _enduranceRate = (float)(double)value;
         }
     }
 }

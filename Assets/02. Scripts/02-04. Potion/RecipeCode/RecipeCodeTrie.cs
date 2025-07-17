@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class RecipeCodeTrie
 {
+    public RecipeCodeTrie() {}
+
     private class Node
     {
         // 숫자 0~9(10개) + 문자 A~D(4개) = 총 14개

@@ -36,9 +36,12 @@ public class UI_Sales : MonoBehaviour
             ++slotIndex;
         }
 
-        for(int deleteIndex = _salesVolumeSlotList.Count - 1; deleteIndex < 0; --deleteIndex)
+        for(int deleteIndex = _salesVolumeSlotList.Count - 1; deleteIndex >= slotIndex; --deleteIndex)
         {
-            Destroy(_salesVolumeSlotList[deleteIndex].gameObject);
+            UI_SalesVolumeSlot deleteSlot = _salesVolumeSlotList[deleteIndex];
+
+            _salesVolumeSlotList.RemoveAt(deleteIndex);
+            Destroy(deleteSlot.gameObject);
         }
 
 

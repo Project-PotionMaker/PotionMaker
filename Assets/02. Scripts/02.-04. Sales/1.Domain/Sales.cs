@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using static UnityEngine.Rendering.DebugUI;
 
 public class Sales
 {
@@ -12,6 +13,22 @@ public class Sales
     public Dictionary<EPotionType, int> SalesVolumeDict => _salesVolumeDict;
     public Sales(int totalSales, int dailySales = 0, Dictionary<EPotionType, int> salesVolumeDict = null)
     {
+        if (totalSales < 0)
+        {
+            throw new ArgumentOutOfRangeException
+            (
+            nameof(totalSales),
+            totalSales,
+                $"{nameof(totalSales)} must be zero or greater");
+        }
+        if (dailySales < 0)
+        {
+            throw new ArgumentOutOfRangeException
+            (
+            nameof(dailySales),
+            dailySales,
+                $"{nameof(dailySales)} must be zero or greater");
+        }
         _totalSales = totalSales;
         _dailySales = dailySales;
 

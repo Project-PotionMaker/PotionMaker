@@ -121,16 +121,17 @@ public class ProductManager : MonoBehaviourPunCallbacksSingleton<ProductManager>
         Debug.Log($"구매 결과: {result}");
     }
 
+    [PunRPC]
     public void RequestUnlock(int productID)
     {
         if (!PhotonNetwork.IsMasterClient)
         {
-            _photonView.RPC(nameof(Unlock), RpcTarget.MasterClient, productID);
+            _photonView.RPC(nameof(RequestUnlock), RpcTarget.MasterClient, productID);
             return;
         }
         Unlock(productID);
     }
-    [PunRPC]
+
     private void Unlock(int productTID)
     {
         if (!PhotonNetwork.IsMasterClient)

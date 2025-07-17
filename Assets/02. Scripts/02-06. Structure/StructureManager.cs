@@ -25,7 +25,8 @@ public class StructureManager : MonoBehaviourSingleton<StructureManager>
             case EStructureType.Machine:
                 MachineData machineData = DataTable.Instance.GetMachineData(data.TypeTID);
                 IMachineInteractable machineInteractable = GetMachineInteractableComponent(machineData.InteractType);
-                instance.GetComponent<Machine>().Init(machineData, machineInteractable);
+                IMachineItemContainer machineItemContainer = GetMachineItemContainerComponent(structureTID);
+                instance.GetComponent<Machine>().Init(machineData, machineInteractable, machineItemContainer);
                 break;
             case EStructureType.Furniture:
                 FurnitureData furnitureData = DataTable.Instance.GetFurnitureData(data.TypeTID);
@@ -74,6 +75,10 @@ public class StructureManager : MonoBehaviourSingleton<StructureManager>
         return null;
     }
 
+    private IMachineItemContainer GetMachineItemContainerComponent(int tid)
+    {
+        return new DefaultMachineContainer();
+    }
     ////테스트용 코드입니다.
     //[SerializeField]
     //private List<MachineEntry> _machinePrefabEntryList;

@@ -3,15 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using VInspector;
 
-public class Machine : MonoBehaviour, IMachineItemContainer
+public class Machine : MonoBehaviour
 {
     private MachineStat _stat;
     private IMachineInteractable _interactComponent;
+    private IMachineItemContainer _containerComponent;
 
-    public void Init(MachineData data, IMachineInteractable interactableComponent)
+    public void Init(MachineData data, IMachineInteractable interactableComponent, IMachineItemContainer containerComponent)
     {
         MachineStat machineStat = new MachineStat(data);
         _interactComponent = interactableComponent;
+        _containerComponent = containerComponent;
 
         _stat.ClearMachine();
     }
@@ -23,33 +25,11 @@ public class Machine : MonoBehaviour, IMachineItemContainer
 
     public bool TryInput(int tid, EInputType inputType)
     {
-        if (_stat.InputTIDList.Count + 1 > _stat.Data.MaxInputCount ||
-            _stat.IsProcessFinished ||
-            _stat.InputTIDList.Contains(tid))
-        {
-            return false;
-        }
-
-        _stat.InputTIDList.Add(tid);
-
-        return true;
+        return _containerComponent.TryInput(this, _stat, tid, inputType);
     }
 
     public GameObject TakeOutput()
     {
-        if (_stat.IsProcessFinished)
-        {
-            //여기 Machine에 합쳐버리면 시트 테이블 타입 주는 곳에서 어떻게 판별할까?
-            GameObject output = OutputManager.Instance.CreateOutput(_stat.InputTIDList, EInputType.Output);
-            _stat.LeftOutputAmount--;
-            if (_stat.LeftOutputAmount <= 0)
-            {
-                _stat.ClearMachine();
-            }
-
-            return output;
-        }
-
-        return null;
+        return _containerComponent.TakeOutput(this, _stat);
     }
 }

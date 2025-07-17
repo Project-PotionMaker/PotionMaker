@@ -4,25 +4,27 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class SalesManager : MonoBehaviourSingleton<SalesManager>
+public class SalesManager : MonoBehaviourPunCallbacksSingleton<SalesManager>
 {
     private PhotonView _photonView;
     public PhotonView PhotonView => _photonView;
     private Sales _sales;
     public SalesDTO Sales => _sales.ToDTO();
 
-    protected override void Awake()
-    {
-        _sales = new Sales(0);
-        _photonView = GetComponent<PhotonView>();
-    }
-
     private void Start()
     {
         PhaseManager.Instance.OnDayPassed += ResetDailySales;
     }
-    public void InitSalesManager()
+
+    public override void OnJoinedRoom()
     {
+        InitSalesManager();
+    }
+
+    private void InitSalesManager()
+    {
+        _sales = new Sales(0);
+        _photonView = GetComponent<PhotonView>();
         RequestUpdateSales();
     }
 
@@ -41,7 +43,7 @@ public class SalesManager : MonoBehaviourSingleton<SalesManager>
     {
         if (!PhotonNetwork.IsMasterClient)
         {
-            throw new Exception("Sale must be processed only by the Master Client.");
+            throw new InvalidOperationException("Sale must be processed only by the Master Client.");
         }
         _sales.Sell(potionType, price);
 
@@ -57,7 +59,7 @@ public class SalesManager : MonoBehaviourSingleton<SalesManager>
     {
         if (!info.Sender.IsMasterClient)
         {
-            throw new Exception("Sales must be Set by the Master Client");
+            throw new InvalidOperationException("Sales must be Set by the Master Client");
         }
 
         SalesRPCData salesRPCData = JsonUtility.FromJson<SalesRPCData>(salesJson);

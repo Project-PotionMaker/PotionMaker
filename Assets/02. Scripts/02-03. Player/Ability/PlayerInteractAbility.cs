@@ -1,11 +1,16 @@
 using UnityEngine;
 
-public class PlayerInteractAbility : MonoBehaviour
+public class PlayerInteractAbility : PlayerAbility
 {
     private bool _isInteract = false;
 
     private void Start()
     {
+        if (!_photonView.IsMine)
+        {
+            return;
+        }
+
         InputManager.Instance.OnInteractChanged += ChangeInteractState;
     }
 

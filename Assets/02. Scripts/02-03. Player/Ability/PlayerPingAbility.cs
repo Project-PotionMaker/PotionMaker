@@ -4,6 +4,11 @@ public class PlayerPingAbility : PlayerAbility
 {
     private void Start()
     {
+        if (!_photonView.IsMine)
+        {
+            return;
+        }
+
         InputManager.Instance.OnPingEvent += Ping;
     }
 

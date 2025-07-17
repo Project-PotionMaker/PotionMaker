@@ -6,6 +6,11 @@ public class PlayerReadyAbility : PlayerAbility
 
     private void Start()
     {
+        if (!_photonView.IsMine)
+        {
+            return;
+        }
+
         InputManager.Instance.OnReadyEvent += Ready;
     }
 

@@ -4,17 +4,7 @@ using Photon.Pun;
 
 public class CustomerLineHandler // 접수대 앞에 물리적으로 줄 세우는 컴포넌트
 {
-    private Vector3 _spacing = new Vector3(1, 0, 0); // 손님 줄 사이의 간격, 임시값
-
-    public void NewCustomerLining(Customer customer) // 새 손님 줄 세우기
-    {
-        if (!PhotonNetwork.IsMasterClient)
-        {
-            return; // 마스터 클라이언트만 호출 가능
-        }
-        int index = CustomerManager.Instance.OrderHandler.PotionOrderLine.Count;
-        customer.MoveTo(GetLinePosition(index));
-    }
+    private Vector3 _spacing = new Vector3(1.5f, 0, 0); // 손님 줄 사이의 간격, 임시값
 
     public void ReLining() // 앞 손님 빠지면 줄 다시 세우기
     {
@@ -32,7 +22,7 @@ public class CustomerLineHandler // 접수대 앞에 물리적으로 줄 세우�
         for (int i = 0; i < lineArray.Length; i++)
         {
             Customer customer = lineArray[i];
-            customer.MoveTo(GetLinePosition(i));
+            customer.MoveAbility.MoveTo(GetLinePosition(i));
         }
     }
 
@@ -42,7 +32,7 @@ public class CustomerLineHandler // 접수대 앞에 물리적으로 줄 세우�
         {
             return; // 마스터 클라이언트만 호출 가능
         }
-        customer.MoveTo(CustomerManager.Instance.ExitDoor.position);
+        customer.MoveAbility.MoveTo(CustomerManager.Instance.ExitDoor.position);
     }
 
     private Vector3 GetLinePosition(int index)

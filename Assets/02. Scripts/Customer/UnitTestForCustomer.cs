@@ -16,6 +16,13 @@ public class UnitTestForCustomer : MonoBehaviour
     }
     public void StashHall()
     {
-        CustomerManager.Instance.OrderHandler.PotionOrderMap.Clear();
+        foreach(var customer in CustomerManager.Instance.OrderHandler.PotionOrderMap[0])
+        {
+            CustomerManager.Instance.LineHandler.PutOutCustomer(customer);
+        }
+    }
+    public void TestServePotion()
+    {
+        CustomerManager.Instance.ServePotion(0);
     }
 }

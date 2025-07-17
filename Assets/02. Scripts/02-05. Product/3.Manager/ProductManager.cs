@@ -97,7 +97,7 @@ public class ProductManager : MonoBehaviourPunCallbacksSingleton<ProductManager>
                           $"상품이름: {product.Data.Name}\n" +
                           $"상품가격: {product.Data.Price}");
 
-                GameObject structure = await StructureManager.Instance.CreateStructure(product.Data.StructureTID);
+                GameObject structure = StructureManager.Instance.CreateStructure(product.Data.StructureTID);
                 structure.transform.position = Vector3.zero;
                 break;
             }

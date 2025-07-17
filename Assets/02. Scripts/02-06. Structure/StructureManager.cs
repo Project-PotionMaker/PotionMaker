@@ -17,31 +17,21 @@ public class StructureManager : MonoBehaviourSingleton<StructureManager>
         {
             await Task.Delay(10);
         }
-        GameObject structure = await CreateStructure(10000);
+        GameObject structure = CreateStructure(10000);
         structure.transform.position = Vector3.one;
-
     }
 
 
 
-    public async Task<GameObject> CreateStructure(int structureTID)
+    public GameObject CreateStructure(int structureTID)
     {
-        GameObject prefab = await AssetManager.Instance.LoadAsset<GameObject>($"{ADDRESSABLE_KEY_PREFIX}{structureTID}");
-        if(prefab == null )
-        {
-            return null;
-        }
-
         // 포톤네트워크로 생성 + 오브젝트풀 고려
-        GameObject instance = StructureFactory.Instance.Create(EStructureType.Machine, Vector3.zero, Quaternion.identity);
+        GameObject instance = StructureFactory.Instance.Create($"{ADDRESSABLE_KEY_PREFIX}{structureTID}", Vector3.zero, Quaternion.identity);
         StructureData data = DataTable.Instance.GetStructureData(structureTID);
         switch (data.StructureType)
         {
             case EStructureType.Machine:
-                MachineData machineData = DataTable.Instance.GetMachineData(data.TypeTID);
-                IMachineInteractable machineInteractable = GetMachineInteractableComponent(machineData.InteractType);
-                IMachineItemContainer machineItemContainer = GetMachineItemContainerComponent(structureTID);
-                instance.GetComponent<Machine>().InitMachine(machineData, machineInteractable, machineItemContainer);
+                SetMachine(instance, data.TypeTID, structureTID);
                 break;
             case EStructureType.Furniture:
                 FurnitureData furnitureData = DataTable.Instance.GetFurnitureData(data.TypeTID);
@@ -71,6 +61,15 @@ public class StructureManager : MonoBehaviourSingleton<StructureManager>
     {
         GameObject prefab = await AssetManager.Instance.LoadAsset<GameObject>($"{ADDRESSABLE_KEY_PREFIX}{structureTID}");
         return prefab;
+    }
+
+    [PunRPC]
+    private void SetMachine(GameObject instance, int detailDataTID, int structureTID)
+    {
+        MachineData machineData = DataTable.Instance.GetMachineData(detailDataTID);
+        IMachineInteractable machineInteractable = GetMachineInteractableComponent(machineData.InteractType);
+        IMachineItemContainer machineItemContainer = GetMachineItemContainerComponent(structureTID);
+        instance.GetComponent<Machine>().InitMachine(machineData, machineInteractable, machineItemContainer);
     }
 
     private IMachineInteractable GetMachineInteractableComponent(EInteractType interactType)

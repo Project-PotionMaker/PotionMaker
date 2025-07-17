@@ -42,10 +42,4 @@ public class CurrencyTest : MonoBehaviourPunCallbacks
     {
         PhotonNetwork.JoinRandomOrCreateRoom();
     }
-
-    public override void OnJoinedRoom()
-    {
-        CurrencyManager.Instance.InitCurrencyManager();
-        SalesManager.Instance.InitSalesManager();
-    }
 }

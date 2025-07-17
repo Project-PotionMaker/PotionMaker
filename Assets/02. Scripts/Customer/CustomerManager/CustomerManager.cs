@@ -155,7 +155,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         {
             return;
         }
-        customer.CurrentState = ECustomerStateType.Leaving; // 손님 상태를 잃어버린 상태로 변경
+        customer.SetCurrentState(ECustomerStateType.Leaving);
         _orderHandler.RemoveAnywhere(customer); // 주문 목록에서 손님 제거
         _lineHandler.PutOutCustomer(customer); // 손님을 나가게 하기
         _lostCustomerCount++;

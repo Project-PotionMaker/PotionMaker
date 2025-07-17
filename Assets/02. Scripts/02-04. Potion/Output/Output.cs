@@ -23,8 +23,8 @@ public class Output : MonoBehaviour
     private PhotonView _photonView;
 
     [Foldout("Project")]
-    public List<MeshOnType> _meshList = new List<MeshOnType>();
-
+    [SerializeField]
+    private List<MeshOnType> _meshList = new List<MeshOnType>();
     private Dictionary<EInputType, Mesh> _meshDict;
 
     private void Awake()
@@ -44,16 +44,19 @@ public class Output : MonoBehaviour
         _photonView = GetComponent<PhotonView>();
     }
 
-    public void InitOutputData(EInputType newInputType, OutputData newData, string newOutputCode)
+    public void InitOutputData(EInputType newInputType, int TID)
     {
-        _photonView.RPC(nameof(RPC_InitOutputData), RpcTarget.All, newInputType, newData, newOutputCode);
+        _currentInputType = newInputType;
+        _outputData = DataTable.Instance.GetOutputData(TID);
+        _meshFilter.mesh = _meshDict[newInputType];
+        _photonView.RPC(nameof(RPC_InitOutputData), RpcTarget.Others, newInputType, TID);
     }
 
     [PunRPC]
-    public void RPC_InitOutputData(EInputType newInputType, OutputData newData, string newOutputCode)
+    public void RPC_InitOutputData(EInputType newInputType, int TID)
     {
         _currentInputType = newInputType;
-        _outputData = newData;
+        _outputData = DataTable.Instance.GetOutputData(TID);
         _meshFilter.mesh = _meshDict[newInputType];
     }
 }

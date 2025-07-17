@@ -32,18 +32,16 @@ public class CustomerEndurance : MonoBehaviour
         {
             return;
         }
-        if (PhotonNetwork.IsMasterClient)
+        if (!PhotonNetwork.IsMasterClient)
         {
-            LosingEndurance(); // 인내심 감소
-            if (_currentEndurance <= 0f && _owner.CurrentState != ECustomerStateType.Leaving)
-            {
-                CustomerManager.Instance.LostCustomer(_owner);
-            }
+            return;
         }
-        else
+        LosingEndurance(); // 인내심 감소
+        if (_currentEndurance <= 0f && _owner.CurrentState != ECustomerStateType.Leaving)
         {
-            TrySyncFromProperties(); // 커스텀 프로퍼티에서 인내심 동기화
+            CustomerManager.Instance.LostCustomer(_owner);
         }
+        
     }
     private void ResetEndurance()
     {
@@ -72,24 +70,13 @@ public class CustomerEndurance : MonoBehaviour
             _enduranceRate = _currentEndurance / HALL_ENDURANCE; // 인내심 비율 계산
         }
 
-        SyncToCustomProperties(); // 인내심을 커스텀 프로퍼티에 동기화
-    }
-    private void SyncToCustomProperties()
-    {
-        if (!PhotonNetwork.IsMasterClient) return;
-
-        var hash = new Hashtable
-        {
-            { "EnduranceRate", _enduranceRate }
-        };
-        _owner.PhotonView.Owner.SetCustomProperties(hash);
+        _owner.PhotonView.RPC(nameof(RPC_SyncEnduranceRate), RpcTarget.Others, _enduranceRate);
     }
 
-    private void TrySyncFromProperties()
+
+    [PunRPC]
+    private void RPC_SyncEnduranceRate(float rate)
     {
-        if (_owner.PhotonView.Owner.CustomProperties.TryGetValue("EnduranceRate", out object value))
-        {
-            _enduranceRate = (float)(double)value;
-        }
+        _enduranceRate = rate;
     }
 }

@@ -1,21 +1,26 @@
 using NUnit.Framework;
+using Photon.Pun;
 using System.Collections.Generic;
 using UnityEngine;
 using VInspector;
 
 public class Machine : MonoBehaviour
 {
+    [SerializeField]
     private MachineStat _stat;
     private IMachineInteractable _interactComponent;
     private IMachineItemContainer _containerComponent;
+    private PhotonView _photonView;
 
-    public void Init(MachineData data, IMachineInteractable interactableComponent, IMachineItemContainer containerComponent)
+    public void InitMachine(MachineData data, IMachineInteractable interactableComponent, IMachineItemContainer containerComponent)
     {
-        MachineStat machineStat = new MachineStat(data);
+        _stat = new MachineStat(data);
         _interactComponent = interactableComponent;
         _containerComponent = containerComponent;
+        _photonView = GetComponent<PhotonView>();
 
         _stat.ClearMachine();
+        SyncMachineStat(_stat);
     }
 
     public bool TryInteract()
@@ -31,5 +36,17 @@ public class Machine : MonoBehaviour
     public GameObject TakeOutput()
     {
         return _containerComponent.TakeOutput(this, _stat);
+    }
+
+    [ContextMenu("드가자")]
+    public void SyncMachineStat(MachineStat stat)
+    {
+        _photonView.RPC(nameof(RPC_SyncMachineStat), RpcTarget.All, stat);
+    }
+
+    [PunRPC]
+    public void RPC_SyncMachineStat(MachineStat stat)
+    {
+        _stat = stat;
     }
 }

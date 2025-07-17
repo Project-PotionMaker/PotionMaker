@@ -29,6 +29,9 @@ public class OutputData
     ///<summary>사용 가능한 기구 TID</summary>
     private readonly int AvailableMachineTID3;
 
+    ///<summary>레시피 코드</summary>
+    public readonly string RecipeCode;
+
     ///<summary>IngredientTID 리스트</summary>
     public readonly List<int> IngredientTIDList = new List<int>();
 
@@ -46,6 +49,8 @@ public class OutputData
         AvailableMachineTID1 = reader.ReadInt32();
         AvailableMachineTID2 = reader.ReadInt32();
         AvailableMachineTID3 = reader.ReadInt32();
+        int recipecode = reader.ReadInt32();
+        RecipeCode = Encoding.UTF8.GetString(reader.ReadBytes(recipecode));
 
         LinkTable();
     }

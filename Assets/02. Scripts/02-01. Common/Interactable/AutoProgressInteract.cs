@@ -31,6 +31,7 @@ public class AutoProgressInteract : IMachineInteractable
            machine.StartCoroutine(Interact_Coroutine(machine, stat));
         }
 
+        machine.SyncMachineStat(stat);
         return true;
     }
 
@@ -39,6 +40,7 @@ public class AutoProgressInteract : IMachineInteractable
         while (stat.CurrentProgress <= stat.Data.MaxProgress)
         {
             stat.CurrentProgress += stat.Data.ProgressPerTick * Time.deltaTime;
+            machine.SyncMachineStat(stat);
             yield return null;
         }
 

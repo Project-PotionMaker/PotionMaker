@@ -8,9 +8,6 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
     [Foldout("Hierarchy")]
     [SerializeField]
     private Grid _grid;
-    // 추후 삭제 (인풋매니저)
-    [SerializeField]
-    private GridTest_InputManager _inputManager;
     [SerializeField]
     private GameObject _gridVisualization;
 
@@ -41,8 +38,6 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
             return;
         }
 
-        // inputManager 테스트 코드
-        Vector3 mousePosition = _inputManager.GetSelectedMapPosition();
         Vector3Int gridPosition = _grid.WorldToCell(mousePosition);
         if (_lastDetectedPosition != gridPosition)
         {
@@ -60,24 +55,18 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
 
     public GameObject TryPickup(Vector3 targetPosition)
     {
-        //if (CanInteract(targetPosition))
-        //{
-        //    _buildingState = new PlacementState(data,
-        //                                    _grid,
-        //                                    _previewSystem,
-        //                                    _gridData,
-        //                                    _objectPlacer);
-        //}
-
-
+        if (CanInteract(targetPosition))
+        {
+            return StartPlacement(targetPosition);
+        }
         return null;
     }
 
     public bool TryDrop(Vector3 targetPosition)
     {
-        //Vector3Int gridPosition = _grid.WorldToCell(targetPosition);
+        Vector3Int gridPosition = _grid.WorldToCell(targetPosition);
 
-        //_buildingState.OnAction(gridPosition);
+        _buildingState.OnAction(gridPosition);
         return false;
     }
 
@@ -87,7 +76,7 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
         Delivery(10000, new Vector3(-2, 0, 2));
     }
 
-    public void StartPlacement(Vector3 targetPosition)
+    public GameObject StartPlacement(Vector3 targetPosition)
     {
         StopPlacement();
         _gridVisualization.SetActive(true);
@@ -106,6 +95,7 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
                                             _gridData,
                                             _objectPlacer);
 
+        return structure;
         //_inputManager.OnClicked += PlaceStructure;
         //_inputManager.OnExit += StopPlacement;
     }

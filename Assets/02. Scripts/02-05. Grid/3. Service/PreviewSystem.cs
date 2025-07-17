@@ -33,6 +33,12 @@ public class PreviewSystem : MonoBehaviour
         PreparePreview(_previewObject);
         PrepareCursor(size);
         _cellIndicator.SetActive(true);
+
+        Collider[] colliders = _previewObject.GetComponentsInChildren<Collider>();
+        foreach(Collider col in colliders)
+        {
+            col.enabled = false;
+        }
     }
 
     private void PrepareCursor(Vector2Int size)

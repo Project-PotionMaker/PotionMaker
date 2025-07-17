@@ -1,6 +1,5 @@
 using Photon.Pun;
 using UnityEngine;
-using ExitGames.Client.Photon;
 
 public class CustomerEndurance : MonoBehaviour
 {

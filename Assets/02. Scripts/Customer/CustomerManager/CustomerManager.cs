@@ -144,7 +144,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         int potionTID = customer.GetComponent<Customer>().RequestedPotionTID;
 
         _orderHandler.AddOrder(potionTID, customer);
-        customer.MoveAbility.MoveTo(_hallEntry.position);
+        customer.CustomerMove.MoveTo(_hallEntry.position);
         customer.SetCurrentState(ECustomerStateType.Waiting); // 대기 상태로 변경
         _lineHandler.ReLining(); // 줄 다시 세우기
     }
@@ -194,7 +194,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
             return; // 해당 TID의 손님이 없으면 실패
         }
         Customer customer = _orderHandler.PotionOrderMap[potionTID].First.Value;
-        customer.MoveAbility.MoveTo(_servingCounter.position); // 손님을 판매대 위치로 이동
+        customer.CustomerMove.MoveTo(_servingCounter.position); // 손님을 판매대 위치로 이동
         customer.SetCurrentState(ECustomerStateType.PickingUp); 
         //TODO : 가져가기 전까지 포션 상호작용 불가로 만들기
     }

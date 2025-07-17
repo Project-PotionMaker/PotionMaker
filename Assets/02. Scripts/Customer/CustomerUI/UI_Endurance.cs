@@ -21,10 +21,10 @@ public class UI_Endurance : MonoBehaviour
             slider.gameObject.SetActive(false); // Leaving 또는 PickingUp 상태에서는 슬라이더 숨김
             return;
         }
-        else if (_owner.EnduranceAbility != null)
+        else if (_owner.CustomerEndurance != null)
         {
             slider.gameObject.SetActive(true); // 다른 상태에서는 슬라이더 표시
-            slider.value = _owner.EnduranceAbility.EnduranceRate;
+            slider.value = _owner.CustomerEndurance.EnduranceRate;
         }
     }
 

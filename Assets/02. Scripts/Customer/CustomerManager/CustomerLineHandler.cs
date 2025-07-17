@@ -22,7 +22,7 @@ public class CustomerLineHandler // 접수대 앞에 물리적으로 줄 세우�
         for (int i = 0; i < lineArray.Length; i++)
         {
             Customer customer = lineArray[i];
-            customer.MoveAbility.MoveTo(GetLinePosition(i));
+            customer.CustomerMove.MoveTo(GetLinePosition(i));
         }
     }
 
@@ -32,7 +32,7 @@ public class CustomerLineHandler // 접수대 앞에 물리적으로 줄 세우�
         {
             return; // 마스터 클라이언트만 호출 가능
         }
-        customer.MoveAbility.MoveTo(CustomerManager.Instance.ExitDoor.position);
+        customer.CustomerMove.MoveTo(CustomerManager.Instance.ExitDoor.position);
     }
 
     private Vector3 GetLinePosition(int index)

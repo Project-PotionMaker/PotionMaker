@@ -15,7 +15,7 @@ public class DefaultMachineContainer : IMachineItemContainer
                 stat.ClearMachine();
             }
 
-            machine.SyncMachineStat(stat);
+            machine.SyncMachineStat();
             return output;
         }
 
@@ -33,7 +33,7 @@ public class DefaultMachineContainer : IMachineItemContainer
 
         stat.InputTIDList.Add(tid);
 
-        machine.SyncMachineStat(stat);
+        machine.SyncMachineStat();
         return true;
     }
 }

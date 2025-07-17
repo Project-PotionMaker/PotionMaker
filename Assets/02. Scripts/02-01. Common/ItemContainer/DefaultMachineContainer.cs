@@ -7,7 +7,8 @@ public class DefaultMachineContainer : IMachineItemContainer
         if (stat.IsProcessFinished)
         {
             //여기 Machine에 합쳐버리면 시트 테이블 타입 주는 곳에서 어떻게 판별할까?
-            GameObject output = OutputManager.Instance.CreateOutput(stat.InputTIDList, EInputType.Output);
+            GameObject output = OutputManager.Instance.TryCreateOutput
+                (stat.InputTIDList, stat.Data.TID, EInputType.Output, machine.transform.position);
             stat.LeftOutputAmount--;
             if (stat.LeftOutputAmount <= 0)
             {

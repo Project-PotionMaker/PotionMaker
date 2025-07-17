@@ -12,7 +12,7 @@ public class Product
     {
         // 유효성 검사 예외 처리는 ProductData에서 해야함
         _data = data;
-        _isUnlocked = isUnlocked; ;
+        _isUnlocked = isUnlocked;
     }
 
     public void Unlock()

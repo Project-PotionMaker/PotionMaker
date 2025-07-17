@@ -1,4 +1,6 @@
+using Photon.Pun;
 using UnityEngine;
+using ExitGames.Client.Photon;
 
 public class CustomerEnduranceAbility : MonoBehaviour
 {
@@ -34,10 +36,17 @@ public class CustomerEnduranceAbility : MonoBehaviour
 
     private void Update()
     {
-        LosingEndurance(); // 인내심 감소
-        if(_currentEndurance <= 0f)
+        if (PhotonNetwork.IsMasterClient)
         {
-            CustomerManager.Instance.LostCustomer(_owner);
+            LosingEndurance(); // 인내심 감소
+            if (_currentEndurance <= 0f)
+            {
+                CustomerManager.Instance.LostCustomer(_owner);
+            }
+        }
+        else
+        {
+            TrySyncFromProperties(); // 커스텀 프로퍼티에서 인내심 동기화
         }
     }
     private void ResetEndurance()
@@ -57,6 +66,25 @@ public class CustomerEnduranceAbility : MonoBehaviour
         if (_owner.CurrentState == ECustomerStateType.Lining || _owner.CurrentState == ECustomerStateType.Waiting)
         {
             _currentEndurance = Mathf.Max(_currentEndurance -_loseEnduranceSpeed * Time.deltaTime,0); // 인내심 감소
+        }
+        SyncToCustomProperties(); // 인내심을 커스텀 프로퍼티에 동기화
+    }
+    private void SyncToCustomProperties()
+    {
+        if (!PhotonNetwork.IsMasterClient) return;
+
+        var hash = new Hashtable
+        {
+            { "Endurance", _currentEndurance }
+        };
+        _owner.PhotonView.Owner.SetCustomProperties(hash);
+    }
+
+    private void TrySyncFromProperties()
+    {
+        if (_owner.PhotonView.Owner.CustomProperties.TryGetValue("Endurance", out object value))
+        {
+            _currentEndurance = (float)(double)value;
         }
     }
 }

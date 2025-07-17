@@ -17,6 +17,7 @@ public class Customer : MonoBehaviour
     public int RequestedPotionTID { get => _requestedPotionTID; set=> _requestedPotionTID = value; } // 요청한 포션 ID
 
     private PhotonView _photonView;
+    public PhotonView PhotonView { get => _photonView; set => _photonView = value; } // PhotonView 컴포넌트
 
     private int _priorityOffset;
     public int PriorityOffset { get => _priorityOffset; set => _priorityOffset = value; } // 우선순위 편향

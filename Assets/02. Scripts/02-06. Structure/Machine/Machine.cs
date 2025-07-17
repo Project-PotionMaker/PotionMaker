@@ -1,49 +1,52 @@
 using NUnit.Framework;
+using Photon.Pun;
 using System.Collections.Generic;
 using UnityEngine;
+using VInspector;
 
-public abstract class Machine : MonoBehaviour, IItemContainer, IInteractable
+public class Machine : MonoBehaviour
 {
-    private MachineData _data;
-    public MachineData Data => _data;
+    [SerializeField]
+    private MachineStat _stat;
+    private IMachineInteractable _interactComponent;
+    private IMachineItemContainer _containerComponent;
+    private PhotonView _photonView;
 
-    protected float _currentProgress;
-    protected int _leftOutputAmount;
-    protected bool _isProcessFinished;
-    protected bool _isProcessStarted;
-
-    protected List<int> InputTIDList;
-
-    public virtual void Init(MachineData data)
+    public void InitMachine(MachineData data, IMachineInteractable interactableComponent, IMachineItemContainer containerComponent)
     {
-        _data = data;
-        InputTIDList = new List<int>();
+        _stat = new MachineStat(data);
+        _interactComponent = interactableComponent;
+        _containerComponent = containerComponent;
+        _photonView = GetComponent<PhotonView>();
 
-        ClearMachine();
+        _stat.ClearMachine();
+        SyncMachineStat(_stat);
     }
 
-    public virtual void ClearMachine()
+    public bool TryInteract()
     {
-        InputTIDList.Clear();
-        _leftOutputAmount = _data.OutputAmount;
-        _isProcessFinished = false;
-        _isProcessStarted = false;
-        _currentProgress = 0f;
+        return _interactComponent.TryInteract(this, _stat);
     }
 
-    // 절구나 분쇄기를 제외하면 재료들은 아예 못들어가기도 하고, 다른 상황도 생길 수 있으므로 각자 처리 필요
-    public abstract bool TryInput(int tid, EInputType inputType);
-
-    public virtual bool CanInteract()
+    public bool TryInput(int tid, EInputType inputType)
     {
-        if(InputTIDList.Count == _data.MaxInputCount && _isProcessFinished == false)
-        {
-            return true;
-        }
-        return false;
+        return _containerComponent.TryInput(this, _stat, tid, inputType);
     }
 
-    public abstract bool TryInteract();
+    public GameObject TakeOutput()
+    {
+        return _containerComponent.TakeOutput(this, _stat);
+    }
 
-    public abstract GameObject TakeOutput();
+    [ContextMenu("드가자")]
+    public void SyncMachineStat(MachineStat stat)
+    {
+        _photonView.RPC(nameof(RPC_SyncMachineStat), RpcTarget.All, stat);
+    }
+
+    [PunRPC]
+    public void RPC_SyncMachineStat(MachineStat stat)
+    {
+        _stat = stat;
+    }
 }

@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class AutoProgressInteract : IMachineInteractable
 {
-    public virtual bool CanInteract(Machine machine)
+    public bool CanInteract(Machine machine, MachineStat stat)
     {
-        if (machine.InputTIDList.Count == machine.Data.MaxInputCount && machine.IsProcessFinished == false)
+        if (stat.InputTIDList.Count == stat.Data.MaxInputCount && stat.IsProcessFinished == false)
         {
             return true;
         }
@@ -13,35 +13,35 @@ public class AutoProgressInteract : IMachineInteractable
     }
 
 
-    public bool TryInteract(Machine machine)
+    public bool TryInteract(Machine machine, MachineStat stat)
     {
-        if (CanInteract(machine) == false)
+        if (CanInteract(machine, stat) == false)
         {
             return false;
         }
 
-        if (machine.IsProcessStarted)
+        if (stat.IsProcessStarted)
         {
-            machine.IsProcessStarted = false;
+            stat.IsProcessStarted = false;
             machine.StopAllCoroutines();
         }
         else
         {
-            machine.IsProcessStarted = true;
-           machine.StartCoroutine(Interact_Coroutine(machine));
+            stat.IsProcessStarted = true;
+           machine.StartCoroutine(Interact_Coroutine(machine, stat));
         }
 
         return true;
     }
 
-    public IEnumerator Interact_Coroutine(Machine machine)
+    public IEnumerator Interact_Coroutine(Machine machine, MachineStat stat)
     {
-        while (machine.CurrentProgress <= machine.Data.MaxProgress)
+        while (stat.CurrentProgress <= stat.Data.MaxProgress)
         {
-            machine.CurrentProgress += machine.Data.ProgressPerTick * Time.deltaTime;
+            stat.CurrentProgress += stat.Data.ProgressPerTick * Time.deltaTime;
             yield return null;
         }
 
-        machine.IsProcessFinished = true;
+        stat.IsProcessFinished = true;
     }
 }

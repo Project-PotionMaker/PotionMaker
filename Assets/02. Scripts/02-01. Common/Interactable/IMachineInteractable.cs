@@ -2,6 +2,6 @@ using UnityEngine;
 
 public interface IMachineInteractable
 {
-    public bool CanInteract(Machine machine);
-    public bool TryInteract(Machine machine);
+    public bool CanInteract(Machine machine, MachineStat stat);
+    public bool TryInteract(Machine machine, MachineStat stat);
 }

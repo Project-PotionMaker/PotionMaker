@@ -42,7 +42,7 @@ public class CurrencyManager : MonoBehaviourPunCallbacksSingleton<CurrencyManage
     {
         if (!PhotonNetwork.IsMasterClient)
         {
-            throw new Exception("Only the Master Client may Add currency directly. Use 'RequestAddCurrency' instead.");
+            throw new InvalidOperationException("Only the Master Client may Add currency directly. Use 'RequestAddCurrency' instead.");
         }
         _coin.AddCurrency(addendValue);
         OnDataChanged?.Invoke();
@@ -54,7 +54,7 @@ public class CurrencyManager : MonoBehaviourPunCallbacksSingleton<CurrencyManage
     {
         if (!PhotonNetwork.IsMasterClient)
         {
-            throw new Exception("Only the Master Client may Subtract currency directly. Request Subtract via a high level action method." +
+            throw new InvalidOperationException("Only the Master Client may Subtract currency directly. Request Subtract via a high level action method." +
                                 "\ne.g., \n[RPC] MarketManager.RequestBuy()" +
                                 "\n ->   MarketManager.TryBuy()" +
                                 "\n ->   CurrencyManager.TrySubtractCurrency()");
@@ -80,7 +80,7 @@ public class CurrencyManager : MonoBehaviourPunCallbacksSingleton<CurrencyManage
     {
         if (!info.Sender.IsMasterClient)
         {
-            throw new Exception("Currency must be Set by the Master Client");
+            throw new InvalidOperationException("Currency must be Set by the Master Client");
         }
         _coin.SetCurrency(value);
         OnDataChanged?.Invoke();

@@ -43,7 +43,7 @@ public class SalesManager : MonoBehaviourPunCallbacksSingleton<SalesManager>
     {
         if (!PhotonNetwork.IsMasterClient)
         {
-            throw new Exception("Sale must be processed only by the Master Client.");
+            throw new InvalidOperationException("Sale must be processed only by the Master Client.");
         }
         _sales.Sell(potionType, price);
 
@@ -59,7 +59,7 @@ public class SalesManager : MonoBehaviourPunCallbacksSingleton<SalesManager>
     {
         if (!info.Sender.IsMasterClient)
         {
-            throw new Exception("Sales must be Set by the Master Client");
+            throw new InvalidOperationException("Sales must be Set by the Master Client");
         }
 
         SalesRPCData salesRPCData = JsonUtility.FromJson<SalesRPCData>(salesJson);

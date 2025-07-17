@@ -7,35 +7,59 @@ public class Currency
 
     public Currency(int value = 0)
     {
+        if (value < 0)
+        {
+            throw new ArgumentOutOfRangeException
+                (
+                nameof(value),
+                value,
+                $"{nameof(value)} must be zero or greater");
+        }
         _value = value;
     }
 
     public void SetCurrency(int value)
     {
+        if (value < 0)
+        {
+            throw new ArgumentOutOfRangeException
+                (
+                nameof(value),
+                value,
+                $"{nameof(value)} must be zero or greater");
+        }
         _value = value;
     }
-    public void AddCurrency(int addendValue)
+    public void AddCurrency(int valueToAdd)
     {
-        if(addendValue <= 0)
+        if(valueToAdd <= 0)
         {
-            throw new System.Exception("Can't add zero or less");
+            throw new ArgumentOutOfRangeException
+                (
+                nameof(valueToAdd),
+                valueToAdd,
+                $"{nameof(valueToAdd)} must be greater than zero");
         }
 
-        _value += addendValue;
+        _value += valueToAdd;
     }
 
-    public bool TrySubtractCurrency(int subtrahendValue)
+    public bool TrySubtractCurrency(int valueToSubtract)
     {
-        if(subtrahendValue <= 0)
+        if (valueToSubtract <= 0)
         {
-            throw new System.Exception("Can't subtract zero or less");
+            throw new ArgumentOutOfRangeException
+                (
+                nameof(valueToSubtract),
+                valueToSubtract,
+                $"{nameof(valueToSubtract)} must be greater than zero");
         }
 
-        if( _value < subtrahendValue)
+        if ( _value < valueToSubtract)
         {
             return false;
         }
-        _value -= subtrahendValue;
+        _value -= valueToSubtract;
         return true;
     }
 

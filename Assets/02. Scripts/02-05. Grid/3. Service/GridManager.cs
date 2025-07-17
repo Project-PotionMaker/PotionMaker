@@ -36,7 +36,7 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
 
     private void Update()
     {
-        if(ReferenceEquals(_buildingState, null))
+        if (ReferenceEquals(_buildingState, null))
         {
             return;
         }
@@ -51,73 +51,112 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
         }
     }
 
-    //public bool CanInteract(Vector3 targetPosition)
-    //{
+    public bool CanInteract(Vector3 targetPosition)
+    {
+        Vector3Int gridPosition = _grid.WorldToCell(targetPosition);
+        int index = _gridData.GetRepresentationIndex(gridPosition);
+        return index == -1 ? false : true;
+    }
 
-    //}
+    public GameObject TryPickup(Vector3 targetPosition)
+    {
+        //if (CanInteract(targetPosition))
+        //{
+        //    _buildingState = new PlacementState(data,
+        //                                    _grid,
+        //                                    _previewSystem,
+        //                                    _gridData,
+        //                                    _objectPlacer);
+        //}
 
-    //public bool TryPickupStructure(Vector3 targetPosition)
-    //{
 
-    //}
+        return null;
+    }
 
-    //public bool TryDropStructure(Vector3 targetPosition)
-    //{
-    //    Vector3Int gridPosition = _grid.WorldToCell(targetPosition);
+    public bool TryDrop(Vector3 targetPosition)
+    {
+        //Vector3Int gridPosition = _grid.WorldToCell(targetPosition);
 
-    //    _buildingState.OnAction(gridPosition);
-    //}
+        //_buildingState.OnAction(gridPosition);
+        return false;
+    }
 
-    public void StartPlacement(int tid)
+    [ContextMenu("생성 테스트")]
+    public void Test()
+    {
+        Delivery(10000, new Vector3(-2, 0, 2));
+    }
+
+    public void StartPlacement(Vector3 targetPosition)
     {
         StopPlacement();
         _gridVisualization.SetActive(true);
-        StructureData data = DataTable.Instance.GetStructureData(tid);
-        _buildingState = new PlacementState(data,
+
+        Vector3Int gridPosition = _grid.WorldToCell(targetPosition);
+        Placement placement = _gridData.GetPlacement(gridPosition);
+        GameObject structure = _objectPlacer.GetGameObject(placement.PlacedObjectIndex);
+        _objectPlacer.RemoveObjectAt(placement.PlacedObjectIndex);
+        _gridData.RemoveObjectAt(gridPosition);
+
+        StructureData data = DataTable.Instance.GetStructureData(placement.TID);
+        _buildingState = new PlacementState(structure,
+                                            data,
                                             _grid,
                                             _previewSystem,
                                             _gridData,
                                             _objectPlacer);
 
-        _inputManager.OnClicked += PlaceStructure;
-        _inputManager.OnExit += StopPlacement;
+        //_inputManager.OnClicked += PlaceStructure;
+        //_inputManager.OnExit += StopPlacement;
     }
 
-    public void StartRemoving()
+    public void Delivery(int tid, Vector3 position)
     {
         StopPlacement();
         _gridVisualization.SetActive(true);
-        _buildingState = new RemovingState(_grid,
-                                           _previewSystem,
-                                           _gridData,
-                                           _objectPlacer);
-        _inputManager.OnClicked += PlaceStructure;
-        _inputManager.OnExit += StopPlacement;
+        StructureData data = DataTable.Instance.GetStructureData(tid);
+        GameObject newObject = StructureManager.Instance.CreateStructure(tid);
+        _buildingState = new PlacementState(newObject,
+                                            data,
+                                            _grid,
+                                            _previewSystem,
+                                            _gridData,
+                                            _objectPlacer);
+        _buildingState.OnAction(_grid.WorldToCell(position));
+        StopPlacement();
     }
 
-    private void PlaceStructure()
-    {
-        if (_inputManager.IsPointerOverUI())
-        {
-            return;
-        }
+    //public void StartRemoving()
+    //{
+    //    StopPlacement();
+    //    _gridVisualization.SetActive(true);
+    //    _buildingState = new RemovingState(_grid,
+    //                                       _previewSystem,
+    //                                       _gridData,
+    //                                       _objectPlacer);
+    //    //_inputManager.OnClicked += PlaceStructure;
+    //    _inputManager.OnExit += StopPlacement;
+    //}
 
-        Vector3 mousePosition = _inputManager.GetSelectedMapPosition();
-        Vector3Int gridPosition = _grid.WorldToCell(mousePosition);
+    private void PlaceStructure(Vector3 position)
+    {
+        Vector3Int gridPosition = _grid.WorldToCell(position);
 
         _buildingState.OnAction(gridPosition);
+
+        StopPlacement();
     }
 
     private void StopPlacement()
     {
-        if(ReferenceEquals(_buildingState, null))
+        if (ReferenceEquals(_buildingState, null))
         {
             return;
         }
 
         _gridVisualization.SetActive(false);
         _buildingState.EndState();
-        _inputManager.OnClicked -= PlaceStructure;
+        //_inputManager.OnClicked -= PlaceStructure;
         _inputManager.OnExit -= StopPlacement;
         _lastDetectedPosition = Vector3Int.zero;
         _buildingState = null;

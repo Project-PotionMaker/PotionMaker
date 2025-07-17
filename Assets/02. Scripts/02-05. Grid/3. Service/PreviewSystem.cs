@@ -26,9 +26,9 @@ public class PreviewSystem : MonoBehaviour
         _cellIndicatorRenderer = _cellIndicator.GetComponentInChildren<Renderer>();
     }
 
-    public void StartShowingPlacementPreview(GameObject prefab, Vector2Int size)
+    public void StartShowingPlacementPreview(int structureTID, Vector2Int size)
     {
-        _previewObject = Instantiate(prefab);
+        _previewObject = StructureManager.Instance.CreateStructure(structureTID);
 
         PreparePreview(_previewObject);
         PrepareCursor(size);

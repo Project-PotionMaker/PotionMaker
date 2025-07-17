@@ -64,6 +64,11 @@ public class GridData
         return true;
     }
 
+    public Placement GetPlacement(Vector3Int gridPosition)
+    {
+        return _placedObjectDict[gridPosition];
+    }
+
     public int GetRepresentationIndex(Vector3Int gridPosition)
     {
         if(_placedObjectDict.TryGetValue(gridPosition, out Placement value))

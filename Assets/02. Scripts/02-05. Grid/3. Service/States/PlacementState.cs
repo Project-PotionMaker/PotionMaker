@@ -7,14 +7,17 @@ public class PlacementState : IBuildingState
     private PreviewSystem _previewSystem;
     private GridData _gridData;
     private PlaceSystem _objectPlacer;
+    private GameObject _structure;
     private Vector2Int _size;
 
-    public PlacementState(StructureData data,
+    public PlacementState(GameObject structure,
+                          StructureData data,
                           Grid grid,
                           PreviewSystem previewSystem,
                           GridData gridData,
                           PlaceSystem objectPlacer)
     {
+        _structure = structure;
         _data = data;
         _grid = grid;
         _previewSystem = previewSystem;
@@ -24,7 +27,7 @@ public class PlacementState : IBuildingState
         _size = new Vector2Int(data.Width, data.Length);
 
         _previewSystem.StartShowingPlacementPreview(
-            StructureManager.Instance.GetMachinePrefab(data.TID),
+            _data.TID,
             _size);
     }
 
@@ -41,10 +44,9 @@ public class PlacementState : IBuildingState
             return;
         }
 
-        // MachineManager 말고 StructureManager에서 가져와야됨
-        Debug.Log("수정필요ㅕ");
         int index = _objectPlacer.PlaceObject(
-            StructureManager.Instance.GetMachinePrefab(_data.TID),
+            _structure,
+            _data.TID,
             _grid.CellToWorld(gridPosition));
 
         _gridData.AddObjectAt(gridPosition,

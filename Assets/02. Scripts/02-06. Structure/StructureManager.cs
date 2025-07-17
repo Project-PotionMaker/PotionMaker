@@ -1,16 +1,97 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
+using Photon.Pun;
 
-public class StructureManager : MonoBehaviour
+public class StructureManager : MonoBehaviourSingleton<StructureManager>
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private const string ADDRESSABLE_KEY_PREFIX = "Prefab_Structure_";
+
+    public async Task<GameObject> CreateStructure(int structureTID)
     {
-        
+        GameObject prefab = await AssetManager.Instance.LoadAsset<GameObject>($"{ADDRESSABLE_KEY_PREFIX}{structureTID}");
+        if(prefab == null )
+        {
+            return null;
+        }
+
+        // 포톤네트워크로 생성 + 오브젝트풀 고려
+        GameObject instance = Instantiate(prefab);
+        StructureData data = DataTable.Instance.GetStructureData(structureTID);
+        switch (data.StructureType)
+        {
+            case EStructureType.Machine:
+                MachineData machineData = DataTable.Instance.GetMachineData(data.TypeTID);
+                instance.GetComponent<Machine>().Init(machineData);
+                break;
+            case EStructureType.Furniture:
+                FurnitureData furnitureData = DataTable.Instance.GetFurnitureData(data.TypeTID);
+                instance.GetComponent<Furniture>().Init(furnitureData);
+                break;
+            case EStructureType.None:
+                Destroy(instance);
+                return null;
+        }
+
+        return instance;
     }
 
-    // Update is called once per frame
-    void Update()
+    public bool TryDeleteStructure(GameObject structureObject)
     {
-        
+        if(structureObject == null)
+        {
+            return false;
+        }
+
+        // 추가 처리사항 있으면 여기서 ㄱㄱ
+        Destroy(structureObject);
+        return true;
     }
+
+    public async Task<GameObject> GetStructurePrefab(int structureTID)
+    {
+        GameObject prefab = await AssetManager.Instance.LoadAsset<GameObject>($"{ADDRESSABLE_KEY_PREFIX}{structureTID}");
+        return prefab;
+    }
+
+
+
+
+    ////테스트용 코드입니다.
+    //[SerializeField]
+    //private List<MachineEntry> _machinePrefabEntryList;
+
+    private Dictionary<int, GameObject> _machinePrefabDict;
+
+    //protected override void Awake()
+    //{
+    //    base.Awake();
+
+    //    if (_machinePrefabEntryList == null || _machinePrefabEntryList.Count == 0)
+    //    {
+    //        _machinePrefabDict = new Dictionary<int, GameObject>();
+    //        return;
+    //    }
+
+    //    try
+    //    {
+    //        _machinePrefabDict = _machinePrefabEntryList.ToDictionary(entry => entry.TID, entry => entry.Prefab);
+    //    }
+    //    catch (System.ArgumentException ex)
+    //    {
+    //        Debug.LogError($"Duplicate TID found in MachinePrefabEntries: {ex.Message}");
+    //    }
+    //    Debug.Log($"MachineManager: Initialized with {_machinePrefabDict.Count} machines.");
+    //}
+
+    public GameObject GetMachinePrefab(int tid)
+    {
+        //if (_machinePrefabDict.TryGetValue(tid, out GameObject prefab))
+        //{
+        //    return prefab;
+        //}
+        return null;
+    }
+
 }

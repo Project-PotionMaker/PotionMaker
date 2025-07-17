@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 using System.Collections.Generic;
@@ -81,6 +81,8 @@ public class PhotonServerManager : MonoBehaviourPunCallbacks
         // 포톤에서는 게임 오브젝트 생성 후 포톤 서버에 등록까지 해야된다. -> PhotonNetwork.Instantiate
         // 프리펩이 Resources폴더에 있어야됨.
         // PhotonNetwork.Instantiate("Player", GameManager.Instance.GetPlayerSpawnPoint(), Quaternion.identity);
+        
+        //await CustomerPoolManager.Instance.InitializeAsync();
     }
 
     // 방 입장에 실패하면 호출되는 함수

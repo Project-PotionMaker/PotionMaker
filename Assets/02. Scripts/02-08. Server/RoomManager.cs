@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class RoomManager : MonoBehaviourSingleton<RoomManager>, IMatchmakingCallbacks, IInRoomCallbacks
 {
-    private EAddressables _playerAddressableKey = EAddressables.Prefab_Player;
+    private EAddressableKeys _playerAddressableKey = EAddressableKeys.Prefab_Player;
     private GameObject _playerPrefab = null;
 
     private Room _room;

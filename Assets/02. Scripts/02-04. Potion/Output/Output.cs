@@ -1,7 +1,15 @@
 using Photon.Pun;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using VInspector;
+
+[Serializable]
+public class MeshOnType
+{
+    public EInputType EInputType;
+    public Mesh Mesh;
+}
 
 public class Output : MonoBehaviour
 {
@@ -15,8 +23,7 @@ public class Output : MonoBehaviour
     private PhotonView _photonView;
 
     [Foldout("Project")]
-    [SerializeField]
-    private List<(EInputType, Mesh)> _meshList;
+    public List<MeshOnType> _meshList = new List<MeshOnType>();
 
     private Dictionary<EInputType, Mesh> _meshDict;
 
@@ -30,7 +37,7 @@ public class Output : MonoBehaviour
         _meshDict = new Dictionary<EInputType, Mesh>();
         foreach (var meshInfo in _meshList)
         {
-            _meshDict.Add(meshInfo.Item1, meshInfo.Item2);
+            _meshDict.Add(meshInfo.EInputType, meshInfo.Mesh);
         }
 
         _meshFilter = GetComponent<MeshFilter>();

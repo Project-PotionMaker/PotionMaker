@@ -8,10 +8,10 @@ public class Customer : MonoBehaviour
 {
     private ECustomerStateType _currentState;
     public ECustomerStateType CurrentState { get => _currentState; } // 현재 상태
-    private CustomerMoveAbility _moveAbility; // 이동 능력 컴포넌트
-    public CustomerMoveAbility MoveAbility { get => _moveAbility; set => _moveAbility = value; } // 이동 능력 컴포넌트
-    private CustomerEnduranceAbility _enduranceAbility; // 인내심
-    public CustomerEnduranceAbility EnduranceAbility { get => _enduranceAbility; set => _enduranceAbility = value; } // 인내심 컴포넌트
+    private CustomerMove _moveAbility; // 이동 능력 컴포넌트
+    public CustomerMove MoveAbility { get => _moveAbility; set => _moveAbility = value; } // 이동 능력 컴포넌트
+    private CustomerEndurance _enduranceAbility; // 인내심
+    public CustomerEndurance EnduranceAbility { get => _enduranceAbility; set => _enduranceAbility = value; } // 인내심 컴포넌트
 
     private int _requestedPotionTID = 0;
     public int RequestedPotionTID { get => _requestedPotionTID; set=> _requestedPotionTID = value; } // 요청한 포션 ID
@@ -27,8 +27,8 @@ public class Customer : MonoBehaviour
     private void Awake()
     {
         _photonView = GetComponent<PhotonView>();
-        _moveAbility = GetComponent<CustomerMoveAbility>();
-        _enduranceAbility = GetComponent<CustomerEnduranceAbility>();
+        _moveAbility = GetComponent<CustomerMove>();
+        _enduranceAbility = GetComponent<CustomerEndurance>();
     }
     private void OnEnable()
     {

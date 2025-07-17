@@ -2,7 +2,7 @@ using Photon.Pun;
 using UnityEngine;
 using ExitGames.Client.Photon;
 
-public class CustomerEnduranceAbility : MonoBehaviour
+public class CustomerEndurance : MonoBehaviour
 {
     Customer _owner; // Customer 컴포넌트
     private const float LINE_ENDURANCE = 10f;

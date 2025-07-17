@@ -24,7 +24,7 @@ public class MachineStat
 
     [SerializeField]
     private List<int> _inputTIDList;
-    public List<int> InputTIDList => _inputTIDList;
+    public List<int> InputTIDList { get => _inputTIDList; set => _inputTIDList = value; }
 
     public MachineStat(MachineData data)
     {

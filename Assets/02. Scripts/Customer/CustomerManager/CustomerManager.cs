@@ -60,6 +60,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
     {
         _photonView = GetComponent<PhotonView>();
         PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseEntered += SetLists;
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.EndingPhase].OnPhaseEntered += ForceReturn; // EndingPhase 진입 시 모든 손님을 반환
         //CustomerPool.Instance.ObjectSpawnedActions.TryAdd(ENPCType.Customer, null);
         //CustomerPool.Instance.ObjectSpawnedActions[ENPCType.Customer] += OnCustomerIn;
 
@@ -109,6 +110,10 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         {
             return;
         }
+        if(_orderHandler.PotionOrderLine.Peek() != customer)
+        {
+            return; // 줄에 도착했지만 첫번째 손님이 아니면 무시
+        }
         PhotonView customerView = _orderHandler.PotionOrderLine.Peek().GetComponent<PhotonView>();
         //TODO : 접수대에 손님을 등록 (접수 가능 상태)
     }
@@ -139,7 +144,8 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         int potionTID = customer.GetComponent<Customer>().RequestedPotionTID;
 
         _orderHandler.AddOrder(potionTID, customer);
-        customer.MoveTo(_hallEntry.position);
+        customer.MoveAbility.MoveTo(_hallEntry.position);
+        customer.SetCurrentState(ECustomerStateType.Waiting); // 대기 상태로 변경
         _lineHandler.ReLining(); // 줄 다시 세우기
     }
 
@@ -149,6 +155,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         {
             return;
         }
+        customer.CurrentState = ECustomerStateType.Leaving; // 손님 상태를 잃어버린 상태로 변경
         _orderHandler.RemoveAnywhere(customer); // 주문 목록에서 손님 제거
         _lineHandler.PutOutCustomer(customer); // 손님을 나가게 하기
         _lostCustomerCount++;
@@ -187,7 +194,8 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
             return; // 해당 TID의 손님이 없으면 실패
         }
         Customer customer = _orderHandler.PotionOrderMap[potionTID].First.Value;
-        customer.MoveTo(_servingCounter.position); // 손님을 판매대 위치로 이동
+        customer.MoveAbility.MoveTo(_servingCounter.position); // 손님을 판매대 위치로 이동
+        customer.SetCurrentState(ECustomerStateType.PickingUp); 
         //TODO : 가져가기 전까지 포션 상호작용 불가로 만들기
     }
 
@@ -202,6 +210,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         Customer customer = _orderHandler.PotionOrderMap[potionTID].First.Value;
         _orderHandler.PotionOrderMap[potionTID].RemoveFirst(); // 손님 제거
         _lineHandler.PutOutCustomer(customer); // 손님을 나가게 하기
+        customer.SetCurrentState(ECustomerStateType.Leaving); // 손님 상태를 나가는 상태로 변경
     }
 
     public void OnLastOrderTime() //영업시간 종료되면 호출
@@ -214,6 +223,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         {
             Customer customer = _orderHandler.PotionOrderLine.Dequeue();
             _lineHandler.PutOutCustomer(customer);
+            customer.SetCurrentState(ECustomerStateType.Leaving); // 손님 상태를 나가는 상태로 변경
         }
     }
 
@@ -226,5 +236,27 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         CustomerFactory.Instance.Return(customer.gameObject); // TODO : PoolManager완성 후 수정
         //CustomerPool.Instance.ReturnObject(customer.gameObject,ENPCType.Customer);
         RemainCustomers--;
+    }
+    public void ForceReturn() // 인내심 바닥나서 끝나면 전부 강제로 내보냄, 또는 버그로 큐에 남아있는 손님도 내보냄
+    {
+        if (PhotonNetwork.IsMasterClient == false)
+        {
+            return;
+        }
+        Debug.Log("Force returning all customers.");
+        while (_orderHandler.PotionOrderLine.Count > 0)
+        {
+            Customer customer = _orderHandler.PotionOrderLine.Dequeue();
+            ReturnCustomer(customer);
+        }
+        foreach (var potionQueue in _orderHandler.PotionOrderMap.Values)
+        {
+            while (potionQueue.Count > 0)
+            {
+                Customer customer = potionQueue.First.Value;
+                potionQueue.RemoveFirst();
+                ReturnCustomer(customer);
+            }
+        }
     }
 }

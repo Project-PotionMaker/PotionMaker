@@ -129,3 +129,15 @@ public enum EStructureType
     Furniture = 2,
 }
 
+public enum ECustomerStateType
+{
+    ///<summary>줄 서기</summary>
+    Lining = 0,
+    ///<summary>기다리기</summary>
+    Waiting = 1,
+    ///<summary>챙기기</summary>
+    PickingUp = 2,
+    ///<summary>나가기</summary>
+    Leaving = 3,
+}
+

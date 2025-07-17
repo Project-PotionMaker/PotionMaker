@@ -2,7 +2,7 @@ using Photon.Pun;
 using System;
 using System.Diagnostics;
 
-public class CurrencyManager : MonoBehaviourSingleton<CurrencyManager>
+public class CurrencyManager : MonoBehaviourPunCallbacksSingleton<CurrencyManager>
 {
     public event Action OnDataChanged;
 
@@ -12,19 +12,18 @@ public class CurrencyManager : MonoBehaviourSingleton<CurrencyManager>
     private Currency _coin;
     public CurrencyDTO Coin => _coin.ToDTO();
 
-    protected override void Awake()
+    public override void OnJoinedRoom()
     {
-        base.Awake();
-
-        _photonView = GetComponent<PhotonView>();
-        _coin = new Currency(0);
+        InitCurrencyManager();
     }
 
-    public void InitCurrencyManager()
+    private void InitCurrencyManager()
     {
+        _photonView = GetComponent<PhotonView>();
+        _coin = new Currency(0);
         RequestUpdateCurrency();
         OnDataChanged?.Invoke();
-        // Todo: SaveÃÑ°ı·ÎºÎÅÍ µ¥ÀÌÅÍ ¹Ş¾Æ¿Â ÈÄ ÃÊ±âÈ­
+        // Todo: Saveì´ê´„ë¡œë¶€í„° ë°ì´í„° ë°›ì•„ì˜¨ í›„ ì´ˆê¸°í™”
     }
 
     [PunRPC]
@@ -43,7 +42,7 @@ public class CurrencyManager : MonoBehaviourSingleton<CurrencyManager>
     {
         if (!PhotonNetwork.IsMasterClient)
         {
-            throw new Exception("Only the Master Client may Add currency directly. Use 'RequestAddCurrency' instead.");
+            throw new InvalidOperationException("Only the Master Client may Add currency directly. Use 'RequestAddCurrency' instead.");
         }
         _coin.AddCurrency(addendValue);
         OnDataChanged?.Invoke();
@@ -55,7 +54,7 @@ public class CurrencyManager : MonoBehaviourSingleton<CurrencyManager>
     {
         if (!PhotonNetwork.IsMasterClient)
         {
-            throw new Exception("Only the Master Client may Subtract currency directly. Request Subtract via a high level action method." +
+            throw new InvalidOperationException("Only the Master Client may Subtract currency directly. Request Subtract via a high level action method." +
                                 "\ne.g., \n[RPC] MarketManager.RequestBuy()" +
                                 "\n ->   MarketManager.TryBuy()" +
                                 "\n ->   CurrencyManager.TrySubtractCurrency()");
@@ -75,19 +74,19 @@ public class CurrencyManager : MonoBehaviourSingleton<CurrencyManager>
         return false;
     }
 
-    // ¸¶½ºÅÍ Å¬¶óÀÌ¾ğÆ®¿¡¼­ Å¬¶óÀÌ¾ğÆ® °»½Å½ÃÅ°´Â ¿ëµµ
+    // ë§ˆìŠ¤í„° í´ë¼ì´ì–¸íŠ¸ì—ì„œ í´ë¼ì´ì–¸íŠ¸ ê°±ì‹ ì‹œí‚¤ëŠ” ìš©ë„
     [PunRPC]
     public void SetCurrency(int value, PhotonMessageInfo info)
     {
         if (!info.Sender.IsMasterClient)
         {
-            throw new Exception("Currency must be Set by the Master Client");
+            throw new InvalidOperationException("Currency must be Set by the Master Client");
         }
         _coin.SetCurrency(value);
         OnDataChanged?.Invoke();
     }
 
-    // °»½Å ¿äÃ»
+    // ê°±ì‹  ìš”ì²­
     public void RequestUpdateCurrency()
     {
         _photonView.RPC(nameof(RequestUpdateCurrency), RpcTarget.MasterClient);

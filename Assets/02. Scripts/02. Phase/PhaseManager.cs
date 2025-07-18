@@ -15,6 +15,7 @@ public class PhaseManager : MonoBehaviourSingleton<PhaseManager>
     private int _day;
     public int Day { get => _day; set => _day = value; }
     public event Action OnDayPassed;
+    public event Action OnPhaseChanged;
     PhotonView _photonView;
 
     protected override void Awake()
@@ -67,5 +68,6 @@ public class PhaseManager : MonoBehaviourSingleton<PhaseManager>
         }
         _currentPhase = _phaseDictionary[nextPhase];
         _currentPhase.EnterPhase();
+        OnPhaseChanged?.Invoke();
     }
 }

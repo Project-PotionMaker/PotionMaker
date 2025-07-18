@@ -62,7 +62,7 @@ public class StructureManager : MonoBehaviourSingleton<StructureManager>
     }
 
     [PunRPC]
-    private void SetMachine(GameObject instance, int detailDataTID, int structureTID)
+    public void SetMachine(GameObject instance, int detailDataTID, int structureTID)
     {
         MachineData machineData = DataTable.Instance.GetMachineData(detailDataTID);
         IMachineInteractable machineInteractable = GetMachineInteractableComponent(machineData.InteractType);

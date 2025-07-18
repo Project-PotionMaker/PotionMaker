@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class DefaultMachineContainer : IMachineItemContainer
 {
+
     public GameObject TakeOutput(Machine machine, MachineStat stat)
     {
         if (stat.IsProcessFinished)
@@ -20,6 +21,15 @@ public class DefaultMachineContainer : IMachineItemContainer
         }
 
         return null;
+    }
+
+    public bool CanTakeOut(Machine machine, MachineStat stat)
+    {
+        if (stat.IsProcessFinished)
+        {
+            return true;
+        }
+        return false;
     }
 
     public bool TryInput(Machine machine, MachineStat stat, int tid, EInputType inputType)

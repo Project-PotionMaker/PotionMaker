@@ -5,14 +5,30 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [SerializeField]
-    private float _moveSpeed = 10f;
-    public float MoveSpeed => _moveSpeed;
-
-    [SerializeField]
-    private float _interactRate = 3f;
-    public float InteractRate => _interactRate;
+    private PlayerStat _stat;
+    public PlayerStat Stat => _stat;
 
     private Dictionary<Type, PlayerAbility> _abilityMap = new Dictionary<Type, PlayerAbility>();
+
+    private void Update()
+    {
+        if (CheckObjectInFront())
+        {
+            // TODO : GridManager를 통해 오브젝트 있으면 빛나게 활성화 작업 추가
+        }
+    }
+
+    public bool CheckObjectInFront()
+    {
+        Vector3 targetPosition = GetFrontPosition();
+
+        return GridManager.Instance.CheckObjectOnGrid(targetPosition);
+    }
+
+    public Vector3 GetFrontPosition()
+    {
+        return transform.position + transform.forward * _stat.FindOffset;
+    }
 
     public T GetAbility<T>() where T : PlayerAbility
     {

@@ -35,6 +35,6 @@ public class PlayerMoveAbility : PlayerAbility
             _owner.transform.forward = _lastForwardVector;
         }
 
-        _rigidbody.linearVelocity = new Vector3(moveInput.x, 0, moveInput.y) * inputSize * _owner.MoveSpeed;
+        _rigidbody.linearVelocity = new Vector3(moveInput.x, 0, moveInput.y) * inputSize * _owner.Stat.MoveSpeed;
     }
 }

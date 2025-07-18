@@ -5,13 +5,8 @@ public class AutoProgressInteract : IMachineInteractable
 {
     public bool CanInteract(Machine machine, MachineStat stat)
     {
-        if (stat.InputTIDList.Count == stat.Data.MaxInputCount && stat.IsProcessFinished == false)
-        {
-            return true;
-        }
-        return false;
+        return (stat.InputTIDList.Count == stat.Data.MaxInputCount && !stat.IsProcessFinished);
     }
-
 
     public bool TryInteract(Machine machine, MachineStat stat)
     {
@@ -43,7 +38,5 @@ public class AutoProgressInteract : IMachineInteractable
             machine.SyncMachineStat();
             yield return null;
         }
-
-        stat.IsProcessFinished = true;
     }
 }

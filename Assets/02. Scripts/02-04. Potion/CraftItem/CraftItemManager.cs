@@ -1,11 +1,9 @@
-
 using Photon.Pun;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
 
-public class OutputManager : MonoBehaviourSingleton<OutputManager>
+public class CraftItemManager : MonoBehaviourSingleton<CraftItemManager>
 {
     // 어드레서블에서 로드해올 예정
     [SerializeField]
@@ -25,10 +23,10 @@ public class OutputManager : MonoBehaviourSingleton<OutputManager>
     protected override void Awake()
     {
         base.Awake();
-        InitOutputManager();
+        InitCraftItemManager();
     }
 
-    private void InitOutputManager()
+    private void InitCraftItemManager()
     {
         _outputDataTIDDict = new Dictionary<string, int>();
         var outputDataList = DataTable.Instance.GetOutputDataList();
@@ -49,35 +47,42 @@ public class OutputManager : MonoBehaviourSingleton<OutputManager>
         _photonView = GetComponent<PhotonView>();
     }
 
-    public GameObject TryCreateOutput(int[] TIDList, int machineTID, EInputType type, Vector3 machinePosition)
+    public GameObject TryCreateIngredientItem(int TID, Vector3 machinePosition)
+    {
+        GameObject ingredient = CraftItemFactory.Instance.Create(EInputType.Ingredient, machinePosition, Quaternion.identity);
+        ingredient.GetComponent<IngredientItem>().InitIngredientData(TID);
+        return ingredient;
+    }
+
+    public GameObject TryCreateOutputItem(int[] TIDList, int machineTID, EInputType type, Vector3 machinePosition)
     {
         string recipeCode = _recipeCodeHandler.MakeNewRecipeCode(TIDList, machineTID);
         GameObject output = null;
         if (_recipeCodeVerifier.IsValidProcess(recipeCode))
         {
-            output = OutputFactory.Instance.Create(type, machinePosition, Quaternion.identity);
-            output.GetComponent<Output>().InitOutputData(type, _outputDataTIDDict[recipeCode]);
+            output = CraftItemFactory.Instance.Create(type, machinePosition, Quaternion.identity);
+            output.GetComponent<OutputItem>().InitOutputData(type, _outputDataTIDDict[recipeCode]);
             return output;
         }
-        return CreateFailureOutput(machinePosition);
+        return CreateFailureItem(machinePosition);
     }
 
 
-    public GameObject TryCreatePotion(int[] TIDList, int bottlerTID, Vector3 machinePosition)
+    public GameObject TryCreatePotionItem(int[] TIDList, int bottlerTID, Vector3 machinePosition)
     {
 
         string recipeCode = _recipeCodeHandler.MakeNewRecipeCode(TIDList, bottlerTID);
         if (_recipeCodeVerifier.IsValidPotion(recipeCode))
         {
-            GameObject potion = OutputFactory.Instance.Create(EInputType.Potion, machinePosition, Quaternion.identity);
+            GameObject potion = CraftItemFactory.Instance.Create(EInputType.Potion, machinePosition, Quaternion.identity);
             potion.GetComponent<Potion>().InitPotionData(_potionDataTIDDict[recipeCode]);
             return potion;
         }
-        return CreateFailureOutput(machinePosition);
+        return CreateFailureItem(machinePosition);
     }
 
-    private GameObject CreateFailureOutput(Vector3 machinePosition)
+    private GameObject CreateFailureItem(Vector3 machinePosition)
     {
-        return OutputFactory.Instance.Create(EInputType.FailureOutput, machinePosition, Quaternion.identity);
+        return CraftItemFactory.Instance.Create(EInputType.FailureOutput, machinePosition, Quaternion.identity);
     }
 }

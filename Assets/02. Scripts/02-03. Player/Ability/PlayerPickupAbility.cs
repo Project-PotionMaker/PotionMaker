@@ -61,13 +61,13 @@ public class PlayerPickupAbility : PlayerAbility
     private void TryPutDown()
     {
         Vector3 targetPosition = transform.position + transform.forward * 0.5f;
-        if (GridManager.Instance.TryDrop(targetPosition))
-        {
-            Debug.Log("Put Down");
-            _heldItem.transform.SetParent(null);
+        //if (GridManager.Instance.TryDrop(targetPosition))
+        //{
+        //    Debug.Log("Put Down");
+        //    _heldItem.transform.SetParent(null);
 
-            _heldItem = null;
-        }
+        //    _heldItem = null;
+        //}
     }
 
     private bool CheckCanPickUp()

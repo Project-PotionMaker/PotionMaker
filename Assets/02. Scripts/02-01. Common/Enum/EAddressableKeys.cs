@@ -2,6 +2,7 @@
 public enum EAddressableKeys
 {
     Prefab_Structure_10000,
+    Prefab_Ingredient_10000,
     Prefab_AddressableTest1,
     Prefab_Player,
     Prefab_AddressableTest2,

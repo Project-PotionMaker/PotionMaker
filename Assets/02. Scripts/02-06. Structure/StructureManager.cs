@@ -12,13 +12,6 @@ public class StructureManager : MonoBehaviourSingleton<StructureManager>
 
     private async void Start()
     {
-        
-        while(DataTable.Instance.GetStructureDataList() == null || PhotonNetwork.InRoom == false)
-        {
-            await Task.Delay(10);
-        }
-        GameObject structure = CreateStructure(10000);
-        structure.transform.position = Vector3.one;
     }
 
     public GameObject CreateStructure(int structureTID)
@@ -61,7 +54,6 @@ public class StructureManager : MonoBehaviourSingleton<StructureManager>
         return prefab;
     }
 
-    [PunRPC]
     public void SetMachine(GameObject instance, int detailDataTID, int structureTID)
     {
         MachineData machineData = DataTable.Instance.GetMachineData(detailDataTID);
@@ -75,13 +67,13 @@ public class StructureManager : MonoBehaviourSingleton<StructureManager>
         switch (interactType)
         {
             case EInteractType.KeepPressing:
-                break;
+                return new AutoProgressInteract();
             case EInteractType.AutoProgress:
                 return new AutoProgressInteract();
             case EInteractType.ClickRepeatly:
-                break;
+                return new AutoProgressInteract();
             case EInteractType.ClickOnce:
-                break;
+                return new AutoProgressInteract();
         }
 
         return null;

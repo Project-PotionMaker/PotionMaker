@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using VInspector;
 
@@ -71,6 +72,25 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
 
     }
 
+    public bool TryInteract(Vector3 targetPosition)
+    {
+        Vector3Int gridPosition = GetGridPosition(targetPosition);
+        int index = _gridData.GetRepresentationIndex(gridPosition);
+        if(index != -1)
+        {
+            GameObject structure = _placeSystem.GetGameObject(index);
+            Machine machine = structure.GetComponent<Machine>();
+            if (ReferenceEquals(machine, null) == false)
+            {
+                if (machine.TryInteract())
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public GameObject TryPickup(Vector3 targetPosition)
     {
         if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
@@ -89,6 +109,8 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
                 return null;
             }
             GameObject structure = _placeSystem.GetGameObject(placement.PlacedObjectIndex);
+
+            // 재료상자는 머신이 아니어서 고민 필요
             if (placement.structureType == EStructureType.Machine)
             {
                 GameObject pickupItem = structure.GetComponent<Machine>().TakeOutput();
@@ -98,7 +120,7 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
         return null;
     }
 
-    public bool TryDrop(Vector3 targetPosition)
+    public bool TryDrop(Vector3 targetPosition, int tid, EInputType inputType, GameObject gameObject)
     {
         Vector3Int gridPosition = GetGridPosition(targetPosition);
         if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
@@ -119,11 +141,12 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
             GameObject structure = _placeSystem.GetGameObject(placement.PlacedObjectIndex);
             if (placement.structureType == EStructureType.Machine)
             {
-                GameObject pickupItem = structure.GetComponent<Machine>().TakeOutput();
-                return pickupItem;
+                structure.GetComponent<Machine>().TryInput(tid, inputType);
+                // 수정필요
+                Destroy(gameObject);
+                return true;
             }
         }
-
 
         return false;
     }
@@ -173,7 +196,7 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
         }
     }
 
-    [ContextMenu("생성 테스트")]
+    [Button("생성 테스트")]
     public void Test()
     {
         CreateStructure(10000, new Vector3(-2, 0, 2), EStructureType.Machine);

@@ -37,7 +37,8 @@ public class PlayerInteractAbility : PlayerAbility
 
     private void StartInteract()
     {
-        Debug.Log("StartInteract");
+        Vector3 targetPosition = transform.position + transform.forward * 0.5f;
+        GridManager.Instance.TryInteract(targetPosition);
     }
 
     private void EndInteract()

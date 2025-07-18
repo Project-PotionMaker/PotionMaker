@@ -11,26 +11,39 @@ public class Ingredient : MonoBehaviour
     private MeshFilter _meshFilter;
     private PhotonView _photonView;
 
+    [Foldout("Project")]
+    [SerializeField]
+    private List<MeshOnTID> _meshList = new List<MeshOnTID>();
+    private Dictionary<int, Mesh> _meshDict;
+
     private void Awake()
     {
-        Init();
+        InitIngredient();
     }
 
-    private void Init()
+    private void InitIngredient()
     {
+        _meshDict = new Dictionary<int, Mesh>();
+        foreach (var meshInfo in _meshList)
+        {
+            _meshDict.Add(meshInfo.TID, meshInfo.Mesh);
+        }
+
         _meshFilter = GetComponent<MeshFilter>();
         _photonView = GetComponent<PhotonView>();
     }
 
-    public void InitIngredientData(IngredientData data, Mesh ingredientMesh)
+    public void InitIngredientData(int TID)
     {
-        _photonView.RPC(nameof(RPC_InitIngredientData), RpcTarget.All, data, ingredientMesh);
+        _data = DataTable.Instance.GetIngredientData(TID);
+        _meshFilter.mesh = _meshDict[TID];
+        _photonView.RPC(nameof(RPC_InitIngredientData), RpcTarget.Others, TID);
     }
 
     [PunRPC]
-    public void RPC_InitIngredientData(IngredientData data, Mesh ingredientMesh)
+    public void RPC_InitIngredientData(int TID)
     {
-        _data = data;
-        _meshFilter.mesh = ingredientMesh;
+        _data = DataTable.Instance.GetIngredientData(TID);
+        _meshFilter.mesh = _meshDict[TID];
     }
 }

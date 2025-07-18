@@ -1,26 +1,42 @@
+using Photon.Pun;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class DefaultMachineContainer : IMachineItemContainer
 {
+    protected PhotonView _photonView;
+    private GameObject _output;
 
     public GameObject TakeOutput(Machine machine, MachineStat stat)
     {
         if (stat.IsProcessFinished)
         {
-            //여기 Machine에 합쳐버리면 시트 테이블 타입 주는 곳에서 어떻게 판별할까?
-            GameObject output = OutputManager.Instance.TryCreateOutput
-                (stat.InputTIDList, stat.Data.TID, EInputType.Output, machine.transform.position);
-            stat.LeftOutputAmount--;
+            if (!PhotonNetwork.IsMasterClient)
+            {
+                _photonView?.RPC(nameof(RPC_TakeOutput), RpcTarget.MasterClient,
+                stat.InputTIDList.ToArray(), stat.Data.TID, EInputType.Output, machine.transform.position);
+            }
+            else
+            {
+                RPC_TakeOutput(stat.InputTIDList.ToArray(), stat.Data.TID, EInputType.Output, machine.transform.position);
+            }
+
+                stat.LeftOutputAmount--;
             if (stat.LeftOutputAmount <= 0)
             {
                 stat.ClearMachine();
             }
-
             machine.SyncMachineStat();
-            return output;
+            return _output;
         }
-
         return null;
+    }
+
+    [PunRPC]
+    public void RPC_TakeOutput(int[] TIDList, int machineTID, EInputType type, Vector3 machinePosition)
+    {
+        _output = OutputManager.Instance.TryCreateOutput
+            (TIDList, machineTID, type, machinePosition);
     }
 
     public bool CanTakeOut(Machine machine, MachineStat stat)

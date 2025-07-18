@@ -54,22 +54,6 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
         Vector3Int gridPosition = GetGridPosition(targetPosition);
         int index = _gridData.GetRepresentationIndex(gridPosition);
         return index == -1 ? false : true;
-
-        //if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
-        //{
-        //}
-        //else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase)
-        //{
-        //    Placement placement = _gridData.GetPlacement(gridPosition);
-        //    GameObject structure = _placeSystem.GetGameObject(placement.PlacedObjectIndex);
-        //    if (placement.structureType == EStructureType.Machine)
-        //    {
-        //        GameObject pickupItem = structure.GetComponent<Machine>().TakeOutput();
-
-        //    }
-        //}
-        //return false;
-
     }
 
     public bool TryInteract(Vector3 targetPosition)

@@ -10,24 +10,32 @@ public class AutoProgressInteract : IMachineInteractable
 
     public bool TryInteract(Machine machine, MachineStat stat)
     {
-        if (CanInteract(machine, stat) == false)
+        if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
         {
-            return false;
-        }
-
-        if (stat.IsProcessStarted)
-        {
-            stat.IsProcessStarted = false;
-            machine.StopAllCoroutines();
+            machine.transform.Rotate(0, 90, 0);
+            return true;
         }
         else
         {
-            stat.IsProcessStarted = true;
-           machine.StartCoroutine(Interact_Coroutine(machine, stat));
-        }
+            if (CanInteract(machine, stat) == false)
+            {
+                return false;
+            }
 
-        machine.SyncMachineStat();
-        return true;
+            if (stat.IsProcessStarted)
+            {
+                stat.IsProcessStarted = false;
+                machine.StopAllCoroutines();
+            }
+            else
+            {
+                stat.IsProcessStarted = true;
+                machine.StartCoroutine(Interact_Coroutine(machine, stat));
+            }
+
+            machine.SyncMachineStat();
+            return true;
+        }
     }
 
     public IEnumerator Interact_Coroutine(Machine machine, MachineStat stat)

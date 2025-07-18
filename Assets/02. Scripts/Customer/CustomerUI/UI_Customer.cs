@@ -7,7 +7,7 @@ public class UI_Customer : MonoBehaviour
 {
     [Foldout("UI컴포넌트")]
     [SerializeField]
-    private Slider _slider;
+    private Slider _enduranceSlider;
     [SerializeField]
     private Image _stateImage;
 
@@ -22,7 +22,7 @@ public class UI_Customer : MonoBehaviour
     private void Start()
     {
         _owner = GetComponentInParent<Customer>();
-        _slider.maxValue = 1f;
+        _enduranceSlider.maxValue = 1f;
 
         _owner.OnStateChanged += SetSlide; // 상태 변경 이벤트에 슬라이더 설정 메서드 등록
         _owner.OnStateChanged += SetStateImage; // 상태 변경 이벤트에 상태 텍스트 설정 메서드 등록
@@ -35,13 +35,13 @@ public class UI_Customer : MonoBehaviour
     {
         if(_owner.CurrentState == ECustomerStateType.Leaving || _owner.CurrentState == ECustomerStateType.PickingUp)
         {
-            _slider.gameObject.SetActive(false); // Leaving 또는 PickingUp 상태에서는 슬라이더 숨김
+            _enduranceSlider.gameObject.SetActive(false); // Leaving 또는 PickingUp 상태에서는 슬라이더 숨김
             return;
         }
         else if (_owner.CustomerEndurance != null)
         {
-            _slider.gameObject.SetActive(true); // 다른 상태에서는 슬라이더 표시
-            _slider.value = _owner.CustomerEndurance.EnduranceRate;
+            _enduranceSlider.gameObject.SetActive(true); // 다른 상태에서는 슬라이더 표시
+            _enduranceSlider.value = _owner.CustomerEndurance.EnduranceRate;
         }
     }
     private void SetStateImage()

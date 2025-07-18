@@ -12,7 +12,9 @@ public class Machine : MonoBehaviour
     private MachineStat _stat;
     private IMachineInteractable _interactComponent;
     private IMachineItemContainer _containerComponent;
+
     private PhotonView _photonView;
+    public PhotonView PhotonView => _photonView;
 
     public Action OnDataChanged;
 
@@ -41,12 +43,12 @@ public class Machine : MonoBehaviour
 
     public bool CanTakeOut()
     {
-        return _containerComponent.CanTakeOut(this, _stat);
+        return _containerComponent.CanTake(this, _stat);
     }
 
     public GameObject TakeOutput()
     {
-        return _containerComponent.TakeOutput(this, _stat);
+        return _containerComponent.TakeItem(this, _stat);
     }
 
     [ContextMenu("HI")]

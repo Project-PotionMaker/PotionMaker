@@ -3,6 +3,7 @@ using UnityEngine;
 public class PlayerMoveAbility : PlayerAbility
 {
     private Rigidbody _rigidbody;
+    private Vector3 _lastForwardVector = Vector3.forward;
 
     protected override void Awake()
     {
@@ -19,7 +20,21 @@ public class PlayerMoveAbility : PlayerAbility
         }
 
         Vector2 moveInput = InputManager.Instance.MoveInput;
+        float inputSize = Mathf.Min(moveInput.magnitude, 1f);
 
-        _rigidbody.linearVelocity = new Vector3(moveInput.x, 0, moveInput.y) * _owner.MoveSpeed;
+        moveInput.Normalize();
+
+        if (inputSize > 0f)
+        {
+            Vector3 targetForward = new Vector3(moveInput.x, 0, moveInput.y);
+            _owner.transform.forward = targetForward;
+            _lastForwardVector = _owner.transform.forward;
+        }
+        else
+        {
+            _owner.transform.forward = _lastForwardVector;
+        }
+
+        _rigidbody.linearVelocity = new Vector3(moveInput.x, 0, moveInput.y) * inputSize * _owner.Stat.MoveSpeed;
     }
 }

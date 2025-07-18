@@ -14,17 +14,28 @@ public class SalesRPCData
 
     public int TotalSales;
     public int DailySales;
-    public List<SalesVolumeKeyValue> SalesVolumeKeyValueList;
+    public List<SalesVolumeKeyValue> TotalSalesVolumeKeyValueList;
+    public List<SalesVolumeKeyValue> DailySalesVolumeKeyValueList;
+
 
     public SalesRPCData(SalesDTO salesDTO)
     {
         TotalSales = salesDTO.TotalSales;
         DailySales = salesDTO.DailySales;
 
-        SalesVolumeKeyValueList = new List<SalesVolumeKeyValue>(salesDTO.SalesVolumeDict.Count);
-        foreach (var keyValuePair in salesDTO.SalesVolumeDict)
+        TotalSalesVolumeKeyValueList = new List<SalesVolumeKeyValue>(salesDTO.TotalSalesVolumeDict.Count);
+        foreach (var keyValuePair in salesDTO.TotalSalesVolumeDict)
         {
-            SalesVolumeKeyValueList.Add(new SalesVolumeKeyValue
+            TotalSalesVolumeKeyValueList.Add(new SalesVolumeKeyValue
+            {
+                Key = keyValuePair.Key,
+                Value = keyValuePair.Value
+            });
+        }
+        DailySalesVolumeKeyValueList = new List<SalesVolumeKeyValue>(salesDTO.DailySalesVolumeDict.Count);
+        foreach (var keyValuePair in salesDTO.DailySalesVolumeDict)
+        {
+            DailySalesVolumeKeyValueList.Add(new SalesVolumeKeyValue
             {
                 Key = keyValuePair.Key,
                 Value = keyValuePair.Value

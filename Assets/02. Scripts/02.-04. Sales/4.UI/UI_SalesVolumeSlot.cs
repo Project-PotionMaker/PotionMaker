@@ -11,6 +11,6 @@ public class UI_SalesVolumeSlot : MonoBehaviour
     public void Refresh(EPotionType potionType)
     {
         // Todo: 포션 이미지
-        _salesVolumeTextUI.text = SalesManager.Instance.Sales.SalesVolumeDict[potionType].ToString("N0"); 
+        _salesVolumeTextUI.text = SalesManager.Instance.Sales.DailySalesVolumeDict[potionType].ToString("N0"); 
     }
 }

@@ -49,6 +49,11 @@ public class RemovingState : IBuildingState
         _previewSystem.UpdatePosition(cellPosition, CheckIfSelectionIsValid(gridPosition));
     }
 
+    public bool TryAction(Vector3Int gridPosition)
+    {
+        throw new NotImplementedException();
+    }
+
     public void UpdateState(Vector3Int gridPosition)
     {
         bool validity = CheckIfSelectionIsValid(gridPosition);

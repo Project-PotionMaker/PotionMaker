@@ -21,8 +21,6 @@ public class StructureManager : MonoBehaviourSingleton<StructureManager>
         structure.transform.position = Vector3.one;
     }
 
-
-
     public GameObject CreateStructure(int structureTID)
     {
         // 포톤네트워크로 생성 + 오브젝트풀 고려

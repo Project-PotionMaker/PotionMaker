@@ -15,6 +15,24 @@ public class PlayerPickupAbility : PlayerAbility
         InputManager.Instance.OnPickupEvent += OnPickupInput;
     }
 
+    private void Update()
+    {
+        if (!_photonView.IsMine)
+        {
+            return;
+        }
+
+        if( _heldItem != null)
+        {
+            Vector3 targetPosition = transform.position + transform.forward * 0.5f;
+            GridManager.Instance.UpdatePlacementPosition(targetPosition);
+        }
+        else
+        {
+            CheckCanPickUp();
+        }
+    }
+
     private void OnPickupInput()
     {
         if (_heldItem == null)
@@ -42,15 +60,35 @@ public class PlayerPickupAbility : PlayerAbility
 
     private void TryPutDown()
     {
-        Debug.Log("Put Down");
-        _heldItem.transform.SetParent(null);
-        _heldItem = null;
+        Vector3 targetPosition = transform.position + transform.forward * 0.5f;
+        if (GridManager.Instance.TryDrop(targetPosition))
+        {
+            Debug.Log("Put Down");
+            _heldItem.transform.SetParent(null);
+
+            _heldItem = null;
+        }
+    }
+
+    private bool CheckCanPickUp()
+    {
+        if (_heldItem != null)
+        {
+            return false;
+        }
+
+        Vector3 targetPosition = transform.position + transform.forward * 0.5f;
+        if (GridManager.Instance.CheckObjectOnGrid(targetPosition))
+        {
+            return true;
+        }
+        return false;
     }
 
     private GameObject FindFrontPickupItem()
     {
-        // TODO : 플레이어가 있는 그리드에서 플레이어가 바라보는 방향의 한 칸 앞의 그리드에 있는 오브젝트 확인
-        // 확인한 오브젝트가 들 수 있는 오브젝트인지 확인
-        return null;
+        Vector3 targetPosition = transform.position + transform.forward * 0.5f;
+        GameObject item = GridManager.Instance.TryPickup(targetPosition);
+        return item;
     }
 }

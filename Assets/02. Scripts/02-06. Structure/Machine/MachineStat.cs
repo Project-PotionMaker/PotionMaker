@@ -11,7 +11,18 @@ public class MachineStat
 
     [SerializeField]
     private float _currentProgress;
-    public float CurrentProgress { get => _currentProgress; set => _currentProgress = value; }
+    public float CurrentProgress 
+    { 
+        get => _currentProgress; 
+        set
+        {
+            _currentProgress = Mathf.Clamp(value, 0, _data.MaxProgress);
+            if (_currentProgress == _data.MaxProgress)
+            {
+                _isProcessFinished = true;
+            }
+        }
+    }
     [SerializeField]
     private int _leftOutputAmount;
     public int LeftOutputAmount { get => _leftOutputAmount; set => _leftOutputAmount = value; }

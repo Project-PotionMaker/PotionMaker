@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 160057555147955401}
   - component: {fileID: 8870322644539311107}
   - component: {fileID: 8735553896410013766}
+  - component: {fileID: 5205056894022672733}
   m_Layer: 0
   m_Name: PhaseManager
   m_TagString: Untagged
@@ -47,7 +48,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _dontDestroy: 1
   _lazyInitialization: 1
-  _day: 0
 --- !u!114 &8735553896410013766
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -70,3 +70,18 @@ MonoBehaviour:
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!114 &5205056894022672733
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4583058061554572844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d81edc90a6cc00344b1b483756fe7c6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _phaseText: {fileID: 0}
+  _dayText: {fileID: 0}
+  _serviceTimer: {fileID: 0}

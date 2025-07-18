@@ -28,15 +28,17 @@ public class CustomerOrderHandler
         _potionOrderMap[potionTID].AddLast(customer);
     }
 
-    public void RemoveAnywhere(Customer customer)
+    public bool RemoveAnywhere(Customer customer)
     {
         if(_potionOrderLine.Contains(customer))
         {
             _potionOrderLine.Dequeue(); // 손님이 줄에 있다면 줄에서 제거
+            return true;
         }
         else
         {
             _potionOrderMap[customer.RequestedPotionTID].Remove(customer); // 손님이 홀에 있다면 포션 큐에서 제거
+            return false;
         }
     }
 

@@ -27,7 +27,10 @@ public class IngredientData
     public readonly int AvailableMachineTID;
 
     ///<summary>레시피 코드</summary>
-    public readonly string RecipCode;
+    public readonly string RecipeCode;
+
+    ///<summary>가격</summary>
+    public readonly int Price;
 
     public IngredientData(BinaryReader reader)
     {
@@ -39,7 +42,8 @@ public class IngredientData
         Detail_LocalizationTID = reader.ReadInt32();
         IngredientType = (EIngredientType)reader.ReadInt32();
         AvailableMachineTID = reader.ReadInt32();
-        int recipcode = reader.ReadInt32();
-        RecipCode = Encoding.UTF8.GetString(reader.ReadBytes(recipcode));
+        int recipecode = reader.ReadInt32();
+        RecipeCode = Encoding.UTF8.GetString(reader.ReadBytes(recipecode));
+        Price = reader.ReadInt32();
     }
 }

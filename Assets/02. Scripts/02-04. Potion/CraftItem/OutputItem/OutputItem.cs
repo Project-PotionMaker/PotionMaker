@@ -11,7 +11,7 @@ public class MeshOnType
     public Mesh Mesh;
 }
 
-public class Output : MonoBehaviour
+public class OutputItem : MonoBehaviour
 {
     private EInputType _currentInputType;
     public EInputType CurrentInputType => _currentInputType;

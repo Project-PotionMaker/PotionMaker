@@ -19,7 +19,6 @@ public class InputManager : MonoBehaviourSingleton<InputManager>
     private void OnMove(InputValue value)
     {
         _moveInput = value.Get<Vector2>();
-        _moveInput.Normalize();
     }
 
     private void OnInteract(InputValue value)

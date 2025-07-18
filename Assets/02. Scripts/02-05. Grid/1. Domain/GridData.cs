@@ -18,10 +18,10 @@ public class GridData
         _availableAreaDict = availableAreaDict;
     }
 
-    public void AddObjectAt(Vector3Int gridPosition, Vector2Int objectSize, int tid, int placedObjectIndex)
+    public void AddObjectAt(Vector3Int gridPosition, Vector2Int objectSize, int tid, EStructureType type, int placedObjectIndex)
     {
         List<Vector3Int> positionToOccupyList = CalculatePositions(gridPosition, objectSize);
-        Placement placement = new Placement(positionToOccupyList, tid, placedObjectIndex);
+        Placement placement = new Placement(positionToOccupyList, tid, type, placedObjectIndex);
         foreach(Vector3Int pos in positionToOccupyList)
         {
             if (_placedObjectDict.ContainsKey(pos))
@@ -66,7 +66,11 @@ public class GridData
 
     public Placement GetPlacement(Vector3Int gridPosition)
     {
-        return _placedObjectDict[gridPosition];
+        if(_placedObjectDict.TryGetValue(gridPosition, out Placement placement))
+        {
+            return placement;
+        }
+        return null;
     }
 
     public int GetRepresentationIndex(Vector3Int gridPosition)

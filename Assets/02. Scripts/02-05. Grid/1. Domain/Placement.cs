@@ -7,9 +7,10 @@ public class Placement
 {
     public List<Vector3Int> OccupiedPositionList;
     public int TID { get; private set; }
+    public EStructureType structureType { get; private set; }
     public int PlacedObjectIndex { get; private set; }
 
-    public Placement(List<Vector3Int> occupiedPositionList, int tid, int placedObjectIndex)
+    public Placement(List<Vector3Int> occupiedPositionList, int tid, EStructureType type, int placedObjectIndex)
     {
         if(tid < 10000)
         {
@@ -18,6 +19,7 @@ public class Placement
 
         OccupiedPositionList = occupiedPositionList;
         TID = tid;
+        structureType = type;
         PlacedObjectIndex = placedObjectIndex;
     }
 

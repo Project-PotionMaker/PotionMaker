@@ -4,7 +4,6 @@ using UnityEditor;
 using UnityEngine;
 
 public class PlaceSystem
-
 {
     private List<GameObject> _placedGameObjectList = new();
 

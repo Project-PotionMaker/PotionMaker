@@ -25,7 +25,7 @@ public class PlayerPickupAbility : PlayerAbility
         if( _heldItem != null)
         {
             Vector3 targetPosition = transform.position + transform.forward * 0.5f;
-            GridManager.Instance.UpdateState(targetPosition);
+            GridManager.Instance.UpdatePlacementPosition(targetPosition);
         }
         else
         {
@@ -78,7 +78,7 @@ public class PlayerPickupAbility : PlayerAbility
         }
 
         Vector3 targetPosition = transform.position + transform.forward * 0.5f;
-        if (GridManager.Instance.CanInteract(targetPosition))
+        if (GridManager.Instance.CheckObjectOnGrid(targetPosition))
         {
             return true;
         }

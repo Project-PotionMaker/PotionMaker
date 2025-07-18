@@ -52,6 +52,7 @@ public class PlacementState : IBuildingState
         _gridData.AddObjectAt(gridPosition,
                                  _size,
                                  _data.TID,
+                                 _data.StructureType,
                                  index);
         _previewSystem.UpdatePosition(_grid.CellToWorld(gridPosition), false);
         return true;

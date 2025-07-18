@@ -10,7 +10,7 @@ public class Global : MonoBehaviourSingleton<Global>
     private IEnumerator Start()
     {
         yield return DataTable.Instance.Load_Routine();
-        OnDataLoaded?.Invoke();
         _isDataLoaded = true;
+        OnDataLoaded?.Invoke();
     }
 }

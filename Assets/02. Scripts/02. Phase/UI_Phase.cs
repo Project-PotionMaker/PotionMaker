@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UI_Phase : MonoBehaviour
 {
@@ -8,11 +9,15 @@ public class UI_Phase : MonoBehaviour
     private TextMeshProUGUI _phaseText;
     [SerializeField]
     private TextMeshProUGUI _dayText;
+    [SerializeField]
+    private Slider _serviceTimer;
 
     private void Start()
     {
+        _serviceTimer.maxValue = 1f;
         PhaseManager.Instance.OnDayPassed += UpdateDayText;
         PhaseManager.Instance.OnPhaseChanged += UpdatePhaseText;
+        ((ServingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase]).OnTimerRunning += UpdateServiceTimer;
     }
 
     private void UpdateDayText()
@@ -40,6 +45,9 @@ public class UI_Phase : MonoBehaviour
                 _phaseText.text = "Finish";
             }
         }
-
+    }
+    private void UpdateServiceTimer(float time)
+    {
+        _serviceTimer.value = time;
     }
 }

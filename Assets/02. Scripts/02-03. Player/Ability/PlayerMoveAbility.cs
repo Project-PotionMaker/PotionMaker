@@ -27,7 +27,7 @@ public class PlayerMoveAbility : PlayerAbility
         if (inputSize > 0f)
         {
             Vector3 targetForward = new Vector3(moveInput.x, 0, moveInput.y);
-            _owner.transform.forward = targetForward;
+            _owner.transform.forward = Vector3.Lerp(_owner.transform.forward, targetForward, Time.deltaTime * 10f);
             _lastForwardVector = _owner.transform.forward;
         }
         else

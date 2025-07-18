@@ -46,6 +46,11 @@ public class Output : MonoBehaviour
 
     public void InitOutputData(EInputType newInputType, int TID)
     {
+        if (!PhotonNetwork.IsMasterClient)
+        {
+            throw new InvalidOperationException("Output 객체 생성 후 내부 데이터 초기화는 Master만 가능합니다.");
+        }
+
         _currentInputType = newInputType;
         _outputData = DataTable.Instance.GetOutputData(TID);
         _meshFilter.mesh = _meshDict[newInputType];

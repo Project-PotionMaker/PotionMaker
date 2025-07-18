@@ -1,6 +1,9 @@
 
+using Photon.Pun;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 public class OutputManager : MonoBehaviourSingleton<OutputManager>
 {
@@ -14,13 +17,18 @@ public class OutputManager : MonoBehaviourSingleton<OutputManager>
     private RecipeCodeHandler _recipeCodeHandler;
     private RecipeCodeVerifier _recipeCodeVerifier;
 
+    private PhotonView _photonView;
+
+    public Action<GameObject> OnOutputCreated;
+    public Action<GameObject> OnPotionCreated;
+
     protected override void Awake()
     {
         base.Awake();
-        Init();
+        InitOutputManager();
     }
 
-    private void Init()
+    private void InitOutputManager()
     {
         _outputDataTIDDict = new Dictionary<string, int>();
         var outputDataList = DataTable.Instance.GetOutputDataList();
@@ -38,44 +46,70 @@ public class OutputManager : MonoBehaviourSingleton<OutputManager>
 
         _recipeCodeHandler = new RecipeCodeHandler();
         _recipeCodeVerifier = new RecipeCodeVerifier(potionDataList);
+        _photonView = GetComponent<PhotonView>();
     }
 
-    public GameObject TryCreateOutput(List<int> TIDList, int machineTID, EInputType type, Vector3 machinePosition)
+    public void RequestCreateOutput(List<int> TIDList, int machineTID, EInputType type, Vector3 machinePosition)
     {
-        string input1RecipeCode = DataTable.Instance.GetOutputData(TIDList[0]).RecipeCode, input2RecipeCode = null;
-        string recipeCode;
-        if (type == EInputType.HeatingPotOutput)
+        if (!PhotonNetwork.IsMasterClient)
         {
-            input2RecipeCode = DataTable.Instance.GetOutputData(TIDList[1]).RecipeCode;
-            string recipeCodeNumberPart = _recipeCodeHandler.GenerateNumberPartCode(input1RecipeCode, input2RecipeCode);
-            recipeCode = _recipeCodeHandler.AddMachineCode(recipeCodeNumberPart, machineTID);
+            _photonView.RPC(nameof(TryCreateOutput), RpcTarget.MasterClient, TIDList.ToArray(), machineTID, type, machinePosition);
+            return;
+        }
+
+        int viewID = TryCreateOutputInternal(TIDList.ToArray(), machineTID, type, machinePosition);
+        _photonView.RPC(nameof(Response), RpcTarget.Others, viewID);
+    }
+
+    [PunRPC]
+    public void TryCreateOutput(int[] TIDList, int machineTID, EInputType type, Vector3 machinePosition)
+    {
+        int viewID = TryCreateOutputInternal(TIDList, machineTID, type, machinePosition);
+        _photonView.RPC(nameof(Response), RpcTarget.Others, viewID);
+    }
+
+    private int TryCreateOutputInternal(int[] TIDList, int machineTID, EInputType type, Vector3 machinePosition)
+    {
+        string recipeCode = _recipeCodeHandler.MakeNewRecipeCode(TIDList, machineTID);
+        GameObject output = null;
+        if (_recipeCodeVerifier.IsValidProcess(recipeCode))
+        {
+            output = OutputFactory.Instance.Create(type, machinePosition, Quaternion.identity);
+            output.GetComponent<Output>().InitOutputData(type, _outputDataTIDDict[recipeCode]);
         }
         else
         {
-            recipeCode = _recipeCodeHandler.AddMachineCode(input1RecipeCode, machineTID);
+            output = CreateFailureOutput(machinePosition);
         }
-
-        if (_recipeCodeVerifier.IsValidProcess(recipeCode))
-        {
-            GameObject output = OutputFactory.Instance.Create(type, machinePosition, Quaternion.identity);
-            output.GetComponent<Output>().InitOutputData(type, _outputDataTIDDict[recipeCode]);
-            return output;
-        }
-        return CreateFailureOutput(machinePosition);
+        return output.GetPhotonView().ViewID;
     }
 
-    public GameObject TryCreatePotion(List<int> TIDList, int bottlerTID, Vector3 machinePosition)
-    {
-        string recipeCode = 
-            _recipeCodeHandler.AddMachineCode(DataTable.Instance.GetOutputData(TIDList[0]).RecipeCode, bottlerTID);
 
+    [PunRPC]
+    public void TryCreatePotion(int[] TIDList, int bottlerTID, Vector3 machinePosition)
+    {
+        if (!PhotonNetwork.IsMasterClient)
+        {
+            return;
+        }
+
+        string recipeCode = _recipeCodeHandler.MakeNewRecipeCode(TIDList, bottlerTID);
         if (_recipeCodeVerifier.IsValidPotion(recipeCode))
         {
             GameObject potion = OutputFactory.Instance.Create(EInputType.Potion, machinePosition, Quaternion.identity);
             potion.GetComponent<Potion>().InitPotionData(_potionDataTIDDict[recipeCode]);
-            return potion;
+            PhotonView outputPhotoNView = potion.GetPhotonView();
         }
-        return CreateFailureOutput(machinePosition);
+        else
+        {
+            CreateFailureOutput(machinePosition);
+        }
+    }
+
+    [PunRPC]
+    public void Response(int viewID)
+    {
+        GameObject newObject = PhotonView.Find(viewID).gameObject;
     }
 
     private GameObject CreateFailureOutput(Vector3 machinePosition)

@@ -43,6 +43,10 @@ public class Potion : MonoBehaviour
 
     public void InitPotionData(int TID)
     {
+        if (!PhotonNetwork.IsMasterClient)
+        {
+            throw new InvalidOperationException("Potion 객체 생성 후 내부 데이터 초기화는 Master만 가능합니다.");
+        }
         _potionData = DataTable.Instance.GetPotionData(TID);
         _meshFilter.mesh = _meshDict[TID];
         _photonView.RPC(nameof(RPC_InitPotionData), RpcTarget.Others, TID);

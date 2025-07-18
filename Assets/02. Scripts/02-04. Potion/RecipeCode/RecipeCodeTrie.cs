@@ -8,23 +8,23 @@ public class RecipeCodeTrie
 
     private class Node
     {
-        // 숫자 0~9(10개) + 문자 A~D(4개) = 총 14개
+        // 숫자 0~9(10개) + 문자 C~F(4개) = 총 14개
         public Node[] Children = new Node[14];
         public bool IsEndOfId = false;
     }
 
     private Node _root = new Node();
 
-    // 0~9 → 0~9, A~D → 10~13
+    // 0~9 → 0~9, C~F → 10~13
     private int CharToIndex(char ch)
     {
         if ('0' <= ch && ch <= '9')
         {
             return ch - '0';
         }
-        if ('A' <= ch && ch <= 'D')
+        if ('C' <= ch && ch <= 'F')
         {
-            return 10 + (ch - 'A');
+            return 10 + (ch - 'C');
         }
         throw new ArgumentException($"유효하지 않은 문자입니다: {ch}");
     }
@@ -46,7 +46,7 @@ public class RecipeCodeTrie
 
         for (int i = 4; i < id.Length; i++)
         {
-            if (id[i] < 'A' || 'D' < id[i])
+            if (id[i] < 'C' || 'F' < id[i])
             {
                 return false;
             }
@@ -141,7 +141,7 @@ public class RecipeCodeTrie
         {
             if (node.Children[i] != null)
             {
-                char ch = (i < 10) ? (char)('0' + i) : (char)('A' + (i - 10));
+                char ch = (i < 10) ? (char)('0' + i) : (char)('C' + (i - 10));
                 DFS(node.Children[i], prefix + ch, results);
             }
         }

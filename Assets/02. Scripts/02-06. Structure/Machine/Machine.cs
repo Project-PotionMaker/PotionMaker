@@ -46,7 +46,7 @@ public class Machine : MonoBehaviour
 
     public GameObject TakeOutput()
     {
-        return _containerComponent.TakeOutput(this, _stat);
+        return _containerComponent.TakeItem(this, _stat);
     }
 
     [ContextMenu("HI")]

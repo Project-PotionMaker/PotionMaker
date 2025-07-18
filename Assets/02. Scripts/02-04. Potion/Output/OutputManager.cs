@@ -1,9 +1,7 @@
-
 using Photon.Pun;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
 
 public class OutputManager : MonoBehaviourSingleton<OutputManager>
 {

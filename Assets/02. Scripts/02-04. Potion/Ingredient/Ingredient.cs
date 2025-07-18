@@ -18,10 +18,10 @@ public class Ingredient : MonoBehaviour
 
     private void Awake()
     {
-        Init();
+        InitIngredient();
     }
 
-    private void Init()
+    private void InitIngredient()
     {
         _meshDict = new Dictionary<int, Mesh>();
         foreach (var meshInfo in _meshList)

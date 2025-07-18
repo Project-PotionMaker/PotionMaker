@@ -26,10 +26,10 @@ public class Potion : MonoBehaviour
 
     private void Awake()
     {
-        Init();
+        InitPotion();
     }
 
-    private void Init()
+    private void InitPotion()
     {
         _meshDict = new Dictionary<int, Mesh>();
         foreach (var meshInfo in _meshList)

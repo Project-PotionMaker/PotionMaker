@@ -29,10 +29,10 @@ public class Output : MonoBehaviour
 
     private void Awake()
     {
-        Init();
+        InitOutput();
     }
 
-    private void Init()
+    private void InitOutput()
     {
         _meshDict = new Dictionary<EInputType, Mesh>();
         foreach (var meshInfo in _meshList)

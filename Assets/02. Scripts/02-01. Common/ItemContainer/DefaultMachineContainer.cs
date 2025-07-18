@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class DefaultMachineContainer : IMachineItemContainer
 {
-    protected PhotonView _photonView;
     private GameObject _output;
 
     public bool TryInput(Machine machine, MachineStat stat, int tid, EInputType inputType)
@@ -27,7 +26,7 @@ public class DefaultMachineContainer : IMachineItemContainer
         {
             if (!PhotonNetwork.IsMasterClient)
             {
-                _photonView?.RPC(nameof(RPC_TakeOutput), RpcTarget.MasterClient,
+                machine.PhotonView.RPC(nameof(RPC_TakeOutput), RpcTarget.MasterClient,
                 stat.InputTIDList.ToArray(), stat.Data.TID, EInputType.Output, machine.transform.position);
             }
             else

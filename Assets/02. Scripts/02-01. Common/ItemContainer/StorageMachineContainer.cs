@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class StorageMachineContainer : IOutputInteractable
 {
-    protected PhotonView _photonView;
     private GameObject _output;
 
     public GameObject TakeItem(Machine machine, MachineStat stat)
@@ -12,7 +11,7 @@ public class StorageMachineContainer : IOutputInteractable
         {
             if (!PhotonNetwork.IsMasterClient)
             {
-                _photonView?.RPC(nameof(RPC_TakeIngredientItem), RpcTarget.MasterClient,
+                machine.PhotonView.RPC(nameof(RPC_TakeIngredientItem), RpcTarget.MasterClient,
                     stat.Data.TID, machine.transform.position);
             }
             else

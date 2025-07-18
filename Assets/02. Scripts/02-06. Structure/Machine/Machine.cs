@@ -12,7 +12,9 @@ public class Machine : MonoBehaviour
     private MachineStat _stat;
     private IMachineInteractable _interactComponent;
     private IMachineItemContainer _containerComponent;
+
     private PhotonView _photonView;
+    public PhotonView PhotonView => _photonView;
 
     public Action OnDataChanged;
 

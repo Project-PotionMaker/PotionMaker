@@ -11,11 +11,19 @@ public class SalesManager : MonoBehaviourPunCallbacksSingleton<SalesManager>
     private Sales _sales;
     public SalesDTO Sales => _sales.ToDTO();
 
+
+    protected override void Awake()
+    {
+        base.Awake();
+        _photonView = GetComponent<PhotonView>();
+    }
     private void Start()
     {
         PhaseManager.Instance.OnDayPassed += ResetDailySales;
+        InitSalesManager();
     }
 
+    // 없애도 됨
     public override void OnJoinedRoom()
     {
         InitSalesManager();
@@ -23,8 +31,12 @@ public class SalesManager : MonoBehaviourPunCallbacksSingleton<SalesManager>
 
     private void InitSalesManager()
     {
+        //없애도 됨
+        if (!PhotonNetwork.InRoom)
+        {
+            return;
+        }
         _sales = new Sales(0);
-        _photonView = GetComponent<PhotonView>();
         RequestUpdateSales();
     }
 

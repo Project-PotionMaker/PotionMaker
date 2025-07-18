@@ -48,20 +48,20 @@ public class UI_Customer : MonoBehaviour
     {
         if (_owner.CurrentState == ECustomerStateType.Lining)
         {
-            _stateImage.gameObject.SetActive(true); // 줄 서는 상태에서는 상태 이미지 표시
+            _stateImage.gameObject.SetActive(true); 
             _stateImage.sprite = _lingingIcon;
         }
         else if (_owner.CurrentState == ECustomerStateType.PickingUp)
         {
-            _stateImage.gameObject.SetActive(false); // 줄 서는 상태에서는 상태 이미지 표시
+            _stateImage.gameObject.SetActive(false); 
         }
         else if (_owner.CurrentState == ECustomerStateType.Leaving)
         {
-            _stateImage.gameObject.SetActive(false); // 줄 서는 상태에서는 상태 이미지 표시
+            _stateImage.gameObject.SetActive(false);
         }
         else if (_owner.CurrentState == ECustomerStateType.Waiting)
         {
-            _stateImage.gameObject.SetActive(true); // 줄 서는 상태에서는 상태 이미지 표시
+            _stateImage.gameObject.SetActive(true); //TODO : 어떤 포션인지 아이콘으로 표현
             _stateImage.sprite = _waitingIcon;
         }
     }

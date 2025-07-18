@@ -12,6 +12,18 @@ public class CurrencyManager : MonoBehaviourPunCallbacksSingleton<CurrencyManage
     private Currency _coin;
     public CurrencyDTO Coin => _coin.ToDTO();
 
+    protected override void Awake()
+    {
+        base.Awake();
+        _photonView = GetComponent<PhotonView>();
+    }
+
+    private void Start()
+    {
+        InitCurrencyManager();
+    }
+
+    // 없애도 됨
     public override void OnJoinedRoom()
     {
         InitCurrencyManager();
@@ -19,7 +31,11 @@ public class CurrencyManager : MonoBehaviourPunCallbacksSingleton<CurrencyManage
 
     private void InitCurrencyManager()
     {
-        _photonView = GetComponent<PhotonView>();
+        //없애도 됨
+        if (!PhotonNetwork.InRoom)
+        {
+            return;
+        }
         _coin = new Currency(0);
         RequestUpdateCurrency();
         OnDataChanged?.Invoke();

@@ -18,18 +18,31 @@ public class ProductManager : MonoBehaviourPunCallbacksSingleton<ProductManager>
             keyValuePair => keyValuePair.Value.Select(product => product.ToDTO()).ToList()
         );
 
+    protected override void Awake()
+    {
+        base.Awake();
+        _photonView = GetComponent<PhotonView>();
+    }
     private void Start()
     {
         Global.Instance.OnDataLoaded += InitProductManager;
+        InitProductManager();
     }
+
+    // 없애도 됨
+    public override void OnJoinedRoom()
+    {
+        InitProductManager();
+    }
+
     private void InitProductManager()
     {
-        if (!PhotonNetwork.InRoom)
+        // 룸 관련 검사는 게임이 만들어지면 없애도 됨
+        if (!PhotonNetwork.InRoom || !Global.Instance.IsDataLoaded)
         {
             return;
         }
 
-        _photonView = GetComponent<PhotonView>();
         _productListDict = new Dictionary<EProductType, List<Product>>()
         {
             { EProductType.Machine, new List<Product>() },
@@ -39,16 +52,6 @@ public class ProductManager : MonoBehaviourPunCallbacksSingleton<ProductManager>
 
         LoadProductData();
         RequestUpdateProducts();
-    }
-
-    public override void OnJoinedRoom()
-    {
-        if (!Global.Instance.IsDataLoaded)
-        {
-            return;
-        }
-
-        InitProductManager();
     }
 
     private void LoadProductData()

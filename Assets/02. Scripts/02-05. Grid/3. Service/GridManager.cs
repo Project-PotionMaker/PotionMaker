@@ -98,7 +98,7 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
         return null;
     }
 
-    public bool TryDrop(Vector3 targetPosition, )
+    public bool TryDrop(Vector3 targetPosition)
     {
         Vector3Int gridPosition = GetGridPosition(targetPosition);
         if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
@@ -119,7 +119,7 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
             GameObject structure = _placeSystem.GetGameObject(placement.PlacedObjectIndex);
             if (placement.structureType == EStructureType.Machine)
             {
-                GameObject pickupItem = structure.GetComponent<Machine>().TryInput()
+                GameObject pickupItem = structure.GetComponent<Machine>().TakeOutput();
                 return pickupItem;
             }
         }

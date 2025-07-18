@@ -1,3 +1,4 @@
+using Google.Apis.Logging;
 using UnityEngine;
 
 public class PlayerPickupAbility : PlayerAbility
@@ -24,12 +25,8 @@ public class PlayerPickupAbility : PlayerAbility
 
         if( _heldItem != null)
         {
-            Vector3 targetPosition = transform.position + transform.forward * 0.5f;
+            Vector3 targetPosition = _owner.GetFrontPosition();
             GridManager.Instance.UpdatePlacementPosition(targetPosition);
-        }
-        else
-        {
-            CheckCanPickUp();
         }
     }
 
@@ -60,7 +57,7 @@ public class PlayerPickupAbility : PlayerAbility
 
     private void TryPutDown()
     {
-        Vector3 targetPosition = transform.position + transform.forward * 0.5f;
+        Vector3 targetPosition = _owner.GetFrontPosition();
         if (GridManager.Instance.TryDrop(targetPosition))
         {
             Debug.Log("Put Down");
@@ -70,24 +67,14 @@ public class PlayerPickupAbility : PlayerAbility
         }
     }
 
-    private bool CheckCanPickUp()
-    {
-        if (_heldItem != null)
-        {
-            return false;
-        }
-
-        Vector3 targetPosition = transform.position + transform.forward * 0.5f;
-        if (GridManager.Instance.CheckObjectOnGrid(targetPosition))
-        {
-            return true;
-        }
-        return false;
-    }
-
     private GameObject FindFrontPickupItem()
     {
-        Vector3 targetPosition = transform.position + transform.forward * 0.5f;
+        if (!_owner.CheckObjectInFront())
+        {
+            return null;
+        }
+
+        Vector3 targetPosition = _owner.GetFrontPosition();
         GameObject item = GridManager.Instance.TryPickup(targetPosition);
         return item;
     }

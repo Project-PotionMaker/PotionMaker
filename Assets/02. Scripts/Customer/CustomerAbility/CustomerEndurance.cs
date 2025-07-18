@@ -1,4 +1,5 @@
 using Photon.Pun;
+using System;
 using UnityEngine;
 
 public class CustomerEndurance : MonoBehaviour
@@ -13,6 +14,8 @@ public class CustomerEndurance : MonoBehaviour
 
     private float _loseEnduranceSpeed = 1f; // 인내심 감소 속도
     public float LoseEnduranceSpeed { get => _loseEnduranceSpeed; set => _loseEnduranceSpeed = value; } // 인내심 감소 속도
+
+    public event Action OnEnduranceChanged; // 인내심 변경 이벤트
 
     private void Awake()
     {
@@ -69,7 +72,7 @@ public class CustomerEndurance : MonoBehaviour
             _enduranceRate = _currentEndurance / HALL_ENDURANCE; // 인내심 비율 계산
         }
 
-        _owner.PhotonView.RPC(nameof(RPC_SyncEnduranceRate), RpcTarget.Others, _enduranceRate);
+        _owner.PhotonView.RPC(nameof(RPC_SyncEnduranceRate), RpcTarget.All, _enduranceRate);
     }
 
 
@@ -77,5 +80,6 @@ public class CustomerEndurance : MonoBehaviour
     private void RPC_SyncEnduranceRate(float rate)
     {
         _enduranceRate = rate;
+        OnEnduranceChanged?.Invoke(); // 인내심 변경 이벤트 호출
     }
 }

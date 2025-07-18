@@ -7,20 +7,19 @@ public class DefaultMachineContainer : IMachineItemContainer
     protected PhotonView _photonView;
     private GameObject _output;
 
-    public GameObject RequestTakeOutput(Machine machine, MachineStat stat)
+    public GameObject TakeOutput(Machine machine, MachineStat stat)
     {
         if (stat.IsProcessFinished)
         {
             if (!PhotonNetwork.IsMasterClient)
             {
-                _photonView?.RPC(nameof(TakeOutput), RpcTarget.MasterClient,
+                _photonView?.RPC(nameof(RPC_TakeOutput), RpcTarget.MasterClient,
                 stat.InputTIDList.ToArray(), stat.Data.TID, EInputType.Output, machine.transform.position);
             }
             else
             {
-                TakeOutput(stat.InputTIDList.ToArray(), stat.Data.TID, EInputType.Output, machine.transform.position);
+                RPC_TakeOutput(stat.InputTIDList.ToArray(), stat.Data.TID, EInputType.Output, machine.transform.position);
             }
-
 
                 stat.LeftOutputAmount--;
             if (stat.LeftOutputAmount <= 0)
@@ -28,15 +27,16 @@ public class DefaultMachineContainer : IMachineItemContainer
                 stat.ClearMachine();
             }
             machine.SyncMachineStat();
-            // return output;
+            return _output;
         }
-
         return null;
     }
 
     [PunRPC]
-    public void TakeOutput(int[] TIDList, int machineTID, EInputType type, Vector3 machinePosition)
+    public void RPC_TakeOutput(int[] TIDList, int machineTID, EInputType type, Vector3 machinePosition)
     {
+        _output = OutputManager.Instance.TryCreateOutput
+            (TIDList, machineTID, type, machinePosition);
     }
 
 

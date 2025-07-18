@@ -1,4 +1,3 @@
-using Google.Apis.Logging;
 using UnityEngine;
 
 public class PlayerPickupAbility : PlayerAbility

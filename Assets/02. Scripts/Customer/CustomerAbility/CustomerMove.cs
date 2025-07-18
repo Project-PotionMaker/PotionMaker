@@ -2,7 +2,7 @@ using Photon.Pun;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class CustomerMoveAbility : MonoBehaviour
+public class CustomerMove : MonoBehaviour
 {
     private NavMeshAgent _agent;
     public NavMeshAgent Agent { get => _agent; set => _agent = value; } // NavMeshAgent 컴포넌트

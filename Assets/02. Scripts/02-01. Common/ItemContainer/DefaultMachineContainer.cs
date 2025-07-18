@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class DefaultMachineContainer : IMachineItemContainer
 {
+
     public GameObject TakeOutput(Machine machine, MachineStat stat)
     {
         if (stat.IsProcessFinished)
@@ -15,11 +16,20 @@ public class DefaultMachineContainer : IMachineItemContainer
                 stat.ClearMachine();
             }
 
-            machine.SyncMachineStat(stat);
+            machine.SyncMachineStat();
             return output;
         }
 
         return null;
+    }
+
+    public bool CanTakeOut(Machine machine, MachineStat stat)
+    {
+        if (stat.IsProcessFinished)
+        {
+            return true;
+        }
+        return false;
     }
 
     public bool TryInput(Machine machine, MachineStat stat, int tid, EInputType inputType)
@@ -33,7 +43,7 @@ public class DefaultMachineContainer : IMachineItemContainer
 
         stat.InputTIDList.Add(tid);
 
-        machine.SyncMachineStat(stat);
+        machine.SyncMachineStat();
         return true;
     }
 }

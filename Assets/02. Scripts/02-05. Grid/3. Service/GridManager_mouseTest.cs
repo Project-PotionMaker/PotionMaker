@@ -52,17 +52,17 @@ public class GridManager_mouseTest : MonoBehaviourSingleton<GridManager_mouseTes
     }
     public void StartPlacement(int tid)
     {
-        StopPlacement();
-        _gridVisualization.SetActive(true);
-        StructureData data = DataTable.Instance.GetStructureData(tid);
-        _buildingState = new PlacementState(data,
-                                            _grid,
-                                            _previewSystem,
-                                            _gridData,
-                                            _objectPlacer);
+        //StopPlacement();
+        //_gridVisualization.SetActive(true);
+        //StructureData data = DataTable.Instance.GetStructureData(tid);
+        //_buildingState = new PlacementState(data,
+        //                                    _grid,
+        //                                    _previewSystem,
+        //                                    _gridData,
+        //                                    _objectPlacer);
 
-        _inputManager.OnClicked += PlaceStructure;
-        _inputManager.OnExit += StopPlacement;
+        //_inputManager.OnClicked += PlaceStructure;
+        //_inputManager.OnExit += StopPlacement;
     }
 
     public void StartRemoving()
@@ -87,7 +87,7 @@ public class GridManager_mouseTest : MonoBehaviourSingleton<GridManager_mouseTes
         Vector3 mousePosition = _inputManager.GetSelectedMapPosition();
         Vector3Int gridPosition = _grid.WorldToCell(mousePosition);
 
-        _buildingState.OnAction(gridPosition);
+        _buildingState.TryAction(gridPosition);
     }
 
     private void StopPlacement()

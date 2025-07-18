@@ -75,6 +75,7 @@ public class PhotonServerManager : MonoBehaviourPunCallbacks
 
             // 진짜 고유 ID
             Debug.Log(player.Value.UserId); // 친구 기능, 귓속말 등등에 쓰임. 게임 안에서는 ActorNumber만으로 충분하다.
+
         }
 
         // 방에 입장 완료가 되면 플레이어를 생성한다.

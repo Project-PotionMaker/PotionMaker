@@ -1,68 +1,77 @@
 
-using NUnit.Framework;
+using Photon.Pun;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 public class OutputManager : MonoBehaviourSingleton<OutputManager>
 {
+    // 어드레서블에서 로드해올 예정
     [SerializeField]
     private GameObject _failureOutput;
 
-    private Dictionary<string, int> _potionDataDict;
+    private Dictionary<string, int> _outputDataTIDDict;
+    private Dictionary<string, int> _potionDataTIDDict;
 
     private RecipeCodeHandler _recipeCodeHandler;
     private RecipeCodeVerifier _recipeCodeVerifier;
 
+    private PhotonView _photonView;
+
+    public Action<GameObject> OnOutputCreated;
+    public Action<GameObject> OnPotionCreated;
+
     protected override void Awake()
     {
         base.Awake();
-        Init();
+        InitOutputManager();
     }
 
-    private void Init()
+    private void InitOutputManager()
     {
+        _outputDataTIDDict = new Dictionary<string, int>();
+        var outputDataList = DataTable.Instance.GetOutputDataList();
+        foreach (var outputData in outputDataList)
+        {
+            _outputDataTIDDict.Add(outputData.RecipeCode, outputData.TID);
+        }
+
+        _potionDataTIDDict = new Dictionary<string, int>();
         var potionDataList = DataTable.Instance.GetPotionDataList();
         foreach (var potionData in potionDataList)
         {
-            _potionDataDict.Add(potionData.RecipeCode, potionData.TID);
+            _potionDataTIDDict.Add(potionData.RecipeCode, potionData.TID);
         }
 
         _recipeCodeHandler = new RecipeCodeHandler();
         _recipeCodeVerifier = new RecipeCodeVerifier(potionDataList);
+        _photonView = GetComponent<PhotonView>();
     }
 
-    public GameObject TryCreateOutput(List<int> TIDList, int machineTID, EInputType type, Vector3 machinePosition)
+    public GameObject TryCreateOutput(int[] TIDList, int machineTID, EInputType type, Vector3 machinePosition)
     {
-        string recipeCode;
-        if (type == EInputType.HeatingPotOutput)
-        {
-            recipeCode = _recipeCodeHandler.GenerateNumberPartCode(
-                DataTable.Instance.GetOutputData(TIDList[0]).RecipeCode,
-                DataTable.Instance.GetOutputData(TIDList[1]).RecipeCode);
-        }
-        else
-        {
-            recipeCode = DataTable.Instance.GetOutputData(TIDList[0]).RecipeCode;
-        }
-
+        string recipeCode = _recipeCodeHandler.MakeNewRecipeCode(TIDList, machineTID);
+        GameObject output = null;
         if (_recipeCodeVerifier.IsValidProcess(recipeCode))
         {
-            string newRecipeCode = _recipeCodeHandler.AddMachineCode(recipeCode, machineTID);
-
-            return OutputFactory.Instance.Create(type, machinePosition, Quaternion.identity);
+            output = OutputFactory.Instance.Create(type, machinePosition, Quaternion.identity);
+            output.GetComponent<Output>().InitOutputData(type, _outputDataTIDDict[recipeCode]);
+            return output;
         }
         return CreateFailureOutput(machinePosition);
     }
 
-    public GameObject TryCreatePotion(List<int> TIDList, int bottlerTID, Vector3 machinePosition)
-    {
-        string recipeCode = 
-            _recipeCodeHandler.AddMachineCode(DataTable.Instance.GetOutputData(TIDList[0]).RecipeCode, bottlerTID);
 
+    public GameObject TryCreatePotion(int[] TIDList, int bottlerTID, Vector3 machinePosition)
+    {
+
+        string recipeCode = _recipeCodeHandler.MakeNewRecipeCode(TIDList, bottlerTID);
         if (_recipeCodeVerifier.IsValidPotion(recipeCode))
         {
-            string newRecipeCode = _recipeCodeHandler.AddMachineCode(recipeCode, bottlerTID);
-            return OutputFactory.Instance.Create(EInputType.Potion, machinePosition, Quaternion.identity);
+            GameObject potion = OutputFactory.Instance.Create(EInputType.Potion, machinePosition, Quaternion.identity);
+            potion.GetComponent<Potion>().InitPotionData(_potionDataTIDDict[recipeCode]);
+            return potion;
         }
         return CreateFailureOutput(machinePosition);
     }

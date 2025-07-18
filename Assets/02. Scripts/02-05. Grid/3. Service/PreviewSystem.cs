@@ -26,13 +26,19 @@ public class PreviewSystem : MonoBehaviour
         _cellIndicatorRenderer = _cellIndicator.GetComponentInChildren<Renderer>();
     }
 
-    public void StartShowingPlacementPreview(GameObject prefab, Vector2Int size)
+    public void StartShowingPlacementPreview(int structureTID, Vector2Int size)
     {
-        _previewObject = Instantiate(prefab);
+        _previewObject = StructureManager.Instance.CreateStructure(structureTID);
 
         PreparePreview(_previewObject);
         PrepareCursor(size);
         _cellIndicator.SetActive(true);
+
+        Collider[] colliders = _previewObject.GetComponentsInChildren<Collider>();
+        foreach(Collider col in colliders)
+        {
+            col.enabled = false;
+        }
     }
 
     private void PrepareCursor(Vector2Int size)

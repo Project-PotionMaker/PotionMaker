@@ -39,6 +39,11 @@ public class Machine : MonoBehaviour
         return _containerComponent.TryInput(this, _stat, tid, inputType);
     }
 
+    public bool CanTakeOut()
+    {
+        return _containerComponent.CanTakeOut(this, _stat);
+    }
+
     public GameObject TakeOutput()
     {
         return _containerComponent.TakeOutput(this, _stat);

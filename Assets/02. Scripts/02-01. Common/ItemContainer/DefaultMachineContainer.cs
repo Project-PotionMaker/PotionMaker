@@ -39,6 +39,14 @@ public class DefaultMachineContainer : IMachineItemContainer
             (TIDList, machineTID, type, machinePosition);
     }
 
+    public bool CanTakeOut(Machine machine, MachineStat stat)
+    {
+        if (stat.IsProcessFinished)
+        {
+            return true;
+        }
+        return false;
+    }
 
     public bool TryInput(Machine machine, MachineStat stat, int tid, EInputType inputType)
     {

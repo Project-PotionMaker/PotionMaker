@@ -17,10 +17,10 @@ public class UI_Phase : MonoBehaviour
         _serviceTimer.maxValue = 1f;
         PhaseManager.Instance.OnDayPassed += UpdateDayText;
         PhaseManager.Instance.OnPhaseChanged += UpdatePhaseText;
-        ((ServingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase]).OnTimerRunning += UpdateServiceTimer;
-        ((ServingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase]).OnPhaseEntered += ShowTimer;
-        ((ServingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase]).OnPhaseExited += HideTimer;
-        HideTimer();
+        ServingPhase servingPhase = (ServingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase];
+        servingPhase.OnTimerRunning += UpdateServiceTimer;
+        servingPhase.OnPhaseEntered += ShowTimer; // 타이머 시작 시 업데이트
+        servingPhase.OnPhaseExited += HideTimer;
     }
 
     private void UpdateDayText()
@@ -35,15 +35,16 @@ public class UI_Phase : MonoBehaviour
     {
         if (_phaseText != null)
         {
-            if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
+            EPhaseType phaseType = PhaseManager.Instance.CurrentPhase.PhaseType;
+            if (phaseType == EPhaseType.PreparingPhase)
             {
                 _phaseText.text = "Preparing";
             }
-            else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase)
+            else if (phaseType == EPhaseType.ServingPhase)
             {
                 _phaseText.text = "Service Time";
             }
-            else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.EndingPhase)
+            else if (phaseType == EPhaseType.EndingPhase)
             {
                 _phaseText.text = "Finish";
             }

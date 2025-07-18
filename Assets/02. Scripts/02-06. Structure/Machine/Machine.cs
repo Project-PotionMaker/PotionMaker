@@ -1,49 +1,75 @@
 using NUnit.Framework;
+using Photon.Pun;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using VInspector;
 
-public abstract class Machine : MonoBehaviour, IItemContainer, IInteractable
+public class Machine : MonoBehaviour
 {
-    private MachineData _data;
-    public MachineData Data => _data;
+    [SerializeField]
+    private MachineStat _stat;
+    private IMachineInteractable _interactComponent;
+    private IMachineItemContainer _containerComponent;
+    private PhotonView _photonView;
 
-    protected float _currentProgress;
-    protected int _leftOutputAmount;
-    protected bool _isProcessFinished;
-    protected bool _isProcessStarted;
+    public Action OnDataChanged;
 
-    protected List<int> InputTIDList;
-
-    public virtual void Init(MachineData data)
+    private void Awake()
     {
-        _data = data;
-        InputTIDList = new List<int>();
-
-        ClearMachine();
+        _photonView = GetComponent<PhotonView>();
     }
 
-    public virtual void ClearMachine()
+    public void InitMachine(MachineData data, IMachineInteractable interactableComponent, IMachineItemContainer containerComponent)
     {
-        InputTIDList.Clear();
-        _leftOutputAmount = _data.OutputAmount;
-        _isProcessFinished = false;
-        _isProcessStarted = false;
-        _currentProgress = 0f;
+        _stat = new MachineStat(data);
+        _interactComponent = interactableComponent;
+        _containerComponent = containerComponent;
+        _photonView = GetComponent<PhotonView>();
     }
 
-    // 절구나 분쇄기를 제외하면 재료들은 아예 못들어가기도 하고, 다른 상황도 생길 수 있으므로 각자 처리 필요
-    public abstract bool TryInput(int tid, EInputType inputType);
-
-    public virtual bool CanInteract()
+    public bool TryInteract()
     {
-        if(InputTIDList.Count == _data.MaxInputCount && _isProcessFinished == false)
-        {
-            return true;
-        }
-        return false;
+        return _interactComponent.TryInteract(this, _stat);
     }
 
-    public abstract bool TryInteract();
+    public bool TryInput(int tid, EInputType inputType)
+    {
+        return _containerComponent.TryInput(this, _stat, tid, inputType);
+    }
 
-    public abstract GameObject TakeOutput();
+    public bool CanTakeOut()
+    {
+        return _containerComponent.CanTakeOut(this, _stat);
+    }
+
+    public GameObject TakeOutput()
+    {
+        return _containerComponent.TakeOutput(this, _stat);
+    }
+
+    [ContextMenu("HI")]
+    public void SyncMachineStat()
+    {
+        _photonView.RPC(nameof(RPC_SyncMachineStat), RpcTarget.All, _stat.CurrentProgress, _stat.LeftOutputAmount, _stat.IsProcessFinished, _stat.IsProcessStarted, _stat.InputTIDList.ToArray());
+    }
+
+    [PunRPC]
+    public void RPC_SyncMachineStat(float currentProgress, int leftOutputAmount, bool isProcessFinished, bool isProcessStarted, int[] inputTIDList)
+    {
+        _stat.CurrentProgress = currentProgress;
+        _stat.LeftOutputAmount = leftOutputAmount;
+        _stat.IsProcessFinished = isProcessFinished;
+        _stat.IsProcessStarted = isProcessStarted;
+        _stat.InputTIDList = inputTIDList.ToList();
+
+        OnDataChanged?.Invoke();
+    }
+
+    // UI 테스트용
+    public MachineStat GetStat()
+    {
+        return _stat;
+    }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using VInspector;
 
@@ -8,9 +9,6 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
     [Foldout("Hierarchy")]
     [SerializeField]
     private Grid _grid;
-    // 추후 삭제 (인풋매니저)
-    [SerializeField]
-    private GridTest_InputManager _inputManager;
     [SerializeField]
     private GameObject _gridVisualization;
 
@@ -18,13 +16,14 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
     private PreviewSystem _previewSystem;
 
     [SerializeField]
-    private PlaceSystem _objectPlacer = new();
+    private PlaceSystem _placeSystem = new();
 
     private Layout _layout;
 
     private GridData _gridData;
     private Vector3Int _lastDetectedPosition = Vector3Int.zero;
     private IBuildingState _buildingState;
+
     // private GridRepository _repository;
 
     private void Start()
@@ -34,16 +33,14 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
         _gridData = new GridData(_layout.GetAvailableAreaDict());
     }
 
-    private void Update()
+    public void UpdatePlacementPosition(Vector3 targetPosition)
     {
-        if(ReferenceEquals(_buildingState, null))
+        if (ReferenceEquals(_buildingState, null))
         {
             return;
         }
 
-        // inputManager 테스트 코드
-        Vector3 mousePosition = _inputManager.GetSelectedMapPosition();
-        Vector3Int gridPosition = _grid.WorldToCell(mousePosition);
+        Vector3Int gridPosition = GetGridPosition(targetPosition);
         if (_lastDetectedPosition != gridPosition)
         {
             _buildingState.UpdateState(gridPosition);
@@ -51,57 +48,152 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
         }
     }
 
-    public void StartPlacement(int tid)
+    public bool CheckObjectOnGrid(Vector3 targetPosition)
+    {
+        Vector3Int gridPosition = GetGridPosition(targetPosition);
+        int index = _gridData.GetRepresentationIndex(gridPosition);
+        return index == -1 ? false : true;
+
+        //if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
+        //{
+        //}
+        //else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase)
+        //{
+        //    Placement placement = _gridData.GetPlacement(gridPosition);
+        //    GameObject structure = _placeSystem.GetGameObject(placement.PlacedObjectIndex);
+        //    if (placement.structureType == EStructureType.Machine)
+        //    {
+        //        GameObject pickupItem = structure.GetComponent<Machine>().TakeOutput();
+
+        //    }
+        //}
+        //return false;
+
+    }
+
+    public GameObject TryPickup(Vector3 targetPosition)
+    {
+        if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
+        {
+            if (CheckObjectOnGrid(targetPosition))
+            {
+                return StartPlacement(targetPosition);
+            }
+        }
+        else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase)
+        {
+            Vector3Int gridPosition = GetGridPosition(targetPosition);
+            Placement placement = _gridData.GetPlacement(gridPosition);
+            if(ReferenceEquals(placement, null))
+            {
+                return null;
+            }
+            GameObject structure = _placeSystem.GetGameObject(placement.PlacedObjectIndex);
+            if (placement.structureType == EStructureType.Machine)
+            {
+                GameObject pickupItem = structure.GetComponent<Machine>().TakeOutput();
+                return pickupItem;
+            }
+        }
+        return null;
+    }
+
+    public bool TryDrop(Vector3 targetPosition)
+    {
+        Vector3Int gridPosition = GetGridPosition(targetPosition);
+        if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
+        {
+            if (_buildingState.TryAction(gridPosition))
+            {
+                StopPlacement();
+                return true;
+            }
+        }
+        else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase)
+        {
+            Placement placement = _gridData.GetPlacement(gridPosition);
+            if (ReferenceEquals(placement, null))
+            {
+                return false;
+            }
+            GameObject structure = _placeSystem.GetGameObject(placement.PlacedObjectIndex);
+            if (placement.structureType == EStructureType.Machine)
+            {
+                GameObject pickupItem = structure.GetComponent<Machine>().TakeOutput();
+                return pickupItem;
+            }
+        }
+
+
+        return false;
+    }
+    private GameObject StartPlacement(Vector3 targetPosition)
     {
         StopPlacement();
         _gridVisualization.SetActive(true);
-        StructureData data = DataTable.Instance.GetStructureData(tid);
-        _buildingState = new PlacementState(data,
+
+        Vector3Int gridPosition = GetGridPosition(targetPosition);
+        Placement placement = _gridData.GetPlacement(gridPosition);
+        GameObject structure = _placeSystem.GetGameObject(placement.PlacedObjectIndex);
+        _placeSystem.RemoveObjectAt(placement.PlacedObjectIndex);
+        _gridData.RemoveObjectAt(gridPosition);
+
+        StructureData data = DataTable.Instance.GetStructureData(placement.TID);
+        _buildingState = new PlacementState(structure,
+                                            data,
                                             _grid,
                                             _previewSystem,
                                             _gridData,
-                                            _objectPlacer);
+                                            _placeSystem);
 
-        _inputManager.OnClicked += PlaceStructure;
-        _inputManager.OnExit += StopPlacement;
+        return structure;
     }
 
-    public void StartRemoving()
+    public void CreateStructure(int tid, Vector3 position, EStructureType structureType)
     {
         StopPlacement();
-        _gridVisualization.SetActive(true);
-        _buildingState = new RemovingState(_grid,
-                                           _previewSystem,
-                                           _gridData,
-                                           _objectPlacer);
-        _inputManager.OnClicked += PlaceStructure;
-        _inputManager.OnExit += StopPlacement;
+        StructureData data = DataTable.Instance.GetStructureData(tid);
+        GameObject newObject = StructureManager.Instance.CreateStructure(tid);
+        _buildingState = new PlacementState(newObject,
+                                            data,
+                                            _grid,
+                                            _previewSystem,
+                                            _gridData,
+                                            _placeSystem);
+        PlaceStructure(position);
     }
 
-    private void PlaceStructure()
+    private void PlaceStructure(Vector3 position)
     {
-        if (_inputManager.IsPointerOverUI())
+        Vector3Int gridPosition = GetGridPosition(position);
+
+        if (_buildingState.TryAction(gridPosition))
         {
-            return;
+            StopPlacement();
         }
+    }
 
-        Vector3 mousePosition = _inputManager.GetSelectedMapPosition();
-        Vector3Int gridPosition = _grid.WorldToCell(mousePosition);
+    [ContextMenu("생성 테스트")]
+    public void Test()
+    {
+        CreateStructure(10000, new Vector3(-2, 0, 2), EStructureType.Machine);
+    }
 
-        _buildingState.OnAction(gridPosition);
+    private Vector3Int GetGridPosition(Vector3 targetPosition)
+    {
+        targetPosition = new Vector3(targetPosition.x, 0, targetPosition.z);
+        return _grid.WorldToCell(targetPosition);
     }
 
     private void StopPlacement()
     {
-        if(ReferenceEquals(_buildingState, null))
+        if (ReferenceEquals(_buildingState, null))
         {
             return;
         }
 
         _gridVisualization.SetActive(false);
         _buildingState.EndState();
-        _inputManager.OnClicked -= PlaceStructure;
-        _inputManager.OnExit -= StopPlacement;
         _lastDetectedPosition = Vector3Int.zero;
         _buildingState = null;
     }

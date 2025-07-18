@@ -3,27 +3,33 @@ using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using Photon.Pun;
+using Unity.VisualScripting;
+using Photon.Realtime;
 
 public class StructureManager : MonoBehaviourSingleton<StructureManager>
 {
     private const string ADDRESSABLE_KEY_PREFIX = "Prefab_Structure_";
 
-    public async Task<GameObject> CreateStructure(int structureTID)
+    private async void Start()
     {
-        GameObject prefab = await AssetManager.Instance.LoadAsset<GameObject>($"{ADDRESSABLE_KEY_PREFIX}{structureTID}");
-        if(prefab == null )
+        
+        while(DataTable.Instance.GetStructureDataList() == null || PhotonNetwork.InRoom == false)
         {
-            return null;
+            await Task.Delay(10);
         }
+        GameObject structure = CreateStructure(10000);
+        structure.transform.position = Vector3.one;
+    }
 
+    public GameObject CreateStructure(int structureTID)
+    {
         // 포톤네트워크로 생성 + 오브젝트풀 고려
-        GameObject instance = Instantiate(prefab);
+        GameObject instance = StructureFactory.Instance.Create($"{ADDRESSABLE_KEY_PREFIX}{structureTID}", Vector3.zero, Quaternion.identity);
         StructureData data = DataTable.Instance.GetStructureData(structureTID);
         switch (data.StructureType)
         {
             case EStructureType.Machine:
-                MachineData machineData = DataTable.Instance.GetMachineData(data.TypeTID);
-                instance.GetComponent<Machine>().Init(machineData);
+                SetMachine(instance, data.TypeTID, structureTID);
                 break;
             case EStructureType.Furniture:
                 FurnitureData furnitureData = DataTable.Instance.GetFurnitureData(data.TypeTID);
@@ -55,9 +61,36 @@ public class StructureManager : MonoBehaviourSingleton<StructureManager>
         return prefab;
     }
 
+    [PunRPC]
+    public void SetMachine(GameObject instance, int detailDataTID, int structureTID)
+    {
+        MachineData machineData = DataTable.Instance.GetMachineData(detailDataTID);
+        IMachineInteractable machineInteractable = GetMachineInteractableComponent(machineData.InteractType);
+        IMachineItemContainer machineItemContainer = GetMachineItemContainerComponent(structureTID);
+        instance.GetComponent<Machine>().InitMachine(machineData, machineInteractable, machineItemContainer);
+    }
 
+    private IMachineInteractable GetMachineInteractableComponent(EInteractType interactType)
+    {
+        switch (interactType)
+        {
+            case EInteractType.KeepPressing:
+                break;
+            case EInteractType.AutoProgress:
+                return new AutoProgressInteract();
+            case EInteractType.ClickRepeatly:
+                break;
+            case EInteractType.ClickOnce:
+                break;
+        }
 
+        return null;
+    }
 
+    private IMachineItemContainer GetMachineItemContainerComponent(int tid)
+    {
+        return new DefaultMachineContainer();
+    }
     ////테스트용 코드입니다.
     //[SerializeField]
     //private List<MachineEntry> _machinePrefabEntryList;

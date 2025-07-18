@@ -18,6 +18,9 @@ public class UI_Phase : MonoBehaviour
         PhaseManager.Instance.OnDayPassed += UpdateDayText;
         PhaseManager.Instance.OnPhaseChanged += UpdatePhaseText;
         ((ServingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase]).OnTimerRunning += UpdateServiceTimer;
+        ((ServingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase]).OnPhaseEntered += ShowTimer;
+        ((ServingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase]).OnPhaseExited += HideTimer;
+        HideTimer();
     }
 
     private void UpdateDayText()
@@ -50,4 +53,14 @@ public class UI_Phase : MonoBehaviour
     {
         _serviceTimer.value = time;
     }
+
+    private void ShowTimer()
+    {
+        _serviceTimer.gameObject.SetActive(true);
+    }
+    private void HideTimer()
+    {
+        _serviceTimer.gameObject.SetActive(false);
+    }
+
 }

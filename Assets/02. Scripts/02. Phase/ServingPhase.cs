@@ -7,8 +7,9 @@ public class ServingPhase : BasePhase
     private float _currentTime;
     public float CurrentTime { get => _currentTime; set => _currentTime = value; }
 
+    private float _currentTimeRate;
     private bool _timesUp = false;
-
+    public event Action<float> OnTimerRunning;
     public ServingPhase()
     {
         _phaseType = EPhaseType.ServingPhase;
@@ -41,6 +42,8 @@ public class ServingPhase : BasePhase
         }
         else
         {
+            _currentTimeRate = _currentTime / INIT_TIMER; // 타이머 비율 계산
+            OnTimerRunning?.Invoke(_currentTimeRate); // 타이머가 작동 중일 때 호출
             CustomerManager.Instance.InviteCustomer(deltaTime); // 손님 초대
         }
 

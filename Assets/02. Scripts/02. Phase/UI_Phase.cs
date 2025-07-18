@@ -17,10 +17,10 @@ public class UI_Phase : MonoBehaviour
         _serviceTimer.maxValue = 1f;
         PhaseManager.Instance.OnDayPassed += UpdateDayText;
         PhaseManager.Instance.OnPhaseChanged += UpdatePhaseText;
-        ((ServingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase]).OnTimerRunning += UpdateServiceTimer;
-        ((ServingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase]).OnPhaseEntered += ShowTimer;
-        ((ServingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase]).OnPhaseExited += HideTimer;
-        HideTimer();
+        ServingPhase servingPhase = (ServingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase];
+        servingPhase.OnTimerRunning += UpdateServiceTimer;
+        servingPhase.OnPhaseEntered += ShowTimer; // 타이머 시작 시 업데이트
+        servingPhase.OnPhaseExited += HideTimer;
     }
 
     private void UpdateDayText()

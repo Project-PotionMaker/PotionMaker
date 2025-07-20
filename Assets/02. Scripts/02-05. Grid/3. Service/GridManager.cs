@@ -26,6 +26,13 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
     private Vector3Int _lastDetectedPosition = Vector3Int.zero;
     private IBuildingState _buildingState;
 
+    private IGridItemHandler _cahser;
+    public IGridItemHandler Casher => _cahser;
+    private IGridItemHandler _door;
+    public IGridItemHandler Door => _door;
+    private List<IGridItemHandler> _pickUpTableList;
+    public List<IGridItemHandler> PickUpTableList => _pickUpTableList;
+
     // private GridRepository _repository;
 
     private void Start()
@@ -33,6 +40,7 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
         StopPlacement();
         _layout = GameObject.FindGameObjectWithTag("Layout").GetComponent<Layout>();
         _gridData = new GridData(_layout.GetAvailableAreaDict());
+        _pickUpTableList = new List<IGridItemHandler>();
     }
 
     public void UpdatePlacementPosition(Vector3 targetPosition)
@@ -57,24 +65,6 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
         return _placeSystem.GetGameObject(index);
     }
 
-    public bool TryInteract(Vector3 targetPosition)
-    {
-        Vector3Int gridPosition = GetGridPosition(targetPosition);
-        int index = _gridData.GetRepresentationIndex(gridPosition);
-        if(index != -1)
-        {
-            GameObject structure = _placeSystem.GetGameObject(index);
-            Machine machine = structure.GetComponent<Machine>();
-            if (ReferenceEquals(machine, null) == false)
-            {
-                if (machine.TryInteract())
-                {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
     public GameObject StartPlacement(Vector3 targetPosition)
     {
         StopPlacement();
@@ -102,6 +92,21 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
         StopPlacement();
         StructureData data = DataTable.Instance.GetStructureData(tid);
         GameObject newObject = StructureManager.Instance.CreateStructure(tid);
+
+        switch (data.SpecialStructureType)
+        {
+            case ESpecialStructureType.PickUpTable:
+                _pickUpTableList.Add(newObject.GetComponent<IGridItemHandler>());
+                break;
+            case ESpecialStructureType.TrashCan:
+                break;
+            case ESpecialStructureType.Casher:
+                _cahser = newObject.GetComponent<IGridItemHandler>();
+                break;
+            case ESpecialStructureType.None:
+                break;
+        }
+
         _buildingState = new PlacementState(newObject,
                                             data,
                                             _grid,

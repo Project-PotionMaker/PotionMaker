@@ -127,6 +127,8 @@ public enum EStructureType
     Machine = 1,
     ///<summary>가구</summary>
     Furniture = 2,
+    ///<summary>재료 상자</summary>
+    Storage = 3,
 }
 
 public enum ECustomerStateType

@@ -7,9 +7,10 @@ public class PlaceSystem
 {
     private List<GameObject> _placedGameObjectList = new();
 
-    public int PlaceObject(GameObject structure, int structureTID, Vector3 position)
+    public int PlaceObject(GameObject structure, int structureTID, Vector3 position, Quaternion rotation)
     {
         structure.transform.position = position;
+        structure.transform.rotation = rotation;
         _placedGameObjectList.Add(structure);
 
         return _placedGameObjectList.Count - 1;
@@ -27,6 +28,10 @@ public class PlaceSystem
 
     public GameObject GetGameObject(int index)
     {
+        if(index < 0 || index > _placedGameObjectList.Count)
+        {
+            return null;
+        }
         return _placedGameObjectList[index];
     }
 }

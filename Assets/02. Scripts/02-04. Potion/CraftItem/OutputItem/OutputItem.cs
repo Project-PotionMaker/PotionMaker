@@ -11,7 +11,7 @@ public class MeshOnType
     public Mesh Mesh;
 }
 
-public class OutputItem : MonoBehaviour
+public class OutputItem : MonoBehaviour, IItem
 {
     private EInputType _currentInputType;
     public EInputType CurrentInputType => _currentInputType;
@@ -63,5 +63,15 @@ public class OutputItem : MonoBehaviour
         _currentInputType = newInputType;
         _outputData = DataTable.Instance.GetOutputData(TID);
         _meshFilter.mesh = _meshDict[newInputType];
+    }
+
+    public EInputType GetInputType()
+    {
+        return EInputType.Output;
+    }
+
+    public int GetTID()
+    {
+        return _outputData.TID;
     }
 }

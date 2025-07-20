@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class AutoProgressInteract : IMachineInteractable
+public class AutoProgressInteract : IInteractable<Machine, MachineStat>
 {
     public bool CanInteract(Machine machine, MachineStat stat)
     {

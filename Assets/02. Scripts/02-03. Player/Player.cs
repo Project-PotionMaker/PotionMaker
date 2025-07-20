@@ -22,7 +22,7 @@ public class Player : MonoBehaviour
     {
         Vector3 targetPosition = GetFrontPosition();
 
-        return GridManager.Instance.CheckObjectOnGrid(targetPosition);
+        return GridManager.Instance.GetObjectOnGrid(targetPosition) != null;
     }
 
     public Vector3 GetFrontPosition()

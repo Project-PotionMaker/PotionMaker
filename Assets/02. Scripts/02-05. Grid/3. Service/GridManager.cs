@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System;
 using System.Collections.Generic;
 using TMPro;
@@ -49,11 +50,11 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
         }
     }
 
-    public bool CheckObjectOnGrid(Vector3 targetPosition)
+    public GameObject GetObjectOnGrid(Vector3 targetPosition)
     {
         Vector3Int gridPosition = GetGridPosition(targetPosition);
         int index = _gridData.GetRepresentationIndex(gridPosition);
-        return index == -1 ? false : true;
+        return _placeSystem.GetGameObject(index);
     }
 
     public bool TryInteract(Vector3 targetPosition)
@@ -74,67 +75,7 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
         }
         return false;
     }
-
-    public GameObject TryPickup(Vector3 targetPosition)
-    {
-        if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
-        {
-            if (CheckObjectOnGrid(targetPosition))
-            {
-                return StartPlacement(targetPosition);
-            }
-        }
-        else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase)
-        {
-            Vector3Int gridPosition = GetGridPosition(targetPosition);
-            Placement placement = _gridData.GetPlacement(gridPosition);
-            if(ReferenceEquals(placement, null))
-            {
-                return null;
-            }
-            GameObject structure = _placeSystem.GetGameObject(placement.PlacedObjectIndex);
-
-            // 재료상자는 머신이 아니어서 고민 필요
-            if (placement.structureType == EStructureType.Machine)
-            {
-                GameObject pickupItem = structure.GetComponent<Machine>().TakeOutput();
-                return pickupItem;
-            }
-        }
-        return null;
-    }
-
-    public bool TryDrop(Vector3 targetPosition, int tid, EInputType inputType, GameObject gameObject)
-    {
-        Vector3Int gridPosition = GetGridPosition(targetPosition);
-        if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
-        {
-            if (_buildingState.TryAction(gridPosition))
-            {
-                StopPlacement();
-                return true;
-            }
-        }
-        else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase)
-        {
-            Placement placement = _gridData.GetPlacement(gridPosition);
-            if (ReferenceEquals(placement, null))
-            {
-                return false;
-            }
-            GameObject structure = _placeSystem.GetGameObject(placement.PlacedObjectIndex);
-            if (placement.structureType == EStructureType.Machine)
-            {
-                structure.GetComponent<Machine>().TryInput(tid, inputType);
-                // 수정필요
-                Destroy(gameObject);
-                return true;
-            }
-        }
-
-        return false;
-    }
-    private GameObject StartPlacement(Vector3 targetPosition)
+    public GameObject StartPlacement(Vector3 targetPosition)
     {
         StopPlacement();
         _gridVisualization.SetActive(true);
@@ -167,26 +108,49 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
                                             _previewSystem,
                                             _gridData,
                                             _placeSystem);
-        PlaceStructure(position);
+        TryPlaceStructure(position);
     }
 
-    private void PlaceStructure(Vector3 position)
+    public bool TryPlaceStructure(Vector3 position)
     {
         Vector3Int gridPosition = GetGridPosition(position);
+        if(ReferenceEquals(_buildingState, null))
+        {
+            return false;
+        }
 
         if (_buildingState.TryAction(gridPosition))
         {
             StopPlacement();
+            return true;
         }
+
+        return false;
     }
 
     [Button("생성 테스트")]
-    public void Test()
+    public async void Test()
     {
+        DefaultPool defaultPool = PhotonNetwork.PrefabPool as DefaultPool;
+
+        //string playerAddressableKey = "Prefab_Structure_10000";
+
+        //GameObject _playerPrefab = await AssetManager.Instance.LoadAsset<GameObject>(playerAddressableKey);
+
+        //defaultPool.ResourceCache.Add(playerAddressableKey, _playerPrefab);
+
+        string playerAddressableKey = "Prefab_Structure_10018";
+
+        GameObject _playerPrefab = await AssetManager.Instance.LoadAsset<GameObject>(playerAddressableKey);
+
+        defaultPool.ResourceCache.Add(playerAddressableKey, _playerPrefab);
+
         CreateStructure(10000, new Vector3(-2, 0, 2), EStructureType.Machine);
+
+        CreateStructure(10018, new Vector3(3, 0, 2), EStructureType.Storage);
     }
 
-    private Vector3Int GetGridPosition(Vector3 targetPosition)
+    public Vector3Int GetGridPosition(Vector3 targetPosition)
     {
         targetPosition = new Vector3(targetPosition.x, 0, targetPosition.z);
         return _grid.WorldToCell(targetPosition);

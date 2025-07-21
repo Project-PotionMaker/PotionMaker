@@ -39,7 +39,7 @@ public class PlayerInteractAbility : PlayerAbility
     {
         Vector3 targetPosition = _owner.GetFrontPosition();
         GameObject structure = GridManager.Instance.GetObjectOnGrid(targetPosition);
-        IGridItemHandler itemHandler = structure.GetComponent<IGridItemHandler>();
+        IGridItemHandler itemHandler = structure?.GetComponent<IGridItemHandler>();
         if (ReferenceEquals(itemHandler, null) == false)
         {
             itemHandler.TryInteract();

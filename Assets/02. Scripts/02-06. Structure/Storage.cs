@@ -1,22 +1,50 @@
 using Photon.Pun;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
+using VInspector;
 
 public class Storage : MonoBehaviour, IGridItemHandler
 {
     private StorageStat _stat;
+    [SerializeField]
+    private Transform _model;
     private IOutputContainer<Storage, StorageStat> _outputComponent;
 
     private PhotonView _photonView;
     public PhotonView PhotonView => _photonView;
 
     public Action OnDataChanged;
+    [Foldout("Project")]
+    [SerializeField]
+    private List<ModelOnTID> _modelObjectList = new List<ModelOnTID>();
+    private Dictionary<int, GameObject> _modelObjectDic;
+
+    private void Awake()
+    {
+        _photonView = GetComponent<PhotonView>();
+        _modelObjectDic = new Dictionary<int, GameObject>();
+        foreach (var modelInfo in _modelObjectList)
+        {
+            modelInfo.Model.SetActive(false);
+            _modelObjectDic.Add(modelInfo.TID, modelInfo.Model);
+        }
+    }
 
     public void InitStorage(StorageData data, int ingredientTID, IOutputContainer<Storage, StorageStat> outputComponent)
     {
         _stat = new StorageStat(data, ingredientTID);
         _outputComponent = outputComponent;
-        _photonView = GetComponent<PhotonView>();
+
+        foreach (var modelInfo in _modelObjectList)
+        {
+            modelInfo.Model.SetActive(false);
+            if (modelInfo.TID == _stat.Data.TID)
+            {
+                _model = modelInfo.Model.transform;
+                modelInfo.Model.SetActive(true);
+            }
+        }
     }
 
     public bool TryInteract()
@@ -29,7 +57,7 @@ public class Storage : MonoBehaviour, IGridItemHandler
                 _stat.CurrentRotation = 0;
             }
 
-            transform.rotation = Quaternion.Euler(0, _stat.CurrentRotation, 0);
+            _model.rotation = Quaternion.Euler(0, _stat.CurrentRotation, 0);
             return true;
         }
         return false;

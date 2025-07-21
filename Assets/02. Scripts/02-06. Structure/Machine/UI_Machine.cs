@@ -9,7 +9,7 @@ public class UI_Machine : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        if(machine != null)
         {
             testText.text = $"{machine.GetStat().CurrentProgress}";
         }

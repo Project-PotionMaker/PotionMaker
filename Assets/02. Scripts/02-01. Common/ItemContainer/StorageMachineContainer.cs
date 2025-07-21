@@ -12,17 +12,11 @@ public class StorageMachineContainer : IOutputInteractable
             if (!PhotonNetwork.IsMasterClient)
             {
                 machine.PhotonView.RPC(nameof(RPC_TakeIngredientItem), RpcTarget.MasterClient,
-                    stat.Data.TID, machine.transform.position);
+                    stat.InputTIDList[0], machine.transform.position);
             }
             else
             {
-                RPC_TakeIngredientItem(stat.Data.TID, machine.transform.position);
-            }
-
-            stat.LeftOutputAmount--;
-            if (stat.LeftOutputAmount <= 0)
-            {
-                stat.ClearMachine();
+                RPC_TakeIngredientItem(stat.InputTIDList[0], machine.transform.position);
             }
             return _output;
         }

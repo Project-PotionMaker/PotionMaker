@@ -29,7 +29,7 @@ public class UI_GameSummary : MonoBehaviour
                 UI_SalesVolumeSlot newSlot = GameObject.Instantiate(_salesVolumeSlotPrefab, _slotContainer);
                 _salesVolumeSlotList.Add(newSlot);
             }
-            _salesVolumeSlotList[slotIndex].Refresh(potionType);
+            _salesVolumeSlotList[slotIndex].Refresh(potionType, true);
             ++slotIndex;
         }
 

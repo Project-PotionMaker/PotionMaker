@@ -53,7 +53,7 @@ public class OutputItem : MonoBehaviour, IItem
 
         _currentInputType = newInputType;
         _outputData = DataTable.Instance.GetOutputData(TID);
-        _meshFilter.mesh = _meshDict[newInputType];
+        // _meshFilter.mesh = _meshDict[newInputType];
         _photonView.RPC(nameof(RPC_InitOutputData), RpcTarget.Others, newInputType, TID);
     }
 
@@ -62,7 +62,7 @@ public class OutputItem : MonoBehaviour, IItem
     {
         _currentInputType = newInputType;
         _outputData = DataTable.Instance.GetOutputData(TID);
-        _meshFilter.mesh = _meshDict[newInputType];
+        // _meshFilter.mesh = _meshDict[newInputType];
     }
 
     public EInputType GetInputType()

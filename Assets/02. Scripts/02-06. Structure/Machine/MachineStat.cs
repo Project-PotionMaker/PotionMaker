@@ -47,6 +47,7 @@ public class MachineStat
     {
         _data = data;
         _inputTIDList = new List<int>();
+        _leftOutputAmount = _data.OutputAmount;
     }
 
     public void ClearMachine()

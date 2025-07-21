@@ -87,11 +87,11 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
         return structure;
     }
 
-    public void CreateStructure(int tid, Vector3 position, EStructureType structureType)
+    public void CreateStructure(int tid, Vector3 position, EStructureType structureType, int ingredientTID = 0)
     {
         StopPlacement();
         StructureData data = DataTable.Instance.GetStructureData(tid);
-        GameObject newObject = StructureManager.Instance.CreateStructure(tid);
+        GameObject newObject = StructureManager.Instance.CreateStructure(tid, ingredientTID);
 
         switch (data.SpecialStructureType)
         {
@@ -136,11 +136,13 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
     [Button("생성 테스트")]
     public async void Test()
     {
-        CreateStructure(10000, new Vector3(-2, 0, 2), EStructureType.Machine);
-        CreateStructure(10014, new Vector3(-2, 0, 1), EStructureType.Furniture);
-        CreateStructure(10016, new Vector3(-3, 0, 1), EStructureType.Furniture);
-        CreateStructure(10005, new Vector3(-3, 0, 2), EStructureType.Furniture);
-        CreateStructure(10019, new Vector3(3, 0, 2), EStructureType.Storage);
+        CreateStructure(10000, new Vector3(-5, 0, 4), EStructureType.Machine);
+        CreateStructure(10002, new Vector3(-3, 0, 4), EStructureType.Machine);
+        CreateStructure(10014, new Vector3(0, 0, 0), EStructureType.Furniture);
+        CreateStructure(10016, new Vector3(-5, 0, 0), EStructureType.Furniture);
+        CreateStructure(10005, new Vector3(0, 0, 2), EStructureType.Furniture);
+        CreateStructure(10019, new Vector3(4, 0, 2), EStructureType.Storage, 10000);
+        CreateStructure(10019, new Vector3(4, 0, 4), EStructureType.Storage, 10001);
     }
 
     public Vector3Int GetGridPosition(Vector3 targetPosition)

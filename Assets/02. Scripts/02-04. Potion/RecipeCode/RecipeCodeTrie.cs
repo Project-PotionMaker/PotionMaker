@@ -77,7 +77,7 @@ public class RecipeCodeTrie
 
     public bool Exists(string id)
     {
-        if (id.Length != 8 || !IsValidFormat(id))
+        if (!IsValidFormat(id))
         {
             return false;
         }

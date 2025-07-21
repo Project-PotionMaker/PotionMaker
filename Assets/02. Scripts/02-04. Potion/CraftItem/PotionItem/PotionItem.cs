@@ -13,7 +13,7 @@ public class MeshOnTID
     public Mesh Mesh;
 }
 
-public class PotionItem : MonoBehaviour
+public class PotionItem : MonoBehaviour, IItem
 {
     private PotionData _potionData;
     public PotionData PotionData => _potionData;
@@ -95,5 +95,15 @@ public class PotionItem : MonoBehaviour
                 break;
         }
         _material.SetPropertyBlock(_mpb);
+    }
+
+    public EInputType GetInputType()
+    {
+        return EInputType.Potion;
+    }
+
+    public int GetTID()
+    {
+        return _potionData.TID;
     }
 }

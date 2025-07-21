@@ -40,11 +40,12 @@ public class AutoProgressInteract : IInteractable<Machine, MachineStat>
 
     public IEnumerator Interact_Coroutine(Machine machine, MachineStat stat)
     {
-        while (stat.CurrentProgress <= stat.Data.MaxProgress)
+        while (stat.CurrentProgress < stat.Data.MaxProgress)
         {
             stat.CurrentProgress += stat.Data.ProgressPerTick * Time.deltaTime;
-            machine.SyncMachineStat();
+            //machine.SyncMachineStat();
             yield return null;
         }
+
     }
 }

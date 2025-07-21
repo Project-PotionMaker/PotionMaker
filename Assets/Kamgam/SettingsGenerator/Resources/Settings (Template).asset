@@ -1,0 +1,424 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41e2996bcb8d98b4686d19913a8d78f5, type: 3}
+  m_Name: Settings (Template)
+  m_EditorClassIdentifier: 
+  _bools:
+  - _isActive: 1
+    ID: fullscreen
+    ApplyImmediately: 0
+    _groups: []
+    _defaultValue: 1
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 11400000, guid: 57cfa21e332facf40a95e6c6d47dca57, type: 2}
+  - _isActive: 1
+    ID: vSync
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 1
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 11400000, guid: 119c44645c341c04d81d42bbc93be27a, type: 2}
+  - _isActive: 1
+    ID: shadows
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 1
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 11400000, guid: d047df088207d5345842aa631429ece1, type: 2}
+  - _isActive: 1
+    ID: audioEnabled
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 1
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 11400000, guid: 1fe73bc5c8500df47b191b292d667c0b, type: 2}
+  - _isActive: 1
+    ID: ambientOcclusionEnabled
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 1
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 11400000, guid: 36a0815a53f78504a9a0bdda5eed136e, type: 2}
+  - _isActive: 1
+    ID: bloomEnabled
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 1
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 11400000, guid: 1b742fb099758154fa9c409b229a19e0, type: 2}
+  - _isActive: 1
+    ID: motionBlurEnabled
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 1
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 11400000, guid: c464bbf4e8ab02840bed02f9383dc8e6, type: 2}
+  - _isActive: 1
+    ID: vignetteEnabled
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 1
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 11400000, guid: c6ccc2582f479e34ab2b720bc93a6772, type: 2}
+  - _isActive: 1
+    ID: depthOfFieldEnabled
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 1
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 11400000, guid: b2c5d0026c6e32645be431611f9cd6e6, type: 2}
+  - _isActive: 1
+    ID: fog
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 1
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 11400000, guid: ddcc54e2d0e4e014e8534f7a72fafd01, type: 2}
+  - _isActive: 1
+    ID: volumetricsEnabled
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 1
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 11400000, guid: 932b6636b052a414ba95b321e157b505, type: 2}
+  _options:
+  - _isActive: 1
+    ID: resolution
+    ApplyImmediately: 0
+    _groups: []
+    _defaultValue: 0
+    IgnoreConnectionDefaults: 0
+    _optionLabels: []
+    _overrideConnectionLabels: 0
+    ConnectionObject: {fileID: 11400000, guid: 0b5bbdc1a88667444aeea97d7b325030, type: 2}
+  - _isActive: 1
+    ID: windowMode
+    ApplyImmediately: 0
+    _groups: []
+    _defaultValue: 0
+    IgnoreConnectionDefaults: 0
+    _optionLabels: []
+    _overrideConnectionLabels: 0
+    ConnectionObject: {fileID: 11400000, guid: f29ce30bcf6a96c4381de61a0ef407a1, type: 2}
+  - _isActive: 1
+    ID: refreshRate
+    ApplyImmediately: 0
+    _groups: []
+    _defaultValue: 0
+    IgnoreConnectionDefaults: 0
+    _optionLabels: []
+    _overrideConnectionLabels: 0
+    ConnectionObject: {fileID: 11400000, guid: 12aae2cfe94bba543975059d47f4e6d8, type: 2}
+  - _isActive: 1
+    ID: frameRate
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 0
+    IgnoreConnectionDefaults: 0
+    _optionLabels: []
+    _overrideConnectionLabels: 0
+    ConnectionObject: {fileID: 11400000, guid: 6dbbb4ed4f7a2ea49976dfcfd50bc691, type: 2}
+  - _isActive: 1
+    ID: antiAliasing
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 0
+    IgnoreConnectionDefaults: 0
+    _optionLabels: []
+    _overrideConnectionLabels: 0
+    ConnectionObject: {fileID: 11400000, guid: 28d8c95fa02364942a6f9aada6121e4f, type: 2}
+  - _isActive: 1
+    ID: gfxQuality
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 0
+    IgnoreConnectionDefaults: 0
+    _optionLabels: []
+    _overrideConnectionLabels: 0
+    ConnectionObject: {fileID: 11400000, guid: fe228db790d29f648a557871ccc2037d, type: 2}
+  - _isActive: 1
+    ID: shadowDistance
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 0
+    IgnoreConnectionDefaults: 0
+    _optionLabels: []
+    _overrideConnectionLabels: 0
+    ConnectionObject: {fileID: 11400000, guid: c71b9f2999fd7b9479352132ad82c605, type: 2}
+  - _isActive: 1
+    ID: shadowResolution
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 0
+    IgnoreConnectionDefaults: 0
+    _optionLabels: []
+    _overrideConnectionLabels: 0
+    ConnectionObject: {fileID: 11400000, guid: 1745d2599a0c39947a7e45b46d804afb, type: 2}
+  - _isActive: 1
+    ID: textureResolution
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 0
+    IgnoreConnectionDefaults: 0
+    _optionLabels: []
+    _overrideConnectionLabels: 0
+    ConnectionObject: {fileID: 11400000, guid: 914ebf35a8566b34285cab98d9a620c1, type: 2}
+  - _isActive: 1
+    ID: dlss
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 0
+    IgnoreConnectionDefaults: 0
+    _optionLabels: []
+    _overrideConnectionLabels: 0
+    ConnectionObject: {fileID: 11400000, guid: 883eb8b576e9cc6409171cbd752e9546, type: 2}
+  - _isActive: 1
+    ID: fsr
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 0
+    IgnoreConnectionDefaults: 0
+    _optionLabels: []
+    _overrideConnectionLabels: 0
+    ConnectionObject: {fileID: 11400000, guid: 9197e7b74ac637549a98dc5a771dac22, type: 2}
+  - _isActive: 1
+    ID: msaa
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 0
+    IgnoreConnectionDefaults: 0
+    _optionLabels: []
+    _overrideConnectionLabels: 0
+    ConnectionObject: {fileID: 11400000, guid: 2e5d6d594922f4f45b9a7beb44d550b3, type: 2}
+  - _isActive: 1
+    ID: microphone
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 0
+    IgnoreConnectionDefaults: 0
+    _optionLabels: []
+    _overrideConnectionLabels: 0
+    ConnectionObject: {fileID: 11400000, guid: 8054505afa0319c4ab0fac6349885b11, type: 2}
+  - _isActive: 1
+    ID: monitor
+    ApplyImmediately: 0
+    _groups: []
+    _defaultValue: 0
+    IgnoreConnectionDefaults: 0
+    _optionLabels: []
+    _overrideConnectionLabels: 0
+    ConnectionObject: {fileID: 11400000, guid: e480217035af2154bb5e816d952cdff1, type: 2}
+  _integers: []
+  _floats:
+  - _isActive: 1
+    ID: ambientLight
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 50
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 11400000, guid: 5c8d736531357b94391c3aba171efd22, type: 2}
+  - _isActive: 1
+    ID: audioMasterVolume
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 50
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 11400000, guid: 5988387f145940c4ea34688e37d77d2f, type: 2}
+  - _isActive: 1
+    ID: gamma
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 0
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 11400000, guid: 69a9e465280a7c94b8506cc7701cfc43, type: 2}
+  - _isActive: 1
+    ID: fieldOfView
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 0
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 11400000, guid: 4c39f4ca36e21514783d955fb3a22046, type: 2}
+  - _isActive: 1
+    ID: renderScale
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 0
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 11400000, guid: f09ed860a9abdf4438058567119bdb1f, type: 2}
+  - _isActive: 1
+    ID: renderDistance
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 1000
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 11400000, guid: a2f4ff4750ef4cf4fa29cae263e1a713, type: 2}
+  - _isActive: 1
+    ID: colorGradeBrightness
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 0
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 11400000, guid: 783829c09ac92274aaf6b5efbdbb8e66, type: 2}
+  - _isActive: 1
+    ID: lift
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 0
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 11400000, guid: 2c53a6e7600605c4ebc100802257b7d5, type: 2}
+  - _isActive: 1
+    ID: gain
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 0
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 11400000, guid: cd84b8ebd947a924bbe000456324490c, type: 2}
+  - _isActive: 1
+    ID: postExposure
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 0
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 11400000, guid: 1080331563783034b863c2fa9ead5a3b, type: 2}
+  - _isActive: 1
+    ID: contrast
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 0
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 11400000, guid: fe72c4cfff9632d4c988354123076e4c, type: 2}
+  - _isActive: 1
+    ID: hueShift
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 0
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 11400000, guid: 6f2f33b959796c744a9bebe72203cc69, type: 2}
+  - _isActive: 1
+    ID: saturation
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 0
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 11400000, guid: 5ce0f1c1a02814e46b11f161b517debc, type: 2}
+  - _isActive: 1
+    ID: temperature
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 0
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 11400000, guid: 6d84acd06b3f4014384267c48868364c, type: 2}
+  - _isActive: 1
+    ID: tint
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 0
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 11400000, guid: e8febb84b784bc945969287803b0e656, type: 2}
+  - _isActive: 1
+    ID: smhShadows
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 0
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 11400000, guid: b05a94a1958d4d1448f4ce45dbef7baa, type: 2}
+  - _isActive: 1
+    ID: smhMidtones
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 0
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 11400000, guid: e79f7580bbbb19e4aa7c7105c7de8109, type: 2}
+  - _isActive: 1
+    ID: smhHighlights
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 0
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 11400000, guid: 824e0d743d54eec4e9407011d6b988c3, type: 2}
+  - _isActive: 1
+    ID: mixerBlueBlue
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 0
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 11400000, guid: 5de25ae94d97aa248965d07a28e41b48, type: 2}
+  - _isActive: 1
+    ID: mixerBlueGreen
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 0
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 11400000, guid: 595b35eabb3135f49a7b78380b877242, type: 2}
+  - _isActive: 1
+    ID: mixerBlueRed
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 0
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 11400000, guid: f2349d2b322e1b44c95473f850cc0eef, type: 2}
+  - _isActive: 1
+    ID: mixerGreenBlue
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 0
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 11400000, guid: 85f3c5b6f8b04cd439ea96d4ae1936f3, type: 2}
+  - _isActive: 1
+    ID: mixerGreenGreen
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 0
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 11400000, guid: da1e8a60646e0d049bc8880457d1d929, type: 2}
+  - _isActive: 1
+    ID: mixerGreenRed
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 0
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 11400000, guid: b4696340063118d4cabe8422b294d8b0, type: 2}
+  - _isActive: 1
+    ID: mixerRedBlue
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 0
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 11400000, guid: 52ba12fc25dc8b741a5f869c29ce9fa4, type: 2}
+  - _isActive: 1
+    ID: mixerRedGreen
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 0
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 11400000, guid: 444f018b0fb869542a5ed79421656bcd, type: 2}
+  - _isActive: 1
+    ID: mixerRedRed
+    ApplyImmediately: 1
+    _groups: []
+    _defaultValue: 0
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 11400000, guid: 185c27af11cebe54b95475b169f20d66, type: 2}
+  _strings: []
+  _colors: []
+  _colorOptions: []
+  _keyCombinations:
+  - _isActive: 1
+    ID: keyboard.jump
+    ApplyImmediately: 1
+    _groups:
+    - controls
+    _defaultValue:
+      Key: 106
+      ModifierKey: 0
+    IgnoreConnectionDefaults: 0
+    ConnectionObject: {fileID: 0}

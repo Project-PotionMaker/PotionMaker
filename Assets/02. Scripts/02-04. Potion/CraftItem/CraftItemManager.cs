@@ -75,7 +75,7 @@ public class CraftItemManager : MonoBehaviourSingleton<CraftItemManager>
         if (_recipeCodeVerifier.IsValidPotion(recipeCode))
         {
             GameObject potion = CraftItemFactory.Instance.Create(EInputType.Potion, machinePosition, Quaternion.identity);
-            potion.GetComponent<Potion>().InitPotionData(_potionDataTIDDict[recipeCode]);
+            potion.GetComponent<PotionItem>().InitPotionData(_potionDataTIDDict[recipeCode]);
             return potion;
         }
         return CreateFailureItem(machinePosition);

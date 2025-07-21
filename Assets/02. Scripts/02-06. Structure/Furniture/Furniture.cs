@@ -5,7 +5,7 @@ using UnityEngine;
 public class Furniture : MonoBehaviour, IGridItemHandler
 {
     [SerializeField]
-    FurnitureStat _stat;
+    private FurnitureStat _stat;
     [SerializeField]
     private Transform _model;
 

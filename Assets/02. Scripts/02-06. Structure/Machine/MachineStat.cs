@@ -39,6 +39,9 @@ public class MachineStat
     [SerializeField]
     private List<int> _inputTIDList;
     public List<int> InputTIDList { get => _inputTIDList; set => _inputTIDList = value; }
+    [SerializeField]
+    private EInputType _inputType;
+    public EInputType InputType { get => _inputType; set => _inputType = value; }
 
     public MachineStat(MachineData data)
     {

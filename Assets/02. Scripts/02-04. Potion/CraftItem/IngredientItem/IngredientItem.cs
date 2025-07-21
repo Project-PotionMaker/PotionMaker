@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using VInspector;
 
-public class IngredientItem : MonoBehaviour
+public class IngredientItem : MonoBehaviour, IItem
 {
     private IngredientData _data;
     public IngredientData Data => _data;
@@ -45,5 +45,15 @@ public class IngredientItem : MonoBehaviour
     {
         _data = DataTable.Instance.GetIngredientData(TID);
         _meshFilter.mesh = _meshDict[TID];
+    }
+
+    public EInputType GetInputType()
+    {
+        return EInputType.Ingredient;
+    }
+
+    public int GetTID()
+    {
+        return _data.TID;
     }
 }

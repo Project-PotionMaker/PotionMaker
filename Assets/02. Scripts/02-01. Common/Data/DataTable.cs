@@ -168,6 +168,33 @@ public partial class DataTable
         }
     }
     #endregion
+    #region Storage
+    private ReadOnlyList<StorageData> StorageList = null;
+    private ReadOnlyDictionary<int, StorageData> StorageTable = null;
+
+    public ReadOnlyList<StorageData> GetStorageDataList()
+    {
+        return StorageList;
+    }
+
+    public StorageData GetStorageData(int key)
+    {
+        if (key == 0)
+        {
+            return null;
+        }
+
+        if (StorageTable.TryGetValue(key, out StorageData retVal) == true)
+        {
+            return retVal;
+        }
+        else
+        {
+            Debug.LogError($"Can not find UniqueID of StorageData: <{key}>");
+            return null;
+        }
+    }
+    #endregion
     #region Furniture
     private ReadOnlyList<FurnitureData> FurnitureList = null;
     private ReadOnlyDictionary<int, FurnitureData> FurnitureTable = null;
@@ -265,6 +292,12 @@ public partial class DataTable
             loadedCount++;
         });
         allCount++;
+        GetBytes_FromResources("Storage", (bytes) =>
+        {
+            LoadStorageData(bytes);
+            loadedCount++;
+        });
+        allCount++;
         GetBytes_FromResources("Furniture", (bytes) =>
         {
             LoadFurnitureData(bytes);
@@ -294,6 +327,8 @@ public partial class DataTable
         LoadStructureData(structureBytes);
         byte[] machineBytes = GetBytes_ForEditor("MachineData");
         LoadMachineData(machineBytes);
+        byte[] storageBytes = GetBytes_ForEditor("StorageData");
+        LoadStorageData(storageBytes);
         byte[] furnitureBytes = GetBytes_ForEditor("FurnitureData");
         LoadFurnitureData(furnitureBytes);
         byte[] layoutBytes = GetBytes_ForEditor("LayoutData");
@@ -484,6 +519,37 @@ public partial class DataTable
 
         MachineList = new ReadOnlyList<MachineData>(machineList);
         MachineTable = new ReadOnlyDictionary<int, MachineData>(machineTable);
+    }
+
+    private void LoadStorageData(byte[] bytes)
+    {
+        List<StorageData> storageList = new List<StorageData>();
+        Dictionary<int, StorageData> storageTable = new Dictionary<int, StorageData>();
+
+        Reader = new BinaryReader(new MemoryStream(bytes));
+
+        while (Reader.BaseStream.Position < bytes.Length)
+        {
+            StorageData data = new StorageData(Reader);
+            if (storageTable.ContainsKey(data.TID) == true)
+            {
+                Debug.LogError("The duplicate TID: " + data.TID + " in Storage");
+                continue;
+            }
+            else if (data.TID == 0)
+            {
+                Debug.LogError("TID is 0 in Storage");
+                continue;
+            }
+
+            storageList.Add(data);
+            storageTable.Add(data.TID, data);
+        }
+
+        Reader.Close();
+
+        StorageList = new ReadOnlyList<StorageData>(storageList);
+        StorageTable = new ReadOnlyDictionary<int, StorageData>(storageTable);
     }
 
     private void LoadFurnitureData(byte[] bytes)

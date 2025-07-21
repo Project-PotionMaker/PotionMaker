@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class ClickOnceInteract : IMachineInteractable
+public class ClickOnceInteract : IInteractable<Machine, MachineStat>
 {
     public bool CanInteract(Machine machine, MachineStat stat)
     {

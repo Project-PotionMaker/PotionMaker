@@ -23,7 +23,7 @@ public class CraftItemManager : MonoBehaviourSingleton<CraftItemManager>
     protected override void Awake()
     {
         base.Awake();
-        InitCraftItemManager();
+        Global.Instance.OnDataLoaded += InitCraftItemManager;
     }
 
     private void InitCraftItemManager()
@@ -39,7 +39,7 @@ public class CraftItemManager : MonoBehaviourSingleton<CraftItemManager>
         var potionDataList = DataTable.Instance.GetPotionDataList();
         foreach (var potionData in potionDataList)
         {
-            _potionDataTIDDict.Add(potionData.RecipeCode, potionData.TID);
+            _potionDataTIDDict.TryAdd(potionData.RecipeCode, potionData.TID);
         }
 
         _recipeCodeHandler = new RecipeCodeHandler();
@@ -75,7 +75,7 @@ public class CraftItemManager : MonoBehaviourSingleton<CraftItemManager>
         if (_recipeCodeVerifier.IsValidPotion(recipeCode))
         {
             GameObject potion = CraftItemFactory.Instance.Create(EInputType.Potion, machinePosition, Quaternion.identity);
-            potion.GetComponent<Potion>().InitPotionData(_potionDataTIDDict[recipeCode]);
+            potion.GetComponent<PotionItem>().InitPotionData(_potionDataTIDDict[recipeCode]);
             return potion;
         }
         return CreateFailureItem(machinePosition);

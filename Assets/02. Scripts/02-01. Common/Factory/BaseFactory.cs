@@ -63,11 +63,11 @@ public class BaseFactory<TEnum, TFactoryInfo> : MonoBehaviourSingleton<BaseFacto
 
     public GameObject Create(string addressableKey, Vector3 position, Quaternion rotation)
     {
-        if (!_validAddressableKeys.Contains(addressableKey))
-        {
-            Debug.LogError($"Factory에 등록된 어드레서블 키가 없습니다. Addressable Key : {addressableKey}");
-            return null;
-        }
+        //if (!_validAddressableKeys.Contains(addressableKey))
+        //{
+        //    Debug.LogError($"Factory에 등록된 어드레서블 키가 없습니다. Addressable Key : {addressableKey}");
+        //    return null;
+        //}
 
         GameObject networkObject = PhotonNetwork.Instantiate(addressableKey, position, rotation);
 

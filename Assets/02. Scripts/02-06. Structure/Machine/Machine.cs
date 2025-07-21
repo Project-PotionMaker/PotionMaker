@@ -21,7 +21,7 @@ public class Machine : MonoBehaviour, IGridItemHandler
     [SerializeField]
     private Transform _model;
     [SerializeField]
-    private Transform PutItemPosition;
+    private Transform _putItemPosition;
 
     private IInteractable<Machine, MachineStat> _interactComponent;
     private IInputContainer<Machine, MachineStat> _inputComponent;

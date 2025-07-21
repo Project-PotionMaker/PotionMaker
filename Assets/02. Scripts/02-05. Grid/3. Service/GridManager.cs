@@ -136,10 +136,11 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
     [Button("생성 테스트")]
     public async void Test()
     {
-        CreateStructure(10000, new Vector3(-2, 0, 2), EStructureType.Machine);
+        CreateStructure(10000, new Vector3(0, 0, 3), EStructureType.Machine);
+        CreateStructure(10002, new Vector3(-1, 0, 3), EStructureType.Machine);
+        CreateStructure(10005, new Vector3(-2, 0, 3), EStructureType.Machine);
         CreateStructure(10014, new Vector3(-2, 0, 1), EStructureType.Furniture);
         CreateStructure(10016, new Vector3(-3, 0, 1), EStructureType.Furniture);
-        CreateStructure(10005, new Vector3(-3, 0, 2), EStructureType.Furniture);
         CreateStructure(10019, new Vector3(3, 0, 2), EStructureType.Storage);
     }
 

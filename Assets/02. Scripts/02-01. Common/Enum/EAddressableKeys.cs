@@ -3,9 +3,9 @@ public enum EAddressableKeys
 {
     Prefab_Structure_10018,
     Prefab_Structure_10000,
-    Prefab_Ingredient_10000,
-    Prefab_AddressableTest1,
+    Prefab_Output_Base,
+    Prefab_Ingredient_Base,
     Prefab_Player,
-    Prefab_AddressableTest2,
+    Prefab_Potion_Base,
     Prefab_CustomerNPC,
 }

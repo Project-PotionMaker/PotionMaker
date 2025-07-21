@@ -100,6 +100,7 @@ public class StructureManager : MonoBehaviourSingleton<StructureManager>
             case EInteractType.ClickOnce:
                 return new ClickOnceInteract();
         }
+
         return null;
     }
 }

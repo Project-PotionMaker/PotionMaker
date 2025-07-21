@@ -23,6 +23,9 @@ public class FurnitureData
     ///<summary>구역 타입</summary>
     public readonly EAreaType AreaType;
 
+    ///<summary>특수 구조물 타입</summary>
+    public readonly ESpecialStructureType SpecialStructureType;
+
     public FurnitureData(BinaryReader reader)
     {
         TID = reader.ReadInt32();
@@ -32,5 +35,6 @@ public class FurnitureData
         Description_LocalizationTID = reader.ReadInt32();
         Hint_LocalizationTID = reader.ReadInt32();
         AreaType = (EAreaType)reader.ReadInt32();
+        SpecialStructureType = (ESpecialStructureType)reader.ReadInt32();
     }
 }

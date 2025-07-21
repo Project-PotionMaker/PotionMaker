@@ -2,7 +2,9 @@ using Photon.Pun;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Experimental.GlobalIllumination;
 using VInspector;
+using static UnityEngine.ParticleSystem;
 
 [Serializable]
 public class MeshOnTID
@@ -24,6 +26,11 @@ public class PotionItem : MonoBehaviour
     private List<MeshOnTID> _meshList = new List<MeshOnTID>();
     private Dictionary<int, Mesh> _meshDict;
 
+    private Renderer _material;
+    private Light _pointLight;
+    private ParticleSystem _particles;
+    private MaterialPropertyBlock _mpb;
+
     private void Awake()
     {
         InitPotion();
@@ -39,6 +46,11 @@ public class PotionItem : MonoBehaviour
 
         _meshFilter = GetComponent<MeshFilter>();
         _photonView = GetComponent<PhotonView>();
+
+        _pointLight = GetComponentInChildren<Light>();
+        _mpb = new MaterialPropertyBlock();
+        _material = transform.GetChild(0).GetComponent<Renderer>();
+        _particles = GetComponentInChildren<ParticleSystem>(true);
     }
 
     public void InitPotionData(int TID)
@@ -47,8 +59,7 @@ public class PotionItem : MonoBehaviour
         {
             throw new InvalidOperationException("Potion 객체 생성 후 내부 데이터 초기화는 Master만 가능합니다.");
         }
-        _potionData = DataTable.Instance.GetPotionData(TID);
-        _meshFilter.mesh = _meshDict[TID];
+        RPC_InitPotionData(TID);
         _photonView.RPC(nameof(RPC_InitPotionData), RpcTarget.Others, TID);
     }
 
@@ -57,5 +68,32 @@ public class PotionItem : MonoBehaviour
     {
         _potionData = DataTable.Instance.GetPotionData(TID);
         _meshFilter.mesh = _meshDict[TID];
+        InitVFX();
+    }
+
+    private void InitVFX()
+    {
+        _material.GetPropertyBlock(_mpb);
+        switch (_potionData.Tier)
+        {
+            case 1:
+                _mpb.SetFloat("_Epic", 0);
+                _mpb.SetFloat("_Efect_emission", 0);
+                _pointLight.enabled = false;
+                break;
+            case 2:
+                _mpb.SetFloat("_Epic", 1);
+                _mpb.SetFloat("_Efect_emission", 1.5f);
+                break;
+            case 3:
+                _particles.gameObject.SetActive(true);
+                break;
+            default:
+                _mpb.SetFloat("_Epic", 0);
+                _mpb.SetFloat("_Efect_emission", 0);
+                _pointLight.enabled = false;
+                break;
+        }
+        _material.SetPropertyBlock(_mpb);
     }
 }

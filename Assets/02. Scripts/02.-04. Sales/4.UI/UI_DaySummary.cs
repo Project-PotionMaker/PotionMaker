@@ -15,25 +15,32 @@ public class UI_DaySummary : MonoBehaviour
     private void Start()
     {
         _salesVolumeSlotList = new List<UI_SalesVolumeSlot>();
+        // 엔딩페이즈 구독 += OnEndingPhaseStarted
+        SalesManager.Instance.OnSummaryReady += ShowSummary;
         gameObject.SetActive(false);
+    }
+
+    public void OnEndingPhaseStarted()
+    {
+        SalesManager.Instance.RequestUpdateSales(isForSummary: true);
     }
     public void ShowSummary()
     {
         _dailySalesTextUI.text = SalesManager.Instance.Sales.DailySales.ToString("N0");
 
         int slotIndex = 0;
-        foreach(EPotionType potionType in SalesManager.Instance.Sales.DailySalesVolumeDict.Keys)
+        foreach (EPotionType potionType in SalesManager.Instance.Sales.DailySalesVolumeDict.Keys)
         {
-            if(slotIndex >= _salesVolumeSlotList.Count)
+            if (slotIndex >= _salesVolumeSlotList.Count)
             {
-                 UI_SalesVolumeSlot newSlot = GameObject.Instantiate(_salesVolumeSlotPrefab, _slotContainer);
+                UI_SalesVolumeSlot newSlot = GameObject.Instantiate(_salesVolumeSlotPrefab, _slotContainer);
                 _salesVolumeSlotList.Add(newSlot);
             }
             _salesVolumeSlotList[slotIndex].Refresh(potionType, false);
             ++slotIndex;
         }
 
-        for(int deleteIndex = _salesVolumeSlotList.Count - 1; deleteIndex >= slotIndex; --deleteIndex)
+        for (int deleteIndex = _salesVolumeSlotList.Count - 1; deleteIndex >= slotIndex; --deleteIndex)
         {
             UI_SalesVolumeSlot deleteSlot = _salesVolumeSlotList[deleteIndex];
 

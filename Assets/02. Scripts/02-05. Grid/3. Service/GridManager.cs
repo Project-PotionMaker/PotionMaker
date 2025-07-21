@@ -26,12 +26,12 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
     private Vector3Int _lastDetectedPosition = Vector3Int.zero;
     private IBuildingState _buildingState;
 
-    private IGridItemHandler _cahser;
-    public IGridItemHandler Casher => _cahser;
-    private IGridItemHandler _door;
-    public IGridItemHandler Door => _door;
-    private List<IGridItemHandler> _pickUpTableList;
-    public List<IGridItemHandler> PickUpTableList => _pickUpTableList;
+    private GameObject _cahser;
+    public GameObject Casher => _cahser;
+    private GameObject _door;
+    public GameObject Door => _door;
+    private List<GameObject> _pickUpTableList;
+    public List<GameObject> PickUpTableList => _pickUpTableList;
 
     // private GridRepository _repository;
 
@@ -40,7 +40,7 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
         StopPlacement();
         _layout = GameObject.FindGameObjectWithTag("Layout").GetComponent<Layout>();
         _gridData = new GridData(_layout.GetAvailableAreaDict());
-        _pickUpTableList = new List<IGridItemHandler>();
+        _pickUpTableList = new List<GameObject>();
     }
 
     public void UpdatePlacementPosition(Vector3 targetPosition)
@@ -96,12 +96,12 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
         switch (data.SpecialStructureType)
         {
             case ESpecialStructureType.PickUpTable:
-                _pickUpTableList.Add(newObject.GetComponent<IGridItemHandler>());
+                _pickUpTableList.Add(newObject);
                 break;
             case ESpecialStructureType.TrashCan:
                 break;
             case ESpecialStructureType.Casher:
-                _cahser = newObject.GetComponent<IGridItemHandler>();
+                _cahser = newObject;
                 break;
             case ESpecialStructureType.None:
                 break;
@@ -136,23 +136,11 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
     [Button("생성 테스트")]
     public async void Test()
     {
-        DefaultPool defaultPool = PhotonNetwork.PrefabPool as DefaultPool;
-
-        //string playerAddressableKey = "Prefab_Structure_10000";
-
-        //GameObject _playerPrefab = await AssetManager.Instance.LoadAsset<GameObject>(playerAddressableKey);
-
-        //defaultPool.ResourceCache.Add(playerAddressableKey, _playerPrefab);
-
-        string playerAddressableKey = "Prefab_Structure_10018";
-
-        GameObject _playerPrefab = await AssetManager.Instance.LoadAsset<GameObject>(playerAddressableKey);
-
-        defaultPool.ResourceCache.Add(playerAddressableKey, _playerPrefab);
-
         CreateStructure(10000, new Vector3(-2, 0, 2), EStructureType.Machine);
-
-        CreateStructure(10018, new Vector3(3, 0, 2), EStructureType.Storage);
+        CreateStructure(10014, new Vector3(-2, 0, 1), EStructureType.Furniture);
+        CreateStructure(10016, new Vector3(-3, 0, 1), EStructureType.Furniture);
+        CreateStructure(10005, new Vector3(-3, 0, 2), EStructureType.Furniture);
+        CreateStructure(10019, new Vector3(3, 0, 2), EStructureType.Storage);
     }
 
     public Vector3Int GetGridPosition(Vector3 targetPosition)

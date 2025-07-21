@@ -7,12 +7,21 @@ using System.Linq;
 using UnityEngine;
 using VInspector;
 
+[Serializable]
+public class ModelOnTID
+{
+    public int TID;
+    public GameObject Model;
+}
+
 public class Machine : MonoBehaviour, IGridItemHandler
 {
     [SerializeField]
     private MachineStat _stat;
     [SerializeField]
     private Transform _model;
+    [SerializeField]
+    private Transform PutItemPosition;
 
     private IInteractable<Machine, MachineStat> _interactComponent;
     private IInputContainer<Machine, MachineStat> _inputComponent;
@@ -21,11 +30,22 @@ public class Machine : MonoBehaviour, IGridItemHandler
     private PhotonView _photonView;
     public PhotonView PhotonView => _photonView;
 
+    [Foldout("Project")]
+    [SerializeField]
+    private List<ModelOnTID> _modelObjectList = new List<ModelOnTID>();
+    private Dictionary<int, GameObject> _modelObjectDic;
+
     public Action OnDataChanged;
 
     private void Awake()
     {
         _photonView = GetComponent<PhotonView>();
+        _modelObjectDic = new Dictionary<int, GameObject>();
+        foreach (var modelInfo in _modelObjectList)
+        {
+            modelInfo.Model.SetActive(false);
+            _modelObjectDic.Add(modelInfo.TID, modelInfo.Model);
+        }
     }
 
     public void InitMachine(MachineData data, IInteractable<Machine, MachineStat> interactableComponent, IInputContainer<Machine, MachineStat> inputComponent, IOutputContainer<Machine, MachineStat> outputComponent)
@@ -34,7 +54,16 @@ public class Machine : MonoBehaviour, IGridItemHandler
         _interactComponent = interactableComponent;
         _inputComponent = inputComponent;
         _outputComponent = outputComponent;
-        _photonView = GetComponent<PhotonView>();
+
+        foreach (var modelInfo in _modelObjectList)
+        {
+            modelInfo.Model.SetActive(false);
+            if (modelInfo.TID == _stat.Data.TID)
+            {
+                _model = modelInfo.Model.transform;
+                modelInfo.Model.SetActive(true);
+            }
+        }
     }
 
     public bool TryInteract()

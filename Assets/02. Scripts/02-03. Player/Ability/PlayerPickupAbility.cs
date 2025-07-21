@@ -24,12 +24,8 @@ public class PlayerPickupAbility : PlayerAbility
 
         if( _heldItem != null)
         {
-            Vector3 targetPosition = transform.position + transform.forward * 0.5f;
+            Vector3 targetPosition = _owner.GetFrontPosition();
             GridManager.Instance.UpdatePlacementPosition(targetPosition);
-        }
-        else
-        {
-            CheckCanPickUp();
         }
     }
 
@@ -49,46 +45,56 @@ public class PlayerPickupAbility : PlayerAbility
     {
         Debug.Log("Pickup");
         GameObject item = FindFrontPickupItem();
-        if (item == null)
+        if (ReferenceEquals(item, null) == false)
         {
-            return;
+            GameObject newItem = item.GetComponent<IGridItemHandler>()?.TryPickUp();
+            if(newItem != null)
+            {
+                _heldItem = newItem;
+                _heldItem.transform.SetParent(this.transform);
+            }
         }
-
-        _heldItem = item;
-        _heldItem.transform.SetParent(this.transform);
     }
 
     private void TryPutDown()
     {
-        Vector3 targetPosition = transform.position + transform.forward * 0.5f;
-        if (GridManager.Instance.TryDrop(targetPosition))
+        Vector3 targetPosition = _owner.GetFrontPosition();
+        IGridItemHandler itemHandler = _heldItem.GetComponent<IGridItemHandler>();
+        if(ReferenceEquals(itemHandler, null) == false)
         {
-            Debug.Log("Put Down");
-            _heldItem.transform.SetParent(null);
+            if (itemHandler.TryDrop(targetPosition))
+            {
+                _heldItem.transform.SetParent(null);
 
-            _heldItem = null;
+                _heldItem = null;
+            }
         }
-    }
-
-    private bool CheckCanPickUp()
-    {
-        if (_heldItem != null)
+        else
         {
-            return false;
-        }
+            GameObject gridObject = FindFrontPickupItem();
+            if(gridObject != null)
+            {
+                IItem item = _heldItem.GetComponent<IItem>();
+                if (item != null && gridObject.GetComponent<IGridItemHandler>().TryDrop(targetPosition, item.GetTID(), item.GetInputType()))
+                {
+                    _heldItem.transform.SetParent(null);
+                    Destroy(_heldItem);
+                    _heldItem = null;
+                }
 
-        Vector3 targetPosition = transform.position + transform.forward * 0.5f;
-        if (GridManager.Instance.CheckObjectOnGrid(targetPosition))
-        {
-            return true;
+            }
         }
-        return false;
     }
 
     private GameObject FindFrontPickupItem()
     {
-        Vector3 targetPosition = transform.position + transform.forward * 0.5f;
-        GameObject item = GridManager.Instance.TryPickup(targetPosition);
+        if (!_owner.CheckObjectInFront())
+        {
+            return null;
+        }
+
+        Vector3 targetPosition = _owner.GetFrontPosition();
+        GameObject item = GridManager.Instance.GetObjectOnGrid(targetPosition);
         return item;
     }
 }

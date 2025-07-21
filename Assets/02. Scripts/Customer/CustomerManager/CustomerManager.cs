@@ -156,7 +156,10 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
             return;
         }
         customer.SetCurrentState(ECustomerStateType.Leaving);
-        _orderHandler.RemoveAnywhere(customer); // 주문 목록에서 손님 제거
+        if (_orderHandler.RemoveAnywhere(customer))// 주문 목록에서 손님 제거
+        {
+            _lineHandler.ReLining(); // 줄 다시 세우기
+        }
         _lineHandler.PutOutCustomer(customer); // 손님을 나가게 하기
         _lostCustomerCount++;
         if(_lostCustomerCount >= _maxCustomerLost)

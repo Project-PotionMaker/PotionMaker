@@ -32,6 +32,9 @@ public class MachineStat
     [SerializeField]
     private bool _isProcessStarted;
     public bool IsProcessStarted { get => _isProcessStarted; set => _isProcessStarted = value; }
+    [SerializeField]
+    private float _currentRotation;
+    public float CurrentRotation { get => _currentRotation; set => _currentRotation = value; }
 
     [SerializeField]
     private List<int> _inputTIDList;

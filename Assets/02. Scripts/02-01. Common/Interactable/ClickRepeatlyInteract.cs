@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class ClickRepeatlyInteract : IMachineInteractable
+public class ClickRepeatlyInteract : IInteractable<Machine, MachineStat>
 {
     public bool CanInteract(Machine machine, MachineStat stat)
     {

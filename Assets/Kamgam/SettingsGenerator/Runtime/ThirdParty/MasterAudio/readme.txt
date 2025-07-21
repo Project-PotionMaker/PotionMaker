@@ -1,0 +1,1 @@
+This third party asset does not support assembly definitiony by default and thus we only declare and interface here that can be used.

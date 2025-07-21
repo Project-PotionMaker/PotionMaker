@@ -19,25 +19,16 @@ public class RoomManager : MonoBehaviourSingleton<RoomManager>, IMatchmakingCall
 
     private bool _initialized = false;
 
+    protected override void Awake()
+    {
+        base.Awake();
+
+        SetPlayerPrefab();
+    }
+
     private void OnEnable()
     {
         PhotonNetwork.AddCallbackTarget(this);
-    }
-
-    private async void Start()
-    {
-        DefaultPool defaultPool = PhotonNetwork.PrefabPool as DefaultPool;
-
-        string playerAddressableKey = _playerAddressableKey.ToString();
-
-        _playerPrefab = await AssetManager.Instance.LoadAsset<GameObject>(playerAddressableKey);
-
-        defaultPool.ResourceCache.Add(playerAddressableKey, _playerPrefab);
-
-        if (PhotonNetwork.InRoom)
-        {
-            Init();
-        }
     }
 
     private void OnDisable()
@@ -66,6 +57,18 @@ public class RoomManager : MonoBehaviourSingleton<RoomManager>, IMatchmakingCall
         SetRoom();
 
         OnRoomDataChanged?.Invoke();
+    }
+
+    // TODO : 나중에 로딩씬에서 실행해야 합니다.(메서드 이전 필요)
+    public async void SetPlayerPrefab()
+    {
+        DefaultPool defaultPool = PhotonNetwork.PrefabPool as DefaultPool;
+
+        string playerAddressableKey = _playerAddressableKey.ToString();
+
+        _playerPrefab = await AssetManager.Instance.LoadAsset<GameObject>(playerAddressableKey);
+
+        defaultPool.ResourceCache.Add(playerAddressableKey, _playerPrefab);
     }
 
     private void GeneratePlayer()

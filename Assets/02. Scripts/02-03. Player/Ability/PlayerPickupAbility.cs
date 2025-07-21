@@ -45,24 +45,44 @@ public class PlayerPickupAbility : PlayerAbility
     {
         Debug.Log("Pickup");
         GameObject item = FindFrontPickupItem();
-        if (item == null)
+        if (ReferenceEquals(item, null) == false)
         {
-            return;
+            GameObject newItem = item.GetComponent<IGridItemHandler>()?.TryPickUp();
+            if(newItem != null)
+            {
+                _heldItem = newItem;
+                _heldItem.transform.SetParent(this.transform);
+            }
         }
-
-        _heldItem = item;
-        _heldItem.transform.SetParent(this.transform);
     }
 
     private void TryPutDown()
     {
         Vector3 targetPosition = _owner.GetFrontPosition();
-        if (GridManager.Instance.TryDrop(targetPosition))
+        IGridItemHandler itemHandler = _heldItem.GetComponent<IGridItemHandler>();
+        if(ReferenceEquals(itemHandler, null) == false)
         {
-            Debug.Log("Put Down");
-            _heldItem.transform.SetParent(null);
+            if (itemHandler.TryDrop(targetPosition))
+            {
+                _heldItem.transform.SetParent(null);
 
-            _heldItem = null;
+                _heldItem = null;
+            }
+        }
+        else
+        {
+            GameObject gridObject = FindFrontPickupItem();
+            if(gridObject != null)
+            {
+                IItem item = _heldItem.GetComponent<IItem>();
+                if (item != null && gridObject.GetComponent<IGridItemHandler>().TryDrop(targetPosition, item.GetTID(), item.GetInputType()))
+                {
+                    _heldItem.transform.SetParent(null);
+                    Destroy(_heldItem);
+                    _heldItem = null;
+                }
+
+            }
         }
     }
 
@@ -74,7 +94,7 @@ public class PlayerPickupAbility : PlayerAbility
         }
 
         Vector3 targetPosition = _owner.GetFrontPosition();
-        GameObject item = GridManager.Instance.TryPickup(targetPosition);
+        GameObject item = GridManager.Instance.GetObjectOnGrid(targetPosition);
         return item;
     }
 }

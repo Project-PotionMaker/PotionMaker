@@ -8,7 +8,9 @@ public class PlacementState : IBuildingState
     private GridData _gridData;
     private PlaceSystem _objectPlacer;
     private GameObject _structure;
+    
     private Vector2Int _size;
+    private Quaternion _rotation;
 
     public PlacementState(GameObject structure,
                           StructureData data,
@@ -25,6 +27,7 @@ public class PlacementState : IBuildingState
         _objectPlacer = objectPlacer;
 
         _size = new Vector2Int(data.Width, data.Length);
+        _rotation = structure.transform.rotation;
 
         _previewSystem.StartShowingPlacementPreview(
             _data.TID,
@@ -47,7 +50,8 @@ public class PlacementState : IBuildingState
         int index = _objectPlacer.PlaceObject(
             _structure,
             _data.TID,
-            _grid.CellToWorld(gridPosition));
+            _grid.CellToWorld(gridPosition),
+            _rotation);
 
         _gridData.AddObjectAt(gridPosition,
                                  _size,

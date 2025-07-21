@@ -1,3 +1,4 @@
+using Google.Apis.Sheets.v4.Data;
 using NUnit.Framework;
 using Photon.Pun;
 using System;
@@ -6,12 +7,16 @@ using System.Linq;
 using UnityEngine;
 using VInspector;
 
-public class Machine : MonoBehaviour
+public class Machine : MonoBehaviour, IGridItemHandler
 {
     [SerializeField]
     private MachineStat _stat;
-    private IMachineInteractable _interactComponent;
-    private IMachineItemContainer _containerComponent;
+    [SerializeField]
+    private Transform _model;
+
+    private IInteractable<Machine, MachineStat> _interactComponent;
+    private IInputContainer<Machine, MachineStat> _inputComponent;
+    private IOutputContainer<Machine, MachineStat> _outputComponent;
 
     private PhotonView _photonView;
     public PhotonView PhotonView => _photonView;
@@ -23,32 +28,37 @@ public class Machine : MonoBehaviour
         _photonView = GetComponent<PhotonView>();
     }
 
-    public void InitMachine(MachineData data, IMachineInteractable interactableComponent, IMachineItemContainer containerComponent)
+    public void InitMachine(MachineData data, IInteractable<Machine, MachineStat> interactableComponent, IInputContainer<Machine, MachineStat> inputComponent, IOutputContainer<Machine, MachineStat> outputComponent)
     {
         _stat = new MachineStat(data);
         _interactComponent = interactableComponent;
-        _containerComponent = containerComponent;
+        _inputComponent = inputComponent;
+        _outputComponent = outputComponent;
         _photonView = GetComponent<PhotonView>();
     }
 
     public bool TryInteract()
     {
-        return _interactComponent.TryInteract(this, _stat);
+        if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
+        {
+            _stat.CurrentRotation += 90f;
+            if (_stat.CurrentRotation > 360f)
+            {
+                _stat.CurrentRotation = 0;
+            }
+            _model.rotation = Quaternion.Euler(0, _stat.CurrentRotation, 0);
+        }
+        else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase)
+        {
+            return _interactComponent.TryInteract(this, _stat);
+        }
+
+        return false;
     }
 
-    public bool TryInput(int tid, EInputType inputType)
+    private bool TryInput(int tid, EInputType inputType)
     {
-        return _containerComponent.TryInput(this, _stat, tid, inputType);
-    }
-
-    public bool CanTakeOut()
-    {
-        return _containerComponent.CanTake(this, _stat);
-    }
-
-    public GameObject TakeOutput()
-    {
-        return _containerComponent.TakeItem(this, _stat);
+        return _inputComponent.TryInput(this, _stat, tid, inputType);
     }
 
     [ContextMenu("HI")]
@@ -73,5 +83,43 @@ public class Machine : MonoBehaviour
     public MachineStat GetStat()
     {
         return _stat;
+    }
+
+    public GameObject TryPickUp()
+    {
+        if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
+        {
+            return GridManager.Instance.StartPlacement(transform.position);
+        }
+        else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase)
+        {
+            if(ReferenceEquals(_outputComponent, null) == false)
+            {
+                if(_outputComponent.CanTake(this, _stat))
+                {
+                    return _outputComponent.TakeItem(this, _stat);
+                }
+            }
+        }
+        return null;
+    }
+
+    public bool TryDrop(Vector3 targetPosition, int tid = 10000, EInputType inputType = EInputType.None, GameObject inputObject = null)
+    {
+        if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
+        {
+            if (GridManager.Instance.TryPlaceStructure(targetPosition))
+            {
+                return true;
+            }
+        }
+        else if(PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase)
+        {
+            if(TryInput(tid, inputType))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

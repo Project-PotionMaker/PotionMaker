@@ -1,24 +1,9 @@
 using Photon.Pun;
 using UnityEngine;
 
-public class DefaultMachineContainer : IMachineItemContainer
+public class MachineOutputContainer : IOutputContainer<Machine, MachineStat>
 {
     private GameObject _output;
-
-    public bool TryInput(Machine machine, MachineStat stat, int tid, EInputType inputType)
-    {
-        if (stat.InputTIDList.Count + 1 > stat.Data.MaxInputCount ||
-            stat.IsProcessFinished ||
-            stat.InputTIDList.Contains(tid))
-        {
-            return false;
-        }
-
-        stat.InputTIDList.Add(tid);
-
-        machine.SyncMachineStat();
-        return true;
-    }
 
     public GameObject TakeItem(Machine machine, MachineStat stat)
     {
@@ -34,7 +19,7 @@ public class DefaultMachineContainer : IMachineItemContainer
                 RPC_TakeOutput(stat.InputTIDList.ToArray(), stat.Data.TID, EInputType.Output, machine.transform.position);
             }
 
-                stat.LeftOutputAmount--;
+            stat.LeftOutputAmount--;
             if (stat.LeftOutputAmount <= 0)
             {
                 stat.ClearMachine();

@@ -127,6 +127,20 @@ public enum EStructureType
     Machine = 1,
     ///<summary>가구</summary>
     Furniture = 2,
+    ///<summary>재료 상자</summary>
+    Storage = 3,
+}
+
+public enum ESpecialStructureType
+{
+    ///<summary>없음</summary>
+    None = 0,
+    ///<summary>픽업테이블</summary>
+    PickUpTable = 1,
+    ///<summary>계산기</summary>
+    Casher = 2,
+    ///<summary>쓰레기통</summary>
+    TrashCan = 3,
 }
 
 public enum ECustomerStateType

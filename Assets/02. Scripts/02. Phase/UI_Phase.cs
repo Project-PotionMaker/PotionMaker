@@ -77,7 +77,7 @@ public class UI_Phase : MonoBehaviour
     private void ShowSummary()
     {
         _todaySummaryPanel.SetActive(true);
-        _todaySummaryText.text = $"Potions : \n Gold :";
+        _todaySummaryText.text = $"Gold : {SalesManager.Instance.Sales.DailySales}";
     }
     private void HideSummary()
     {

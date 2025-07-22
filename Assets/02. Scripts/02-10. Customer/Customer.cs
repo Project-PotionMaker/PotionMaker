@@ -15,6 +15,9 @@ public class Customer : MonoBehaviour
 
     [SerializeField]
     private int _requestedPotionTID = 10000;
+    [SerializeField]
+    private GameObject _potionHandler;
+    public GameObject PotionHandler { get => _potionHandler; set => _potionHandler = value; } // 포션 핸들러 오브젝트
     public int RequestedPotionTID { get => _requestedPotionTID; set=> _requestedPotionTID = value; } // 요청한 포션 ID
 
     private PhotonView _photonView;

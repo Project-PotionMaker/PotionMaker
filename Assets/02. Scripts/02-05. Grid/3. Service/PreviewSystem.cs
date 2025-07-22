@@ -29,10 +29,15 @@ public class PreviewSystem : MonoBehaviour
     public void StartShowingPlacementPreview(int structureTID, Vector2Int size)
     {
         _previewObject = StructureManager.Instance.CreateStructure(structureTID);
-
         PreparePreview(_previewObject);
         PrepareCursor(size);
         _cellIndicator.SetActive(true);
+
+        Canvas canvas = _previewObject.GetComponentInChildren<Canvas>();
+        if(canvas != null)
+        {
+            canvas.gameObject.SetActive(false);
+        }
 
         Collider[] colliders = _previewObject.GetComponentsInChildren<Collider>();
         foreach(Collider col in colliders)

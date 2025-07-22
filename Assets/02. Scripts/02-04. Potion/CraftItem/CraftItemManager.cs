@@ -57,21 +57,25 @@ public class CraftItemManager : MonoBehaviourSingleton<CraftItemManager>
     public GameObject TryCreateOutputItem(int[] TIDList, int machineTID, EInputType type, Vector3 machinePosition)
     {
         string recipeCode;
+        GameObject output = null;
         if (type != EInputType.Ingredient)
         {
             recipeCode = _recipeCodeHandler.MakeNewRecipeCode(TIDList, machineTID);
+            if (_recipeCodeVerifier.IsValidProcess(recipeCode))
+            {
+                output = CraftItemFactory.Instance.Create(EInputType.Output, machinePosition, Quaternion.identity);
+                output.GetComponent<OutputItem>().InitOutputData(EInputType.Output, _outputDataTIDDict[recipeCode]);
+                return output;
+            }
         }
         else
         {
             recipeCode = DataTable.Instance.GetIngredientData(TIDList[0]).RecipeCode;
-        }
-        GameObject output = null;
-        if (_recipeCodeVerifier.IsValidProcess(recipeCode))
-        {
             output = CraftItemFactory.Instance.Create(EInputType.Output, machinePosition, Quaternion.identity);
             output.GetComponent<OutputItem>().InitOutputData(EInputType.Output, _outputDataTIDDict[recipeCode]);
             return output;
         }
+
         return CreateFailureItem(machinePosition);
     }
 

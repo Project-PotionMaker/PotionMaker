@@ -15,7 +15,6 @@ public class PickUpTableInputContainer : IInputContainer<Furniture, FurnitureSta
 
             // NPC매니저에서 여기 있는거 알리기
             CustomerManager.Instance.ServePotion(tid);
-
             return true;
         }
         return false;

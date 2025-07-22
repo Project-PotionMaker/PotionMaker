@@ -3,7 +3,7 @@ using System;
 
 public class ServingPhase : BasePhase
 {
-    private const float INIT_TIMER = 20f;
+    private const float INIT_TIMER = 100f;
     private float _currentTime;
     public float CurrentTime { get => _currentTime; set => _currentTime = value; }
 

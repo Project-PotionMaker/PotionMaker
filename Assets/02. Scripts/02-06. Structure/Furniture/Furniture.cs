@@ -1,6 +1,8 @@
 using Photon.Pun;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
+using VInspector;
 
 public class Furniture : MonoBehaviour, IGridItemHandler
 {
@@ -15,8 +17,23 @@ public class Furniture : MonoBehaviour, IGridItemHandler
 
     private PhotonView _photonView;
     public PhotonView PhotonView => _photonView;
+    [Foldout("Project")]
+    [SerializeField]
+    private List<ModelOnTID> _modelObjectList = new List<ModelOnTID>();
+    private Dictionary<int, GameObject> _modelObjectDic;
 
     public Action OnDataChanged;
+
+    private void Awake()
+    {
+        _photonView = GetComponent<PhotonView>();
+        _modelObjectDic = new Dictionary<int, GameObject>();
+        foreach (var modelInfo in _modelObjectList)
+        {
+            modelInfo.Model.SetActive(false);
+            _modelObjectDic.Add(modelInfo.TID, modelInfo.Model);
+        }
+    }
 
     public void InitFurniture(FurnitureData data, IInteractable<Furniture, FurnitureStat> interactComponent, IInputContainer<Furniture, FurnitureStat> inputComponent, IOutputContainer<Furniture, FurnitureStat> outputComponent)
     {
@@ -24,6 +41,16 @@ public class Furniture : MonoBehaviour, IGridItemHandler
         _interactComponent = interactComponent;
         _inputComponent = inputComponent;
         _outputComponent = outputComponent;
+
+        foreach (var modelInfo in _modelObjectList)
+        {
+            modelInfo.Model.SetActive(false);
+            if (modelInfo.TID == _stat.Data.TID)
+            {
+                _model = modelInfo.Model.transform;
+                modelInfo.Model.SetActive(true);
+            }
+        }
     }
 
     public bool TryDrop(Vector3 targetPosition, int tid = 10000, EInputType inputType = EInputType.None, GameObject inputObject = null)
@@ -55,12 +82,15 @@ public class Furniture : MonoBehaviour, IGridItemHandler
                 _stat.CurrentRotation = 0;
             }
 
-            transform.rotation = Quaternion.Euler(0, _stat.CurrentRotation, 0);
+            _model.rotation = Quaternion.Euler(0, _stat.CurrentRotation, 0);
             return true;
         }
         else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase)
         {
-            return _interactComponent.TryInteract(this, _stat);
+            if(ReferenceEquals(_interactComponent, null) == false)
+            {
+                return _interactComponent.TryInteract(this, _stat);
+            }
         }
 
         return false;
@@ -87,6 +117,10 @@ public class Furniture : MonoBehaviour, IGridItemHandler
 
     public bool TryInput(int tid, EInputType inputType, GameObject inputObject)
     {
-        return _inputComponent.TryInput(this, _stat, tid, inputType, inputObject);
+        if(ReferenceEquals(_inputComponent, null) == false)
+        {
+            return _inputComponent.TryInput(this, _stat, tid, inputType, inputObject);
+        }
+        return false;
     }
 }

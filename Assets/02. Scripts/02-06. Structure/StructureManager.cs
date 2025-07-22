@@ -8,17 +8,17 @@ using Photon.Realtime;
 
 public class StructureManager : MonoBehaviourSingleton<StructureManager>
 {
-    private const string ADDRESSABLE_KEY_PREFIX = "Prefab_Structure_";
+    private const string ADDRESSABLE_KEY_PREFIX = "Prefab_";
 
     public GameObject CreateStructure(int structureTID, int ingredientTID = 10000)
     {
-        // 포톤네트워크로 생성 + 오브젝트풀 고려
-        GameObject instance = StructureFactory.Instance.Create($"{ADDRESSABLE_KEY_PREFIX}{structureTID}", Vector3.zero, Quaternion.identity);
         StructureData data = DataTable.Instance.GetStructureData(structureTID);
+        GameObject instance = StructureFactory.Instance.Create(data.StructureType, Vector3.zero, Quaternion.identity);
 
         switch (data.StructureType)
         {
             case EStructureType.Furniture:
+                InitFurniture(instance, data.TypeTID);
                 break;
             case EStructureType.Machine:
                 InitMachine(instance, data.TypeTID);
@@ -51,6 +51,25 @@ public class StructureManager : MonoBehaviourSingleton<StructureManager>
         return prefab;
     }
 
+    public void InitFurniture(GameObject instance, int furnitureTID)
+    {
+        FurnitureData furnitureData = DataTable.Instance.GetFurnitureData(furnitureTID);
+        IInteractable<Furniture, FurnitureStat> interactable = null;
+        IInputContainer<Furniture, FurnitureStat> inputContainer = null;
+        IOutputContainer<Furniture, FurnitureStat> outputContainer = null;
+        // 테스트용
+        if (furnitureData.Name == "계산기")
+        {
+            interactable = new CasherInteract();
+        }
+        if(furnitureData.Name == "픽업 테이블")
+        {
+            inputContainer = new PickUpTableInputContainer();
+            outputContainer = new PickUpTableOutputContainer();
+        }
+        instance.GetComponent<Furniture>().InitFurniture(furnitureData, interactable, inputContainer, outputContainer);
+    }
+
     public void InitMachine(GameObject instance, int MachineTID)
     {
         MachineData machineData = DataTable.Instance.GetMachineData(MachineTID);
@@ -81,6 +100,7 @@ public class StructureManager : MonoBehaviourSingleton<StructureManager>
             case EInteractType.ClickOnce:
                 return new ClickOnceInteract();
         }
+
         return null;
     }
 }

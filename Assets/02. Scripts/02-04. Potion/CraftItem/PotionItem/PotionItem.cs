@@ -2,9 +2,7 @@ using Photon.Pun;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Experimental.GlobalIllumination;
 using VInspector;
-using static UnityEngine.ParticleSystem;
 
 [Serializable]
 public class MeshOnTID

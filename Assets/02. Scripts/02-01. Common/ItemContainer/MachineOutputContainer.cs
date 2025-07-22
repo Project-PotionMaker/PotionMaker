@@ -12,11 +12,11 @@ public class MachineOutputContainer : IOutputContainer<Machine, MachineStat>
             if (!PhotonNetwork.IsMasterClient)
             {
                 machine.PhotonView.RPC(nameof(RPC_TakeOutput), RpcTarget.MasterClient,
-                stat.InputTIDList.ToArray(), stat.Data.TID, EInputType.Output, machine.transform.position);
+                stat.InputTIDList.ToArray(), stat.Data.TID, stat.InputType, machine.transform.position);
             }
             else
             {
-                RPC_TakeOutput(stat.InputTIDList.ToArray(), stat.Data.TID, EInputType.Output, machine.transform.position);
+                RPC_TakeOutput(stat.InputTIDList.ToArray(), stat.Data.TID, stat.InputType, machine.transform.position);
             }
 
             stat.LeftOutputAmount--;

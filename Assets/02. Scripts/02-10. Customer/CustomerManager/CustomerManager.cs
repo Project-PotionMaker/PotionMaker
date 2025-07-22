@@ -16,6 +16,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
     private PhotonView _photonView;
     private int _lostCustomerCount;
     public int LostCustomerCount { get => _lostCustomerCount; set => _lostCustomerCount = value; }
+    private bool _canOrdered = false; // 주문을 받을 수 있는 상태인지 여부
 
     [Foldout("Inspector")]
     [SerializeField]
@@ -115,7 +116,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
             return; // 줄에 도착했지만 첫번째 손님이 아니면 무시
         }
         PhotonView customerView = _orderHandler.PotionOrderLine.Peek().GetComponent<PhotonView>();
-        //TODO : 접수대에 손님을 등록 (접수 가능 상태)
+        _canOrdered = true;
     }
 
     public void RegisterOrder() // 플레이어가 접수를 받으면 호출
@@ -140,6 +141,11 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         {
             return;
         }
+        if(_canOrdered == false)
+        {
+            return;
+        }
+        _canOrdered = false; // 주문을 받은 후에는 다시 주문을 받을 수 없도록 설정
         Customer customer = _orderHandler.PotionOrderLine.Dequeue();
         int potionTID = customer.GetComponent<Customer>().RequestedPotionTID;
 
@@ -210,7 +216,10 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         }
         //TODO : 구매 성공, Currency 증가
         Debug.Log($"Potion served successfully for TID: {potionTID}");
+        GameObject potion = GridManager.Instance.PickUpTableList[0].GetComponent<IGridItemHandler>().TryPickUp();
         Customer customer = _orderHandler.PotionOrderMap[potionTID].First.Value;
+        potion.transform.SetParent(customer.PotionHandler.transform);
+        potion.transform.localPosition = Vector3.zero;
         _orderHandler.PotionOrderMap[potionTID].RemoveFirst(); // 손님 제거
         _lineHandler.PutOutCustomer(customer); // 손님을 나가게 하기
         customer.SetCurrentState(ECustomerStateType.Leaving); // 손님 상태를 나가는 상태로 변경

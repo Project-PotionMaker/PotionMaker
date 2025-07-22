@@ -8,8 +8,7 @@ public class Placement
     public List<Vector3Int> OccupiedPositionList;
     public int TID { get; private set; }
     public EStructureType structureType { get; private set; }
-    public GameObject structureObject { get; private set; }
-
+    public GameObject StructureObject { get; private set; }
     public Placement(List<Vector3Int> occupiedPositionList, int tid, EStructureType type, GameObject structureObject)
     {
         if (tid < 10000)
@@ -20,7 +19,7 @@ public class Placement
         OccupiedPositionList = occupiedPositionList;
         TID = tid;
         structureType = type;
-        this.structureObject = structureObject;
+        StructureObject = structureObject;
     }
 
     public PlacementDTO ToDTO()

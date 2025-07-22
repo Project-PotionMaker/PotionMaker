@@ -17,9 +17,6 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
     [SerializeField]
     private PreviewSystem _previewSystem;
 
-    [SerializeField]
-    private PlaceSystem _placeSystem = new();
-
     private Layout _layout;
 
     private GridData _gridData;
@@ -61,19 +58,22 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
     public GameObject GetObjectOnGrid(Vector3 targetPosition)
     {
         Vector3Int gridPosition = GetGridPosition(targetPosition);
-        int index = _gridData.GetRepresentationIndex(gridPosition);
-        return _placeSystem.GetGameObject(index);
+        Placement placement = _gridData.GetPlacement(gridPosition);
+        if(ReferenceEquals(placement, null))
+        {
+            return null;
+        }
+        return placement.StructureObject;
     }
 
     public GameObject StartPlacement(Vector3 targetPosition)
     {
         StopPlacement();
         _gridVisualization.SetActive(true);
-
+        Debug.Log(targetPosition);
         Vector3Int gridPosition = GetGridPosition(targetPosition);
         Placement placement = _gridData.GetPlacement(gridPosition);
-        GameObject structure = _placeSystem.GetGameObject(placement.PlacedObjectIndex);
-        _placeSystem.RemoveObjectAt(placement.PlacedObjectIndex);
+        GameObject structure = placement.StructureObject;
         _gridData.RemoveObjectAt(gridPosition);
 
         StructureData data = DataTable.Instance.GetStructureData(placement.TID);
@@ -81,17 +81,16 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
                                             data,
                                             _grid,
                                             _previewSystem,
-                                            _gridData,
-                                            _placeSystem);
+                                            _gridData);
 
         return structure;
     }
 
-    public void CreateStructure(int tid, Vector3 position, EStructureType structureType)
+    public void CreateStructure(int tid, Vector3 position, EStructureType structureType, int ingredientTID = 0)
     {
         StopPlacement();
         StructureData data = DataTable.Instance.GetStructureData(tid);
-        GameObject newObject = StructureManager.Instance.CreateStructure(tid);
+        GameObject newObject = StructureManager.Instance.CreateStructure(tid, ingredientTID);
 
         switch (data.SpecialStructureType)
         {
@@ -111,8 +110,7 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
                                             data,
                                             _grid,
                                             _previewSystem,
-                                            _gridData,
-                                            _placeSystem);
+                                            _gridData);
         TryPlaceStructure(position);
     }
 
@@ -136,12 +134,13 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
     [Button("생성 테스트")]
     public async void Test()
     {
-        CreateStructure(10000, new Vector3(0, 0, 3), EStructureType.Machine);
-        CreateStructure(10002, new Vector3(-1, 0, 3), EStructureType.Machine);
-        CreateStructure(10005, new Vector3(-2, 0, 3), EStructureType.Machine);
-        CreateStructure(10014, new Vector3(-2, 0, 1), EStructureType.Furniture);
-        CreateStructure(10016, new Vector3(-3, 0, 1), EStructureType.Furniture);
-        CreateStructure(10019, new Vector3(3, 0, 2), EStructureType.Storage);
+        CreateStructure(10000, new Vector3(-5, 0, 4), EStructureType.Machine);
+        CreateStructure(10002, new Vector3(-3, 0, 4), EStructureType.Machine);
+        CreateStructure(10014, new Vector3(0, 0, 0), EStructureType.Furniture);
+        CreateStructure(10016, new Vector3(-5, 0, 0), EStructureType.Furniture);
+        CreateStructure(10005, new Vector3(0, 0, 2), EStructureType.Furniture);
+        CreateStructure(10019, new Vector3(4, 0, 2), EStructureType.Storage, 10000);
+        CreateStructure(10019, new Vector3(4, 0, 4), EStructureType.Storage, 10001);
     }
 
     public Vector3Int GetGridPosition(Vector3 targetPosition)

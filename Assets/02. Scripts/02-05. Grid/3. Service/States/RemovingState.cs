@@ -30,23 +30,23 @@ public class RemovingState : IBuildingState
 
     public void OnAction(Vector3Int gridPosition)
     {
-        if(ReferenceEquals(_gridData, null))
-        {
-            return;
-        }
-        else
-        {
-            _gameObjectIndex = _gridData.GetRepresentationIndex(gridPosition);
-            if(_gameObjectIndex == -1)
-            {
-                return;
-            }
-            _gridData.RemoveObjectAt(gridPosition);
-            _objectPlacer.RemoveObjectAt(_gameObjectIndex);
-        }
+        //if(ReferenceEquals(_gridData, null))
+        //{
+        //    return;
+        //}
+        //else
+        //{
+        //    _gameObjectIndex = _gridData.GetRepresentationIndex(gridPosition);
+        //    if(_gameObjectIndex == -1)
+        //    {
+        //        return;
+        //    }
+        //    _gridData.RemoveObjectAt(gridPosition);
+        //    _objectPlacer.RemoveObjectAt(_gameObjectIndex);
+        //}
 
-        Vector3 cellPosition = _grid.CellToWorld(gridPosition);
-        _previewSystem.UpdatePosition(cellPosition, CheckIfSelectionIsValid(gridPosition));
+        //Vector3 cellPosition = _grid.CellToWorld(gridPosition);
+        //_previewSystem.UpdatePosition(cellPosition, CheckIfSelectionIsValid(gridPosition));
     }
 
     public bool TryAction(Vector3Int gridPosition)

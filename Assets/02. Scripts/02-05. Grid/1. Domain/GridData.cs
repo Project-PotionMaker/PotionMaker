@@ -18,10 +18,10 @@ public class GridData
         _availableAreaDict = availableAreaDict;
     }
 
-    public void AddObjectAt(Vector3Int gridPosition, Vector2Int objectSize, int tid, EStructureType type, int placedObjectIndex)
+    public void AddObjectAt(Vector3Int gridPosition, Vector2Int objectSize, int tid, EStructureType type, GameObject sturctureObject)
     {
         List<Vector3Int> positionToOccupyList = CalculatePositions(gridPosition, objectSize);
-        Placement placement = new Placement(positionToOccupyList, tid, type, placedObjectIndex);
+        Placement placement = new Placement(positionToOccupyList, tid, type, sturctureObject);
         foreach(Vector3Int pos in positionToOccupyList)
         {
             if (_placedObjectDict.ContainsKey(pos))
@@ -60,7 +60,6 @@ public class GridData
         {
             return false;
         }
-
         return true;
     }
 
@@ -71,15 +70,6 @@ public class GridData
             return placement;
         }
         return null;
-    }
-
-    public int GetRepresentationIndex(Vector3Int gridPosition)
-    {
-        if(_placedObjectDict.TryGetValue(gridPosition, out Placement value))
-        {
-            return value.PlacedObjectIndex;
-        }
-        return -1;
     }
 
     public void RemoveObjectAt(Vector3Int gridPosition)

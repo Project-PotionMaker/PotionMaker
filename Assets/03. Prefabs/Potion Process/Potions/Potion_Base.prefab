@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 4452530630250593384}
   - component: {fileID: 8986124530472647767}
   m_Layer: 0
-  m_Name: Liquido.013
+  m_Name: Liquid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -186,7 +186,6 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: d1233314bcb44794aa328c733365d287, type: 2}
   - {fileID: 2100000, guid: d1233314bcb44794aa328c733365d287, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -391,11 +390,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 071d55af7cb54114f86cf06d749ff1cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _meshList:
+  _bottleMeshFilter: {fileID: 3078721892043624568}
+  _bottleRenderer: {fileID: 4424355994082114076}
+  _liquidMeshFilter: {fileID: 6932002558959443633}
+  _liquidRenderer: {fileID: 4452530630250593384}
+  _potionAppearanceList:
   - TID: 10000
-    Mesh: {fileID: 164915891871986919, guid: af8f7be17ed614845a53499634c05dd4, type: 3}
+    BottleMesh: {fileID: 164915891871986919, guid: af8f7be17ed614845a53499634c05dd4, type: 3}
+    LiquidMesh: {fileID: -6781750665191758519, guid: af8f7be17ed614845a53499634c05dd4, type: 3}
+    LiquidMaterial: {fileID: 2100000, guid: dcdf9d1af4edda64c84825baddd32a36, type: 2}
   - TID: 10001
-    Mesh: {fileID: 3846711905212226069, guid: af8f7be17ed614845a53499634c05dd4, type: 3}
+    BottleMesh: {fileID: 3846711905212226069, guid: af8f7be17ed614845a53499634c05dd4, type: 3}
+    LiquidMesh: {fileID: -1463142862627718176, guid: af8f7be17ed614845a53499634c05dd4, type: 3}
+    LiquidMaterial: {fileID: 2100000, guid: 5c85934344bb73143b47a66df543fd0d, type: 2}
 --- !u!1001 &5333005868003212952
 PrefabInstance:
   m_ObjectHideFlags: 0

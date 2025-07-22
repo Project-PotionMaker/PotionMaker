@@ -10,7 +10,7 @@ public class UI_Storage : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI _nameTextUI;
 
-    private void Start()
+    private void Awake()
     {
         _storage.OnDataChanged += InitUIStorage;
     }

@@ -80,7 +80,10 @@ public class PlayerPickupAbility : PlayerAbility
                 if (item != null && gridObject.GetComponent<IGridItemHandler>().TryDrop(targetPosition, item.GetTID(), item.GetInputType(), _heldItem))
                 {
                     _heldItem.transform.SetParent(null);
-                    Destroy(_heldItem);
+                    if(item.GetInputType() != EInputType.Potion)
+                    {
+                        Destroy(_heldItem);
+                    }
                     _heldItem = null;
                 }
 

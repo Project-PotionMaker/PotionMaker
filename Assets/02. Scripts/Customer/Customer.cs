@@ -13,7 +13,8 @@ public class Customer : MonoBehaviour
     private CustomerEndurance _customerEndurance; // 인내심
     public CustomerEndurance CustomerEndurance { get => _customerEndurance; set => _customerEndurance = value; } // 인내심 컴포넌트
 
-    private int _requestedPotionTID = 0;
+    [SerializeField]
+    private int _requestedPotionTID = 10000;
     public int RequestedPotionTID { get => _requestedPotionTID; set=> _requestedPotionTID = value; } // 요청한 포션 ID
 
     private PhotonView _photonView;

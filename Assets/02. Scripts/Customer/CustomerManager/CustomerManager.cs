@@ -143,9 +143,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         Customer customer = _orderHandler.PotionOrderLine.Dequeue();
         int potionTID = customer.GetComponent<Customer>().RequestedPotionTID;
 
-        // 임시 코드
-        Debug.Log("임시 코드입니다. PotionTID 고정");
-        _orderHandler.AddOrder(10000, customer);
+        _orderHandler.AddOrder(potionTID, customer);
         customer.CustomerMove.MoveTo(_hallEntry.position);
         customer.SetCurrentState(ECustomerStateType.Waiting); // 대기 상태로 변경
         _lineHandler.ReLining(); // 줄 다시 세우기

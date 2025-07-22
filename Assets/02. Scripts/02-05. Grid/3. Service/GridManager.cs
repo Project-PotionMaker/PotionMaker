@@ -17,9 +17,6 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
     [SerializeField]
     private PreviewSystem _previewSystem;
 
-    [SerializeField]
-    private PlaceSystem _placeSystem = new();
-
     private Layout _layout;
 
     private GridData _gridData;
@@ -61,19 +58,22 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
     public GameObject GetObjectOnGrid(Vector3 targetPosition)
     {
         Vector3Int gridPosition = GetGridPosition(targetPosition);
-        int index = _gridData.GetRepresentationIndex(gridPosition);
-        return _placeSystem.GetGameObject(index);
+        Placement placement = _gridData.GetPlacement(gridPosition);
+        if(ReferenceEquals(placement, null))
+        {
+            return null;
+        }
+        return placement.structureObject;
     }
 
     public GameObject StartPlacement(Vector3 targetPosition)
     {
         StopPlacement();
         _gridVisualization.SetActive(true);
-
+        Debug.Log(targetPosition);
         Vector3Int gridPosition = GetGridPosition(targetPosition);
         Placement placement = _gridData.GetPlacement(gridPosition);
-        GameObject structure = _placeSystem.GetGameObject(placement.PlacedObjectIndex);
-        _placeSystem.RemoveObjectAt(placement.PlacedObjectIndex);
+        GameObject structure = placement.structureObject;
         _gridData.RemoveObjectAt(gridPosition);
 
         StructureData data = DataTable.Instance.GetStructureData(placement.TID);
@@ -81,8 +81,7 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
                                             data,
                                             _grid,
                                             _previewSystem,
-                                            _gridData,
-                                            _placeSystem);
+                                            _gridData);
 
         return structure;
     }
@@ -111,8 +110,7 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
                                             data,
                                             _grid,
                                             _previewSystem,
-                                            _gridData,
-                                            _placeSystem);
+                                            _gridData);
         TryPlaceStructure(position);
     }
 

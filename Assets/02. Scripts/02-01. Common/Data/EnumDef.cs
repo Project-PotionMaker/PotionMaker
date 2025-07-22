@@ -141,6 +141,8 @@ public enum ESpecialStructureType
     Casher = 2,
     ///<summary>쓰레기통</summary>
     TrashCan = 3,
+    ///<summary>문</summary>
+    Door = 4,
 }
 
 public enum ECustomerStateType

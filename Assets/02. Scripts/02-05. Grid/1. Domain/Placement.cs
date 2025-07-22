@@ -18,7 +18,7 @@ public class Placement
 
         OccupiedPositionList = occupiedPositionList;
         TID = tid;
-        structureType = type;
+        StructureType = type;
         StructureObject = structureObject;
     }
 

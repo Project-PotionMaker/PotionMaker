@@ -63,7 +63,7 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
         {
             return null;
         }
-        return placement.structureObject;
+        return placement.StructureObject;
     }
 
     public GameObject StartPlacement(Vector3 targetPosition)
@@ -73,7 +73,7 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
         Debug.Log(targetPosition);
         Vector3Int gridPosition = GetGridPosition(targetPosition);
         Placement placement = _gridData.GetPlacement(gridPosition);
-        GameObject structure = placement.structureObject;
+        GameObject structure = placement.StructureObject;
         _gridData.RemoveObjectAt(gridPosition);
 
         StructureData data = DataTable.Instance.GetStructureData(placement.TID);

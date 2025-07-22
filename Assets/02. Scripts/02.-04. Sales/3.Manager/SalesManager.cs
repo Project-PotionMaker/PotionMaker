@@ -44,13 +44,14 @@ public class SalesManager : MonoBehaviourPunCallbacksSingleton<SalesManager>
     {
         if (!PhotonNetwork.IsMasterClient)
         {
-            _photonView.RPC(nameof(RequestSell), RpcTarget.MasterClient, potionType, price);
+            _photonView.RPC(nameof(RPC_Sell), RpcTarget.MasterClient, potionType, price);
             return;
         }
-        Sell(potionType, price);
+        RPC_Sell(potionType, price);
     }
 
-    private void Sell(EPotionType potionType, int price)
+    [PunRPC]
+    public void RPC_Sell(EPotionType potionType, int price)
     {
         if (!PhotonNetwork.IsMasterClient)
         {
@@ -60,13 +61,13 @@ public class SalesManager : MonoBehaviourPunCallbacksSingleton<SalesManager>
 
         SalesRPCData salesRPCData = new SalesRPCData(Sales);
         string salesJson = JsonUtility.ToJson(salesRPCData);
-        _photonView.RPC(nameof(SetSales), RpcTarget.Others, salesJson);
+        _photonView.RPC(nameof(RPC_SetSales), RpcTarget.Others, salesJson);
 
         CurrencyManager.Instance.RequestAddCurrency(price);
     }
 
     [PunRPC]
-    public void SetSales(string salesJson,PhotonMessageInfo info)
+    public void RPC_SetSales(string salesJson,PhotonMessageInfo info)
     {
         if (!info.Sender.IsMasterClient)
         {
@@ -81,21 +82,26 @@ public class SalesManager : MonoBehaviourPunCallbacksSingleton<SalesManager>
 
     public void RequestUpdateSales()
     {
-        _photonView.RPC(nameof(RequestUpdateSales), RpcTarget.MasterClient);
+        if (!PhotonNetwork.IsMasterClient)
+        {
+            _photonView.RPC(nameof(RPC_UpdateSales), RpcTarget.MasterClient);
+            return;
+        }
+
+        RPC_UpdateSales();
     }
 
     [PunRPC]
-    public void RequestUpdateSales(PhotonMessageInfo info)
+    public void RPC_UpdateSales()
     {
         if (!PhotonNetwork.IsMasterClient)
         {
-            _photonView.RPC(nameof(RequestUpdateSales), RpcTarget.MasterClient);
-            return;
+            throw new InvalidOperationException("Only the Master Client may Update sales directly. Use 'RequestUpdateSales' instead.");
         }
 
         SalesRPCData salesRPCData = new SalesRPCData(Sales);
         string salesJson = JsonUtility.ToJson(salesRPCData);
-        _photonView.RPC(nameof(SetSales), info.Sender, salesJson);
+        _photonView.RPC(nameof(RPC_SetSales), RpcTarget.Others, salesJson);
     }
 
     public void ResetDailySales()
@@ -109,6 +115,6 @@ public class SalesManager : MonoBehaviourPunCallbacksSingleton<SalesManager>
         
         SalesRPCData salesRPCData = new SalesRPCData(Sales);
         string salesJson = JsonUtility.ToJson(salesRPCData);
-        _photonView.RPC(nameof(SetSales), RpcTarget.Others, salesJson);
+        _photonView.RPC(nameof(RPC_SetSales), RpcTarget.Others, salesJson);
     }
 }

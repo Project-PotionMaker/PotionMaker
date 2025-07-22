@@ -4,4 +4,10 @@ public enum EAddressableLabels
     Default,
     Level,
     Prefabs,
+    Shaders,
+    Materials,
+    Meshes,
+    Sprites,
+    Models,
+    Animations,
 }

@@ -6,7 +6,6 @@ public class PlacementState : IBuildingState
     private Grid _grid;
     private PreviewSystem _previewSystem;
     private GridData _gridData;
-    private PlaceSystem _objectPlacer;
     private GameObject _structure;
     
     private Vector2Int _size;
@@ -16,15 +15,13 @@ public class PlacementState : IBuildingState
                           StructureData data,
                           Grid grid,
                           PreviewSystem previewSystem,
-                          GridData gridData,
-                          PlaceSystem objectPlacer)
+                          GridData gridData)
     {
         _structure = structure;
         _data = data;
         _grid = grid;
         _previewSystem = previewSystem;
         _gridData = gridData;
-        _objectPlacer = objectPlacer;
 
         _size = new Vector2Int(data.Width, data.Length);
         _rotation = structure.transform.rotation;
@@ -47,17 +44,14 @@ public class PlacementState : IBuildingState
             return false;
         }
 
-        int index = _objectPlacer.PlaceObject(
-            _structure,
-            _data.TID,
-            _grid.CellToWorld(gridPosition),
-            _rotation);
+        _structure.transform.position = _grid.CellToWorld(gridPosition);
+        _structure.transform.rotation = _rotation;
 
         _gridData.AddObjectAt(gridPosition,
                                  _size,
                                  _data.TID,
                                  _data.StructureType,
-                                 index);
+                                 _structure);
         _previewSystem.UpdatePosition(_grid.CellToWorld(gridPosition), false);
         return true;
     }

@@ -1,16 +1,23 @@
-using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using VInspector;
 
 public class UI_Phase : MonoBehaviour
 {
+    [Foldout("UIs")]
     [SerializeField]
     private TextMeshProUGUI _phaseText;
     [SerializeField]
     private TextMeshProUGUI _dayText;
     [SerializeField]
     private Slider _serviceTimer;
+    [SerializeField]
+    private GameObject _todaySummaryPanel;
+    [SerializeField]
+    private TextMeshProUGUI _todaySummaryText;
+    [SerializeField]
+    private Button _nextDayButton;
 
     private void Start()
     {
@@ -21,6 +28,9 @@ public class UI_Phase : MonoBehaviour
         servingPhase.OnTimerRunning += UpdateServiceTimer;
         servingPhase.OnPhaseEntered += ShowTimer; // 타이머 시작 시 업데이트
         servingPhase.OnPhaseExited += HideTimer;
+        EndingPhase endingPhase = (EndingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.EndingPhase];
+        endingPhase.OnPhaseEntered += ShowSummary; // 영업 종료 시 요약 패널 표시
+        endingPhase.OnPhaseExited += HideSummary; // 영업 종료 후 요약 패널 숨김
     }
 
     private void UpdateDayText()
@@ -62,6 +72,16 @@ public class UI_Phase : MonoBehaviour
     private void HideTimer()
     {
         _serviceTimer.gameObject.SetActive(false);
+    }
+
+    private void ShowSummary()
+    {
+        _todaySummaryPanel.SetActive(true);
+        _todaySummaryText.text = $"Potions : \n Gold :";
+    }
+    private void HideSummary()
+    {
+        _todaySummaryPanel.SetActive(false);
     }
 
 }

@@ -163,7 +163,7 @@ public class WallGeneratorEditorWindow : EditorWindow
         for (int x = minX; x <= maxX; x++)
         {
             Vector3 spawnPos = GetWallSpawnPosition(x, maxY + 1, WallOrientation.AlongXAxis);
-            InstantiateAndParentWall(spawnPos, Quaternion.Euler(0, 90, 0)); // 변경: identity -> Y 90도 회전
+            InstantiateAndParentWall(spawnPos, Quaternion.identity); // 변경: identity -> Y 90도 회전
         }
 
         // --- 하단 벽 (-Z 방향) ---
@@ -171,7 +171,7 @@ public class WallGeneratorEditorWindow : EditorWindow
         for (int x = minX; x <= maxX; x++)
         {
             Vector3 spawnPos = GetWallSpawnPosition(x, minY, WallOrientation.AlongXAxis);
-            InstantiateAndParentWall(spawnPos, Quaternion.Euler(0, 90, 0)); // 변경: identity -> Y 90도 회전
+            InstantiateAndParentWall(spawnPos, Quaternion.identity); // 변경: identity -> Y 90도 회전
         }
 
         // --- 좌측 벽 (-X 방향) ---
@@ -179,7 +179,7 @@ public class WallGeneratorEditorWindow : EditorWindow
         for (int y = minY; y <= maxY; y++)
         {
             Vector3 spawnPos = GetWallSpawnPosition(minX, y, WallOrientation.AlongZAxis);
-            InstantiateAndParentWall(spawnPos, Quaternion.identity); // 변경: Y 90도 회전 -> identity
+            InstantiateAndParentWall(spawnPos, Quaternion.Euler(0, 90, 0)); // 변경: Y 90도 회전 -> identity
         }
 
         // --- 우측 벽 (+X 방향) ---
@@ -187,7 +187,7 @@ public class WallGeneratorEditorWindow : EditorWindow
         for (int y = minY; y <= maxY; y++)
         {
             Vector3 spawnPos = GetWallSpawnPosition(maxX + 1, y, WallOrientation.AlongZAxis);
-            InstantiateAndParentWall(spawnPos, Quaternion.identity); // 변경: Y 90도 회전 -> identity
+            InstantiateAndParentWall(spawnPos, Quaternion.Euler(0, 90, 0)); // 변경: Y 90도 회전 -> identity
         }
 
         Undo.SetCurrentGroupName("Generate Outer Walls");

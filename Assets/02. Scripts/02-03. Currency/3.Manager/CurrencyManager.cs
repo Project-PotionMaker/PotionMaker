@@ -42,19 +42,19 @@ public class CurrencyManager : MonoBehaviourPunCallbacksSingleton<CurrencyManage
         // Todo: Save총괄로부터 데이터 받아온 후 초기화
     }
 
-    [PunRPC]
     public void RequestAddCurrency(int addendValue)
     {
         if (!PhotonNetwork.IsMasterClient)
         {
-            _photonView.RPC(nameof(RequestAddCurrency), RpcTarget.MasterClient, addendValue);
+            _photonView.RPC(nameof(RPC_AddCurrency), RpcTarget.MasterClient, addendValue);
             return;
         }
 
-        AddCurrency(addendValue);
+        RPC_AddCurrency(addendValue);
     }
 
-    private void AddCurrency(int addendValue)
+    [PunRPC]
+    public void RPC_AddCurrency(int addendValue)
     {
         if (!PhotonNetwork.IsMasterClient)
         {
@@ -63,7 +63,7 @@ public class CurrencyManager : MonoBehaviourPunCallbacksSingleton<CurrencyManage
         _coin.AddCurrency(addendValue);
         OnDataChanged?.Invoke();
 
-        _photonView.RPC(nameof(SetCurrency), RpcTarget.Others, _coin.Value);
+        _photonView.RPC(nameof(RPC_SetCurrency), RpcTarget.Others, _coin.Value);
     }
 
     public bool TrySubtractCurrency(int subtrahendValue)
@@ -82,7 +82,7 @@ public class CurrencyManager : MonoBehaviourPunCallbacksSingleton<CurrencyManage
         {
             OnDataChanged?.Invoke();
 
-            _photonView.RPC(nameof(SetCurrency), RpcTarget.Others, _coin.Value);
+            _photonView.RPC(nameof(RPC_SetCurrency), RpcTarget.Others, _coin.Value);
             UnityEngine.Debug.Log("Subtract succed");
             return true;
         }
@@ -92,7 +92,7 @@ public class CurrencyManager : MonoBehaviourPunCallbacksSingleton<CurrencyManage
 
     // 마스터 클라이언트에서 클라이언트 갱신시키는 용도
     [PunRPC]
-    public void SetCurrency(int value, PhotonMessageInfo info)
+    public void RPC_SetCurrency(int value, PhotonMessageInfo info)
     {
         if (!info.Sender.IsMasterClient)
         {
@@ -105,16 +105,21 @@ public class CurrencyManager : MonoBehaviourPunCallbacksSingleton<CurrencyManage
     // 갱신 요청
     public void RequestUpdateCurrency()
     {
-        _photonView.RPC(nameof(RequestUpdateCurrency), RpcTarget.MasterClient);
+        if (!PhotonNetwork.IsMasterClient)
+        {
+            _photonView.RPC(nameof(RPC_UpdateCurrency), RpcTarget.MasterClient);
+            return;
+        }
+        RPC_UpdateCurrency();
     }
+
     [PunRPC]
-    public void RequestUpdateCurrency(PhotonMessageInfo info)
+    public void RPC_UpdateCurrency()
     {
         if (!PhotonNetwork.IsMasterClient)
         {
-            _photonView.RPC(nameof(RequestUpdateCurrency), RpcTarget.MasterClient);
-            return;
+            throw new InvalidOperationException("Only the Master Client may Update currency directly. Use 'RequestUpdateCurrency' instead.");
         }
-        _photonView.RPC(nameof(SetCurrency), info.Sender, _coin.Value);
+        _photonView.RPC(nameof(RPC_SetCurrency), RpcTarget.Others, _coin.Value);
     }
 }

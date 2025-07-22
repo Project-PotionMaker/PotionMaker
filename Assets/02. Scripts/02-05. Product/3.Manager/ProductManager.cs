@@ -63,30 +63,27 @@ public class ProductManager : MonoBehaviourPunCallbacksSingleton<ProductManager>
         }
     }
 
+  
+  
     public void RequestBuy(EProductType productType, int productID)
-    {
-        _photonView.RPC(nameof(RequestBuy), RpcTarget.MasterClient, productType, productID);
-    }
-    [PunRPC]
-    public async void RequestBuy(EProductType productType, int productID, PhotonMessageInfo info)
     {
         if (!PhotonNetwork.IsMasterClient)
         {
-            _photonView.RPC(nameof(RequestBuy), RpcTarget.MasterClient, productType, productID);
+            _photonView.RPC(nameof(RPC_TryBuy), RpcTarget.MasterClient, productType, productID);
             return;
         }
 
         Product product = _productListDict[productType].Find(product => product.Data.TID == productID);
-        bool result = await TryBuy(product);
-
-        _photonView.RPC(nameof(ShowResultUI), info.Sender, result);
+        
+        RPC_TryBuy(product, new PhotonMessageInfo(PhotonNetwork.LocalPlayer, PhotonNetwork.ServerTimestamp, _photonView));
     }
 
-    private async Task<bool> TryBuy(Product product)
+    [PunRPC]
+    public void RPC_TryBuy(Product product, PhotonMessageInfo info)
     {
-        if (!CurrencyManager.Instance.TrySubtractCurrency(product.Data.Price))
+        if (CurrencyManager.Instance.TrySubtractCurrency(product.Data.Price))
         {
-            return false;
+            _photonView.RPC(nameof(RPC_ShowResultUI), info.Sender, false);
         }
         switch (product.Data.ProductType)
         {
@@ -114,41 +111,41 @@ public class ProductManager : MonoBehaviourPunCallbacksSingleton<ProductManager>
                 break;
             }
         }
-        return true;
+        _photonView.RPC(nameof(RPC_ShowResultUI), info.Sender, true);
     }
 
     [PunRPC]
-    public void ShowResultUI(bool result)
+    public void RPC_ShowResultUI(bool result)
     {
         // Todo: 팝업매니저를 통한 구매 성공 여부 팝업?
         Debug.Log($"구매 결과: {result}");
     }
 
-    [PunRPC]
     public void RequestUnlock(int productID)
     {
         if (!PhotonNetwork.IsMasterClient)
         {
-            _photonView.RPC(nameof(RequestUnlock), RpcTarget.MasterClient, productID);
+            _photonView.RPC(nameof(RPC_Unlock), RpcTarget.MasterClient, productID);
             return;
         }
-        Unlock(productID);
+        RPC_Unlock(productID);
     }
 
-    private void Unlock(int productTID)
+    [PunRPC]
+    public void RPC_Unlock(int productTID)
     {
         if (!PhotonNetwork.IsMasterClient)
         {
-            return;
+            throw new InvalidOperationException("Only the Master Client may Uunlock products directly. Use 'RequestUnlock' instead.");
         }
 
         Product targetProduct = _productListDict.SelectMany(keyValuePair => keyValuePair.Value).FirstOrDefault(product => product.Data.TID == productTID);
         targetProduct.Unlock();
-        _photonView.RPC(nameof(SetProduct), RpcTarget.Others, targetProduct.Data.TID, targetProduct.IsUnlocked);
+        _photonView.RPC(nameof(RPC_SetProduct), RpcTarget.Others, targetProduct.Data.TID, targetProduct.IsUnlocked);
     }
 
     [PunRPC]
-    public void SetProduct(int productTID, bool isUnlocked, PhotonMessageInfo info)
+    public void RPC_SetProduct(int productTID, bool isUnlocked, PhotonMessageInfo info)
     {
         if (!info.Sender.IsMasterClient)
         {
@@ -160,22 +157,26 @@ public class ProductManager : MonoBehaviourPunCallbacksSingleton<ProductManager>
 
     public void RequestUpdateProducts()
     {
-        _photonView.RPC(nameof(RequestUpdateProducts), RpcTarget.MasterClient);
+        if (!PhotonNetwork.IsMasterClient)
+        {
+            _photonView.RPC(nameof(RPC_UpdateProducts), RpcTarget.MasterClient);
+            return;
+        }
+        RPC_UpdateProducts();
     }
 
     [PunRPC]
-    public void RequestUpdateProducts(PhotonMessageInfo info)
+    public void RPC_UpdateProducts()
     {
         if (!PhotonNetwork.IsMasterClient)
         {
-            _photonView.RPC(nameof(RequestUpdateProducts), RpcTarget.MasterClient);
-            return;
+            throw new InvalidOperationException("Only the Master Client may Update products directly. Use 'RequestUpdateProducts' instead.");
         }
 
         List<ProductDTO> targetProductList = ProductListDict.SelectMany(keyValuePair => keyValuePair.Value).ToList();
         foreach (ProductDTO productDTO in targetProductList)
         {
-            _photonView.RPC(nameof(SetProduct), info.Sender, productDTO.Data.TID, productDTO.IsUnlocked);
+            _photonView.RPC(nameof(RPC_SetProduct), RpcTarget.Others, productDTO.Data.TID, productDTO.IsUnlocked);
         }
     }
 }

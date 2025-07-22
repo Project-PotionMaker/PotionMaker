@@ -18,10 +18,6 @@ public class CurrencyTest : MonoBehaviourPunCallbacks
         {
             CurrencyManager.Instance.TrySubtractCurrency(1000);
         }
-        if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            CurrencyManager.Instance.PhotonView.RPC(nameof(CurrencyManager.SetCurrency), RpcTarget.All, 9999);
-        }
 
         if (Input.GetKeyDown(KeyCode.Alpha9))
         {

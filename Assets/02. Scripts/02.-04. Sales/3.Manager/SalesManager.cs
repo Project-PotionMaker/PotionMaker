@@ -40,7 +40,6 @@ public class SalesManager : MonoBehaviourPunCallbacksSingleton<SalesManager>
         RequestUpdateSales();
     }
 
-    [PunRPC]
     public void RequestSell(EPotionType potionType, int price)
     {
         if (!PhotonNetwork.IsMasterClient)

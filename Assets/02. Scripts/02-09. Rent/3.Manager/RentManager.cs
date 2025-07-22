@@ -39,11 +39,16 @@ public class RentManager : MonoBehaviourPunCallbacksSingleton<RentManager>
     }
     public void RequestUpdateRent()
     {
-        _photonView.RPC(nameof(RequestUpdateRent), RpcTarget.MasterClient);
+        if (!PhotonNetwork.IsMasterClient)
+        {
+            _photonView.RPC(nameof(RequestUpdateRent), RpcTarget.MasterClient);
+            return;
+        }
+        RPC_UpdateRent();
     }
 
     [PunRPC]
-    public void RequestUpdateRent(PhotonMessageInfo info)
+    public void RPC_UpdateRent()
     {
         if (!PhotonNetwork.IsMasterClient)
         {
@@ -53,11 +58,11 @@ public class RentManager : MonoBehaviourPunCallbacksSingleton<RentManager>
 
         RentRPCData rentRPCData = new RentRPCData(Rent);
         string rentJson = JsonUtility.ToJson(rentRPCData);
-        _photonView.RPC(nameof(SetRent), info.Sender, rentJson);
+        _photonView.RPC(nameof(RPC_SetRent), RpcTarget.Others, rentJson);
     }
 
     [PunRPC]
-    public void SetRent(string rentJson, PhotonMessageInfo info)
+    public void RPC_SetRent(string rentJson, PhotonMessageInfo info)
     {
         if (!info.Sender.IsMasterClient)
         {
@@ -82,6 +87,6 @@ public class RentManager : MonoBehaviourPunCallbacksSingleton<RentManager>
         _rent.OnRentPaid();
         RentRPCData rentRPCData = new RentRPCData(Rent);
         string rentJson = JsonUtility.ToJson(rentRPCData);
-        _photonView.RPC(nameof(SetRent), RpcTarget.Others, rentJson);
+        _photonView.RPC(nameof(RPC_SetRent), RpcTarget.Others, rentJson);
     }
 }

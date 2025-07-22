@@ -28,9 +28,11 @@ public class UI_Phase : MonoBehaviour
         servingPhase.OnTimerRunning += UpdateServiceTimer;
         servingPhase.OnPhaseEntered += ShowTimer; // 타이머 시작 시 업데이트
         servingPhase.OnPhaseExited += HideTimer;
+        HideTimer();
         EndingPhase endingPhase = (EndingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.EndingPhase];
         endingPhase.OnPhaseEntered += ShowSummary; // 영업 종료 시 요약 패널 표시
         endingPhase.OnPhaseExited += HideSummary; // 영업 종료 후 요약 패널 숨김
+        HideSummary();
     }
 
     private void UpdateDayText()

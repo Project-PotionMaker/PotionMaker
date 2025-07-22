@@ -20,7 +20,7 @@ public class Placement
         OccupiedPositionList = occupiedPositionList;
         TID = tid;
         structureType = type;
-        this.structureObject = structureObject;
+        StructureObject = structureObject;
     }
 
     public PlacementDTO ToDTO()

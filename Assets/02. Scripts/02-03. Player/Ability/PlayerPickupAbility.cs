@@ -51,7 +51,9 @@ public class PlayerPickupAbility : PlayerAbility
             if(newItem != null)
             {
                 _heldItem = newItem;
-                _heldItem.transform.SetParent(this.transform);
+                _heldItem.transform.SetParent(_owner.HeldPosition);
+                _heldItem.transform.localPosition = Vector3.zero;
+                _heldItem.transform.localRotation = Quaternion.Euler(Vector3.zero);
             }
         }
     }

@@ -16,13 +16,13 @@ public class UnitTestForCustomer : MonoBehaviour
     }
     public void StashHall()
     {
-        foreach(var customer in CustomerManager.Instance.OrderHandler.PotionOrderMap[0])
+        foreach(var customer in CustomerManager.Instance.OrderHandler.PotionOrderMap[10000])
         {
             CustomerManager.Instance.LineHandler.PutOutCustomer(customer);
         }
     }
     public void TestServePotion()
     {
-        CustomerManager.Instance.ServePotion(0);
+        CustomerManager.Instance.ServePotion(10000);
     }
 }

@@ -11,10 +11,6 @@ public class BillboardCanvas : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (_mainCamera == null)
-            return;
-
-        // 카메라를 바라보게 회전
-        transform.rotation = Quaternion.LookRotation(transform.position - _mainCamera.transform.position);
+        transform.forward = Camera.main.transform.forward;
     }
 }

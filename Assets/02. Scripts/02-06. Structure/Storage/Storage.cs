@@ -14,7 +14,7 @@ public class Storage : MonoBehaviour, IGridItemHandler
     private PhotonView _photonView;
     public PhotonView PhotonView => _photonView;
 
-    public Action OnDataChanged;
+    public Action<StorageStat> OnDataChanged;
     [Foldout("Project")]
     [SerializeField]
     private List<ModelOnTID> _modelObjectList = new List<ModelOnTID>();
@@ -45,6 +45,8 @@ public class Storage : MonoBehaviour, IGridItemHandler
                 modelInfo.Model.SetActive(true);
             }
         }
+
+        OnDataChanged?.Invoke(_stat);
     }
 
     public bool TryInteract()

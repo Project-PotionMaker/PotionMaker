@@ -18,10 +18,12 @@ public class ProductManager : MonoBehaviourPunCallbacksSingleton<ProductManager>
             keyValuePair => keyValuePair.Value.Select(product => product.ToDTO()).ToList()
         );
 
+    private MovingHouse _movingHouse;
     protected override void Awake()
     {
         base.Awake();
         _photonView = GetComponent<PhotonView>();
+        _movingHouse = new MovingHouse();
     }
     private void Start()
     {
@@ -100,13 +102,13 @@ public class ProductManager : MonoBehaviourPunCallbacksSingleton<ProductManager>
                           $"상품이름: {product.Data.Name}\n" +
                           $"상품가격: {product.Data.Price}");
 
-                GameObject structure = StructureManager.Instance.CreateStructure(product.Data.StructureTID);
+                GameObject structure = StructureManager.Instance.CreateStructure(product.Data.TargetTID);
                 structure.transform.position = Vector3.zero;
                 break;
             }
             case EProductType.HouseMoving:
             {
-                // Todo: 씬 전환
+                _movingHouse.MoveHouse(product.Data.TargetTID);
                 break;
             }
             default:

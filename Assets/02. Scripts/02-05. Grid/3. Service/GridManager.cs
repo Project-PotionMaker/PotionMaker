@@ -1,6 +1,7 @@
 using Photon.Pun;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -18,7 +19,7 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
     private PreviewSystem _previewSystem;
 
     private Layout _layout;
-
+    
     private GridData _gridData;
     private Vector3Int _lastDetectedPosition = Vector3Int.zero;
     private IBuildingState _buildingState;
@@ -86,7 +87,7 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
         return structure;
     }
 
-    public void CreateStructure(int tid, Vector3 position, EStructureType structureType, int ingredientTID = 0)
+    public void CreateStructure(int tid, Vector3 position, int ingredientTID = 0)
     {
         StopPlacement();
         StructureData data = DataTable.Instance.GetStructureData(tid);
@@ -134,13 +135,13 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
     [Button("생성 테스트")]
     public async void Test()
     {
-        CreateStructure(10000, new Vector3(-5, 0, 4), EStructureType.Machine);
-        CreateStructure(10002, new Vector3(-3, 0, 4), EStructureType.Machine);
-        CreateStructure(10014, new Vector3(0, 0, 0), EStructureType.Furniture);
-        CreateStructure(10016, new Vector3(-5, 0, 0), EStructureType.Furniture);
-        CreateStructure(10005, new Vector3(0, 0, 2), EStructureType.Furniture);
-        CreateStructure(10019, new Vector3(4, 0, 2), EStructureType.Storage, 10000);
-        CreateStructure(10019, new Vector3(4, 0, 4), EStructureType.Storage, 10001);
+        CreateStructure(10000, new Vector3(-5, 0, 4));
+        CreateStructure(10002, new Vector3(-3, 0, 4));
+        CreateStructure(10014, new Vector3(0, 0, 0));
+        CreateStructure(10016, new Vector3(-5, 0, 0));
+        CreateStructure(10005, new Vector3(0, 0, 2));
+        CreateStructure(10019, new Vector3(4, 0, 2), 10000);
+        CreateStructure(10019, new Vector3(4, 0, 4), 10001);
     }
 
     public Vector3Int GetGridPosition(Vector3 targetPosition)
@@ -161,4 +162,19 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
         _lastDetectedPosition = Vector3Int.zero;
         _buildingState = null;
     }
+
+    public List<Vector3Int> GetPositionByAreaType(EAreaType areaType)
+    {
+        List<Vector3Int> targetPosionList = null;
+        foreach(AreaDefinition areaDefinition in _layout.AllAreaDefinitionList)
+        {
+            if(areaDefinition.AreaType == areaType)
+            {
+                targetPosionList = areaDefinition.GridPositionList;
+                break;
+            }
+        }
+
+        return targetPosionList;
+    } 
 }

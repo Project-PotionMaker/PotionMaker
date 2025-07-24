@@ -3,7 +3,9 @@ using Photon.Pun;
 using Photon.Realtime;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class RoomManager : MonoBehaviourSingleton<RoomManager>, IMatchmakingCallbacks, IInRoomCallbacks
 {
@@ -23,7 +25,8 @@ public class RoomManager : MonoBehaviourSingleton<RoomManager>, IMatchmakingCall
     {
         base.Awake();
 
-        SetPlayerPrefab();
+        SceneManager.sceneLoaded += SetPlayerPrefab;
+        
     }
 
     private void OnEnable()
@@ -38,7 +41,6 @@ public class RoomManager : MonoBehaviourSingleton<RoomManager>, IMatchmakingCall
 
     public void OnJoinedRoom()
     {
-        Init();
     }
 
     private void Init()
@@ -60,7 +62,7 @@ public class RoomManager : MonoBehaviourSingleton<RoomManager>, IMatchmakingCall
     }
 
     // TODO : 나중에 로딩씬에서 실행해야 합니다.(메서드 이전 필요)
-    public async void SetPlayerPrefab()
+    public async void SetPlayerPrefab(Scene scene, LoadSceneMode mode)
     {
         DefaultPool defaultPool = PhotonNetwork.PrefabPool as DefaultPool;
 
@@ -69,6 +71,7 @@ public class RoomManager : MonoBehaviourSingleton<RoomManager>, IMatchmakingCall
         _playerPrefab = await AssetManager.Instance.LoadAsset<GameObject>(playerAddressableKey);
 
         defaultPool.ResourceCache.Add(playerAddressableKey, _playerPrefab);
+        Init();
     }
 
     private void GeneratePlayer()

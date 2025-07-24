@@ -37,7 +37,7 @@ public class Furniture : MonoBehaviour, IGridItemHandler
 
     public void InitFurniture(FurnitureData data, IInteractable<Furniture, FurnitureStat> interactComponent, IInputContainer<Furniture, FurnitureStat> inputComponent, IOutputContainer<Furniture, FurnitureStat> outputComponent)
     {
-        _stat = new FurnitureStat(data);
+        _stat = new FurnitureStat(data, _stat.InputPosition);
         _interactComponent = interactComponent;
         _inputComponent = inputComponent;
         _outputComponent = outputComponent;

@@ -17,7 +17,11 @@ public class Reputation
     public float Value
     {
         get => _value;
-        private set => _value = Mathf.Clamp(value, _minValue, _maxValue);
+        private set
+        {
+            _value = Mathf.Clamp(value, _minValue, _maxValue);
+            UpdateReputationGrade();
+        }
     }
 
     private const float _minValue = 0f;

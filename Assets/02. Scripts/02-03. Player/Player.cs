@@ -8,6 +8,10 @@ public class Player : MonoBehaviour
     private PlayerStat _stat;
     public PlayerStat Stat => _stat;
 
+    [Header("Ability 오브젝트")]
+    [SerializeField]
+    private GameObject _abilityObject;
+
     [Header("들기 위치")]
     [SerializeField]
     private Transform _heldPosition;
@@ -46,7 +50,7 @@ public class Player : MonoBehaviour
 
         // 게으른 초기화/로딩 -> 처음에 곧바로 초기화/로딩을 하는게 아니라
         //                      필요할 때만 하는 뒤로 미루는 기법
-        ability = GetComponent<T>();
+        ability = _abilityObject.GetComponent<T>();
 
         if (ability != null)
         {

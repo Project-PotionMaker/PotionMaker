@@ -3,7 +3,7 @@ using UnityEngine;
 public class PlayerMoveAbility : PlayerAbility
 {
     private Rigidbody _rigidbody;
-    private Animator _animator;
+    private PlayerAnimationAbility _animationAbility;
     private Vector3 _lastForwardVector = Vector3.forward;
     private float _cosAngleThreshold;
 
@@ -12,9 +12,13 @@ public class PlayerMoveAbility : PlayerAbility
         base.Awake();
 
         _rigidbody = _owner.GetComponent<Rigidbody>();
-        _animator = _owner.GetComponent<Animator>();
 
         _cosAngleThreshold = Mathf.Cos(_owner.Stat.MoveAngleLimit);
+    }
+
+    private void Start()
+    {
+        _animationAbility = _owner.GetAbility<PlayerAnimationAbility>();
     }
 
     private void FixedUpdate()
@@ -26,7 +30,8 @@ public class PlayerMoveAbility : PlayerAbility
 
         Vector2 moveInput = InputManager.Instance.MoveInput;
         float inputSize = Mathf.Min(moveInput.magnitude, 1f);
-        _animator.SetBool("IsMove", inputSize != 0f);
+
+        _animationAbility.SetBool(EPlayerAnimationParameter.IsMove, inputSize != 0f);
 
         moveInput.Normalize();
 

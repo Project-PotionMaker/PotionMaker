@@ -4,6 +4,7 @@ public class PlayerPickupAbility : PlayerAbility
 {
     // 나중에 IPickable로 변경 가능
     private GameObject _heldItem = null;
+    private PlayerAnimationAbility _animationAbility;
 
     private void Start()
     {
@@ -13,6 +14,7 @@ public class PlayerPickupAbility : PlayerAbility
         }
 
         InputManager.Instance.OnPickupEvent += OnPickupInput;
+        _animationAbility = _owner.GetAbility<PlayerAnimationAbility>();
     }
 
     private void Update()
@@ -39,11 +41,13 @@ public class PlayerPickupAbility : PlayerAbility
         {
             TryPutDown();
         }
+
+        bool hasHeldItem = _heldItem != null;
+        _animationAbility.SetBool(EPlayerAnimationParameter.HasHeldItem,hasHeldItem);
     }
 
     private void TryPickup()
     {
-        Debug.Log("Pickup");
         GameObject item = FindFrontPickupItem();
         if (ReferenceEquals(item, null) == false)
         {

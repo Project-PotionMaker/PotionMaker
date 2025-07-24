@@ -174,7 +174,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         }
     }
 
-    public void ServePotion(int potionTID, Vector3 pickupTable)// 판매대에 올려놓으면 호출
+    public void ServePotion(int potionTID, Furniture pickupTable)// 판매대에 올려놓으면 호출
     {
         if (PhotonNetwork.IsMasterClient)
         {
@@ -186,12 +186,12 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         }
     }
     [PunRPC]
-    public void RPC_ServePotion(int potionTID, Vector3 pickupTable)
+    public void RPC_ServePotion(int potionTID, Furniture pickupTable)
     {
         ServePotionInternal(potionTID,pickupTable);
     }
 
-    public void ServePotionInternal(int potionTID,Vector3 pickupTable)
+    public void ServePotionInternal(int potionTID,Furniture pickupTable)
     {
         if (PhotonNetwork.IsMasterClient == false)
         {
@@ -202,26 +202,27 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         {
             return;
         }
-        customer.CustomerMove.MoveTo(pickupTable); // 손님을 판매대 위치로 이동
+        customer.CustomerMove.MoveTo(pickupTable.transform.position); // 손님을 판매대 위치로 이동
         customer.SetCurrentState(ECustomerStateType.PickingUp);
-        //TODO : 가져가기 전까지 포션 상호작용 불가로 만들기
+        _orderHandler.PickingCustomers[pickupTable] = customer; // 손님과 판매대 매핑 저장
+        _orderHandler.PotionOrderMap[potionTID].Remove(customer);
     }
 
-    public void OnServedSuccess(int potionTID,Vector3 pickupTable) // 손님이 판매대에 도착하면 호출 
+    public void OnServedSuccess(Customer customer,Furniture pickupTable) // 손님이 판매대에 도착하면 호출 
     {
         if (PhotonNetwork.IsMasterClient == false)
         {
             return;
         }
         //TODO : 구매 성공, Currency 증가
-        Debug.Log($"Potion served successfully for TID: {potionTID}");
-        GameObject potion = GridManager.Instance.GetObjectOnGrid(pickupTable).GetComponent<IGridItemHandler>().TryPickUp(); // 판매대 위치에서 포션 오브젝트 가져오기
-        Customer customer = _orderHandler.PotionOrderMap[potionTID].First.Value;
+        Debug.Log($"Potion served successfully");
+        _orderHandler.PickingCustomers[pickupTable] = null;
+        GameObject potion = pickupTable.GetComponent<IGridItemHandler>().TryPickUp(); // 판매대 위치에서 포션 오브젝트 가져오기
         potion.transform.SetParent(customer.PotionHandler.transform);
         potion.transform.localPosition = Vector3.zero;
-        _orderHandler.PotionOrderMap[potionTID].RemoveFirst(); // 손님 제거
         _lineHandler.PutOutCustomer(customer); // 손님을 나가게 하기
         customer.SetCurrentState(ECustomerStateType.Leaving); // 손님 상태를 나가는 상태로 변경
+
     }
 
     public void OnLastOrderTime() //영업시간 종료되면 호출

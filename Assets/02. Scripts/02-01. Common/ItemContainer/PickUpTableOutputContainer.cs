@@ -14,10 +14,15 @@ public class PickUpTableOutputContainer : IOutputContainer<Furniture, FurnitureS
 
     public bool CanTake(Furniture furniture, FurnitureStat stat)
     {
-        if(stat.InputObject != null)
+        if(stat.InputObject == null)
         {
-            return true;
+            return false;
         }
-        return false;
+        if (CustomerManager.Instance.OrderHandler.PickingCustomers[furniture] != null)
+        {
+            Debug.Log("이미 가져가는 중");
+            return false;
+        }
+        return true;
     }
 }

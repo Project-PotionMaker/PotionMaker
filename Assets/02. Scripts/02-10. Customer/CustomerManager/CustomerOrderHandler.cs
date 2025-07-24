@@ -10,15 +10,24 @@ public class CustomerOrderHandler
     private Queue<Customer> _potionOrderLine; // 손님이 줄을 서는 대기열
     public Queue<Customer> PotionOrderLine { get => _potionOrderLine; set => _potionOrderLine = value; }
 
+    private Dictionary<Furniture, Customer> _pickingCustomers; // 포션 찾으러 가는 손님들 (제작 완료 번호표)
+    public Dictionary<Furniture, Customer> PickingCustomers { get => _pickingCustomers; set => _pickingCustomers = value; }
+
     public void Init()
     {
         _potionOrderMap = new Dictionary<int, LinkedList<Customer>>();
         _potionOrderLine = new Queue<Customer>();
+        _pickingCustomers = new Dictionary<Furniture, Customer>();
     }
     public void SetLists()
     {
         _potionOrderMap.Clear();
         _potionOrderLine.Clear();
+        _pickingCustomers.Clear();
+        foreach (GameObject pickupTable in GridManager.Instance.PickUpTableList)
+        {
+            _pickingCustomers.Add(pickupTable.GetComponent<Furniture>(), null); // 각 픽업 테이블에 대해 초기화
+        }
     }
 
     public void AddOrder(int potionTID, Customer customer)

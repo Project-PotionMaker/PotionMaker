@@ -20,6 +20,7 @@ public class ServingPhase : BasePhase
         _timesUp = false;
 
         // 임시 코드
+        CustomerManager.Instance.PreService();
         CustomerManager.Instance.CasherLocation = GridManager.Instance.Casher.transform;
         base.EnterPhase();
     }

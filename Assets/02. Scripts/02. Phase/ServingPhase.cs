@@ -18,10 +18,8 @@ public class ServingPhase : BasePhase
     {
         _currentTime = INIT_TIMER;
         _timesUp = false;
-
-        // 임시 코드
+        PhaseManager.Instance.DeathCount = 0;
         CustomerManager.Instance.PreService();
-        CustomerManager.Instance.CasherLocation = GridManager.Instance.Casher.transform;
         base.EnterPhase();
     }
 

@@ -14,14 +14,9 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
     private CustomerOrderHandler _orderHandler; // 주문을 처리하는 컴포넌트
     public CustomerOrderHandler OrderHandler { get => _orderHandler; set => _orderHandler = value; }
     private PhotonView _photonView;
-    private int _lostCustomerCount;
-    public int LostCustomerCount { get => _lostCustomerCount; set => _lostCustomerCount = value; }
     private bool _canOrdered = false; // 주문을 받을 수 있는 상태인지 여부
 
     [Foldout("Inspector")]
-    [SerializeField]
-    private int _maxCustomerLost = 5;
-    public int MaxCustomerLost { get => _maxCustomerLost; set => _maxCustomerLost = value; }
     [SerializeField]
     private float _inviteCoolTime;
     public float InviteCoolTime { get => _inviteCoolTime; set => _inviteCoolTime = value; }
@@ -51,7 +46,6 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         _orderHandler = new CustomerOrderHandler();
         _lineHandler = new CustomerLineHandler();
         _orderHandler.Init();
-        _lostCustomerCount = 0;
     }
     private void Start()
     {
@@ -165,10 +159,10 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
             _lineHandler.ReLining(); // 줄 다시 세우기
         }
         _lineHandler.PutOutCustomer(customer); // 손님을 나가게 하기
-        _lostCustomerCount++;
-        if(_lostCustomerCount >= _maxCustomerLost)
+        PhaseManager.Instance.DeathCount++;
+        if(PhaseManager.Instance.DeathCount >= PhaseManager.Instance.MaxCustomerLost)
         {
-            PhaseManager.Instance.TransitionPhase(EPhaseType.EndingPhase);
+            //TODO : 게임종료 씬
         }
     }
 

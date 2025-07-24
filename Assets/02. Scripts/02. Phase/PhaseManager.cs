@@ -12,6 +12,11 @@ public class PhaseManager : MonoBehaviourSingleton<PhaseManager>
     private Dictionary<EPhaseType, BasePhase> _phaseDictionary;
     public Dictionary<EPhaseType, BasePhase> PhaseDictionary { get => _phaseDictionary; set => _phaseDictionary = value; }
 
+    private int _deathCount;
+    public int DeathCount { get => _deathCount; set => _deathCount = value; }
+    [SerializeField]
+    private int _maxCustomerLost = 5;
+    public int MaxCustomerLost { get => _maxCustomerLost; set => _maxCustomerLost = value; }
     private int _day;
     public int Day { get => _day; set => _day = value; }
     public event Action OnDayPassed;
@@ -22,6 +27,7 @@ public class PhaseManager : MonoBehaviourSingleton<PhaseManager>
     {
         base.Awake();
         _photonView = GetComponent<PhotonView>();
+        _deathCount = 0;
         InitPhase();
     }
 

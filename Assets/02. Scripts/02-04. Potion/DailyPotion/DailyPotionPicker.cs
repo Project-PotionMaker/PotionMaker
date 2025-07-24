@@ -9,10 +9,10 @@ public class DailyPotionPicker
 
     public DailyPotionPicker()
     {
-        InitPotionPicker();
+        InitDailyPotionPicker();
     }
 
-    private void InitPotionPicker()
+    private void InitDailyPotionPicker()
     {
         int tierCount = Enum.GetValues(typeof(ETierType)).Length;
         _potionDataList = new List<List<PotionData>>(tierCount + 1);

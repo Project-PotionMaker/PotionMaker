@@ -35,7 +35,6 @@ public class ReputationManager : MonoBehaviourPunCallbacksSingleton<ReputationMa
         _reputation = new Reputation(0);
         // Todo: 리포지토리 구현하고 데이터 로드해와야 한다.
         UpdateReputation(_reputation.Value);
-        OnDataChanged += _reputation.UpdateReputationGrade;
         OnDataChanged?.Invoke();
     }
 

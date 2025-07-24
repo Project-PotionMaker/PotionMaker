@@ -39,7 +39,7 @@ public class PlayerMoveAbility : PlayerAbility
 
         if (inputSize > 0f)
         {
-            _owner.transform.forward = Vector3.Lerp(_owner.transform.forward, inputDirection, Time.deltaTime * _owner.Stat.TurnSpeed);
+            _owner.transform.forward = Vector3.RotateTowards(_owner.transform.forward, inputDirection, Time.deltaTime * _owner.Stat.TurnSpeed, 0f);
             _lastForwardVector = _owner.transform.forward;
         }
         else

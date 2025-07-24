@@ -57,7 +57,7 @@ public class PhotonServerManager : MonoBehaviourPunCallbacks
         Debug.Log($"InLobby: {PhotonNetwork.InLobby}");
 
         // 랜덤 방에 들어간다.
-        PhotonNetwork.JoinRandomRoom();
+        //PhotonNetwork.JoinRandomRoom();
     }
 
     // 방에 입장한 후 호출되는 함수

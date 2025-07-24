@@ -174,11 +174,11 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         }
     }
 
-    public void ServePotion(int potionTID)// 판매대에 올려놓으면 호출
+    public void ServePotion(int potionTID, Vector3 pickupTable)// 판매대에 올려놓으면 호출
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            ServePotionInternal(potionTID); 
+            ServePotionInternal(potionTID,pickupTable); 
         }
         else
         {
@@ -186,29 +186,28 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         }
     }
     [PunRPC]
-    public void RPC_ServePotion(int potionTID)
+    public void RPC_ServePotion(int potionTID, Vector3 pickupTable)
     {
-        ServePotionInternal(potionTID);
+        ServePotionInternal(potionTID,pickupTable);
     }
 
-    public void ServePotionInternal(int potionTID)
+    public void ServePotionInternal(int potionTID,Vector3 pickupTable)
     {
         if (PhotonNetwork.IsMasterClient == false)
         {
             return;
         }
-        if (!_orderHandler.PotionOrderMap.ContainsKey(potionTID) || _orderHandler.PotionOrderMap[potionTID].Count == 0)
+        Customer customer = _orderHandler.FindPicker(potionTID); // 포션을 가져갈 손님 찾기
+        if (ReferenceEquals(customer, null)) 
         {
-            Debug.Log($"No customers in hall for potion TID: {potionTID}");
-            return; // 해당 TID의 손님이 없으면 실패
+            return;
         }
-        Customer customer = _orderHandler.PotionOrderMap[potionTID].First.Value;
-        customer.CustomerMove.MoveTo(_servingCounter.position); // 손님을 판매대 위치로 이동
-        customer.SetCurrentState(ECustomerStateType.PickingUp); 
+        customer.CustomerMove.MoveTo(pickupTable); // 손님을 판매대 위치로 이동
+        customer.SetCurrentState(ECustomerStateType.PickingUp);
         //TODO : 가져가기 전까지 포션 상호작용 불가로 만들기
     }
 
-    public void OnServedSuccess(int potionTID) // 손님이 판매대에 도착하면 호출 
+    public void OnServedSuccess(int potionTID,Vector3 pickupTable) // 손님이 판매대에 도착하면 호출 
     {
         if (PhotonNetwork.IsMasterClient == false)
         {
@@ -216,7 +215,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         }
         //TODO : 구매 성공, Currency 증가
         Debug.Log($"Potion served successfully for TID: {potionTID}");
-        GameObject potion = GridManager.Instance.PickUpTableList[0].GetComponent<IGridItemHandler>().TryPickUp();
+        GameObject potion = GridManager.Instance.GetObjectOnGrid(pickupTable).GetComponent<IGridItemHandler>().TryPickUp(); // 판매대 위치에서 포션 오브젝트 가져오기
         Customer customer = _orderHandler.PotionOrderMap[potionTID].First.Value;
         potion.transform.SetParent(customer.PotionHandler.transform);
         potion.transform.localPosition = Vector3.zero;

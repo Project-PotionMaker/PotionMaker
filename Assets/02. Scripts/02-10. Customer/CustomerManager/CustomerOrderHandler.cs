@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Unity.IO.LowLevel.Unsafe;
+using UnityEditor.Build.Pipeline;
 using UnityEngine;
 
 public class CustomerOrderHandler
@@ -41,5 +43,27 @@ public class CustomerOrderHandler
             return false;
         }
     }
+    public Customer FindPicker(int potionTID)
+    {
+        if (!_potionOrderMap.ContainsKey(potionTID) || _potionOrderMap[potionTID].Count == 0)
+        {
+            return null; // 해당 포션 TID에 대한 주문이 없으면 null 반환
+        }
+
+        float minEndurance = float.MaxValue;
+        Customer picker = null; // Picking 상태인 손님을 찾기 위한 변수
+
+        foreach (var customer in _potionOrderMap[potionTID])
+        {
+            if(customer.CustomerEndurance.CurrentEndurance < minEndurance)
+            {
+                minEndurance = customer.CustomerEndurance.CurrentEndurance; // 최소 인내심을 가진 손님 찾기
+                picker = customer; // Picking 상태인 손님을 찾기 위한 변수
+            }
+        }
+        
+        return picker;
+    }
+    
 
 }

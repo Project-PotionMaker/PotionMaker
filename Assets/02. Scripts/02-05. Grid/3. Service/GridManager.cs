@@ -137,6 +137,7 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
         CreateStructure(10000, new Vector3(-5, 0, 4), EStructureType.Machine);
         CreateStructure(10002, new Vector3(-3, 0, 4), EStructureType.Machine);
         CreateStructure(10014, new Vector3(0, 0, 0), EStructureType.Furniture);
+        CreateStructure(10014, new Vector3(-1, 0, 0), EStructureType.Furniture);
         CreateStructure(10016, new Vector3(-5, 0, 0), EStructureType.Furniture);
         CreateStructure(10005, new Vector3(0, 0, 2), EStructureType.Furniture);
         CreateStructure(10019, new Vector3(4, 0, 2), EStructureType.Storage, 10000);

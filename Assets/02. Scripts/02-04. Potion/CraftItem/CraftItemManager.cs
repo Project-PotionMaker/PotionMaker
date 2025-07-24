@@ -56,14 +56,26 @@ public class CraftItemManager : MonoBehaviourSingleton<CraftItemManager>
 
     public GameObject TryCreateOutputItem(int[] TIDList, int machineTID, EInputType type, Vector3 machinePosition)
     {
-        string recipeCode = _recipeCodeHandler.MakeNewRecipeCode(TIDList, machineTID);
+        string recipeCode;
         GameObject output = null;
-        if (_recipeCodeVerifier.IsValidProcess(recipeCode))
+        if (type != EInputType.Ingredient)
         {
-            output = CraftItemFactory.Instance.Create(type, machinePosition, Quaternion.identity);
-            output.GetComponent<OutputItem>().InitOutputData(type, _outputDataTIDDict[recipeCode]);
+            recipeCode = _recipeCodeHandler.MakeNewRecipeCode(TIDList, machineTID);
+            if (_recipeCodeVerifier.IsValidProcess(recipeCode))
+            {
+                output = CraftItemFactory.Instance.Create(EInputType.Output, machinePosition, Quaternion.identity);
+                output.GetComponent<OutputItem>().InitOutputData(EInputType.Output, _outputDataTIDDict[recipeCode]);
+                return output;
+            }
+        }
+        else
+        {
+            recipeCode = DataTable.Instance.GetIngredientData(TIDList[0]).RecipeCode;
+            output = CraftItemFactory.Instance.Create(EInputType.Output, machinePosition, Quaternion.identity);
+            output.GetComponent<OutputItem>().InitOutputData(EInputType.Output, _outputDataTIDDict[recipeCode]);
             return output;
         }
+
         return CreateFailureItem(machinePosition);
     }
 
@@ -75,7 +87,7 @@ public class CraftItemManager : MonoBehaviourSingleton<CraftItemManager>
         if (_recipeCodeVerifier.IsValidPotion(recipeCode))
         {
             GameObject potion = CraftItemFactory.Instance.Create(EInputType.Potion, machinePosition, Quaternion.identity);
-            potion.GetComponent<Potion>().InitPotionData(_potionDataTIDDict[recipeCode]);
+            potion.GetComponent<PotionItem>().InitPotionData(_potionDataTIDDict[recipeCode]);
             return potion;
         }
         return CreateFailureItem(machinePosition);

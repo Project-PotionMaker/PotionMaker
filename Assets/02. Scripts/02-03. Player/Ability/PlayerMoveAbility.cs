@@ -3,13 +3,18 @@ using UnityEngine;
 public class PlayerMoveAbility : PlayerAbility
 {
     private Rigidbody _rigidbody;
+    private Animator _animator;
     private Vector3 _lastForwardVector = Vector3.forward;
+    private float _cosAngleThreshold;
 
     protected override void Awake()
     {
         base.Awake();
 
         _rigidbody = _owner.GetComponent<Rigidbody>();
+        _animator = _owner.GetComponent<Animator>();
+
+        _cosAngleThreshold = Mathf.Cos(_owner.Stat.MoveAngleLimit);
     }
 
     private void FixedUpdate()
@@ -21,13 +26,15 @@ public class PlayerMoveAbility : PlayerAbility
 
         Vector2 moveInput = InputManager.Instance.MoveInput;
         float inputSize = Mathf.Min(moveInput.magnitude, 1f);
+        _animator.SetBool("IsMove", inputSize != 0f);
 
         moveInput.Normalize();
 
+        Vector3 inputDirection = new Vector3(moveInput.x, 0, moveInput.y);
+
         if (inputSize > 0f)
         {
-            Vector3 targetForward = new Vector3(moveInput.x, 0, moveInput.y);
-            _owner.transform.forward = targetForward;
+            _owner.transform.forward = Vector3.Lerp(_owner.transform.forward, inputDirection, Time.deltaTime * _owner.Stat.TurnSpeed);
             _lastForwardVector = _owner.transform.forward;
         }
         else
@@ -35,6 +42,15 @@ public class PlayerMoveAbility : PlayerAbility
             _owner.transform.forward = _lastForwardVector;
         }
 
-        _rigidbody.linearVelocity = new Vector3(moveInput.x, 0, moveInput.y) * inputSize * _owner.Stat.MoveSpeed;
+        float dot = Vector3.Dot(_owner.transform.forward, inputDirection);
+
+        if (dot >= _cosAngleThreshold)
+        {
+            _rigidbody.linearVelocity = new Vector3(moveInput.x, 0, moveInput.y) * inputSize * _owner.Stat.MoveSpeed;
+        }
+        else
+        {
+            _rigidbody.linearVelocity = Vector3.zero;
+        }
     }
 }

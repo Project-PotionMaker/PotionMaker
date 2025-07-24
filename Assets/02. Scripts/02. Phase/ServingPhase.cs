@@ -3,7 +3,7 @@ using System;
 
 public class ServingPhase : BasePhase
 {
-    private const float INIT_TIMER = 20f;
+    private const float INIT_TIMER = 100f;
     private float _currentTime;
     public float CurrentTime { get => _currentTime; set => _currentTime = value; }
 
@@ -18,6 +18,10 @@ public class ServingPhase : BasePhase
     {
         _currentTime = INIT_TIMER;
         _timesUp = false;
+
+        // 임시 코드
+        CustomerManager.Instance.CounterLocation = GridManager.Instance.Casher.transform;
+        CustomerManager.Instance.ServingCounter = GridManager.Instance.PickUpTableList[0].transform;
         base.EnterPhase();
     }
 

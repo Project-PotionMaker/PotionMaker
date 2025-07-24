@@ -77,7 +77,7 @@ public class RecipeCodeTrie
 
     public bool Exists(string id)
     {
-        if (id.Length != 8 || !IsValidFormat(id))
+        if (!IsValidFormat(id))
         {
             return false;
         }
@@ -99,7 +99,7 @@ public class RecipeCodeTrie
 
     public bool HasPrefix(string prefix)
     {
-        if (prefix.Length < 1 || 8 < prefix.Length || !IsValidFormat(prefix))
+        if (prefix.Length < 1 || 8 < prefix.Length)
         {
             return false;
         }

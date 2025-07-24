@@ -12,6 +12,7 @@ public class MachineInputContainer : IInputContainer<Machine, MachineStat>
             return false;
         }
 
+        stat.InputType = inputType;
         stat.InputTIDList.Add(tid);
 
         machine.SyncMachineStat();

@@ -7,24 +7,24 @@ public class Placement
 {
     public List<Vector3Int> OccupiedPositionList;
     public int TID { get; private set; }
-    public EStructureType structureType { get; private set; }
-    public int PlacedObjectIndex { get; private set; }
-
-    public Placement(List<Vector3Int> occupiedPositionList, int tid, EStructureType type, int placedObjectIndex)
+    public EStructureType StructureType { get; private set; }
+    public GameObject StructureObject { get; private set; }
+    public Placement(List<Vector3Int> occupiedPositionList, int tid, EStructureType type, GameObject structureObject)
     {
-        if(tid < 10000)
+        if (tid < 10000)
         {
             throw new System.Exception("TID가 올바르지 않습니다.");
         }
 
         OccupiedPositionList = occupiedPositionList;
         TID = tid;
-        structureType = type;
-        PlacedObjectIndex = placedObjectIndex;
+        StructureType = type;
+        StructureObject = structureObject;
     }
 
     public PlacementDTO ToDTO()
     {
-        return new PlacementDTO(OccupiedPositionList, TID, PlacedObjectIndex);
+        //return new PlacementDTO(OccupiedPositionList, TID, PlacedObjectIndex);
+        return null;
     }
 }

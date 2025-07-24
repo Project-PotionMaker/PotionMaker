@@ -1,17 +1,21 @@
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class UI_Machine : MonoBehaviour
 {
-    // 테스트 코드들입니다.
-    public Machine machine;
-    public TextMeshProUGUI testText;
+    [SerializeField]
+    private Machine _machine;
+    [SerializeField]
+    private TextMeshProUGUI _progressTextUI;
 
-    void Update()
+    private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        transform.forward = Camera.main.transform.forward;
+
+        if (_machine != null)
         {
-            testText.text = $"{machine.GetStat().CurrentProgress}";
+            _progressTextUI.text = $"{_machine.GetStat().CurrentProgress:F0}";
         }
     }
 }

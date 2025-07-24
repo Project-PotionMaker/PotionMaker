@@ -51,7 +51,9 @@ public class PlayerPickupAbility : PlayerAbility
             if(newItem != null)
             {
                 _heldItem = newItem;
-                _heldItem.transform.SetParent(this.transform);
+                _heldItem.transform.SetParent(_owner.HeldPosition);
+                _heldItem.transform.localPosition = Vector3.zero;
+                _heldItem.transform.localRotation = Quaternion.Euler(Vector3.zero);
             }
         }
     }
@@ -75,10 +77,13 @@ public class PlayerPickupAbility : PlayerAbility
             if(gridObject != null)
             {
                 IItem item = _heldItem.GetComponent<IItem>();
-                if (item != null && gridObject.GetComponent<IGridItemHandler>().TryDrop(targetPosition, item.GetTID(), item.GetInputType()))
+                if (item != null && gridObject.GetComponent<IGridItemHandler>().TryDrop(targetPosition, item.GetTID(), item.GetInputType(), _heldItem))
                 {
                     _heldItem.transform.SetParent(null);
-                    Destroy(_heldItem);
+                    if(item.GetInputType() != EInputType.Potion)
+                    {
+                        Destroy(_heldItem);
+                    }
                     _heldItem = null;
                 }
 

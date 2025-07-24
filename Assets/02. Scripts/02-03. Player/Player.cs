@@ -8,6 +8,11 @@ public class Player : MonoBehaviour
     private PlayerStat _stat;
     public PlayerStat Stat => _stat;
 
+    [Header("들기 위치")]
+    [SerializeField]
+    private Transform _heldPosition;
+    public Transform HeldPosition => _heldPosition;
+
     private Dictionary<Type, PlayerAbility> _abilityMap = new Dictionary<Type, PlayerAbility>();
 
     private void Update()

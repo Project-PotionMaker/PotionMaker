@@ -12,18 +12,13 @@ public class MachineOutputContainer : IOutputContainer<Machine, MachineStat>
             if (!PhotonNetwork.IsMasterClient)
             {
                 machine.PhotonView.RPC(nameof(RPC_TakeOutput), RpcTarget.MasterClient,
-                stat.InputTIDList.ToArray(), stat.Data.TID, EInputType.Output, machine.transform.position);
+                stat.InputTIDList.ToArray(), stat.Data.TID, stat.InputType, machine.transform.position);
             }
             else
             {
-                RPC_TakeOutput(stat.InputTIDList.ToArray(), stat.Data.TID, EInputType.Output, machine.transform.position);
+                RPC_TakeOutput(stat, stat.InputTIDList.ToArray(), stat.Data.TID, stat.InputType, machine.transform.position);
             }
 
-            stat.LeftOutputAmount--;
-            if (stat.LeftOutputAmount <= 0)
-            {
-                stat.ClearMachine();
-            }
             machine.SyncMachineStat();
             return _output;
         }
@@ -31,10 +26,23 @@ public class MachineOutputContainer : IOutputContainer<Machine, MachineStat>
     }
 
     [PunRPC]
-    public void RPC_TakeOutput(int[] TIDList, int machineTID, EInputType type, Vector3 machinePosition)
+    public void RPC_TakeOutput(MachineStat stat, int[] TIDList, int machineTID, EInputType type, Vector3 machinePosition)
     {
-        _output = CraftItemManager.Instance.TryCreateOutputItem
-            (TIDList, machineTID, type, machinePosition);
+        if(stat.Data.Name == "병입기")
+        {
+            _output = CraftItemManager.Instance.TryCreatePotionItem(TIDList, machineTID, machinePosition);
+        }
+        else
+        {
+            _output = CraftItemManager.Instance.TryCreateOutputItem(TIDList, machineTID, type, machinePosition);
+        }
+
+
+        stat.LeftOutputAmount--;
+        if (stat.LeftOutputAmount <= 0)
+        {
+            stat.ClearMachine();
+        }
     }
 
     public bool CanTake(Machine machine, MachineStat stat)

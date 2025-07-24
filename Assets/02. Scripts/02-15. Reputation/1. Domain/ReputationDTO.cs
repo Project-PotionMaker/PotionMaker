@@ -2,15 +2,12 @@ using UnityEngine;
 
 public class ReputationDTO
 {
-    public readonly int Value;
+    public readonly float Value;
+    public readonly EReputationGrade ReputationGrade;
 
     public ReputationDTO(Reputation reputation)
     {
         Value = reputation.Value;
-    }
-
-    public ReputationDTO(int value)
-    {
-        Value = value;
+        ReputationGrade = reputation.ReputationGrade;
     }
 }

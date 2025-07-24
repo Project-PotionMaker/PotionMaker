@@ -1,14 +1,35 @@
 using System;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
+
+public enum EReputationGrade
+{
+    VeryBad,
+    Bad,
+    Normal,
+    Good,
+    Excellent
+}
 
 public class Reputation
 {
-    private int _value = 0;
-    public int Value => _value;
-
-    public Reputation(int value = 0)
+    private float _value = 0;
+    public float Value
     {
-        if (value < 0)
+        get => _value;
+        private set => _value = Mathf.Clamp(value, _minValue, _maxValue);
+    }
+
+    private const float _minValue = 0f;
+    private const float _maxValue = 5f;
+
+    private EReputationGrade _reputationGrade = EReputationGrade.Normal;
+    public EReputationGrade ReputationGrade => _reputationGrade;
+
+
+    public Reputation(float value = 0f)
+    {
+        if (value < 0f)
         {
             throw new ArgumentOutOfRangeException
                 (
@@ -16,12 +37,18 @@ public class Reputation
                 value,
                 $"{nameof(value)} must be zero or greater");
         }
-        _value = value;
+        Value = value;
     }
 
-    public void SetReputation(int value)
+    public Reputation(ReputationDTO reputationDto)
     {
-        if (value < 0)
+        _value = reputationDto.Value;
+        _reputationGrade = reputationDto.ReputationGrade;
+    }
+
+    public void SetReputation(float value)
+    {
+        if (value < 0f)
         {
             throw new ArgumentOutOfRangeException
                 (
@@ -29,12 +56,12 @@ public class Reputation
                 value,
                 $"{nameof(value)} must be zero or greater");
         }
-        _value = value;
+        Value = value;
     }
 
-    public void AddReputation(int valueToAdd)
+    public void AddReputation(float valueToAdd)
     {
-        if (valueToAdd <= 0)
+        if (valueToAdd <= 0f)
         {
             throw new ArgumentOutOfRangeException
                 (
@@ -43,12 +70,12 @@ public class Reputation
                 $"{nameof(valueToAdd)} must be greater than zero");
         }
 
-        _value += valueToAdd;
+        Value += valueToAdd;
     }
 
-    public bool TrySubtractReputation(int valueToSubtract)
+    public bool TrySubtractReputation(float valueToSubtract)
     {
-        if (valueToSubtract <= 0)
+        if (valueToSubtract <= 0f)
         {
             throw new ArgumentOutOfRangeException
                 (
@@ -61,13 +88,22 @@ public class Reputation
         {
             return false;
         }
-        _value -= valueToSubtract;
+        Value -= valueToSubtract;
         return true;
+    }
+
+    public void UpdateReputationGrade()
+    {
+        int enumIndex = Mathf.Clamp(Mathf.FloorToInt(_value), 0, 4);
+        if (Enum.IsDefined(typeof(EReputationGrade), enumIndex))
+        {
+            _reputationGrade = (EReputationGrade)enumIndex;
+        }
     }
 
     public ReputationDTO ToDTO()
     {
-        return new ReputationDTO(_value);
+        return new ReputationDTO(this);
     }
 }
 

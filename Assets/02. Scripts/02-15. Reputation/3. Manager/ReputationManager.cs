@@ -1,6 +1,7 @@
 using Photon.Pun;
 using System;
 using UnityEngine;
+using PhotonPlayer = Photon.Realtime.Player;
 
 public class ReputationManager : MonoBehaviourPunCallbacksSingleton<ReputationManager>
 {
@@ -13,6 +14,9 @@ public class ReputationManager : MonoBehaviourPunCallbacksSingleton<ReputationMa
     public ReputationDTO Reputation => _reputation.ToDTO();
 
     private ReputationRepository _reputationRepository;
+
+    private const float _increaseAmountOnSuccessOrder = 0.01f;
+    private const float _decreaseAmountOnFailOrder = 0.2f;
 
     protected override void Awake()
     {
@@ -29,37 +33,60 @@ public class ReputationManager : MonoBehaviourPunCallbacksSingleton<ReputationMa
     {
         _reputationRepository = new ReputationRepository();
         _reputation = new Reputation(0);
-        _photonView.RPC(nameof(RPC_RequestSetReputation), RpcTarget.MasterClient);
-        // Todo: Save총괄로부터 데이터 받아온 후 초기화
+        // Todo: 리포지토리 구현하고 데이터 로드해와야 한다.
+        UpdateReputation(_reputation.Value);
+        OnDataChanged += _reputation.UpdateReputationGrade;
         OnDataChanged?.Invoke();
     }
 
-    [PunRPC]
-    public void RPC_RequestAddReputation(int addendValue)
+    public void RequestAddReputation(float addedValue = _increaseAmountOnSuccessOrder)
     {
         if (!PhotonNetwork.IsMasterClient)
         {
-            _photonView.RPC(nameof(RPC_RequestAddReputation), RpcTarget.MasterClient, addendValue);
+            _photonView.RPC(nameof(RPC_AddReputation), RpcTarget.MasterClient, addedValue);
             return;
         }
 
-        AddReputation(addendValue);
+        AddReputation(addedValue);
     }
 
-    private void AddReputation(int addendValue)
+    [PunRPC]
+    public void RPC_AddReputation(float addedValue)
+    {
+        AddReputation(addedValue);
+    }
+
+    private void AddReputation(float addedValue)
     {
         if (!PhotonNetwork.IsMasterClient)
         {
             throw new InvalidOperationException
-                ("마스터 클라이언트만 평판을 증가시킬 수 있습니다. 대신 RequestAddReputation을 사용하세요.");
+                ("마스터 클라이언트만 평판을 증가시킬 수 있습니다.");
         }
-        _reputation.AddReputation(addendValue);
+        _reputation.AddReputation(addedValue);
         OnDataChanged?.Invoke();
 
-        _photonView.RPC(nameof(RPC_SetReputation), RpcTarget.Others, _reputation.Value);
+        _photonView.RPC(nameof(RPC_UpdateReputation), RpcTarget.Others, _reputation.Value);
     }
 
-    public bool TrySubtractReputation(int subtrahendValue)
+    public void RequestSubtractReputation(float subtractedValue = _decreaseAmountOnFailOrder)
+    {
+        if (!PhotonNetwork.IsMasterClient)
+        {
+            _photonView.RPC(nameof(RPC_SubtractReputation), RpcTarget.MasterClient, subtractedValue);
+            return;
+        }
+
+        SubtractReputation(subtractedValue);
+    }
+
+    [PunRPC]
+    public void RPC_SubtractReputation(float subtractedValue)
+    {
+        SubtractReputation(subtractedValue);
+    }
+
+    private void SubtractReputation(float subtractedValue)
     {
         if (!PhotonNetwork.IsMasterClient)
         {
@@ -67,40 +94,31 @@ public class ReputationManager : MonoBehaviourPunCallbacksSingleton<ReputationMa
                 ("마스터 클라이언트만 평판을 감소시킬 수 있습니다.");
         }
 
-        bool result = _reputation.TrySubtractReputation(subtrahendValue);
+        bool result = _reputation.TrySubtractReputation(subtractedValue);
         if (result)
         {
             OnDataChanged?.Invoke();
-            _photonView.RPC(nameof(RPC_SetReputation), RpcTarget.Others, _reputation.Value);
+            _photonView.RPC(nameof(RPC_UpdateReputation), RpcTarget.Others, _reputation.Value);
             Debug.Log("평판 감소...");
-            return true;
-        }
-        Debug.Log("평판 감소 실패");
-        return false;
-    }
-
-
-    [PunRPC]
-    public void RPC_RequestSetReputation(PhotonMessageInfo info)
-    {
-        if (!PhotonNetwork.IsMasterClient)
-        {
-            _photonView.RPC(nameof(RPC_RequestSetReputation), RpcTarget.MasterClient);
             return;
         }
-
-        _photonView.RPC(nameof(RPC_SetReputation), info.Sender, _reputation.Value);
+        Debug.Log("평판 감소 실패");
     }
 
     [PunRPC]
-    public void RPC_SetReputation(int value, PhotonMessageInfo info)
+    public void RPC_UpdateReputation(float value)
     {
-        if (!info.Sender.IsMasterClient)
-        {
-            throw new InvalidOperationException("마스터 클라이언트만 평판을 Setting할 수 있습니다.");
-        }
+        UpdateReputation(value);
+    }
 
+    private void UpdateReputation(float value)
+    {
         _reputation.SetReputation(value);
         OnDataChanged?.Invoke();
+    }
+
+    private void UpdateReputationState()
+    {
+
     }
 }

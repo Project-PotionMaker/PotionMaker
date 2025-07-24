@@ -95,8 +95,8 @@ public class CustomerMove : MonoBehaviour
         }
         else if (_owner.CurrentState == ECustomerStateType.PickingUp)
         {
-            Furniture pickupTable = GridManager.Instance.GetObjectOnGrid(_lastTarget).GetComponent<Furniture>();
-            CustomerManager.Instance.OnServedSuccess(_owner,pickupTable); 
+            int pickupTableViewID = GridManager.Instance.GetObjectOnGrid(_lastTarget).GetComponent<Furniture>().PhotonView.ViewID;
+            CustomerManager.Instance.OnServedSuccess(_owner,pickupTableViewID); 
         }
         else if (_owner.CurrentState == ECustomerStateType.Leaving)
         {

@@ -20,8 +20,7 @@ public class ServingPhase : BasePhase
         _timesUp = false;
 
         // 임시 코드
-        CustomerManager.Instance.CounterLocation = GridManager.Instance.Casher.transform;
-        CustomerManager.Instance.ServingCounter = GridManager.Instance.PickUpTableList[0].transform;
+        CustomerManager.Instance.CasherLocation = GridManager.Instance.Casher.transform;
         base.EnterPhase();
     }
 

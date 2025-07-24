@@ -25,8 +25,10 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
 
     private GameObject _cahser;
     public GameObject Casher => _cahser;
-    private GameObject _door;
-    public GameObject Door => _door;
+    private GameObject _enterDoor;
+    public GameObject EnterDoor => _enterDoor;
+    private GameObject _exitDoor;
+    public GameObject ExitDoor => _exitDoor;
     private List<GameObject> _pickUpTableList;
     public List<GameObject> PickUpTableList => _pickUpTableList;
 

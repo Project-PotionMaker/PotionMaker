@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections.Generic;
 using Unity.IO.LowLevel.Unsafe;
 using UnityEditor.Build.Pipeline;
@@ -10,14 +11,14 @@ public class CustomerOrderHandler
     private Queue<Customer> _potionOrderLine; // 손님이 줄을 서는 대기열
     public Queue<Customer> PotionOrderLine { get => _potionOrderLine; set => _potionOrderLine = value; }
 
-    private Dictionary<Furniture, Customer> _pickingCustomers; // 포션 찾으러 가는 손님들 (제작 완료 번호표)
-    public Dictionary<Furniture, Customer> PickingCustomers { get => _pickingCustomers; set => _pickingCustomers = value; }
+    private Dictionary<int, PickingStat> _pickingCustomers; // 포션 찾으러 가는 손님들 (제작 완료 번호표)
+    public Dictionary<int, PickingStat> PickupTableDict { get => _pickingCustomers; set => _pickingCustomers = value; }
 
     public void Init()
     {
         _potionOrderMap = new Dictionary<int, LinkedList<Customer>>();
         _potionOrderLine = new Queue<Customer>();
-        _pickingCustomers = new Dictionary<Furniture, Customer>();
+        _pickingCustomers = new Dictionary<int, PickingStat>();
     }
     public void SetLists()
     {
@@ -26,7 +27,7 @@ public class CustomerOrderHandler
         _pickingCustomers.Clear();
         foreach (GameObject pickupTable in GridManager.Instance.PickUpTableList)
         {
-            _pickingCustomers.Add(pickupTable.GetComponent<Furniture>(), null); // 각 픽업 테이블에 대해 초기화
+            _pickingCustomers.Add(pickupTable.GetComponent<PhotonView>().ViewID, null); // 각 픽업 테이블에 대해 초기화
         }
     }
 

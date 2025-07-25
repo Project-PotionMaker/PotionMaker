@@ -9,9 +9,12 @@ public class Sales
     private int _dailySales;
     public int DailySales => _dailySales;
 
-    private Dictionary<EPotionType, int> _salesVolumeDict;
-    public Dictionary<EPotionType, int> SalesVolumeDict => _salesVolumeDict;
-    public Sales(int totalSales, int dailySales = 0, Dictionary<EPotionType, int> salesVolumeDict = null)
+    private Dictionary<EPotionType, int> _totalSalesVolumeDict;
+    public Dictionary<EPotionType, int> TotalSalesVolumeDict => _totalSalesVolumeDict;
+
+    private Dictionary<EPotionType, int> _dailySalesVolumeDict;
+    public Dictionary<EPotionType, int> DailySalesVolumeDict => _dailySalesVolumeDict;
+    public Sales(int totalSales, int dailySales = 0, Dictionary<EPotionType, int> totalSalesVolumeDict = null, Dictionary<EPotionType, int> dailySalesVolumeDict = null)
     {
         if (totalSales < 0)
         {
@@ -32,19 +35,39 @@ public class Sales
         _totalSales = totalSales;
         _dailySales = dailySales;
 
-        if (ReferenceEquals(salesVolumeDict, null))
+        if (ReferenceEquals(totalSalesVolumeDict, null))
         {
-            _salesVolumeDict = new Dictionary<EPotionType, int>();
+            _totalSalesVolumeDict = new Dictionary<EPotionType, int>();
         }
         else
         {
-            _salesVolumeDict = salesVolumeDict;
+            _totalSalesVolumeDict = totalSalesVolumeDict;
+        }
+
+        if (ReferenceEquals(dailySalesVolumeDict, null))
+        {
+            _dailySalesVolumeDict = new Dictionary<EPotionType, int>();
+        }
+        else
+        {
+            _dailySalesVolumeDict = dailySalesVolumeDict;
         }
     }
+    
     public int GetTotalSalesVolume()
     {
         int sum = 0;
-        foreach (int n in _salesVolumeDict.Values)
+        foreach (int n in _totalSalesVolumeDict.Values)
+        {
+            sum += n;
+        }
+        return sum;
+    }
+
+    public int GetDailySalesVolume()
+    {
+        int sum = 0;
+        foreach (int n in _dailySalesVolumeDict.Values)
         {
             sum += n;
         }
@@ -53,16 +76,23 @@ public class Sales
 
     public void Sell(EPotionType potionType, int price)
     {
-        if (!_salesVolumeDict.ContainsKey(potionType))
+        if (!_totalSalesVolumeDict.ContainsKey(potionType))
         {
-            _salesVolumeDict.Add(potionType, 0);
+            _totalSalesVolumeDict.Add(potionType, 0);
         }
-        ++_salesVolumeDict[potionType];
-        _dailySales += price;
+        ++_totalSalesVolumeDict[potionType];
+
+        if (!_dailySalesVolumeDict.ContainsKey(potionType))
+        {
+            _dailySalesVolumeDict.Add(potionType, 0);
+        }
+        ++_dailySalesVolumeDict[potionType];
+
         _totalSales += price;
+        _dailySales += price;
     }
 
-    public void SetSales(int totalSales, int dailySales, Dictionary<EPotionType, int> salesVolumeDict)
+    public void SetSales(int totalSales, int dailySales, Dictionary<EPotionType, int> totalSalesVolumeDict, Dictionary<EPotionType, int> dailySalesVolumeDict)
     {
         if(totalSales < 0)
         {
@@ -78,20 +108,28 @@ public class Sales
                 dailySales,
                 $"{nameof(dailySales)} must be zero or greater");
         }
-        if (ReferenceEquals(salesVolumeDict, null))
+        if (ReferenceEquals(totalSalesVolumeDict, null))
         {
             throw new ArgumentNullException(
-                nameof(salesVolumeDict),
-                $"{nameof(salesVolumeDict)} must not be null");
+                nameof(totalSalesVolumeDict),
+                $"{nameof(totalSalesVolumeDict)} must not be null");
+        }
+        if (ReferenceEquals(dailySalesVolumeDict, null))
+        {
+            throw new ArgumentNullException(
+                nameof(dailySalesVolumeDict),
+                $"{nameof(dailySalesVolumeDict)} must not be null");
         }
         _totalSales = totalSales;
         _dailySales = dailySales;
-        _salesVolumeDict = salesVolumeDict;
+        _totalSalesVolumeDict = totalSalesVolumeDict;
+        _dailySalesVolumeDict = dailySalesVolumeDict;
     }
 
-    public void ResetDailySales()
+    public void OnDayChanged()
     {
         _dailySales = 0;
+        _dailySalesVolumeDict.Clear();
     }
 
     public SalesDTO ToDTO()

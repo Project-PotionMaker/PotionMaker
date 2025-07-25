@@ -18,6 +18,7 @@ public class DailyPotionPicker
 {
     private Dictionary<ETierType, List<PotionPickInfo>> _potionDataDict;
 
+    private const int _pickCountLimit = 100;
     public DailyPotionPicker()
     {
         InitDailyPotionPicker();
@@ -74,11 +75,13 @@ public class DailyPotionPicker
 
     private PotionData PickPotion(ETierType tier)
     {
-        var potionList = _potionDataDict[tier];
-        while (true)
+        var potionPickInfoList = _potionDataDict[tier];
+
+        int currentPickCount = 0;
+        while (currentPickCount++ < _pickCountLimit)
         {
-            int randomIndex = UnityEngine.Random.Range(0, potionList.Count);
-            var pickInfo = potionList[randomIndex];
+            int randomIndex = UnityEngine.Random.Range(0, potionPickInfoList.Count);
+            var pickInfo = potionPickInfoList[randomIndex];
 
             if (!pickInfo.IsPicked)
             {
@@ -86,6 +89,17 @@ public class DailyPotionPicker
                 return pickInfo.Data;
             }
         }
+
+        foreach (var pickInfo in _potionDataDict[tier])
+        {
+            if (!pickInfo.IsPicked)
+            {
+                pickInfo.IsPicked = true;
+                return pickInfo.Data;
+            }
+        }
+        Debug.LogWarning("뽑을 수 있는 포션이 존재하지 않습니다.");
+        return null;
     }
 
     private void ResetIsPicked()

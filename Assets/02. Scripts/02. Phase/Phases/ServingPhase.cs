@@ -16,11 +16,11 @@ public class ServingPhase : BasePhase
     }
     public override void EnterPhase()
     {
+        base.EnterPhase();
         _currentTime = INIT_TIMER;
         _timesUp = false;
         PhaseManager.Instance.DeathCount = 0;
         CustomerManager.Instance.PreService();
-        base.EnterPhase();
     }
 
     public override void Update(float deltaTime)

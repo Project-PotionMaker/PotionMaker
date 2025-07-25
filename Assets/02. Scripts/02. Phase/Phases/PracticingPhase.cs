@@ -8,8 +8,8 @@ public class PracticingPhase : BasePhase
     }
     public override void EnterPhase()
     {
-        CustomerManager.Instance.PreService();
         base.EnterPhase();
+        CustomerManager.Instance.PreService();
     }
     public override void Update(float deltaTime)
     {

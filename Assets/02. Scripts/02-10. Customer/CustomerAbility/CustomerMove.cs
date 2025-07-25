@@ -11,11 +11,14 @@ public class CustomerMove : MonoBehaviour
     private bool _hasArrived = true; // 도착 여부
     private int _priorityOffset;
     public int PriorityOffset { get => _priorityOffset; set => _priorityOffset = value; } // 우선순위 편향
+    private Animator _animator; // 애니메이터 컴포넌트
+    public Animator Animator { get => _animator; set => _animator = value; } // 애니메이터 컴포넌트
 
     private void Awake()
     {
         _agent = GetComponent<NavMeshAgent>();
         _owner = GetComponent<Customer>();
+        _animator = GetComponent<Animator>();
     }
     private void Update()
     {
@@ -49,6 +52,7 @@ public class CustomerMove : MonoBehaviour
         {
             return; // 마스터 클라이언트만 이동 가능
         }
+        _animator.SetTrigger("Move");
 
         _hasArrived = false; // 이동 시작 시 도착 여부 초기화
         _agent.SetDestination(target); // NavMeshAgent를 사용하여 이동
@@ -92,6 +96,7 @@ public class CustomerMove : MonoBehaviour
         }
         if (_owner.CurrentState == ECustomerStateType.Lining)
         {
+            _animator.SetTrigger("Stand");
             CustomerManager.Instance.OnArrivedLine(_owner); // 손님이 줄에 도착했을 때 호출
         }
         else if (_owner.CurrentState == ECustomerStateType.PickingUp)
@@ -101,7 +106,10 @@ public class CustomerMove : MonoBehaviour
         else if (_owner.CurrentState == ECustomerStateType.Leaving)
         {
             CustomerManager.Instance.ReturnCustomer(_owner); // 손님이 나가는 문에 도착했을 때 호출
-        };
+        }else if (_owner.CurrentState == ECustomerStateType.Waiting)
+        {
+            _animator.SetTrigger("Sit");
+        }
 
     }
 }

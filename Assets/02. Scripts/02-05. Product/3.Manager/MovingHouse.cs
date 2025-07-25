@@ -31,7 +31,7 @@ public class MovingHouse
     {
         SceneManager.sceneLoaded -= OnHouseMoved;
         RelocateStructure();
-        StorageLoad();
+        LoadStorage();
     }
     public void RelocateStructure()
     {
@@ -68,7 +68,7 @@ public class MovingHouse
         }
     }
 
-    public void StorageLoad()
+    public void LoadStorage()
     {
         List<Vector3Int> relocatePostion = GridManager.Instance.GetPositionByAreaType(EAreaType.Storage);
         List<Vector3Int> newPostion = GridManager.Instance.GetPositionByAreaType(EAreaType.Delivery);

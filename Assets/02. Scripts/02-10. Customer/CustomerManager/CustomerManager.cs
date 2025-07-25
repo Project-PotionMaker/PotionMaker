@@ -30,9 +30,6 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
     [SerializeField]
     private Transform _enterDoor;
     public Transform EnterDoor { get => _enterDoor; set => _enterDoor = value; }
-    [SerializeField]
-    private Transform _hallEntry; // 줄 이탈 초기위치
-    public Transform HallEntry { get => _hallEntry; set => _hallEntry = value; }
     private Transform _casherLocation; // 접수대 위치
     public Transform CasherLocation { get => _casherLocation; set => _casherLocation = value; }
     [SerializeField]
@@ -136,12 +133,17 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         {
             return;
         }
+        int chairViewID = _orderHandler.FindAvailableChair(); // 사용 가능한 의자 찾기
+        if (chairViewID == 0)
+        {
+            Debug.LogWarning("No available chair found for the customer.");
+            return; // 사용 가능한 의자가 없으면 주문을 받지 않음
+        }
         _canOrdered = false; // 주문을 받은 후에는 다시 주문을 받을 수 없도록 설정
         Customer customer = _orderHandler.PotionOrderLine.Dequeue();
         int potionTID = customer.GetComponent<Customer>().RequestedPotionTID;
-
         _orderHandler.AddOrder(potionTID, customer);
-        customer.CustomerMove.MoveTo(_hallEntry.position);
+        SitOnChair(chairViewID, customer);
         customer.SetCurrentState(ECustomerStateType.Waiting); // 대기 상태로 변경
         _lineHandler.ReLining(); // 줄 다시 세우기
         ReServePotion();
@@ -168,11 +170,11 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
 
     private void ReServePotion()
     {
-        foreach (KeyValuePair<int, PickingStat> pair in _orderHandler.PickupTableDict)
+        foreach (KeyValuePair<int, FurnitureUsingStat> pair in _orderHandler.PickupTableDict)
         {
-            if (pair.Value.IsPotionExist == true && pair.Value.Picker == null)
+            if (pair.Value.IsUsing == true && pair.Value.UsingCustomer == null)
             {
-                ServePotion(pair.Value.potionTID,pair.Key);
+                ServePotion(pair.Value.HeldItemTID,pair.Key);
             }
         }
     }
@@ -205,12 +207,15 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         {
             return;
         }
-       
+
+        PlaceOnTable(potionTID, pickupTableViewID);
         Vector3 position = FindPickupTalbeByViewID(pickupTableViewID).transform.position; // 판매대 위치 찾기
         customer.CustomerMove.MoveTo(position); // 손님을 판매대 위치로 이동
         customer.SetCurrentState(ECustomerStateType.PickingUp);
-        _orderHandler.PickupTableDict[pickupTableViewID].Picker = customer; // 손님과 판매대 매핑 저장
+        _orderHandler.PickupTableDict[pickupTableViewID].UsingCustomer = customer; // 손님과 판매대 매핑 저장
+        LeaveChair(customer); 
         _orderHandler.PotionOrderMap[potionTID].Remove(customer);
+        
     }
 
     public void OnServedSuccess(Customer customer,int pickupTableViewID) // 손님이 판매대에 도착하면 호출 
@@ -221,7 +226,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         }
         //TODO : 구매 성공, Currency 증가
         Debug.Log($"Potion served successfully");
-        _orderHandler.PickupTableDict[pickupTableViewID].Picker = null;
+        _orderHandler.PickupTableDict[pickupTableViewID].UsingCustomer = null;
         GameObject potion = FindPickupTalbeByViewID(pickupTableViewID).GetComponent<IGridItemHandler>().TryPickUp(); // 판매대 위치에서 포션 오브젝트 가져오기
         potion.transform.SetParent(customer.PotionHandler.transform);
         potion.transform.localPosition = Vector3.zero;
@@ -290,14 +295,57 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         return null;
     }
 
-    public void PlaceOnTable(int potionTID, int pickupTableViewID)
+    private GameObject FindChairByViewID(int chairViewID)
     {
-        _orderHandler.PickupTableDict[pickupTableViewID].IsPotionExist = true;
-        _orderHandler.PickupTableDict[pickupTableViewID].potionTID = potionTID;
+        foreach (GameObject luxuryChair in GridManager.Instance.LuxuryChairList)
+        {
+            if (luxuryChair.GetComponent<PhotonView>().ViewID == chairViewID)
+            {
+                return luxuryChair;
+            }
+        }
+        foreach (GameObject oldChair in GridManager.Instance.OldChairList)
+        {
+            if (oldChair.GetComponent<PhotonView>().ViewID == chairViewID)
+            {
+                return oldChair;
+            }
+        }
+        return null;
+    }
+
+    private void PlaceOnTable(int potionTID, int pickupTableViewID)
+    {
+        _orderHandler.PickupTableDict[pickupTableViewID].IsUsing = true;
+        _orderHandler.PickupTableDict[pickupTableViewID].HeldItemTID = potionTID;
     }
     public void RemoveOnTable(int pickupTableViewID)
     {
-        _orderHandler.PickupTableDict[pickupTableViewID].IsPotionExist = false;
-        _orderHandler.PickupTableDict[pickupTableViewID].potionTID = 0;
+        _orderHandler.PickupTableDict[pickupTableViewID].IsUsing = false;
+        _orderHandler.PickupTableDict[pickupTableViewID].HeldItemTID = 0;
+    }
+    private void SitOnChair(int chairViewID,Customer customer)
+    {
+        if(_orderHandler.LuxuryChairDict.ContainsKey(chairViewID))
+        {
+            _orderHandler.LuxuryChairDict[chairViewID].IsUsing = true;
+            _orderHandler.LuxuryChairDict[chairViewID].UsingCustomer = customer; // 손님과 의자 매핑 저장
+        }
+        else if (_orderHandler.OldChairDict.ContainsKey(chairViewID))
+        {
+            _orderHandler.OldChairDict[chairViewID].IsUsing = true;
+            _orderHandler.OldChairDict[chairViewID].UsingCustomer = customer; // 손님과 의자 매핑 저장
+        }
+        GameObject chair = FindChairByViewID(chairViewID);
+        customer.CustomerMove.MoveTo(chair.transform.position);
+    }
+    private void LeaveChair(Customer customer)
+    {
+        FurnitureUsingStat usedChair = _orderHandler.FindUsingChair(customer);
+        if (usedChair != null)
+        {
+            usedChair.IsUsing = false;
+            usedChair.UsingCustomer = null; // 손님과 의자 매핑 해제
+        }
     }
 }

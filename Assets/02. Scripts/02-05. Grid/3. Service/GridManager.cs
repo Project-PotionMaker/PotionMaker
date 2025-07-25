@@ -31,6 +31,11 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
     public GameObject ExitDoor => _exitDoor;
     private List<GameObject> _pickUpTableList;
     public List<GameObject> PickUpTableList => _pickUpTableList;
+    private List<GameObject> _oldChairList;
+    public List<GameObject> OldChairList => _oldChairList;
+    private List<GameObject> _luxuryChairList;
+    public List<GameObject> LuxuryChairList => _luxuryChairList;
+
 
     // private GridRepository _repository;
 

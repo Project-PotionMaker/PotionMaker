@@ -54,10 +54,10 @@ public class CustomerMove : MonoBehaviour
         _hasArrived = false; 
         _agent.SetDestination(target); 
         _agent.isStopped = false;
-        SetPriority(target);
+        SetPriority();
         _lastTarget = target;
     }
-    private void SetPriority(Vector3 target)
+    private void SetPriority()
     {
         if (_owner.CurrentState == ECustomerStateType.Waiting)
         {

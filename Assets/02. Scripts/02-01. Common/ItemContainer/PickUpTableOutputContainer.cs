@@ -19,7 +19,7 @@ public class PickUpTableOutputContainer : IOutputContainer<Furniture, FurnitureS
         {
             return false;
         }
-        if (CustomerManager.Instance.OrderHandler.PickupTableDict[furniture.PhotonView.ViewID].Picker != null)
+        if (CustomerManager.Instance.OrderHandler.PickupTableDict[furniture.PhotonView.ViewID].UsingCustomer != null)
         {
             Debug.Log("이미 가져가는 중");
             return false;

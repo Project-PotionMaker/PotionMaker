@@ -16,7 +16,7 @@ public class PotionPickInfo
 
 public class DailyPotionPicker
 {
-    private Dictionary<ETierType, List<PotionPickInfo>> _potionDataDict = new Dictionary<ETierType, List<PotionPickInfo>>();
+    private Dictionary<ETierType, List<PotionPickInfo>> _potionDataDict;
 
     public DailyPotionPicker()
     {
@@ -25,23 +25,21 @@ public class DailyPotionPicker
 
     private void InitDailyPotionPicker()
     {
-        int tierCount = Enum.GetValues(typeof(ETierType)).Length;
-        InitTierPotionDict(tierCount);
+        InitTierPotionDict();
     }
 
-    private void InitTierPotionDict(int maxTier)
+    private void InitTierPotionDict()
     {
+        _potionDataDict = new Dictionary<ETierType, List<PotionPickInfo>>();
         var potionDataList = DataTable.Instance.GetPotionDataList();
-        for (int currentTier = 0; currentTier < maxTier; currentTier++)
+        foreach (ETierType currentTier in Enum.GetValues(typeof(ETierType)))
         {
-            var tier = (ETierType)currentTier;
-            _potionDataDict.Add(tier, new List<PotionPickInfo>());
-
+            _potionDataDict.Add(currentTier, new List<PotionPickInfo>());
             foreach (var potionData in potionDataList)
             {
-                if (potionData.Tier == currentTier)
+                if (potionData.Tier == (int)currentTier + 1)
                 {
-                    _potionDataDict[tier].Add(new PotionPickInfo(potionData));
+                    _potionDataDict[currentTier].Add(new PotionPickInfo(potionData));
                 }
             }
         }

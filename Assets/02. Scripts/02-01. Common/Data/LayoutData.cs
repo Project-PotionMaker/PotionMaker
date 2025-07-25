@@ -17,6 +17,9 @@ public class LayoutData
     ///<summary>임대료 증가값</summary>
     public readonly int RentIncrement;
 
+    ///<summary>씬 이름</summary>
+    public readonly string SceneName;
+
     public LayoutData(BinaryReader reader)
     {
         TID = reader.ReadInt32();
@@ -24,5 +27,7 @@ public class LayoutData
         Name = Encoding.UTF8.GetString(reader.ReadBytes(name));
         InitialRentCost = reader.ReadInt32();
         RentIncrement = reader.ReadInt32();
+        int scenename = reader.ReadInt32();
+        SceneName = Encoding.UTF8.GetString(reader.ReadBytes(scenename));
     }
 }

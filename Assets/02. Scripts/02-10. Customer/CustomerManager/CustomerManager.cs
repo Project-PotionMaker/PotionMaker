@@ -47,10 +47,11 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
     private void Start()
     {
         _photonView = GetComponent<PhotonView>();
-        PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseEntered += PreService;
-        PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += ForceReturn; 
-        PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase].OnPhaseEntered += PreService;
-        PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase].OnPhaseExited += ForceReturn;
+        Dictionary<EPhaseType, BasePhase> phaseDictionary = PhaseManager.Instance.PhaseDictionary;
+        phaseDictionary[EPhaseType.ServingPhase].OnPhaseEntered += PreService;
+        phaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += ForceReturn; 
+        phaseDictionary[EPhaseType.PracticingPhase].OnPhaseEntered += PreService;
+        phaseDictionary[EPhaseType.PracticingPhase].OnPhaseExited += ForceReturn;
         //CustomerPool.Instance.ObjectSpawnedActions.TryAdd(ENPCType.Customer, null);
         //CustomerPool.Instance.ObjectSpawnedActions[ENPCType.Customer] += OnCustomerIn;
 

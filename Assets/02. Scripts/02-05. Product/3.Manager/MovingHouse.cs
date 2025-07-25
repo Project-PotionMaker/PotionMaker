@@ -2,6 +2,7 @@ using Mono.Cecil;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -9,7 +10,7 @@ public class MovingHouse
 {
     private List<int> _structureTIDList;
 
-    private void Awake()
+    public void InitMovingHouse()
     {
         _structureTIDList = new List<int>();
     }
@@ -17,9 +18,11 @@ public class MovingHouse
     public void MoveHouse(int layoutTID)
     {
         string sceneName = DataTable.Instance.GetLayoutData(layoutTID).SceneName;
-            
+
         // GridManager에서 받아올거임
-        _structureTIDList.Add(10000);
+        _structureTIDList = GridManager.Instance.GetPlacedStructureTIDList().ToList();
+
+
         SceneManager.sceneLoaded += OnHouseMoved;
         SceneManager.LoadScene(sceneName);
     }
@@ -45,7 +48,7 @@ public class MovingHouse
 
         foreach (EAreaType areaType in Enum.GetValues(typeof(EAreaType)))
         {
-            if(areaType == EAreaType.None)
+            if(areaType == EAreaType.None || areaType == EAreaType.Storage)
             {
                 continue;
             }

@@ -33,9 +33,11 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
 
     // private GridRepository _repository;
 
-    private void Start()
+    protected override void Awake()
     {
+        base.Awake();
         StopPlacement();
+
         _layout = GameObject.FindGameObjectWithTag("Layout").GetComponent<Layout>();
         _gridData = new GridData(_layout.GetAvailableAreaDict());
         _pickUpTableList = new List<GameObject>();
@@ -176,5 +178,10 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
         }
 
         return targetPosionList;
-    } 
+    }
+    
+    public ReadOnlyList<int> GetPlacedStructureTIDList()
+    {
+        return _gridData.PlacedObjectList;
+    }
 }

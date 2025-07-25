@@ -24,6 +24,7 @@ public class ProductManager : MonoBehaviourPunCallbacksSingleton<ProductManager>
         base.Awake();
         _photonView = GetComponent<PhotonView>();
         _movingHouse = new MovingHouse();
+        _movingHouse.InitMovingHouse();
     }
     private void Start()
     {

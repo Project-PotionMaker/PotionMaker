@@ -54,7 +54,7 @@ public class DailyPotionPicker
         
         foreach (int potionTier in potionTierList)
         {
-            if (potionTier <= 0 || Enum.GetValues(typeof(ETierType)).Length <= potionTier)
+            if (potionTier < 1 || Enum.GetValues(typeof(ETierType)).Length < potionTier)
             {
                 Debug.LogWarning($"올바르지 않은 티어 값입니다. 1 ~ 3 사이의 티어값인지 확인해주세요.");
             }

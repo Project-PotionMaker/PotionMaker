@@ -16,13 +16,11 @@ public class ServingPhase : BasePhase
     }
     public override void EnterPhase()
     {
+        base.EnterPhase();
         _currentTime = INIT_TIMER;
         _timesUp = false;
-
-        // 임시 코드
-        CustomerManager.Instance.CounterLocation = GridManager.Instance.Casher.transform;
-        CustomerManager.Instance.ServingCounter = GridManager.Instance.PickUpTableList[0].transform;
-        base.EnterPhase();
+        PhaseManager.Instance.DeathCount = 0;
+        CustomerManager.Instance.PreService();
     }
 
     public override void Update(float deltaTime)

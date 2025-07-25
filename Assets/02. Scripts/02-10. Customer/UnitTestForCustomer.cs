@@ -6,6 +6,14 @@ public class UnitTestForCustomer : MonoBehaviour
     {
         PhaseManager.Instance.TransitionPhase(EPhaseType.ServingPhase);
     }
+    public void PracticeStart()
+    {
+        PhaseManager.Instance.TransitionPhase(EPhaseType.PracticingPhase);
+    }
+    public void PracticeEnd()
+    {
+        PhaseManager.Instance.TransitionPhase(EPhaseType.PreparingPhase);
+    }
     public void NextDay()
     {
         PhaseManager.Instance.TransitionPhase(EPhaseType.PreparingPhase);
@@ -23,6 +31,6 @@ public class UnitTestForCustomer : MonoBehaviour
     }
     public void TestServePotion()
     {
-        CustomerManager.Instance.ServePotion(10000);
+       // CustomerManager.Instance.ServePotion(10000);
     }
 }

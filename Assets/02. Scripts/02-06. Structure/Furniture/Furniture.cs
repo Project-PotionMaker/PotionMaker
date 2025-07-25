@@ -14,6 +14,7 @@ public class Furniture : MonoBehaviour, IGridItemHandler
     private IInteractable<Furniture, FurnitureStat> _interactComponent;
     private IInputContainer<Furniture, FurnitureStat> _inputComponent;
     private IOutputContainer<Furniture, FurnitureStat> _outputComponent;
+    private ICustomerEffectable<Furniture, FurnitureStat> _effectComponent;
 
     private PhotonView _photonView;
     public PhotonView PhotonView => _photonView;
@@ -35,12 +36,19 @@ public class Furniture : MonoBehaviour, IGridItemHandler
         }
     }
 
-    public void InitFurniture(FurnitureData data, IInteractable<Furniture, FurnitureStat> interactComponent, IInputContainer<Furniture, FurnitureStat> inputComponent, IOutputContainer<Furniture, FurnitureStat> outputComponent)
+    private void Start()
     {
-        _stat = new FurnitureStat(data);
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += ResetItem;
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase].OnPhaseExited += ResetItem;
+    }
+
+    public void InitFurniture(FurnitureData data, IInteractable<Furniture, FurnitureStat> interactComponent, IInputContainer<Furniture, FurnitureStat> inputComponent, IOutputContainer<Furniture, FurnitureStat> outputComponent, ICustomerEffectable<Furniture, FurnitureStat>effectComponent)
+    {
+        _stat = new FurnitureStat(data, _stat.InputPosition);
         _interactComponent = interactComponent;
         _inputComponent = inputComponent;
         _outputComponent = outputComponent;
+        _effectComponent = effectComponent;
 
         foreach (var modelInfo in _modelObjectList)
         {
@@ -62,7 +70,8 @@ public class Furniture : MonoBehaviour, IGridItemHandler
                 return true;
             }
         }
-        else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase)
+        else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase
+            ||PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
         {
             if (TryInput(tid, inputType, inputObject))
             {
@@ -85,7 +94,8 @@ public class Furniture : MonoBehaviour, IGridItemHandler
             _model.rotation = Quaternion.Euler(0, _stat.CurrentRotation, 0);
             return true;
         }
-        else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase)
+        else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase
+            || PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
         {
             if(ReferenceEquals(_interactComponent, null) == false)
             {
@@ -102,7 +112,8 @@ public class Furniture : MonoBehaviour, IGridItemHandler
         {
             return GridManager.Instance.StartPlacement(transform.position);
         }
-        else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase)
+        else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase 
+            || PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
         {
             if (ReferenceEquals(_outputComponent, null) == false)
             {
@@ -122,5 +133,21 @@ public class Furniture : MonoBehaviour, IGridItemHandler
             return _inputComponent.TryInput(this, _stat, tid, inputType, inputObject);
         }
         return false;
+    }
+
+    public void TryEffect(Customer customer)
+    {
+        if (ReferenceEquals(_effectComponent, null) == false)
+        {
+            _effectComponent.Effect(this, _stat, customer);
+        }
+    }
+    public void ResetItem()
+    {
+        if (!ReferenceEquals(_stat.InputObject, null))
+        {
+            CraftItemFactory.Instance.Return(_stat.InputObject);
+            _stat.InputObject = null;
+        }
     }
 }

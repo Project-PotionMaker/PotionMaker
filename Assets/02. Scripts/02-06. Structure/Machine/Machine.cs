@@ -47,6 +47,11 @@ public class Machine : MonoBehaviour, IGridItemHandler
             _modelObjectDic.Add(modelInfo.TID, modelInfo.Model);
         }
     }
+    private void Start()
+    {
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += ResetItem;
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase].OnPhaseExited += ResetItem;
+    }
 
     public void InitMachine(MachineData data, IInteractable<Machine, MachineStat> interactableComponent, IInputContainer<Machine, MachineStat> inputComponent, IOutputContainer<Machine, MachineStat> outputComponent)
     {

@@ -36,6 +36,12 @@ public class Furniture : MonoBehaviour, IGridItemHandler
         }
     }
 
+    private void Start()
+    {
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += ResetItem;
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase].OnPhaseExited += ResetItem;
+    }
+
     public void InitFurniture(FurnitureData data, IInteractable<Furniture, FurnitureStat> interactComponent, IInputContainer<Furniture, FurnitureStat> inputComponent, IOutputContainer<Furniture, FurnitureStat> outputComponent, ICustomerEffectable<Furniture, FurnitureStat>effectComponent)
     {
         _stat = new FurnitureStat(data, _stat.InputPosition);

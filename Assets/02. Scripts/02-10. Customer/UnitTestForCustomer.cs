@@ -23,6 +23,6 @@ public class UnitTestForCustomer : MonoBehaviour
     }
     public void TestServePotion()
     {
-        CustomerManager.Instance.ServePotion(10000);
+       // CustomerManager.Instance.ServePotion(10000);
     }
 }

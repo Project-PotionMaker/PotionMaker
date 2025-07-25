@@ -13,8 +13,7 @@ public class PickUpTableInputContainer : IInputContainer<Furniture, FurnitureSta
             stat.InputObject = inputObject;
             stat.InputObject.transform.position = stat.InputPosition.position;
 
-            // NPC매니저에서 여기 있는거 알리기
-            CustomerManager.Instance.ServePotion(tid);
+            CustomerManager.Instance.ServePotion(tid,furniture.PhotonView.ViewID);
             return true;
         }
         return false;

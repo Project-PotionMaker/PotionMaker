@@ -25,10 +25,17 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
 
     private GameObject _cahser;
     public GameObject Casher => _cahser;
-    private GameObject _door;
-    public GameObject Door => _door;
+    private GameObject _enterDoor;
+    public GameObject EnterDoor => _enterDoor;
+    private GameObject _exitDoor;
+    public GameObject ExitDoor => _exitDoor;
     private List<GameObject> _pickUpTableList;
     public List<GameObject> PickUpTableList => _pickUpTableList;
+    private List<GameObject> _oldChairList;
+    public List<GameObject> OldChairList => _oldChairList;
+    private List<GameObject> _luxuryChairList;
+    public List<GameObject> LuxuryChairList => _luxuryChairList;
+
 
     // private GridRepository _repository;
 
@@ -38,6 +45,8 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
         _layout = GameObject.FindGameObjectWithTag("Layout").GetComponent<Layout>();
         _gridData = new GridData(_layout.GetAvailableAreaDict());
         _pickUpTableList = new List<GameObject>();
+        _oldChairList = new List<GameObject>();
+        _luxuryChairList = new List<GameObject>();
     }
 
     public void UpdatePlacementPosition(Vector3 targetPosition)
@@ -102,6 +111,12 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
             case ESpecialStructureType.Casher:
                 _cahser = newObject;
                 break;
+            case ESpecialStructureType.OldChair:
+                _oldChairList.Add(newObject);
+                break;
+            case ESpecialStructureType.LuxuryChair:
+                _luxuryChairList.Add(newObject);
+                break;
             case ESpecialStructureType.None:
                 break;
         }
@@ -136,11 +151,14 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
     {
         CreateStructure(10000, new Vector3(-5, 0, 4), EStructureType.Machine);
         CreateStructure(10002, new Vector3(-3, 0, 4), EStructureType.Machine);
-        CreateStructure(10014, new Vector3(0, 0, 0), EStructureType.Furniture);
-        CreateStructure(10016, new Vector3(-5, 0, 0), EStructureType.Furniture);
-        CreateStructure(10005, new Vector3(0, 0, 2), EStructureType.Furniture);
-        CreateStructure(10019, new Vector3(4, 0, 2), EStructureType.Storage, 10000);
-        CreateStructure(10019, new Vector3(4, 0, 4), EStructureType.Storage, 10001);
+        CreateStructure(10013, new Vector3(0, 0, 0), EStructureType.Furniture);
+        CreateStructure(10013, new Vector3(-1, 0, 0), EStructureType.Furniture);
+        CreateStructure(10015, new Vector3(-5, 0, 0), EStructureType.Furniture);
+        CreateStructure(10006, new Vector3(0, 0, 2), EStructureType.Machine);
+        CreateStructure(10018, new Vector3(4, 0, 2), EStructureType.Storage, 10000);
+        CreateStructure(10018, new Vector3(4, 0, 4), EStructureType.Storage, 10001);
+        CreateStructure(10016, new Vector3(-1, 0, -5), EStructureType.Furniture);
+        CreateStructure(10017, new Vector3(0, 0, -5), EStructureType.Furniture);
     }
 
     public Vector3Int GetGridPosition(Vector3 targetPosition)

@@ -143,6 +143,10 @@ public enum ESpecialStructureType
     TrashCan = 3,
     ///<summary>문</summary>
     Door = 4,
+    ///<summary>허름한의자</summary>
+    OldChair = 5,
+    ///<summary>푹신한의자</summary>
+    LuxuryChair = 6,
 }
 
 public enum ECustomerStateType

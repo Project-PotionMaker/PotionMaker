@@ -9,15 +9,21 @@ public class PickUpTableOutputContainer : IOutputContainer<Furniture, FurnitureS
     {
         GameObject output = stat.InputObject;
         stat.InputObject = null;
+        CustomerManager.Instance.RemoveOnTable(furniture.PhotonView.ViewID);
         return output;
     }
 
     public bool CanTake(Furniture furniture, FurnitureStat stat)
     {
-        if(stat.InputObject != null)
+        if(stat.InputObject == null)
         {
-            return true;
+            return false;
         }
-        return false;
+        if (CustomerManager.Instance.OrderHandler.PickupTableDict[furniture.PhotonView.ViewID].UsingCustomer != null)
+        {
+            Debug.Log("이미 가져가는 중");
+            return false;
+        }
+        return true;
     }
 }

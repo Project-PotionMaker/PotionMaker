@@ -10,7 +10,7 @@ public class CustomerEndurance : MonoBehaviour
     private float _currentEndurance; // 현재 인내심
     public float CurrentEndurance    {get => _currentEndurance; set => _currentEndurance = value; } // 현재 인내심
     private float _enduranceRate;
-    public float EnduranceRate { get => _enduranceRate; set => _enduranceRate = value; } // 인내심 회복 속도
+    public float EnduranceRate { get => _enduranceRate; set => _enduranceRate = value; }
 
     private float _loseEnduranceSpeed = 1f; // 인내심 감소 속도
     public float LoseEnduranceSpeed { get => _loseEnduranceSpeed; set => _loseEnduranceSpeed = value; } // 인내심 감소 속도

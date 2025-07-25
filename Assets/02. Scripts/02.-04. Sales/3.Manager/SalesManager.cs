@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class SalesManager : MonoBehaviourPunCallbacksSingleton<SalesManager>
 {
+    public event Action OnSummaryReady;
+
     private PhotonView _photonView;
     public PhotonView PhotonView => _photonView;
     private Sales _sales;
@@ -19,7 +21,7 @@ public class SalesManager : MonoBehaviourPunCallbacksSingleton<SalesManager>
     }
     private void Start()
     {
-        PhaseManager.Instance.OnDayPassed += ResetDailySales;
+        PhaseManager.Instance.OnDayPassed += OnDayChanged;
         InitSalesManager();
     }
 
@@ -61,13 +63,13 @@ public class SalesManager : MonoBehaviourPunCallbacksSingleton<SalesManager>
 
         SalesRPCData salesRPCData = new SalesRPCData(Sales);
         string salesJson = JsonUtility.ToJson(salesRPCData);
-        _photonView.RPC(nameof(SetSales), RpcTarget.Others, salesJson);
+        _photonView.RPC(nameof(SetSales), RpcTarget.Others, salesJson, false);
 
         CurrencyManager.Instance.RequestAddCurrency(price);
     }
 
     [PunRPC]
-    public void SetSales(string salesJson,PhotonMessageInfo info)
+    public void SetSales(string salesJson, bool isForSummary, PhotonMessageInfo info)
     {
         if (!info.Sender.IsMasterClient)
         {
@@ -75,18 +77,23 @@ public class SalesManager : MonoBehaviourPunCallbacksSingleton<SalesManager>
         }
 
         SalesRPCData salesRPCData = JsonUtility.FromJson<SalesRPCData>(salesJson);
-        Dictionary<EPotionType, int> salesVolumeDict = salesRPCData.SalesVolumeKeyValueList.ToDictionary(keyValuePair => keyValuePair.Key, keyValuePair => keyValuePair.Value);
+        Dictionary<EPotionType, int> totalSalesVolumeDict = salesRPCData.TotalSalesVolumeKeyValueList.ToDictionary(keyValuePair => keyValuePair.Key, keyValuePair => keyValuePair.Value);
+        Dictionary<EPotionType, int> dailySalesVolumeDict = salesRPCData.DailySalesVolumeKeyValueList.ToDictionary(keyValuePair => keyValuePair.Key, keyValuePair => keyValuePair.Value);
 
-        _sales.SetSales(salesRPCData.TotalSales, salesRPCData.DailySales, salesVolumeDict);
+        _sales.SetSales(salesRPCData.TotalSales, salesRPCData.DailySales, totalSalesVolumeDict, dailySalesVolumeDict);
+        if (isForSummary)
+        {
+            OnSummaryReady?.Invoke();
+        }
     }
 
-    public void RequestUpdateSales()
+    public void RequestUpdateSales(bool isForSummary = false)
     {
-        _photonView.RPC(nameof(RequestUpdateSales), RpcTarget.MasterClient);
+        _photonView.RPC(nameof(RequestUpdateSales), RpcTarget.MasterClient, isForSummary);
     }
 
     [PunRPC]
-    public void RequestUpdateSales(PhotonMessageInfo info)
+    public void RequestUpdateSales(bool isForSummary, PhotonMessageInfo info)
     {
         if (!PhotonNetwork.IsMasterClient)
         {
@@ -96,20 +103,19 @@ public class SalesManager : MonoBehaviourPunCallbacksSingleton<SalesManager>
 
         SalesRPCData salesRPCData = new SalesRPCData(Sales);
         string salesJson = JsonUtility.ToJson(salesRPCData);
-        _photonView.RPC(nameof(SetSales), info.Sender, salesJson);
+        _photonView.RPC(nameof(SetSales), info.Sender, salesJson, isForSummary);
     }
-
-    public void ResetDailySales()
+     
+    public void OnDayChanged()
     {
         if (!PhotonNetwork.IsMasterClient)
         {
             return;
         }
-        _sales.ResetDailySales();
-        // Todo: daily 판매량?
+        _sales.OnDayChanged();
         
         SalesRPCData salesRPCData = new SalesRPCData(Sales);
         string salesJson = JsonUtility.ToJson(salesRPCData);
-        _photonView.RPC(nameof(SetSales), RpcTarget.Others, salesJson);
+        _photonView.RPC(nameof(SetSales), RpcTarget.Others, salesJson, false);
     }
 }

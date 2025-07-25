@@ -36,7 +36,7 @@ public class BaseFactory<TEnum, TFactoryInfo> : MonoBehaviourSingleton<BaseFacto
             {
                 _validAddressableKeys.Add(info.AddressableKey);
                 _typeToAddressableKeyMap[info.Type] = info.AddressableKey;
-                defaultPool.ResourceCache.Add(info.AddressableKey, prefab);
+                defaultPool.ResourceCache.TryAdd(info.AddressableKey, prefab);
             }
             else
             {

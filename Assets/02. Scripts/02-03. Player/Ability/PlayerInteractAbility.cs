@@ -3,6 +3,8 @@ using UnityEngine;
 public class PlayerInteractAbility : PlayerAbility
 {
     private bool _isInteract = false;
+    private PlayerAnimationAbility _animationAbility;
+
 
     private void Start()
     {
@@ -12,6 +14,7 @@ public class PlayerInteractAbility : PlayerAbility
         }
 
         InputManager.Instance.OnInteractChanged += ChangeInteractState;
+        _animationAbility = _owner.GetAbility<PlayerAnimationAbility>();
     }
 
     private void Update()
@@ -25,6 +28,7 @@ public class PlayerInteractAbility : PlayerAbility
     private void ChangeInteractState(bool isInteract)
     {
         _isInteract = isInteract;
+        _animationAbility.SetBool(EPlayerAnimationParameter.IsInteract, isInteract);
         if (isInteract)
         {
             StartInteract();

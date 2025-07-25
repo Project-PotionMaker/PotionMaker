@@ -3,5 +3,6 @@ public enum EPlayerAnimationParameter
 {
     IsMove,
     HasHeldItem,
-    Ping
+    IsInteract,
+    Ping,
 }

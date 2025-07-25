@@ -355,7 +355,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CellSize: 1
-  GridSize: {x: 10, y: 10}
+  GridSize: {x: 10, y: 15}
   Origin: {x: 0, y: 0, z: 0}
 --- !u!114 &84351118
 MonoBehaviour:
@@ -476,6 +476,20 @@ MonoBehaviour:
     - {x: 4, y: 0, z: 2}
     - {x: 4, y: 0, z: 3}
     - {x: 4, y: 0, z: 4}
+  - AreaType: 4
+    GridPositionList:
+    - {x: -3, y: 0, z: -7}
+    - {x: -3, y: 0, z: -6}
+    - {x: -2, y: 0, z: -7}
+    - {x: -2, y: 0, z: -6}
+    - {x: -1, y: 0, z: -7}
+    - {x: -1, y: 0, z: -6}
+    - {x: 0, y: 0, z: -7}
+    - {x: 0, y: 0, z: -6}
+    - {x: 1, y: 0, z: -7}
+    - {x: 1, y: 0, z: -6}
+    - {x: 2, y: 0, z: -7}
+    - {x: 2, y: 0, z: -6}
 --- !u!4 &84351119
 Transform:
   m_ObjectHideFlags: 0
@@ -885,8 +899,8 @@ Transform:
   m_GameObject: {fileID: 185393244}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -2.5}
+  m_LocalScale: {x: 1, y: 1, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -2540,8 +2554,8 @@ Transform:
   m_GameObject: {fileID: 599584240}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.015, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0.015, z: -2.5}
+  m_LocalScale: {x: 1, y: 1, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 732401616}

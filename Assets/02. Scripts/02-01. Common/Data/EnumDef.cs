@@ -29,6 +29,8 @@ public enum EPhaseType
     ServingPhase = 1,
     ///<summary>영업종료</summary>
     EndingPhase = 2,
+    ///<summary>연습모드</summary>
+    PracticingPhase = 3,
 }
 
 public enum ENPCType
@@ -55,6 +57,8 @@ public enum EAreaType
     Kitchen = 2,
     ///<summary>창고</summary>
     Storage = 3,
+    ///<summary>배달</summary>
+    Delivery = 4,
 }
 
 public enum EIngredientType
@@ -143,6 +147,10 @@ public enum ESpecialStructureType
     TrashCan = 3,
     ///<summary>문</summary>
     Door = 4,
+    ///<summary>허름한의자</summary>
+    OldChair = 5,
+    ///<summary>푹신한의자</summary>
+    LuxuryChair = 6,
 }
 
 public enum ECustomerStateType

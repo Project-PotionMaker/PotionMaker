@@ -14,6 +14,7 @@ public class Furniture : MonoBehaviour, IGridItemHandler
     private IInteractable<Furniture, FurnitureStat> _interactComponent;
     private IInputContainer<Furniture, FurnitureStat> _inputComponent;
     private IOutputContainer<Furniture, FurnitureStat> _outputComponent;
+    private ICustomerEffectable<Furniture, FurnitureStat> _effectComponent;
 
     private PhotonView _photonView;
     public PhotonView PhotonView => _photonView;
@@ -35,12 +36,13 @@ public class Furniture : MonoBehaviour, IGridItemHandler
         }
     }
 
-    public void InitFurniture(FurnitureData data, IInteractable<Furniture, FurnitureStat> interactComponent, IInputContainer<Furniture, FurnitureStat> inputComponent, IOutputContainer<Furniture, FurnitureStat> outputComponent)
+    public void InitFurniture(FurnitureData data, IInteractable<Furniture, FurnitureStat> interactComponent, IInputContainer<Furniture, FurnitureStat> inputComponent, IOutputContainer<Furniture, FurnitureStat> outputComponent, ICustomerEffectable<Furniture, FurnitureStat>effectComponent)
     {
-        _stat = new FurnitureStat(data);
+        _stat = new FurnitureStat(data, _stat.InputPosition);
         _interactComponent = interactComponent;
         _inputComponent = inputComponent;
         _outputComponent = outputComponent;
+        _effectComponent = effectComponent;
 
         foreach (var modelInfo in _modelObjectList)
         {
@@ -122,5 +124,13 @@ public class Furniture : MonoBehaviour, IGridItemHandler
             return _inputComponent.TryInput(this, _stat, tid, inputType, inputObject);
         }
         return false;
+    }
+
+    public void TryEffect(Customer customer)
+    {
+        if (ReferenceEquals(_effectComponent, null) == false)
+        {
+            _effectComponent.Effect(this, _stat, customer);
+        }
     }
 }

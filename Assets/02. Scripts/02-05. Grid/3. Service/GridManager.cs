@@ -38,7 +38,7 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
         base.Awake();
         StopPlacement();
 
-        _layout = GameObject.FindGameObjectWithTag("Layout").GetComponent<Layout>();
+        _layout = GameObject.FindGameObjectWithTag(nameof(ETags.Layout)).GetComponent<Layout>();
         _gridData = new GridData(_layout.GetAvailableAreaDict());
         _pickUpTableList = new List<GameObject>();
     }
@@ -89,7 +89,7 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
         return structure;
     }
 
-    public void CreateStructure(int tid, Vector3 position, int ingredientTID = 0)
+    public bool CreateStructure(int tid, Vector3 position, int ingredientTID = 0)
     {
         StopPlacement();
         StructureData data = DataTable.Instance.GetStructureData(tid);
@@ -114,7 +114,7 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
                                             _grid,
                                             _previewSystem,
                                             _gridData);
-        TryPlaceStructure(position);
+        return TryPlaceStructure(position);
     }
 
     public bool TryPlaceStructure(Vector3 position)
@@ -165,19 +165,17 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
         _buildingState = null;
     }
 
-    public List<Vector3Int> GetPositionByAreaType(EAreaType areaType)
+    public ReadOnlyList<Vector3Int> GetPositionByAreaType(EAreaType areaType)
     {
-        List<Vector3Int> targetPosionList = null;
         foreach(AreaDefinition areaDefinition in _layout.AllAreaDefinitionList)
         {
             if(areaDefinition.AreaType == areaType)
             {
-                targetPosionList = areaDefinition.GridPositionList;
-                break;
+                return new ReadOnlyList<Vector3Int>(areaDefinition.GridPositionList);
             }
         }
 
-        return targetPosionList;
+        return null;
     }
     
     public ReadOnlyList<int> GetPlacedStructureTIDList()

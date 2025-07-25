@@ -3,6 +3,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -30,15 +31,19 @@ public class MovingHouse
     public void OnHouseMoved(Scene scene, LoadSceneMode mode)
     {
         SceneManager.sceneLoaded -= OnHouseMoved;
+        // 재배치
         RelocateStructure();
+        List<int> unlockedIngredientTIDList = new List<int>() { 10000, 10001, 10002, 10003 }; // 임시 이미 해금
+        RelocateStorage(unlockedIngredientTIDList);
 
-        // 임시 해금 재료
-        List<int> unlockedIngredientTIDList = new List<int>() { 10000, 10001, 10002, 10003 };
-        List<int> newlyUnlockedIngredientTIDList = new List<int>() { 10004, 10005, 20000, 30000 };
-        RelocateStorage(EAreaType.Storage, unlockedIngredientTIDList);
-        RelocateStorage(EAreaType.Delivery, newlyUnlockedIngredientTIDList);
+        // 새로운 해금 배달        
+        List<int> newlyUnlockedStructureTIDList = new List<int>() { 10009, 10017 }; // 임시 해금 가구/조리기구
+        List<int> newlyUnlockedIngredientTIDList = new List<int>() { 10004, 10005, 20000, 30000 }; // 임시 해금 재료
+
+        DeliverNewStructure(newlyUnlockedStructureTIDList);
+        DeliverNewStorage(newlyUnlockedIngredientTIDList);
     }
-    public void RelocateStructure()
+    private void RelocateStructure ()
     {
         Dictionary<EAreaType, List<int>> structureDict = new Dictionary<EAreaType, List<int>>();
 
@@ -58,7 +63,7 @@ public class MovingHouse
             {
                 continue;
             }
-            List<Vector3Int> locatePosition = GridManager.Instance.GetPositionByAreaType(areaType);
+            ReadOnlyList<Vector3Int> locatePosition = GridManager.Instance.GetPositionByAreaType(areaType);
 
             if (locatePosition == null)
             {
@@ -72,10 +77,17 @@ public class MovingHouse
             }
         }
     }
-
-    public void RelocateStorage(EAreaType areaType, List<int> ingredientTIDList)
+    private void DeliverNewStructure(List<int> structureTIDList)
     {
-        List<Vector3Int> postionList = GridManager.Instance.GetPositionByAreaType(areaType);
+        ReadOnlyList<Vector3Int> positionList = GridManager.Instance.GetPositionByAreaType(EAreaType.Delivery);
+
+    }
+
+    public void RelocateStorage(List<int> ingredientList) => LocateStorage(ingredientList, EAreaType.Storage);
+    public void DeliverNewStorage(List<int> ingredientList) => LocateStorage(ingredientList, EAreaType.Delivery);
+    private void LocateStorage(List<int> ingredientTIDList, EAreaType areaType )
+    {
+        ReadOnlyList<Vector3Int> positionList = GridManager.Instance.GetPositionByAreaType(areaType);
 
         int index = 0;
 
@@ -105,7 +117,7 @@ public class MovingHouse
                     break;
                 }
             }
-            GridManager.Instance.CreateStructure(storageStructureTID, postionList[index++], TID);
+            GridManager.Instance.CreateStructure(storageStructureTID, positionList[index++], TID);
         }
     }
 }

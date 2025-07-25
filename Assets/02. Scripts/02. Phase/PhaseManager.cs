@@ -15,8 +15,8 @@ public class PhaseManager : MonoBehaviourSingleton<PhaseManager>
     private int _deathCount;
     public int DeathCount { get => _deathCount; set => _deathCount = value; }
     [SerializeField]
-    private int _maxCustomerLost = 5;
-    public int MaxCustomerLost { get => _maxCustomerLost; set => _maxCustomerLost = value; }
+    private int _maxDeathCount = 5;
+    public int MaxDeathCount { get => _maxDeathCount; set => _maxDeathCount = value; }
     private int _day;
     public int Day { get => _day; set => _day = value; }
     public event Action OnDayPassed;
@@ -50,6 +50,7 @@ public class PhaseManager : MonoBehaviourSingleton<PhaseManager>
             { EPhaseType.PreparingPhase, new PreparingPhase() },
             { EPhaseType.ServingPhase, new ServingPhase() },
             { EPhaseType.EndingPhase, new EndingPhase() },
+            { EPhaseType.PracticingPhase, new PracticingPhase() }
         };
         _currentPhase = _phaseDictionary[EPhaseType.PreparingPhase];
         _currentPhase.EnterPhase();

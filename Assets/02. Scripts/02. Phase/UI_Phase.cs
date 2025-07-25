@@ -60,6 +60,10 @@ public class UI_Phase : MonoBehaviour
             {
                 _phaseText.text = "Finish";
             }
+            else if (phaseType == EPhaseType.PracticingPhase)
+            {
+                _phaseText.text = "Practicing";
+            }
         }
     }
     private void UpdateServiceTimer(float time)

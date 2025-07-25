@@ -29,6 +29,8 @@ public enum EPhaseType
     ServingPhase = 1,
     ///<summary>영업종료</summary>
     EndingPhase = 2,
+    ///<summary>연습모드</summary>
+    PracticingPhase = 3,
 }
 
 public enum ENPCType

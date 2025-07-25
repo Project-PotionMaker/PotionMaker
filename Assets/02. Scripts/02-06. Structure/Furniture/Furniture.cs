@@ -36,6 +36,12 @@ public class Furniture : MonoBehaviour, IGridItemHandler
         }
     }
 
+    private void Start()
+    {
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += ResetItem;
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase].OnPhaseExited += ResetItem;
+    }
+
     public void InitFurniture(FurnitureData data, IInteractable<Furniture, FurnitureStat> interactComponent, IInputContainer<Furniture, FurnitureStat> inputComponent, IOutputContainer<Furniture, FurnitureStat> outputComponent, ICustomerEffectable<Furniture, FurnitureStat>effectComponent)
     {
         _stat = new FurnitureStat(data, _stat.InputPosition);
@@ -64,7 +70,8 @@ public class Furniture : MonoBehaviour, IGridItemHandler
                 return true;
             }
         }
-        else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase)
+        else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase
+            ||PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
         {
             if (TryInput(tid, inputType, inputObject))
             {
@@ -87,7 +94,8 @@ public class Furniture : MonoBehaviour, IGridItemHandler
             _model.rotation = Quaternion.Euler(0, _stat.CurrentRotation, 0);
             return true;
         }
-        else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase)
+        else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase
+            || PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
         {
             if(ReferenceEquals(_interactComponent, null) == false)
             {
@@ -104,7 +112,8 @@ public class Furniture : MonoBehaviour, IGridItemHandler
         {
             return GridManager.Instance.StartPlacement(transform.position);
         }
-        else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase)
+        else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase 
+            || PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
         {
             if (ReferenceEquals(_outputComponent, null) == false)
             {
@@ -131,6 +140,14 @@ public class Furniture : MonoBehaviour, IGridItemHandler
         if (ReferenceEquals(_effectComponent, null) == false)
         {
             _effectComponent.Effect(this, _stat, customer);
+        }
+    }
+    public void ResetItem()
+    {
+        if (!ReferenceEquals(_stat.InputObject, null))
+        {
+            CraftItemFactory.Instance.Return(_stat.InputObject);
+            _stat.InputObject = null;
         }
     }
 }

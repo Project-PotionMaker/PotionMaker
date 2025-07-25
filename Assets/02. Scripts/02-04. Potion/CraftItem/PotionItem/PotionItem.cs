@@ -59,17 +59,21 @@ public class PotionItem : MonoBehaviour, IItem
     public void RPC_UpdatePotionData(int TID)
     {
         _potionData = DataTable.Instance.GetPotionData(TID);
-
-        foreach (var potionModel in _potionModelList)
+        if (!ReferenceEquals(_currentModel, null))
         {
-            potionModel.Model.SetActive(false);
-            if (_potionData.TID == potionModel.TID)
-            {
-                _currentModel = potionModel.Model;
-            }
+            _currentModel.SetActive(false);
         }
-        UpdateComponent();
-        UpdateVFX();
+
+        if (_potionModelDict.TryGetValue(_potionData.TID, out _currentModel))
+        {
+            _currentModel.SetActive(true);
+            UpdateComponent();
+            UpdateVFX();
+        }
+        else
+        {
+            Debug.LogError($"포션 TID {_potionData.TID}에 대응하는 모델이 딕셔너리에 존재하지 않습니다.");
+        }
     }
 
     private void UpdateComponent()

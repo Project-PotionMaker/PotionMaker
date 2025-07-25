@@ -31,7 +31,12 @@ public class MovingHouse
     {
         SceneManager.sceneLoaded -= OnHouseMoved;
         RelocateStructure();
-        LoadStorage();
+
+        // 임시 해금 재료
+        List<int> unlockedIngredientTIDList = new List<int>() { 10000, 10001, 10002, 10003 };
+        List<int> newlyUnlockedIngredientTIDList = new List<int>() { 10004, 10005, 20000, 30000 };
+        RelocateStorage(EAreaType.Storage, unlockedIngredientTIDList);
+        RelocateStorage(EAreaType.Delivery, newlyUnlockedIngredientTIDList);
     }
     public void RelocateStructure()
     {
@@ -68,58 +73,39 @@ public class MovingHouse
         }
     }
 
-    public void LoadStorage()
+    public void RelocateStorage(EAreaType areaType, List<int> ingredientTIDList)
     {
-        List<Vector3Int> relocatePostion = GridManager.Instance.GetPositionByAreaType(EAreaType.Storage);
-        List<Vector3Int> newPostion = GridManager.Instance.GetPositionByAreaType(EAreaType.Delivery);
+        List<Vector3Int> postionList = GridManager.Instance.GetPositionByAreaType(areaType);
 
         int index = 0;
 
-        List<int> relocateTIDList = new List<int>() { 10000, 10001, 10002, 10003 };
-        List<int> newTIDList = new List<int>() { 10004, 10005, 20000, 30000 };
-
-        foreach (int TID in relocateTIDList)
+        foreach (int TID in ingredientTIDList)
         {
+            int storageStructureTID;
             switch (DataTable.Instance.GetIngredientData(TID).IngredientType)
             {
                 case EIngredientType.Plants:
                 {
-                    GridManager.Instance.CreateStructure(10018, relocatePostion[index++], TID);
+                    storageStructureTID = 10018;
                     break;
                 }
                 case EIngredientType.Animals:
                 {
-                    GridManager.Instance.CreateStructure(10019, relocatePostion[index++], TID);
+                    storageStructureTID = 10019;
                     break;
                 }
                 case EIngredientType.Crystals:
                 {
-                    GridManager.Instance.CreateStructure(10020, relocatePostion[index++], TID);
+                    storageStructureTID = 10020;
+                    break;
+                }
+                default:
+                {
+                    storageStructureTID = -1;
                     break;
                 }
             }
-        }
-
-        foreach (int TID in newTIDList)
-        {
-            switch (DataTable.Instance.GetIngredientData(TID).IngredientType)
-            {
-                case EIngredientType.Plants:
-                {
-                    GridManager.Instance.CreateStructure(10018, newPostion[index++], TID);
-                    break;
-                }
-                case EIngredientType.Animals:
-                {
-                    GridManager.Instance.CreateStructure(10019, newPostion[index++], TID);
-                    break;
-                }
-                case EIngredientType.Crystals:
-                {
-                    GridManager.Instance.CreateStructure(10020, newPostion[index++], TID);
-                    break;
-                }
-            }
+            GridManager.Instance.CreateStructure(storageStructureTID, postionList[index++], TID);
         }
     }
 }

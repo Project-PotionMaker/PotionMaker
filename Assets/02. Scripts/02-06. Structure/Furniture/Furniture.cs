@@ -126,11 +126,11 @@ public class Furniture : MonoBehaviour, IGridItemHandler
         return false;
     }
 
-    public void TryEffect()
+    public void TryEffect(Customer customer)
     {
         if (ReferenceEquals(_effectComponent, null) == false)
         {
-            _effectComponent.Effect(this, _stat);
+            _effectComponent.Effect(this, _stat, customer);
         }
     }
 }

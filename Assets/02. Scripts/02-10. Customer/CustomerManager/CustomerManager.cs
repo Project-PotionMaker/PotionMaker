@@ -73,6 +73,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         {
             return;
         } 
+        //TODO : Layout에서 최대 줄 길이 가져와서 적용하기
         _inviteTimer = _inviteCoolTime;
         Debug.Log("손님 초대");
         GameObject customer = CustomerFactory.Instance.Create(ENPCType.Customer,Vector3.zero,Quaternion.identity); // TODO : PoolManager완성 후 수정
@@ -136,7 +137,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         int chairViewID = _orderHandler.FindAvailableChair(); // 사용 가능한 의자 찾기
         if (chairViewID == 0)
         {
-            Debug.LogWarning("No available chair found for the customer.");
+            Debug.Log("No available chair found for the customer.");
             return; // 사용 가능한 의자가 없으면 주문을 받지 않음
         }
         _canOrdered = false; // 주문을 받은 후에는 다시 주문을 받을 수 없도록 설정
@@ -160,6 +161,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         {
             _lineHandler.ReLining(); // 줄 다시 세우기
         }
+        LeaveChair(customer);
         _lineHandler.PutOutCustomer(customer); // 손님을 나가게 하기
         PhaseManager.Instance.DeathCount++;
         if(PhaseManager.Instance.DeathCount >= PhaseManager.Instance.MaxCustomerLost)
@@ -338,6 +340,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         }
         GameObject chair = FindChairByViewID(chairViewID);
         customer.CustomerMove.MoveTo(chair.transform.position);
+        chair.GetComponent<Furniture>().TryEffect(customer); // 의자 효과 적용
     }
     private void LeaveChair(Customer customer)
     {

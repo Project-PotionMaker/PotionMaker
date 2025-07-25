@@ -21,7 +21,7 @@ public class PlayerInteractAbility : PlayerAbility
     {
         if (_isInteract)
         {
-            Debug.Log("Interacting");
+            ProcessInteract();
         }
     }
 
@@ -48,6 +48,11 @@ public class PlayerInteractAbility : PlayerAbility
         {
             itemHandler.TryInteract();
         }
+    }
+
+    private void ProcessInteract()
+    {
+
     }
 
     private void EndInteract()

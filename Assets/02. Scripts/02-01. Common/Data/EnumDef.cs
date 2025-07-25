@@ -57,6 +57,8 @@ public enum EAreaType
     Kitchen = 2,
     ///<summary>창고</summary>
     Storage = 3,
+    ///<summary>배달</summary>
+    Delivery = 4,
 }
 
 public enum EIngredientType
@@ -156,11 +158,15 @@ public enum ECustomerStateType
     ///<summary>줄 서기</summary>
     Lining = 0,
     ///<summary>기다리기</summary>
-    Waiting = 1,
+    Sitting = 1,
     ///<summary>챙기기</summary>
     PickingUp = 2,
     ///<summary>나가기</summary>
     Leaving = 3,
+    ///<summary>줄로 이동</summary>
+    ReturningLine = 4,
+    ///<summary>의자로 이동</summary>
+    ReturningChair = 5,
 }
 
 public enum ETierType

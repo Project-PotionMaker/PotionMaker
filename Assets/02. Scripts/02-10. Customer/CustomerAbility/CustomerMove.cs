@@ -1,31 +1,36 @@
 using Photon.Pun;
 using UnityEngine;
 using UnityEngine.AI;
+using static UnityEngine.GraphicsBuffer;
 
 public class CustomerMove : MonoBehaviour
 {
     private NavMeshAgent _agent;
     public NavMeshAgent Agent { get => _agent; set => _agent = value; } // NavMeshAgent 컴포넌트
+    private NavMeshObstacle _obstacle;
+    public NavMeshObstacle Obstacle { get => _obstacle; set => _obstacle = value; } // NavMeshObstacle 컴포넌트
+    private Rigidbody _rigidbody;
 
     private Customer _owner;
-    private bool _hasArrived = true; // 도착 여부
-    private int _priorityOffset;
-    public int PriorityOffset { get => _priorityOffset; set => _priorityOffset = value; } // 우선순위 편향
     private Animator _animator; // 애니메이터 컴포넌트
     public Animator Animator { get => _animator; set => _animator = value; } // 애니메이터 컴포넌트
+    private Vector3 _lastTarget;
 
     private void Awake()
     {
         _agent = GetComponent<NavMeshAgent>();
+        _obstacle = GetComponent<NavMeshObstacle>();
+        _rigidbody = GetComponent<Rigidbody>();
         _owner = GetComponent<Customer>();
-        _animator = GetComponent<Animator>();
+        _animator = GetComponentInChildren<Animator>();
+
+        _agent.enabled = false; 
+        _obstacle.enabled = true; 
+        _rigidbody.isKinematic = false; 
     }
     private void Update()
     {
-        if (_hasArrived == false)
-        {
-            ArriveCheck();
-        }
+        ArriveCheck();
     }
 
     private void ArriveCheck()
@@ -34,82 +39,88 @@ public class CustomerMove : MonoBehaviour
         {
             return; // 마스터 클라이언트만 도착 여부 확인
         }
-        if (_agent.remainingDistance <= 1f && !_agent.pathPending)
+        if (IsStayOn())
         {
-            if(_owner.CurrentState == ECustomerStateType.Leaving || _agent.remainingDistance <= 0.1f)
-            {
-                _hasArrived = true; // 도착했음을 표시
-                _agent.isStopped = true; // 이동 중지
-                Debug.Log("Customer has arrived at the destination: " + _owner.CurrentState);
-                OnArrived(); // 도착 시 호출
-            }
+            OnArrived(); // 도착 시 호출
+        }
+        else
+        {
+            StartMoving();
         }
     }
 
-    public void MoveTo(Vector3 target)
+    public void MoveTo(Vector3 target) // 목적지만 바꾸는 함수
     {
         if (PhotonNetwork.IsMasterClient == false)
         {
             return; // 마스터 클라이언트만 이동 가능
         }
-        _animator.SetTrigger("Move");
-
-        _hasArrived = false; // 이동 시작 시 도착 여부 초기화
-        _agent.SetDestination(target); // NavMeshAgent를 사용하여 이동
-        _agent.isStopped = false; // 이동을 시작
-        SetPriority(target); // 우선순위 설정
+        _lastTarget = target; // 마지막 목적지 저장
+        SwitchNavmeshToAgent();
+        _agent.SetDestination(target);
         Debug.Log("Customer moved to: " + target);
     }
-    private void SetPriority(Vector3 target)
-    {
-        if (_owner.CurrentState == ECustomerStateType.Waiting)
-        {
-            _agent.avoidancePriority = 100; // 대기 중인 손님은 우선순위가 가장 높음
-            return; // 대기 중인 손님은 우선순위만 설정하고 종료
-        }
-        if (_owner.CurrentState == ECustomerStateType.Lining)
-        {
-            _agent.avoidancePriority = 60; // 줄에 서 있는 손님은 우선순위가 낮음
-        }
-        else if (_owner.CurrentState == ECustomerStateType.PickingUp)
-        {
-            _agent.avoidancePriority = 30; // 포션 제공대에 있는 손님은 우선순위가 높음
-        }
-        else if (_owner.CurrentState == ECustomerStateType.Leaving)
-        {
-            _agent.avoidancePriority = 0; // 나가는 문에 있는 손님은 우선순위가 가장 높음
-        }
-        _agent.avoidancePriority += _priorityOffset; // 우선순위 편향 적용
-    }
 
-    public void OnArrived()
+    private void StartMoving()
+    {
+        if (!PhotonNetwork.IsMasterClient)
+        {
+            return; // 마스터 클라이언트만 이동 시작
+        }
+        if (_owner.CurrentState.StateType == ECustomerStateType.Sitting)
+        {
+            _owner.TransitionState(ECustomerStateType.ReturningChair);
+        }
+        else if (_owner.CurrentState.StateType == ECustomerStateType.Lining)
+        {
+            _owner.TransitionState(ECustomerStateType.ReturningLine);
+        }
+    }
+    private void OnArrived()
     {
         if(!PhotonNetwork.IsMasterClient)
         {
-            return; // 마스터 클라이언트만 도착 시 호출 가능
+            return; 
         }
-        //TODO : 이동이 끝났을 때 호출
-        //TODO : Layout에서 목적지 정보 가져오게 수정
-        if (!PhotonNetwork.IsMasterClient)
+        if (_owner.CurrentState.StateType == ECustomerStateType.ReturningLine)
         {
-            return; // 마스터 클라이언트만 호출 가능
+            Debug.Log("줄서기 상태로 전환");
+            _owner.TransitionState(ECustomerStateType.Lining);
+        } else if (_owner.CurrentState.StateType == ECustomerStateType.ReturningChair)
+        {
+            _owner.TransitionState(ECustomerStateType.Sitting);
         }
-        if (_owner.CurrentState == ECustomerStateType.Lining)
+        else if (_owner.CurrentState.StateType == ECustomerStateType.PickingUp)
         {
-            _animator.SetTrigger("Stand");
-            CustomerManager.Instance.OnArrivedLine(_owner); // 손님이 줄에 도착했을 때 호출
+            _owner.TransitionState(ECustomerStateType.Leaving);
         }
-        else if (_owner.CurrentState == ECustomerStateType.PickingUp)
+        else if (_owner.CurrentState.StateType == ECustomerStateType.Leaving)
         {
-            CustomerManager.Instance.OnServedSuccess(_owner.RequestedPotionTID); // 손님이 포션 제공대에 도착했을 때 호출
+            CustomerManager.Instance.ReturnCustomer(_owner); // 삭제
         }
-        else if (_owner.CurrentState == ECustomerStateType.Leaving)
+    }
+    public bool IsStayOn()
+    {
+        float distance = Vector3.Distance(transform.position, _lastTarget);
+        if (distance < 1f)
         {
-            CustomerManager.Instance.ReturnCustomer(_owner); // 손님이 나가는 문에 도착했을 때 호출
-        }else if (_owner.CurrentState == ECustomerStateType.Waiting)
-        {
-            _animator.SetTrigger("Sit");
+            if (_owner.CurrentState.StateType == ECustomerStateType.Leaving || distance <1f) // 출구는 넉넉하게 1 나머지는 0.1
+            {
+                return true;
+            }
         }
+        return false;
+    }
 
+    public void SwitchNavmeshToAgent()
+    {
+        _owner.CustomerMove.Obstacle.enabled = false;
+        _owner.CustomerMove.Agent.enabled = true;
+    }
+    public void SwitchNavMeshToObstacle()
+    {
+        _owner.CustomerMove.Agent.ResetPath();
+        _owner.CustomerMove.Agent.enabled = false;
+        _owner.CustomerMove.Obstacle.enabled = true;
     }
 }

@@ -20,7 +20,6 @@ public class CustomerEndurance : MonoBehaviour
     private void Awake()
     {
         _owner = GetComponent<Customer>();
-        _owner.OnStateChanged += ResetEndurance; // 상태 변경 시 인내심 초기화
     }
     private void OnEnable()
     {
@@ -30,44 +29,37 @@ public class CustomerEndurance : MonoBehaviour
 
     private void Update()
     {
-        if (_owner.CurrentState == ECustomerStateType.Leaving || _owner.CurrentState == ECustomerStateType.PickingUp)
-        {
-            return;
-        }
         if (!PhotonNetwork.IsMasterClient)
         {
             return;
         }
+        if (_owner.CurrentState.StateType == ECustomerStateType.Leaving || _owner.CurrentState.StateType == ECustomerStateType.PickingUp)
+        {
+            return;
+        }
         LosingEndurance(); // 인내심 감소
-        if (_currentEndurance <= 0f && _owner.CurrentState != ECustomerStateType.Leaving)
+        if (_currentEndurance <= 0f && _owner.CurrentState.StateType != ECustomerStateType.Leaving)
         {
             CustomerManager.Instance.LostCustomer(_owner);
         }
         
     }
-    private void ResetEndurance()
-    {
-        if (_owner.CurrentState == ECustomerStateType.Lining)
-        {
-            _currentEndurance = LINE_ENDURANCE; // 줄 서는 상태에서 인내심 초기화
-        }
-        else if (_owner.CurrentState == ECustomerStateType.Waiting)
-        {
-            _currentEndurance = HALL_ENDURANCE; // 대기실 상태에서 인내심 초기화
-        }
+    public void ResetEndurance()
+    { 
+        _currentEndurance = HALL_ENDURANCE;   
     }
 
     private void LosingEndurance()
     {
-        if (_owner.CurrentState == ECustomerStateType.Lining || _owner.CurrentState == ECustomerStateType.Waiting)
+        if (_owner.CurrentState.StateType != ECustomerStateType.Leaving && _owner.CurrentState.StateType != ECustomerStateType.PickingUp)
         {
             _currentEndurance = Mathf.Max(_currentEndurance -_loseEnduranceSpeed * Time.deltaTime,0); // 인내심 감소
         }
 
-        if(_owner.CurrentState == ECustomerStateType.Lining)
+        if(_owner.CurrentState.StateType == ECustomerStateType.Lining || _owner.CurrentState.StateType == ECustomerStateType.ReturningLine)
         {
             _enduranceRate = _currentEndurance /LINE_ENDURANCE; // 인내심 비율 계산
-        }else if (_owner.CurrentState == ECustomerStateType.Waiting)
+        }else if (_owner.CurrentState.StateType == ECustomerStateType.Sitting || _owner.CurrentState.StateType == ECustomerStateType.ReturningChair)
         {
             _enduranceRate = _currentEndurance / HALL_ENDURANCE; // 인내심 비율 계산
         }

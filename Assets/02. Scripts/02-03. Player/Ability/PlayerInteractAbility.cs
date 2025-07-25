@@ -3,6 +3,8 @@ using UnityEngine;
 public class PlayerInteractAbility : PlayerAbility
 {
     private bool _isInteract = false;
+    private PlayerAnimationAbility _animationAbility;
+
 
     private void Start()
     {
@@ -12,19 +14,21 @@ public class PlayerInteractAbility : PlayerAbility
         }
 
         InputManager.Instance.OnInteractChanged += ChangeInteractState;
+        _animationAbility = _owner.GetAbility<PlayerAnimationAbility>();
     }
 
     private void Update()
     {
         if (_isInteract)
         {
-            Debug.Log("Interacting");
+            ProcessInteract();
         }
     }
 
     private void ChangeInteractState(bool isInteract)
     {
         _isInteract = isInteract;
+        _animationAbility.SetBool(EPlayerAnimationParameter.IsInteract, isInteract);
         if (isInteract)
         {
             StartInteract();
@@ -44,6 +48,11 @@ public class PlayerInteractAbility : PlayerAbility
         {
             itemHandler.TryInteract();
         }
+    }
+
+    private void ProcessInteract()
+    {
+
     }
 
     private void EndInteract()

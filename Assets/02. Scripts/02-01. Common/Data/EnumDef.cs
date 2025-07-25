@@ -157,3 +157,13 @@ public enum ECustomerStateType
     Leaving = 3,
 }
 
+public enum ETierType
+{
+    ///<summary>티어 1</summary>
+    Tier1 = 0,
+    ///<summary>티어 2</summary>
+    Tier2 = 1,
+    ///<summary>티어 3</summary>
+    Tier3 = 2,
+}
+

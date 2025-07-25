@@ -149,7 +149,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         SitOnChair(chairViewID, customer);
         customer.SetCurrentState(ECustomerStateType.Waiting); // 대기 상태로 변경
         _lineHandler.ReLining(); // 줄 다시 세우기
-        ReServePotion();
+        ServePotionOnTakeOrder();
     }
 
     public void LostCustomer(Customer customer) // 인내심이 바닥나면 호출
@@ -175,7 +175,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         }
     }
 
-    private void ReServePotion()
+    private void ServePotionOnTakeOrder()
     {
         foreach (KeyValuePair<int, FurnitureUsingStat> pair in _orderHandler.PickupTableDict)
         {
@@ -216,13 +216,13 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         }
 
         PlaceOnTable(potionTID, pickupTableViewID);
-        Vector3 position = FindPickupTalbeByViewID(pickupTableViewID).transform.position; // 판매대 위치 찾기
+        Vector3 position = FindPickupTableByViewID(pickupTableViewID).transform.position; // 판매대 위치 찾기
         customer.CustomerMove.MoveTo(position); // 손님을 판매대 위치로 이동
         customer.SetCurrentState(ECustomerStateType.PickingUp);
         _orderHandler.PickupTableDict[pickupTableViewID].UsingCustomer = customer; // 손님과 판매대 매핑 저장
-        LeaveChair(customer); 
         _orderHandler.PotionOrderMap[potionTID].Remove(customer);
-        
+        LeaveChair(customer);
+
     }
 
     public void OnServedSuccess(Customer customer,int pickupTableViewID) // 손님이 판매대에 도착하면 호출 
@@ -236,8 +236,8 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
             //TODO : 구매 성공, Currency 증가
         }
         Debug.Log($"Potion served successfully");
-        _orderHandler.PickupTableDict[pickupTableViewID].UsingCustomer = null;
-        GameObject potion = FindPickupTalbeByViewID(pickupTableViewID).GetComponent<IGridItemHandler>().TryPickUp(); // 판매대 위치에서 포션 오브젝트 가져오기
+        RemoveOnTable(pickupTableViewID); // 판매대에서 포션 제거
+        GameObject potion = FindPickupTableByViewID(pickupTableViewID).GetComponent<IGridItemHandler>().TryPickUp(); // 판매대 위치에서 포션 오브젝트 가져오기
         potion.transform.SetParent(customer.PotionHandler.transform);
         potion.transform.localPosition = Vector3.zero;
         _lineHandler.PutOutCustomer(customer); // 손님을 나가게 하기
@@ -251,7 +251,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         {
             return;
         }
-        while (_orderHandler.PotionOrderLine != null && _orderHandler.PotionOrderLine.Count > 0)
+        while (_orderHandler.PotionOrderLine.Count > 0)
         {
             Customer customer = _orderHandler.PotionOrderLine.Dequeue();
             _lineHandler.PutOutCustomer(customer);
@@ -300,7 +300,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         }
     }
 
-    private GameObject FindPickupTalbeByViewID(int pickupTableViewID)
+    private GameObject FindPickupTableByViewID(int pickupTableViewID)
     {
         foreach (GameObject pickupTable in GridManager.Instance.PickUpTableList)
         {
@@ -341,6 +341,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
     {
         _orderHandler.PickupTableDict[pickupTableViewID].IsUsing = false;
         _orderHandler.PickupTableDict[pickupTableViewID].HeldItemTID = 0;
+        _orderHandler.PickupTableDict[pickupTableViewID].UsingCustomer = null; 
     }
     private void SitOnChair(int chairViewID,Customer customer)
     {

@@ -47,8 +47,11 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
     private void Start()
     {
         _photonView = GetComponent<PhotonView>();
-        PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseEntered += PreService;
-        PhaseManager.Instance.PhaseDictionary[EPhaseType.EndingPhase].OnPhaseEntered += ForceReturn; // EndingPhase 진입 시 모든 손님을 반환
+        Dictionary<EPhaseType, BasePhase> phaseDictionary = PhaseManager.Instance.PhaseDictionary;
+        phaseDictionary[EPhaseType.ServingPhase].OnPhaseEntered += PreService;
+        phaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += ForceReturn; 
+        phaseDictionary[EPhaseType.PracticingPhase].OnPhaseEntered += PreService;
+        phaseDictionary[EPhaseType.PracticingPhase].OnPhaseExited += ForceReturn;
         //CustomerPool.Instance.ObjectSpawnedActions.TryAdd(ENPCType.Customer, null);
         //CustomerPool.Instance.ObjectSpawnedActions[ENPCType.Customer] += OnCustomerIn;
 
@@ -163,10 +166,13 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         }
         LeaveChair(customer);
         _lineHandler.PutOutCustomer(customer); // 손님을 나가게 하기
-        PhaseManager.Instance.DeathCount++;
-        if(PhaseManager.Instance.DeathCount >= PhaseManager.Instance.MaxCustomerLost)
+        if(PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase)
         {
-            //TODO : 게임종료 씬
+            PhaseManager.Instance.DeathCount++;
+            if (PhaseManager.Instance.DeathCount >= PhaseManager.Instance.MaxDeathCount)
+            {
+                //TODO : 게임종료 씬
+            }
         }
     }
 
@@ -226,7 +232,10 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         {
             return;
         }
-        //TODO : 구매 성공, Currency 증가
+        if(PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase)
+        {
+            //TODO : 구매 성공, Currency 증가
+        }
         Debug.Log($"Potion served successfully");
         RemoveOnTable(pickupTableViewID); // 판매대에서 포션 제거
         GameObject potion = FindPickupTableByViewID(pickupTableViewID).GetComponent<IGridItemHandler>().TryPickUp(); // 판매대 위치에서 포션 오브젝트 가져오기
@@ -257,6 +266,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         {
             return;
         }
+        customer.ReturnPotion();
         CustomerFactory.Instance.Return(customer.gameObject); // TODO : PoolManager완성 후 수정
         //CustomerPool.Instance.ReturnObject(customer.gameObject,ENPCType.Customer);
         RemainCustomers--;
@@ -280,6 +290,13 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
                 Customer customer = potionQueue.First.Value;
                 potionQueue.RemoveFirst();
                 ReturnCustomer(customer);
+            }
+        }
+        foreach(var pair in _orderHandler.PickupTableDict)
+        {
+            if (pair.Value.IsUsing && pair.Value.UsingCustomer != null)
+            {
+                ReturnCustomer(pair.Value.UsingCustomer);
             }
         }
     }

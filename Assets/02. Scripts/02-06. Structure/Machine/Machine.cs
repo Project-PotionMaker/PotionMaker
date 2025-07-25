@@ -47,6 +47,11 @@ public class Machine : MonoBehaviour, IGridItemHandler
             _modelObjectDic.Add(modelInfo.TID, modelInfo.Model);
         }
     }
+    private void Start()
+    {
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += ResetItem;
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase].OnPhaseExited += ResetItem;
+    }
 
     public void InitMachine(MachineData data, IInteractable<Machine, MachineStat> interactableComponent, IInputContainer<Machine, MachineStat> inputComponent, IOutputContainer<Machine, MachineStat> outputComponent)
     {
@@ -77,7 +82,8 @@ public class Machine : MonoBehaviour, IGridItemHandler
             }
             _model.rotation = Quaternion.Euler(0, _stat.CurrentRotation, 0);
         }
-        else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase)
+        else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase 
+            || PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
         {
             return _interactComponent.TryInteract(this, _stat);
         }
@@ -120,7 +126,8 @@ public class Machine : MonoBehaviour, IGridItemHandler
         {
             return GridManager.Instance.StartPlacement(transform.position);
         }
-        else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase)
+        else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase 
+            || PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
         {
             if(ReferenceEquals(_outputComponent, null) == false)
             {
@@ -142,7 +149,8 @@ public class Machine : MonoBehaviour, IGridItemHandler
                 return true;
             }
         }
-        else if(PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase)
+        else if(PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase 
+            || PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
         {
             if(TryInput(tid, inputType))
             {
@@ -150,5 +158,11 @@ public class Machine : MonoBehaviour, IGridItemHandler
             }
         }
         return false;
+    }
+
+    public void ResetItem()
+    {
+        StopAllCoroutines();
+        _stat.ClearMachine();
     }
 }

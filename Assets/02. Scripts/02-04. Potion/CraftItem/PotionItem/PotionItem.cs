@@ -4,15 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using VInspector;
 
-[Serializable]
-public class PotionAppearance
-{
-    public int TID;
-    public Mesh BottleMesh;
-    public Mesh LiquidMesh;
-    public Material LiquidMaterial;
-}
-
 public class PotionItem : MonoBehaviour, IItem
 {
     private PotionData _potionData;
@@ -20,19 +11,9 @@ public class PotionItem : MonoBehaviour, IItem
 
     [Foldout("Hierarchy")]
     [SerializeField]
-    private MeshFilter _bottleMeshFilter;
-    [SerializeField]
     private Renderer _bottleRenderer;
-    [SerializeField]
-    private MeshFilter _liquidMeshFilter;
-    [SerializeField]
-    private Renderer _liquidRenderer;
-
 
     [Foldout("Project")]
-    [SerializeField]
-    private List<PotionAppearance> _potionAppearanceList = new List<PotionAppearance>();
-    private Dictionary<int, PotionAppearance> _potionAppearanceDict;
 
     private Light _pointLight;
     private ParticleSystem _particles;
@@ -48,16 +29,9 @@ public class PotionItem : MonoBehaviour, IItem
 
     private void InitPotion()
     {
-        _potionAppearanceDict = new Dictionary<int, PotionAppearance>();
-        foreach (var potionAppearance in _potionAppearanceList)
-        {
-            _potionAppearanceDict.Add(potionAppearance.TID, potionAppearance);
-        }
-
         _pointLight = GetComponentInChildren<Light>();
-        _mpb = new MaterialPropertyBlock();
         _particles = GetComponentInChildren<ParticleSystem>(true);
-
+        _mpb = new MaterialPropertyBlock();
         _photonView = GetComponent<PhotonView>();
     }
 
@@ -75,7 +49,6 @@ public class PotionItem : MonoBehaviour, IItem
     public void RPC_InitPotionData(int TID)
     {
         _potionData = DataTable.Instance.GetPotionData(TID);
-        InitPotionAppearance(TID);
         InitVFX();
     }
 
@@ -103,13 +76,6 @@ public class PotionItem : MonoBehaviour, IItem
                 break;
         }
         _bottleRenderer.SetPropertyBlock(_mpb);
-    }
-
-    private void InitPotionAppearance(int TID)
-    {
-        _bottleMeshFilter.mesh = _potionAppearanceDict[TID].BottleMesh;
-        _liquidMeshFilter.mesh = _potionAppearanceDict[TID].LiquidMesh;
-        _liquidRenderer.material = _potionAppearanceDict[TID].LiquidMaterial;
     }
 
     public EInputType GetInputType()

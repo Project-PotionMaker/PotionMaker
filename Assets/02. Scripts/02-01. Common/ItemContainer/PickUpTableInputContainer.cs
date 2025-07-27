@@ -4,11 +4,7 @@ public class PickUpTableInputContainer : IInputContainer<Furniture, FurnitureSta
 {
     public bool TryInput(Furniture furniture, FurnitureStat stat, int tid, EInputType inputType, GameObject inputObject = null)
     {
-        if(inputType != EInputType.Potion)
-        {
-            return false;
-        }
-        else if(stat.InputObject == null)
+        if(stat.InputObject == null)
         {
             stat.InputObject = inputObject;
             stat.InputObject.transform.position = stat.InputPosition.position;

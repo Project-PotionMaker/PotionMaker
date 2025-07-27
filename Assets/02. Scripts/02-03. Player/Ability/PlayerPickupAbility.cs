@@ -4,6 +4,7 @@ public class PlayerPickupAbility : PlayerAbility
 {
     // 나중에 IPickable로 변경 가능
     private GameObject _heldItem = null;
+    private PlayerAnimationAbility _animationAbility;
 
     private void Start()
     {
@@ -13,6 +14,9 @@ public class PlayerPickupAbility : PlayerAbility
         }
 
         InputManager.Instance.OnPickupEvent += OnPickupInput;
+        _animationAbility = _owner.GetAbility<PlayerAnimationAbility>();
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += ResetItem;
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase].OnPhaseExited += ResetItem;
     }
 
     private void Update()
@@ -39,11 +43,13 @@ public class PlayerPickupAbility : PlayerAbility
         {
             TryPutDown();
         }
+
+        bool hasHeldItem = _heldItem != null;
+        _animationAbility.SetBool(EPlayerAnimationParameter.HasHeldItem,hasHeldItem);
     }
 
     private void TryPickup()
     {
-        Debug.Log("Pickup");
         GameObject item = FindFrontPickupItem();
         if (ReferenceEquals(item, null) == false)
         {
@@ -52,7 +58,7 @@ public class PlayerPickupAbility : PlayerAbility
             {
                 _heldItem = newItem;
                 _heldItem.transform.SetParent(_owner.HeldPosition);
-                _heldItem.transform.localPosition = Vector3.zero;
+                _heldItem.transform.localPosition = -0.5f * Vector3.one;
                 _heldItem.transform.localRotation = Quaternion.Euler(Vector3.zero);
             }
         }
@@ -101,5 +107,14 @@ public class PlayerPickupAbility : PlayerAbility
         Vector3 targetPosition = _owner.GetFrontPosition();
         GameObject item = GridManager.Instance.GetObjectOnGrid(targetPosition);
         return item;
+    }
+
+    private void ResetItem()
+    {
+        if(!ReferenceEquals(_heldItem, null))
+        {
+            _heldItem.transform.SetParent(null);
+            CraftItemFactory.Instance.Return(_heldItem);
+        }
     }
 }

@@ -16,9 +16,10 @@ public class FurnitureStat
     private Transform _inputPosition;
     public Transform InputPosition { get => _inputPosition; set => _inputPosition = value; }
 
-    public FurnitureStat(FurnitureData data)
+    public FurnitureStat(FurnitureData data, Transform inputPosition)
     {
         _data = data;
+        _inputPosition = inputPosition;
     }
 
 

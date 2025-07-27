@@ -12,7 +12,6 @@ public class CustomerLineHandler // 접수대 앞에 물리적으로 줄 세우�
         {
             return; // 마스터 클라이언트만 호출 가능
         }
-        Debug.Log("ReLining customers in the Waiting Line.");
         Queue<Customer> line = CustomerManager.Instance.OrderHandler.PotionOrderLine;
         Customer[] lineArray = line.ToArray();
         if (line == null || line.Count == 0)
@@ -37,7 +36,7 @@ public class CustomerLineHandler // 접수대 앞에 물리적으로 줄 세우�
 
     private Vector3 GetLinePosition(int index)
     {
-        return CustomerManager.Instance.CounterLocation.position + (index * _spacing);
+        return CustomerManager.Instance.CasherLocation.position + (index * _spacing);
     }
 
     public void ResetLocation()

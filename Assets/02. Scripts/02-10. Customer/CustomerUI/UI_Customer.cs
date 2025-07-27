@@ -59,11 +59,11 @@ public class UI_Customer : MonoBehaviour
         {
             _stateImage.gameObject.SetActive(false);
         }
-        else if (_owner.CurrentState == ECustomerStateType.Waiting)
-        {
-            _stateImage.gameObject.SetActive(true); //TODO : 어떤 포션인지 아이콘으로 표현
-            _stateImage.sprite = _waitingIcon;
-        }
+        //else if (_owner.CurrentState == ECustomerStateType.Waiting)
+        //{
+        //    _stateImage.gameObject.SetActive(true); //TODO : 어떤 포션인지 아이콘으로 표현
+        //    _stateImage.sprite = _waitingIcon;
+        //}
     }
 
 

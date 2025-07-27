@@ -29,6 +29,8 @@ public enum EPhaseType
     ServingPhase = 1,
     ///<summary>영업종료</summary>
     EndingPhase = 2,
+    ///<summary>연습모드</summary>
+    PracticingPhase = 3,
 }
 
 public enum ENPCType
@@ -55,6 +57,8 @@ public enum EAreaType
     Kitchen = 2,
     ///<summary>창고</summary>
     Storage = 3,
+    ///<summary>배달</summary>
+    Delivery = 4,
 }
 
 public enum EIngredientType
@@ -77,20 +81,22 @@ public enum EInputType
     Ingredient = 1,
     ///<summary>결과물</summary>
     Output = 2,
-    ///<summary>가루</summary>
-    MortarOutput = 3,
-    ///<summary>분쇄물</summary>
-    GrinderOutput = 4,
-    ///<summary>추출물</summary>
-    HeatingPotOutput = 5,
-    ///<summary>증류원액</summary>
-    DistillerOutput = 6,
-    ///<summary>냉각물</summary>
-    CoolerOutput = 7,
-    ///<summary>포션</summary>
-    Potion = 8,
     ///<summary>실패 결과물</summary>
-    FailureOutput = 9,
+    FailureOutput = 3,
+    ///<summary>포션</summary>
+    Potion = 4,
+}
+
+public enum EOutputType
+{
+    ///<summary>가루</summary>
+    PowderOutput = 0,
+    ///<summary>액체</summary>
+    LiquidOutput = 1,
+    ///<summary>실패 결과물</summary>
+    FailureOutput = 2,
+    ///<summary>포션</summary>
+    Potion = 3,
 }
 
 public enum EMachineMeshType
@@ -143,6 +149,10 @@ public enum ESpecialStructureType
     TrashCan = 3,
     ///<summary>문</summary>
     Door = 4,
+    ///<summary>허름한의자</summary>
+    OldChair = 5,
+    ///<summary>푹신한의자</summary>
+    LuxuryChair = 6,
 }
 
 public enum ECustomerStateType
@@ -150,10 +160,24 @@ public enum ECustomerStateType
     ///<summary>줄 서기</summary>
     Lining = 0,
     ///<summary>기다리기</summary>
-    Waiting = 1,
+    Sitting = 1,
     ///<summary>챙기기</summary>
     PickingUp = 2,
     ///<summary>나가기</summary>
     Leaving = 3,
+    ///<summary>줄로 이동</summary>
+    ReturningLine = 4,
+    ///<summary>의자로 이동</summary>
+    ReturningChair = 5,
+}
+
+public enum ETierType
+{
+    ///<summary>티어 1</summary>
+    Tier1 = 0,
+    ///<summary>티어 2</summary>
+    Tier2 = 1,
+    ///<summary>티어 3</summary>
+    Tier3 = 2,
 }
 

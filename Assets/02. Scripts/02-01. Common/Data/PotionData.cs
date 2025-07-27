@@ -32,9 +32,6 @@ public class PotionData
     ///<summary>재료2TID</summary>
     private readonly int Ingredient2TID;
 
-    ///<summary>재료3TID</summary>
-    private readonly int Ingredient3TID;
-
     ///<summary>레시피 코드</summary>
     public readonly string RecipeCode;
 
@@ -52,7 +49,6 @@ public class PotionData
         Tier = reader.ReadInt32();
         Ingredient1TID = reader.ReadInt32();
         Ingredient2TID = reader.ReadInt32();
-        Ingredient3TID = reader.ReadInt32();
         int recipecode = reader.ReadInt32();
         RecipeCode = Encoding.UTF8.GetString(reader.ReadBytes(recipecode));
 
@@ -63,6 +59,5 @@ public class PotionData
     {
         IngredientTIDList.Add(Ingredient1TID);
         IngredientTIDList.Add(Ingredient2TID);
-        IngredientTIDList.Add(Ingredient3TID);
     }
 }

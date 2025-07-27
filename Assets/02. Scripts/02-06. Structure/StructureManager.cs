@@ -57,6 +57,7 @@ public class StructureManager : MonoBehaviourSingleton<StructureManager>
         IInteractable<Furniture, FurnitureStat> interactable = null;
         IInputContainer<Furniture, FurnitureStat> inputContainer = null;
         IOutputContainer<Furniture, FurnitureStat> outputContainer = null;
+        ICustomerEffectable<Furniture, FurnitureStat> customerEffectable = null;
         // 테스트용
         if (furnitureData.Name == "계산기")
         {
@@ -67,7 +68,11 @@ public class StructureManager : MonoBehaviourSingleton<StructureManager>
             inputContainer = new PickUpTableInputContainer();
             outputContainer = new PickUpTableOutputContainer();
         }
-        instance.GetComponent<Furniture>().InitFurniture(furnitureData, interactable, inputContainer, outputContainer);
+        if(furnitureData.Name == "허름한 의자" || furnitureData.Name == "푹신한 의자")
+        {
+            customerEffectable = new ChairEffect();
+        }
+        instance.GetComponent<Furniture>().InitFurniture(furnitureData, interactable, inputContainer, outputContainer, customerEffectable);
     }
 
     public void InitMachine(GameObject instance, int MachineTID)

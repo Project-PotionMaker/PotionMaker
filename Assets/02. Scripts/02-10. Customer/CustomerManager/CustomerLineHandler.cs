@@ -21,7 +21,6 @@ public class CustomerLineHandler // 접수대 앞에 물리적으로 줄 세우�
         for (int i = 0; i < lineArray.Length; i++)
         {
             Customer customer = lineArray[i];
-            customer.TransitionState(ECustomerStateType.ReturningLine); // 상태 변경
             customer.CustomerMove.MoveTo(GetLinePosition(i));
         }
     }

@@ -133,7 +133,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         Customer customer = _orderHandler.PotionOrderLine.Dequeue();
         int potionTID = customer.GetComponent<Customer>().RequestedPotionTID;
         _orderHandler.AddOrder(potionTID, customer);
-        customer.TransitionState(ECustomerStateType.Sitting); // 대기 상태로 변경
+        customer.TransitionState(ECustomerStateType.Sitting); 
         SitOnChair(chairViewID, customer);
         customer.CustomerEndurance.ResetEndurance(); 
         _lineHandler.ReLining(); // 줄 다시 세우기

@@ -24,11 +24,8 @@ public class UI_Customer : MonoBehaviour
         _owner = GetComponentInParent<Customer>();
         _enduranceSlider.maxValue = 1f;
 
-        foreach (var state in _owner.StateDictionary.Values)
-        {
-            state.OnStateEntered += SetSlide; 
-            state.OnStateEntered += SetStateImage; 
-        }
+        _owner.OnStateChanged += SetSlide;
+        _owner.OnStateChanged += SetStateImage;
         _owner.CustomerEndurance.OnEnduranceChanged += SetSlide; // 인내심 변경 이벤트에 슬라이더 설정 메서드 등록
         SetSlide(); // 초기 슬라이더 설정
         SetStateImage(); // 초기 상태 텍스트 설정
@@ -36,7 +33,7 @@ public class UI_Customer : MonoBehaviour
 
     private void SetSlide()
     {
-        if(_owner.CurrentState.StateType == ECustomerStateType.Leaving || _owner.CurrentState.StateType == ECustomerStateType.PickingUp)
+        if(_owner.CurrentState == ECustomerStateType.Leaving || _owner.CurrentState == ECustomerStateType.PickingUp)
         {
             _enduranceSlider.gameObject.SetActive(false); // Leaving 또는 PickingUp 상태에서는 슬라이더 숨김
             return;
@@ -49,20 +46,20 @@ public class UI_Customer : MonoBehaviour
     }
     private void SetStateImage()
     {
-        if (_owner.CurrentState.StateType == ECustomerStateType.Lining || _owner.CurrentState.StateType == ECustomerStateType.ReturningLine)
+        if (_owner.CurrentState == ECustomerStateType.Lining)
         {
             _stateImage.gameObject.SetActive(true); 
             _stateImage.sprite = _lingingIcon;
         }
-        else if (_owner.CurrentState.StateType == ECustomerStateType.PickingUp)
+        else if (_owner.CurrentState == ECustomerStateType.PickingUp)
         {
             _stateImage.gameObject.SetActive(false); 
         }
-        else if (_owner.CurrentState.StateType == ECustomerStateType.Leaving)
+        else if (_owner.CurrentState  == ECustomerStateType.Leaving)
         {
             _stateImage.gameObject.SetActive(false);
         }
-        else if (_owner.CurrentState.StateType == ECustomerStateType.Sitting || _owner.CurrentState.StateType == ECustomerStateType.ReturningChair)
+        else if (_owner.CurrentState == ECustomerStateType.Sitting)
         {
             _stateImage.gameObject.SetActive(true); //TODO : 어떤 포션인지 아이콘으로 표현
             _stateImage.sprite = _waitingIcon;

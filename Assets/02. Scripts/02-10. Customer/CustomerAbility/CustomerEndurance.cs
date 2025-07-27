@@ -33,12 +33,12 @@ public class CustomerEndurance : MonoBehaviour
         {
             return;
         }
-        if (_owner.CurrentState.StateType == ECustomerStateType.Leaving || _owner.CurrentState.StateType == ECustomerStateType.PickingUp)
+        if (_owner.CurrentState == ECustomerStateType.Leaving || _owner.CurrentState == ECustomerStateType.PickingUp)
         {
             return;
         }
         LosingEndurance(); // 인내심 감소
-        if (_currentEndurance <= 0f && _owner.CurrentState.StateType != ECustomerStateType.Leaving)
+        if (_currentEndurance <= 0f && _owner.CurrentState != ECustomerStateType.Leaving)
         {
             CustomerManager.Instance.LostCustomer(_owner);
         }
@@ -51,15 +51,15 @@ public class CustomerEndurance : MonoBehaviour
 
     private void LosingEndurance()
     {
-        if (_owner.CurrentState.StateType != ECustomerStateType.Leaving && _owner.CurrentState.StateType != ECustomerStateType.PickingUp)
+        if (_owner.CurrentState != ECustomerStateType.Leaving && _owner.CurrentState != ECustomerStateType.PickingUp)
         {
             _currentEndurance = Mathf.Max(_currentEndurance -_loseEnduranceSpeed * Time.deltaTime,0); // 인내심 감소
         }
 
-        if(_owner.CurrentState.StateType == ECustomerStateType.Lining || _owner.CurrentState.StateType == ECustomerStateType.ReturningLine)
+        if(_owner.CurrentState == ECustomerStateType.Lining)
         {
             _enduranceRate = _currentEndurance /LINE_ENDURANCE; // 인내심 비율 계산
-        }else if (_owner.CurrentState.StateType == ECustomerStateType.Sitting || _owner.CurrentState.StateType == ECustomerStateType.ReturningChair)
+        }else if (_owner.CurrentState == ECustomerStateType.Sitting)
         {
             _enduranceRate = _currentEndurance / HALL_ENDURANCE; // 인내심 비율 계산
         }

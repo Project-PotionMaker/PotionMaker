@@ -32,6 +32,9 @@ public class OutputData
     ///<summary>레시피 코드</summary>
     public readonly string RecipeCode;
 
+    ///<summary>출력물 타입</summary>
+    public readonly EOutputType OutputType;
+
     ///<summary>IngredientTID 리스트</summary>
     public readonly List<int> IngredientTIDList = new List<int>();
 
@@ -51,6 +54,7 @@ public class OutputData
         AvailableMachineTID3 = reader.ReadInt32();
         int recipecode = reader.ReadInt32();
         RecipeCode = Encoding.UTF8.GetString(reader.ReadBytes(recipecode));
+        OutputType = (EOutputType)reader.ReadInt32();
 
         LinkTable();
     }

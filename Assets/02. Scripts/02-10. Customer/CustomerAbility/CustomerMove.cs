@@ -7,8 +7,6 @@ public class CustomerMove : MonoBehaviour
 {
     private NavMeshAgent _agent;
     public NavMeshAgent Agent { get => _agent; set => _agent = value; } // NavMeshAgent 컴포넌트
-    private NavMeshObstacle _obstacle;
-    public NavMeshObstacle Obstacle { get => _obstacle; set => _obstacle = value; } // NavMeshObstacle 컴포넌트
     private Rigidbody _rigidbody;
 
     private Customer _owner;
@@ -16,16 +14,16 @@ public class CustomerMove : MonoBehaviour
     public Animator Animator { get => _animator; set => _animator = value; } // 애니메이터 컴포넌트
     private Vector3 _lastTarget;
 
+    private bool _hasArrived = true;
+
     private void Awake()
     {
         _agent = GetComponent<NavMeshAgent>();
-        _obstacle = GetComponent<NavMeshObstacle>();
         _rigidbody = GetComponent<Rigidbody>();
         _owner = GetComponent<Customer>();
         _animator = GetComponentInChildren<Animator>();
 
-        _agent.enabled = false; 
-        _obstacle.enabled = true; 
+        _agent.enabled = true; 
         _rigidbody.isKinematic = false; 
     }
     private void Update()
@@ -41,10 +39,15 @@ public class CustomerMove : MonoBehaviour
         }
         if (IsStayOn())
         {
-            OnArrived(); // 도착 시 호출
+            if (_hasArrived == false)
+            {
+                OnArrived(); // 도착 시 호출
+                _hasArrived=true;
+            }
         }
         else
         {
+            _hasArrived = false;
             StartMoving();
         }
     }
@@ -56,7 +59,6 @@ public class CustomerMove : MonoBehaviour
             return; // 마스터 클라이언트만 이동 가능
         }
         _lastTarget = target; // 마지막 목적지 저장
-        SwitchNavmeshToAgent();
         _agent.SetDestination(target);
         Debug.Log("Customer moved to: " + target);
     }
@@ -67,14 +69,7 @@ public class CustomerMove : MonoBehaviour
         {
             return; // 마스터 클라이언트만 이동 시작
         }
-        if (_owner.CurrentState.StateType == ECustomerStateType.Sitting)
-        {
-            _owner.TransitionState(ECustomerStateType.ReturningChair);
-        }
-        else if (_owner.CurrentState.StateType == ECustomerStateType.Lining)
-        {
-            _owner.TransitionState(ECustomerStateType.ReturningLine);
-        }
+        _animator.SetBool("Move", true);
     }
     private void OnArrived()
     {
@@ -82,19 +77,23 @@ public class CustomerMove : MonoBehaviour
         {
             return; 
         }
-        if (_owner.CurrentState.StateType == ECustomerStateType.ReturningLine)
+        _animator.SetBool("Move", false);
+        if (_owner.CurrentState == ECustomerStateType.Lining)
         {
-            Debug.Log("줄서기 상태로 전환");
-            _owner.TransitionState(ECustomerStateType.Lining);
-        } else if (_owner.CurrentState.StateType == ECustomerStateType.ReturningChair)
+            _animator.SetTrigger("Stand");
+            if (ReferenceEquals(_owner, CustomerManager.Instance.OrderHandler.PotionOrderLine.Peek()))
+            {
+                CustomerManager.Instance.CanOrdered = true;
+            }
+        } else if (_owner.CurrentState == ECustomerStateType.Sitting)
         {
-            _owner.TransitionState(ECustomerStateType.Sitting);
+            _animator.SetTrigger("Sit");
         }
-        else if (_owner.CurrentState.StateType == ECustomerStateType.PickingUp)
+        else if (_owner.CurrentState == ECustomerStateType.PickingUp)
         {
-            _owner.TransitionState(ECustomerStateType.Leaving);
+            CustomerManager.Instance.OnServedSuccess(_owner, _owner.RequestedPotionTID);
         }
-        else if (_owner.CurrentState.StateType == ECustomerStateType.Leaving)
+        else if (_owner.CurrentState == ECustomerStateType.Leaving)
         {
             CustomerManager.Instance.ReturnCustomer(_owner); // 삭제
         }
@@ -104,23 +103,11 @@ public class CustomerMove : MonoBehaviour
         float distance = Vector3.Distance(transform.position, _lastTarget);
         if (distance < 1f)
         {
-            if (_owner.CurrentState.StateType == ECustomerStateType.Leaving || distance <1f) // 출구는 넉넉하게 1 나머지는 0.1
+            if (_owner.CurrentState == ECustomerStateType.Leaving || distance <1f) // 출구는 넉넉하게 1 나머지는 0.1
             {
                 return true;
             }
         }
         return false;
-    }
-
-    public void SwitchNavmeshToAgent()
-    {
-        _owner.CustomerMove.Obstacle.enabled = false;
-        _owner.CustomerMove.Agent.enabled = true;
-    }
-    public void SwitchNavMeshToObstacle()
-    {
-        _owner.CustomerMove.Agent.ResetPath();
-        _owner.CustomerMove.Agent.enabled = false;
-        _owner.CustomerMove.Obstacle.enabled = true;
     }
 }

@@ -6,10 +6,8 @@ using UnityEngine.AI;
 
 public class Customer : MonoBehaviour
 {
-    private BaseCustomerState _currentState; // 현재 상태 컴포넌트
-    private Dictionary<ECustomerStateType, BaseCustomerState> _stateDictionary;
-    public Dictionary<ECustomerStateType, BaseCustomerState> StateDictionary { get => _stateDictionary; set => _stateDictionary = value; }
-    public BaseCustomerState CurrentState { get => _currentState; set => _currentState = value; } // 현재 상태 컴포넌트
+    private ECustomerStateType _currentState; // 현재 상태 컴포넌트
+    public ECustomerStateType CurrentState { get => _currentState; set => _currentState = value; } // 현재 상태 컴포넌트
     private CustomerMove _customerMove; // 이동 능력 컴포넌트
     public CustomerMove CustomerMove { get => _customerMove; set => _customerMove = value; } // 이동 능력 컴포넌트
     private CustomerEndurance _customerEndurance; // 인내심
@@ -26,25 +24,18 @@ public class Customer : MonoBehaviour
     private PhotonView _photonView;
     public PhotonView PhotonView { get => _photonView; set => _photonView = value; } // PhotonView 컴포넌트
 
+    public event Action OnStateChanged;
+
     private void Awake()
     {
         _photonView = GetComponent<PhotonView>();
         _customerMove = GetComponent<CustomerMove>();
         _customerEndurance = GetComponent<CustomerEndurance>();
-        _stateDictionary = new Dictionary<ECustomerStateType, BaseCustomerState>
-        {
-            { ECustomerStateType.Lining, new LiningState(this) },
-            { ECustomerStateType.Sitting, new SittingState(this) },
-            { ECustomerStateType.PickingUp, new PickingUpState(this) },
-            { ECustomerStateType.Leaving, new LeavingState(this) },
-            { ECustomerStateType.ReturningLine, new ReturningLine(this) },
-            { ECustomerStateType.ReturningChair, new ReturningChairState(this) }
-        };
 
     }
     private void OnEnable()
     {
-        _currentState = _stateDictionary[ECustomerStateType.Lining]; // 초기 상태 설정
+        _currentState = ECustomerStateType.Lining; // 초기 상태 설정
         //_requestedPotionTID = RandomPotion();
     }
 
@@ -59,15 +50,8 @@ public class Customer : MonoBehaviour
     [PunRPC]
     public void RPC_TransitionState(ECustomerStateType nextState)
     {
-        if (_currentState != null)
-        {
-            _currentState.ExitState(); // 현재 상태 종료
-        }
-
-        _currentState = _stateDictionary[nextState];
-        _currentState.StateType = nextState; // 상태 타입 설정
-
-        _currentState.EnterState(); // 새로운 상태 시작
+        _currentState = nextState;
+        OnStateChanged?.Invoke();
     }
 
     public void ReturnPotion()

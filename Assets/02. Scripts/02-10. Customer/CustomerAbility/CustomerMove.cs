@@ -137,8 +137,4 @@ public class CustomerMove : MonoBehaviour
         _agent.enabled = true;
         _collider.enabled = true; // 충돌체 활성화
     }
-    private void LocalMoveing()
-    {
-
-    }
 }

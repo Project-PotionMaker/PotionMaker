@@ -2797,6 +2797,7 @@ GameObject:
   m_Component:
   - component: {fileID: 909308884}
   - component: {fileID: 909308885}
+  - component: {fileID: 909308886}
   m_Layer: 0
   m_Name: NavMeshMap
   m_TagString: Untagged
@@ -2852,10 +2853,27 @@ MonoBehaviour:
   m_OverrideTileSize: 0
   m_TileSize: 256
   m_OverrideVoxelSize: 0
-  m_VoxelSize: 0.016666668
+  m_VoxelSize: 0.033333335
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 23800000, guid: eeae194959691154b8c3032d63a7803e, type: 2}
   m_BuildHeightMesh: 0
+--- !u!114 &909308886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 909308883}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35e95dc5ff2b64380880dd7ac5922847, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SerializedVersion: 0
+  m_Size: {x: 10, y: 3, z: 5}
+  m_Center: {x: 0, y: 1, z: 2}
+  m_Area: 1
+  m_AffectedAgents: f2652fae
 --- !u!1 &915616296 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8160434464890312973, guid: 9a961b6c5c1adee4da8a646ae71cc04c, type: 3}

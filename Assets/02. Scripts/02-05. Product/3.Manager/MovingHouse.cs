@@ -1,5 +1,6 @@
 using Mono.Cecil;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +10,13 @@ using UnityEngine.SceneManagement;
 
 public class MovingHouse
 {
+    private Delivery _delivery;
     private List<int> _structureTIDList;
 
-    public void InitMovingHouse()
+    public void InitMovingHouse(Delivery delivery)
     {
         _structureTIDList = new List<int>();
+        _delivery = delivery;
     }
 
     public void MoveHouse(int layoutTID)
@@ -28,22 +31,22 @@ public class MovingHouse
         SceneManager.LoadScene(sceneName);
     }
 
-    public void OnHouseMoved(Scene scene, LoadSceneMode mode)
+    private void OnHouseMoved(Scene scene, LoadSceneMode mode)
     {
         SceneManager.sceneLoaded -= OnHouseMoved;
         // 재배치
-        RelocateStructure();
-        List<int> unlockedIngredientTIDList = new List<int>() { 10000, 10001, 10002, 10003 }; // 임시 이미 해금
-        RelocateStorage(unlockedIngredientTIDList);
+        List<int> unlockedIngredientTIDList = new List<int>() { 10000, 10001 }; // 임시 이미 해금
+        RelocateStorages(unlockedIngredientTIDList);
+        RelocateStructures();
 
-        // 새로운 해금 배달        
+        // 새로운 해금 배달
+        List<int> newlyUnlockedIngredientTIDList = new List<int>() { 10002, 10003, 20000, 30000 }; // 임시 해금 재료
         List<int> newlyUnlockedStructureTIDList = new List<int>() { 10009, 10017 }; // 임시 해금 가구/조리기구
-        List<int> newlyUnlockedIngredientTIDList = new List<int>() { 10004, 10005, 20000, 30000 }; // 임시 해금 재료
 
-        DeliverNewStructure(newlyUnlockedStructureTIDList);
-        DeliverNewStorage(newlyUnlockedIngredientTIDList);
+        DeliverUnlockedStorages(newlyUnlockedIngredientTIDList);
+        DeliverUnlockedStructures(newlyUnlockedStructureTIDList);
     }
-    private void RelocateStructure ()
+    private void RelocateStructures ()
     {
         Dictionary<EAreaType, List<int>> structureDict = new Dictionary<EAreaType, List<int>>();
 
@@ -73,51 +76,20 @@ public class MovingHouse
             int index = 0;
             foreach (int structureTID in structureDict[areaType])
             {
-                GridManager.Instance.CreateStructure(structureTID, locatePosition[index++]);
+                _delivery.DeliverStructure(structureTID, areaType, index, out index);
             }
         }
     }
-    private void DeliverNewStructure(List<int> structureTIDList)
+    private void DeliverUnlockedStructures(List<int> structureTIDList)
     {
-        ReadOnlyList<Vector3Int> positionList = GridManager.Instance.GetPositionByAreaType(EAreaType.Delivery);
-
-    }
-
-    public void RelocateStorage(List<int> ingredientList) => LocateStorage(ingredientList, EAreaType.Storage);
-    public void DeliverNewStorage(List<int> ingredientList) => LocateStorage(ingredientList, EAreaType.Delivery);
-    private void LocateStorage(List<int> ingredientTIDList, EAreaType areaType )
-    {
-        ReadOnlyList<Vector3Int> positionList = GridManager.Instance.GetPositionByAreaType(areaType);
-
         int index = 0;
-
-        foreach (int TID in ingredientTIDList)
+        foreach(int structureTID in structureTIDList)
         {
-            int storageStructureTID;
-            switch (DataTable.Instance.GetIngredientData(TID).IngredientType)
-            {
-                case EIngredientType.Plants:
-                {
-                    storageStructureTID = 10018;
-                    break;
-                }
-                case EIngredientType.Animals:
-                {
-                    storageStructureTID = 10019;
-                    break;
-                }
-                case EIngredientType.Crystals:
-                {
-                    storageStructureTID = 10020;
-                    break;
-                }
-                default:
-                {
-                    storageStructureTID = -1;
-                    break;
-                }
-            }
-            GridManager.Instance.CreateStructure(storageStructureTID, positionList[index++], TID);
+            _delivery.DeliverStructure(structureTID, EAreaType.Delivery, index, out index);
         }
     }
+
+    public void RelocateStorages(List<int> ingredientList) => _delivery.DeliverStorages(ingredientList, EAreaType.Storage);
+    public void DeliverUnlockedStorages(List<int> ingredientList) => _delivery.DeliverStorages(ingredientList, EAreaType.Delivery);
+   
 }

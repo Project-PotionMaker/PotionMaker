@@ -17,14 +17,15 @@ public class ProductManager : MonoBehaviourPunCallbacksSingleton<ProductManager>
             keyValuePair => keyValuePair.Key,
             keyValuePair => keyValuePair.Value.Select(product => product.ToDTO()).ToList()
         );
-
+    private Delivery _delivery;
     private MovingHouse _movingHouse;
     protected override void Awake()
     {
         base.Awake();
         _photonView = GetComponent<PhotonView>();
+        _delivery = new Delivery();
         _movingHouse = new MovingHouse();
-        _movingHouse.InitMovingHouse();
+        _movingHouse.InitMovingHouse(_delivery);
     }
     private void Start()
     {
@@ -71,7 +72,7 @@ public class ProductManager : MonoBehaviourPunCallbacksSingleton<ProductManager>
         _photonView.RPC(nameof(RequestBuy), RpcTarget.MasterClient, productType, productID);
     }
     [PunRPC]
-    public async void RequestBuy(EProductType productType, int productID, PhotonMessageInfo info)
+    public void RequestBuy(EProductType productType, int productID, PhotonMessageInfo info)
     {
         if (!PhotonNetwork.IsMasterClient)
         {
@@ -80,12 +81,12 @@ public class ProductManager : MonoBehaviourPunCallbacksSingleton<ProductManager>
         }
 
         Product product = _productListDict[productType].Find(product => product.Data.TID == productID);
-        bool result = await TryBuy(product);
+        bool result = TryBuy(product);
 
         _photonView.RPC(nameof(ShowResultUI), info.Sender, result);
     }
 
-    private async Task<bool> TryBuy(Product product)
+    private bool TryBuy(Product product)
     {
         if (!CurrencyManager.Instance.TrySubtractCurrency(product.Data.Price))
         {
@@ -103,8 +104,7 @@ public class ProductManager : MonoBehaviourPunCallbacksSingleton<ProductManager>
                           $"상품이름: {product.Data.Name}\n" +
                           $"상품가격: {product.Data.Price}");
 
-                GameObject structure = StructureManager.Instance.CreateStructure(product.Data.TargetTID);
-                structure.transform.position = Vector3.zero;
+                _delivery.DeliverStructure(product.Data.TargetTID, EAreaType.Delivery ,0, out int dummy);
                 break;
             }
             case EProductType.HouseMoving:

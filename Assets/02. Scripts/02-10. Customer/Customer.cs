@@ -26,6 +26,9 @@ public class Customer : MonoBehaviour
 
     public event Action OnStateChanged;
 
+    private GameObject _chair;
+    public GameObject Chair { get => _chair; set => _chair = value; } // 의자 오브젝트
+
     private void Awake()
     {
         _photonView = GetComponent<PhotonView>();

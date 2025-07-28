@@ -179,6 +179,7 @@ GameObject:
   - component: {fileID: 6617373977214812602}
   - component: {fileID: 8111148566247880532}
   - component: {fileID: 8375640666861431819}
+  - component: {fileID: -5403709563654500963}
   m_Layer: 0
   m_Name: Furniture
   m_TagString: Untagged
@@ -269,6 +270,22 @@ MonoBehaviour:
     Model: {fileID: 1094413778041799505}
   - TID: 10001
     Model: {fileID: 3772911656837465561}
+--- !u!208 &-5403709563654500963
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8801851221884048064}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 0.25, y: 0.5, z: 0.25}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0.5, y: 0, z: 0.5}
+  m_TimeToStationary: 0.5
 --- !u!1001 &284090000725032448
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -320,10 +337,6 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: b20372a9dba3a1b42808fc8d25226d2d, type: 3}
       propertyPath: m_Name
       value: chair
-      objectReference: {fileID: 0}
-    - target: {fileID: 919132149155446097, guid: b20372a9dba3a1b42808fc8d25226d2d, type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -392,10 +405,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: chair_nice
       objectReference: {fileID: 0}
-    - target: {fileID: 919132149155446097, guid: f65a0653f691d21449a5fd6ac8eeac02, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -463,14 +472,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: PickupTable
       objectReference: {fileID: 0}
-    - target: {fileID: 772037419060535573, guid: 6c292099ee7144a4d9a82be7ffbd1b68, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3015452843193287100, guid: 6c292099ee7144a4d9a82be7ffbd1b68, type: 3}
-      propertyPath: m_Convex
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -497,10 +498,6 @@ PrefabInstance:
     - target: {fileID: 363842060084307944, guid: ce970cbc106cc1842b80a3d55a01ecf5, type: 3}
       propertyPath: m_Name
       value: Casher
-      objectReference: {fileID: 0}
-    - target: {fileID: 363842060084307944, guid: ce970cbc106cc1842b80a3d55a01ecf5, type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1028915016576515410, guid: ce970cbc106cc1842b80a3d55a01ecf5, type: 3}
       propertyPath: m_LocalPosition.x

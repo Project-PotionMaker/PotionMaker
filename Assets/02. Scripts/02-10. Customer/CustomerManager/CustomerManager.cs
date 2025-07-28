@@ -341,6 +341,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
             _orderHandler.OldChairDict[chairViewID].UsingCustomer = customer; // 손님과 의자 매핑 저장
         }
         GameObject chair = FindChairByViewID(chairViewID);
+        customer.Chair = chair;
         customer.CustomerMove.MoveTo(chair.transform.position);
         chair.GetComponent<Furniture>().TryEffect(customer); // 의자 효과 적용
     }

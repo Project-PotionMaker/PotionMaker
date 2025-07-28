@@ -1,4 +1,5 @@
 using Photon.Pun;
+using Steamworks;
 using UnityEngine;
 using UnityEngine.AI;
 using static UnityEngine.GraphicsBuffer;
@@ -28,7 +29,14 @@ public class CustomerMove : MonoBehaviour
     }
     private void Update()
     {
-        ArriveCheck();
+        if (_agent.isActiveAndEnabled == true)
+        {
+            ArriveCheck();
+        }
+        else
+        {
+            LocalMoveing();
+        }
     }
 
     private void ArriveCheck()
@@ -58,6 +66,8 @@ public class CustomerMove : MonoBehaviour
         {
             return; // 마스터 클라이언트만 이동 가능
         }
+        _agent.enabled = true; 
+        target = new Vector3(target.x+0.5f, target.y, target.z+0.5f); // Y축은 현재 위치 유지
         _lastTarget = target; // 마지막 목적지 저장
         _agent.SetDestination(target);
         Debug.Log("Customer moved to: " + target);
@@ -88,6 +98,7 @@ public class CustomerMove : MonoBehaviour
         } else if (_owner.CurrentState == ECustomerStateType.Sitting)
         {
             _animator.SetTrigger("Sit");
+            SittingAction(); // 의자에 앉는 동작 실행
         }
         else if (_owner.CurrentState == ECustomerStateType.PickingUp)
         {
@@ -103,11 +114,16 @@ public class CustomerMove : MonoBehaviour
         float distance = Vector3.Distance(transform.position, _lastTarget);
         if (distance < 1f)
         {
-            if (_owner.CurrentState == ECustomerStateType.Leaving || distance <1f) // 출구는 넉넉하게 1 나머지는 0.1
-            {
-                return true;
-            }
+            return true;    
         }
         return false;
+    }
+    private void SittingAction()
+    {
+        _agent.enabled = false;
+    }
+    private void LocalMoveing()
+    {
+
     }
 }

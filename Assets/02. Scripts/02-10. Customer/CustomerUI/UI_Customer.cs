@@ -55,7 +55,7 @@ public class UI_Customer : MonoBehaviour
         {
             _stateImage.gameObject.SetActive(false); 
         }
-        else if (_owner.CurrentState  == ECustomerStateType.Leaving)
+        else if (_owner.CurrentState == ECustomerStateType.Leaving)
         {
             _stateImage.gameObject.SetActive(false);
         }

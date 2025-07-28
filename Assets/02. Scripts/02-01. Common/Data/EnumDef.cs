@@ -58,7 +58,7 @@ public enum EAreaType
     ///<summary>창고</summary>
     Storage = 3,
     ///<summary>배달</summary>
-    Delivery = 4,
+    FrontYard = 4,
 }
 
 public enum EIngredientType

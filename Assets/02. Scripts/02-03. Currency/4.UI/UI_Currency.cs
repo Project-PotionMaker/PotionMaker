@@ -11,6 +11,10 @@ public class UI_Currency : MonoBehaviour
         CurrencyManager.Instance.OnDataChanged += Refresh;
     }
 
+    private void Start()
+    {
+        Refresh();
+    }
     public void Refresh()
     {
         _coinValueTextUI.text = CurrencyManager.Instance.Coin.Value.ToString("N0");

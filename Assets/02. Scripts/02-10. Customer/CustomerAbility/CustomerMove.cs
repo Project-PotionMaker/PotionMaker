@@ -59,11 +59,11 @@ public class CustomerMove : MonoBehaviour
     }
     private void SetPriority()
     {
-        //if (_owner.CurrentState == ECustomerStateType.Waiting)
-        //{
-        //    _agent.avoidancePriority = 100;
-        //    return;
-        //}
+        if (_owner.CurrentState == ECustomerStateType.Sitting)
+        {
+            _agent.avoidancePriority = 100;
+            return;
+        }
         if (_owner.CurrentState == ECustomerStateType.Lining)
         {
             _agent.avoidancePriority = 60;

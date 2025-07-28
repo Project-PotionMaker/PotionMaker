@@ -51,27 +51,27 @@ public class CustomerEndurance : MonoBehaviour
         {
             _currentEndurance = LINE_ENDURANCE; // 줄 서는 상태에서 인내심 초기화
         }
-        //else if (_owner.CurrentState == ECustomerStateType.Waiting)
-        //{
-        //    _currentEndurance = HALL_ENDURANCE; // 대기실 상태에서 인내심 초기화
-        //}
+        else if (_owner.CurrentState == ECustomerStateType.Sitting)
+        {
+            _currentEndurance = HALL_ENDURANCE; // 대기실 상태에서 인내심 초기화
+        }
     }
 
     private void LosingEndurance()
     {
-        //if (_owner.CurrentState == ECustomerStateType.Lining || _owner.CurrentState == ECustomerStateType.Waiting)
-        //{
-        //    _currentEndurance = Mathf.Max(_currentEndurance -_loseEnduranceSpeed * Time.deltaTime,0); // 인내심 감소
-        //}
+        if (_owner.CurrentState == ECustomerStateType.Lining || _owner.CurrentState == ECustomerStateType.Sitting)
+        {
+            _currentEndurance = Mathf.Max(_currentEndurance -_loseEnduranceSpeed * Time.deltaTime,0); // 인내심 감소
+        }
 
         if(_owner.CurrentState == ECustomerStateType.Lining)
         {
             _enduranceRate = _currentEndurance /LINE_ENDURANCE; // 인내심 비율 계산
         }
-        //else if (_owner.CurrentState == ECustomerStateType.Waiting)
-        //{
-        //    _enduranceRate = _currentEndurance / HALL_ENDURANCE; // 인내심 비율 계산
-        //}
+        else if (_owner.CurrentState == ECustomerStateType.Sitting)
+        {
+            _enduranceRate = _currentEndurance / HALL_ENDURANCE; // 인내심 비율 계산
+        }
 
         _owner.PhotonView.RPC(nameof(RPC_SyncEnduranceRate), RpcTarget.All, _enduranceRate);
     }

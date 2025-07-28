@@ -75,7 +75,6 @@ public class CustomerMove : MonoBehaviour
         target = new Vector3(target.x+0.5f, target.y, target.z+0.5f); // Y축은 현재 위치 유지
         _lastTarget = target; // 마지막 목적지 저장
         _agent.SetDestination(target);
-        Debug.Log("Customer moved to: " + target);
     }
 
     private void StartMoving()

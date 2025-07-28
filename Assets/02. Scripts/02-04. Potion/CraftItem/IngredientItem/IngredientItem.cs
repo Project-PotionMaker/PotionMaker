@@ -4,14 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using VInspector;
 
-[Serializable]
-public class IngredientAppearance
-{
-    public int TID;
-    public Mesh IngredientMesh;
-    public Material LiquidMaterial;
-}
-
 public class IngredientItem : MonoBehaviour, IItem
 {
     private IngredientData _data;
@@ -23,8 +15,8 @@ public class IngredientItem : MonoBehaviour, IItem
 
     [Foldout("Project")]
     [SerializeField]
-    private List<IngredientAppearance> _ingeredientAppearanceList = new List<IngredientAppearance>();
-    private Dictionary<int, IngredientAppearance> _ingeredientAppearanceDict;
+    private List<ModelOnTID> _modelObjectList = new List<ModelOnTID>();
+    private Dictionary<int, GameObject> _modelObjectDic;
 
     private void Awake()
     {
@@ -33,10 +25,11 @@ public class IngredientItem : MonoBehaviour, IItem
 
     private void InitIngredient()
     {
-        _ingeredientAppearanceDict = new Dictionary<int, IngredientAppearance>();
-        foreach (var ingredientAppearance in _ingeredientAppearanceList)
+        _modelObjectDic = new Dictionary<int, GameObject>();
+        foreach (var modelInfo in _modelObjectList)
         {
-            _ingeredientAppearanceDict.Add(ingredientAppearance.TID, ingredientAppearance);
+            modelInfo.Model.SetActive(false);
+            _modelObjectDic.Add(modelInfo.TID, modelInfo.Model);
         }
 
         _ingredientMeshFilter = GetComponent<MeshFilter>();
@@ -47,7 +40,15 @@ public class IngredientItem : MonoBehaviour, IItem
     public void InitIngredientData(int TID)
     {
         _data = DataTable.Instance.GetIngredientData(TID);
-        _ingredientMeshFilter.mesh = _ingeredientAppearanceDict[TID].IngredientMesh;
+        foreach (var modelInfo in _modelObjectList)
+        {
+            modelInfo.Model.SetActive(false);
+            if (modelInfo.TID == _data.TID)
+            {
+                modelInfo.Model.SetActive(true);
+            }
+        }
+
         _photonView.RPC(nameof(RPC_InitIngredientData), RpcTarget.Others, TID);
     }
 
@@ -55,7 +56,15 @@ public class IngredientItem : MonoBehaviour, IItem
     public void RPC_InitIngredientData(int TID)
     {
         _data = DataTable.Instance.GetIngredientData(TID);
-        _ingredientMeshFilter.mesh = _ingeredientAppearanceDict[TID].IngredientMesh;
+
+        foreach (var modelInfo in _modelObjectList)
+        {
+            modelInfo.Model.SetActive(false);
+            if (modelInfo.TID == _data.TID)
+            {
+                modelInfo.Model.SetActive(true);
+            }
+        }
     }
 
     private void InitIngredientMaterial()

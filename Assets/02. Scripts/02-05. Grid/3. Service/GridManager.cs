@@ -26,10 +26,17 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
 
     private GameObject _cahser;
     public GameObject Casher => _cahser;
-    private GameObject _door;
-    public GameObject Door => _door;
+    private GameObject _enterDoor;
+    public GameObject EnterDoor => _enterDoor;
+    private GameObject _exitDoor;
+    public GameObject ExitDoor => _exitDoor;
     private List<GameObject> _pickUpTableList;
     public List<GameObject> PickUpTableList => _pickUpTableList;
+    private List<GameObject> _oldChairList;
+    public List<GameObject> OldChairList => _oldChairList;
+    private List<GameObject> _luxuryChairList;
+    public List<GameObject> LuxuryChairList => _luxuryChairList;
+
 
     // private GridRepository _repository;
 
@@ -41,6 +48,8 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
         _layout = GameObject.FindGameObjectWithTag(nameof(ETags.Layout)).GetComponent<Layout>();
         _gridData = new GridData(_layout.GetAvailableAreaDict());
         _pickUpTableList = new List<GameObject>();
+        _oldChairList = new List<GameObject>();
+        _luxuryChairList = new List<GameObject>();
     }
 
     public void UpdatePlacementPosition(Vector3 targetPosition)
@@ -104,6 +113,12 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
                 break;
             case ESpecialStructureType.Casher:
                 _cahser = newObject;
+                break;
+            case ESpecialStructureType.OldChair:
+                _oldChairList.Add(newObject);
+                break;
+            case ESpecialStructureType.LuxuryChair:
+                _luxuryChairList.Add(newObject);
                 break;
             case ESpecialStructureType.None:
                 break;

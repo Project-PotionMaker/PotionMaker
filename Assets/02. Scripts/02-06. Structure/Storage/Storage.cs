@@ -54,7 +54,7 @@ public class Storage : MonoBehaviour, IGridItemHandler
         if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
         {
             _stat.CurrentRotation += 90f;
-            if (_stat.CurrentRotation > 360f)
+            if (_stat.CurrentRotation >= 360f)
             {
                 _stat.CurrentRotation = 0;
             }
@@ -71,7 +71,8 @@ public class Storage : MonoBehaviour, IGridItemHandler
         {
             return GridManager.Instance.StartPlacement(transform.position);
         }
-        else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase)
+        else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase 
+            || PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
         {
             if (ReferenceEquals(_outputComponent, null) == false)
             {
@@ -94,5 +95,8 @@ public class Storage : MonoBehaviour, IGridItemHandler
             }
         }
         return false;
+    }
+    public void ResetItem()
+    {
     }
 }

@@ -104,7 +104,7 @@ public class ProductManager : MonoBehaviourPunCallbacksSingleton<ProductManager>
                           $"상품이름: {product.Data.Name}\n" +
                           $"상품가격: {product.Data.Price}");
 
-                _delivery.DeliverStructure(product.Data.TargetTID, EAreaType.FrontYard ,0, out int dummy);
+                _delivery.DeliverStructure(product.Data.TargetTID, EAreaType.FrontYard);
                 break;
             }
             case EProductType.HouseMoving:

@@ -47,7 +47,7 @@ public class MovingHouse
         DeliverUnlockedStructures(newlyUnlockedStructureTIDList);
         DeliverUnlockedStorages(newlyUnlockedIngredientTIDList);
     }
-    private void RelocateStructures ()
+    private void RelocateStructures()
     {
         Dictionary<EAreaType, List<int>> structureDict = new Dictionary<EAreaType, List<int>>();
 
@@ -74,37 +74,10 @@ public class MovingHouse
                 throw new Exception($"{nameof(areaType)} is not set in the Layout");
             }
 
-            int index = 0;
-            foreach (int structureTID in structureDict[areaType])
-            {
-                _delivery.DeliverStructure(structureTID, areaType, index, out index);
-            }
+            _delivery.DeliverStructures(structureDict[areaType], areaType);
         }
     }
-    private void DeliverUnlockedStructures(List<int> structureTIDList)
-    {
-        int index = 0;
-        foreach(int structureTID in structureTIDList)
-        {
-            _delivery.DeliverStructure(structureTID, EAreaType.FrontYard, index, out index);
-        }
-    }
-
-    public void RelocateStorages(List<int> ingredientList)
-    {
-        int index = 0;
-        foreach(int ingredientTID in ingredientList)
-        {
-            _delivery.DeliverStorage(ingredientTID, EAreaType.Storage, index, out index);
-        }
-    }
-    public void DeliverUnlockedStorages(List<int> ingredientList)
-    {
-        int index = 0;
-        foreach (int ingredientTID in ingredientList)
-        {
-            _delivery.DeliverStorage(ingredientTID, EAreaType.FrontYard, index, out index);
-        }
-    }
-
+    private void DeliverUnlockedStructures(List<int> structureTIDList) => _delivery.DeliverStructures(structureTIDList, EAreaType.FrontYard);
+    private void RelocateStorages(List<int> ingredientTIDList) => _delivery.DeliverStorages(ingredientTIDList, EAreaType.Storage);
+    private void DeliverUnlockedStorages(List<int> ingredientTIDList) => _delivery.DeliverStorages(ingredientTIDList, EAreaType.FrontYard);
 }

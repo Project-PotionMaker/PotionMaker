@@ -4,84 +4,88 @@ using System.Collections.Generic;
 using UnityEngine;
 using VInspector;
 
-[Serializable]
-public class PotionAppearance
-{
-    public int TID;
-    public Mesh BottleMesh;
-    public Mesh LiquidMesh;
-    public Material LiquidMaterial;
-}
-
 public class PotionItem : MonoBehaviour, IItem
 {
     private PotionData _potionData;
     public PotionData PotionData => _potionData;
 
-    [Foldout("Hierarchy")]
-    [SerializeField]
-    private MeshFilter _bottleMeshFilter;
-    [SerializeField]
-    private Renderer _bottleRenderer;
-    [SerializeField]
-    private MeshFilter _liquidMeshFilter;
-    [SerializeField]
-    private Renderer _liquidRenderer;
+    [Header("Component")]
+    private GameObject _currentModel;
+    private PhotonView _photonView;
+    private Renderer _potionBottleRenderer;
+    private Light _pointLight;
+    private ParticleSystem _particles;
 
+    private MaterialPropertyBlock _mpb;
 
     [Foldout("Project")]
     [SerializeField]
-    private List<PotionAppearance> _potionAppearanceList = new List<PotionAppearance>();
-    private Dictionary<int, PotionAppearance> _potionAppearanceDict;
-
-    private Light _pointLight;
-    private ParticleSystem _particles;
-    private MaterialPropertyBlock _mpb;
-
-    [Foldout("Component")]
-    private PhotonView _photonView;
+    private List<ModelOnTID> _potionModelList = new List<ModelOnTID>();
+    private Dictionary<int, GameObject> _potionModelDict;
 
     private void Awake()
     {
-        InitPotion();
+        InitPotionItem();
     }
 
-    private void InitPotion()
+    private void InitPotionItem()
     {
-        _potionAppearanceDict = new Dictionary<int, PotionAppearance>();
-        foreach (var potionAppearance in _potionAppearanceList)
-        {
-            _potionAppearanceDict.Add(potionAppearance.TID, potionAppearance);
-        }
-
-        _pointLight = GetComponentInChildren<Light>();
-        _mpb = new MaterialPropertyBlock();
-        _particles = GetComponentInChildren<ParticleSystem>(true);
-
         _photonView = GetComponent<PhotonView>();
+        _mpb = new MaterialPropertyBlock();
+        InitPotionModelDictionary();
     }
 
-    public void InitPotionData(int TID)
+    private void InitPotionModelDictionary()
+    {
+        _potionModelDict = new Dictionary<int, GameObject>();
+        foreach (var potionModel in _potionModelList)
+        {
+            potionModel.Model.SetActive(false);
+            _potionModelDict.Add(potionModel.TID, potionModel.Model);
+        }
+    }
+
+    public void UpdatePotionData(int TID)
     {
         if (!PhotonNetwork.IsMasterClient)
         {
             throw new InvalidOperationException("Potion 객체 생성 후 내부 데이터 초기화는 Master만 가능합니다.");
         }
-        RPC_InitPotionData(TID);
-        _photonView.RPC(nameof(RPC_InitPotionData), RpcTarget.Others, TID);
+        RPC_UpdatePotionData(TID);
+        _photonView.RPC(nameof(RPC_UpdatePotionData), RpcTarget.Others, TID);
     }
 
     [PunRPC]
-    public void RPC_InitPotionData(int TID)
+    public void RPC_UpdatePotionData(int TID)
     {
         _potionData = DataTable.Instance.GetPotionData(TID);
-        InitPotionAppearance(TID);
-        InitVFX();
+        if (!ReferenceEquals(_currentModel, null))
+        {
+            _currentModel.SetActive(false);
+        }
+
+        if (_potionModelDict.TryGetValue(_potionData.TID, out _currentModel))
+        {
+            _currentModel.SetActive(true);
+            UpdateComponent();
+            UpdateVFX();
+        }
+        else
+        {
+            Debug.LogError($"포션 TID {_potionData.TID}에 대응하는 모델이 딕셔너리에 존재하지 않습니다.");
+        }
     }
 
-    private void InitVFX()
+    private void UpdateComponent()
     {
-        _bottleRenderer.GetPropertyBlock(_mpb);
+        _potionBottleRenderer = _currentModel.GetComponent<Renderer>();
+        _pointLight = _currentModel.GetComponentInChildren<Light>();
+        _particles = _currentModel.GetComponentInChildren<ParticleSystem>();
+    }
+
+    private void UpdateVFX()
+    {
+        _potionBottleRenderer.GetPropertyBlock(_mpb);
         switch (_potionData.Tier)
         {
             case 1:
@@ -102,14 +106,7 @@ public class PotionItem : MonoBehaviour, IItem
                 _pointLight.enabled = false;
                 break;
         }
-        _bottleRenderer.SetPropertyBlock(_mpb);
-    }
-
-    private void InitPotionAppearance(int TID)
-    {
-        _bottleMeshFilter.mesh = _potionAppearanceDict[TID].BottleMesh;
-        _liquidMeshFilter.mesh = _potionAppearanceDict[TID].LiquidMesh;
-        _liquidRenderer.material = _potionAppearanceDict[TID].LiquidMaterial;
+        _potionBottleRenderer.SetPropertyBlock(_mpb);
     }
 
     public EInputType GetInputType()

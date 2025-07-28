@@ -35,7 +35,6 @@ public class CustomerMove : MonoBehaviour
         }
         else
         {
-            LocalMoveing();
         }
     }
 

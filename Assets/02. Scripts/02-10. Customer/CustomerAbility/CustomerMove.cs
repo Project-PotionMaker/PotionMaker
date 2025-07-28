@@ -1,10 +1,7 @@
 using DG.Tweening;
 using Photon.Pun;
-using Steamworks;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
-using static UnityEngine.GraphicsBuffer;
 
 public class CustomerMove : MonoBehaviour
 {

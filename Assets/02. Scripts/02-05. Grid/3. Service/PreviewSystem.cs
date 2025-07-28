@@ -17,7 +17,7 @@ public class PreviewSystem : MonoBehaviour
     private Renderer _cellIndicatorRenderer;
     private MaterialPropertyBlock _cellIndicatorPropertyBlock;
 
-    private void Start()
+    private void Awake()
     {
         _previewMaterialPropertyBlock = new MaterialPropertyBlock();
         _cellIndicatorPropertyBlock = new MaterialPropertyBlock();

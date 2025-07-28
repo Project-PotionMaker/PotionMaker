@@ -1,6 +1,7 @@
 using Photon.Pun;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -18,7 +19,7 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
     private PreviewSystem _previewSystem;
 
     private Layout _layout;
-
+    
     private GridData _gridData;
     private Vector3Int _lastDetectedPosition = Vector3Int.zero;
     private IBuildingState _buildingState;
@@ -39,10 +40,12 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
 
     // private GridRepository _repository;
 
-    private void Start()
+    protected override void Awake()
     {
+        base.Awake();
         StopPlacement();
-        _layout = GameObject.FindGameObjectWithTag("Layout").GetComponent<Layout>();
+
+        _layout = GameObject.FindGameObjectWithTag(nameof(ETags.Layout)).GetComponent<Layout>();
         _gridData = new GridData(_layout.GetAvailableAreaDict());
         _pickUpTableList = new List<GameObject>();
         _oldChairList = new List<GameObject>();
@@ -95,7 +98,7 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
         return structure;
     }
 
-    public void CreateStructure(int tid, Vector3 position, EStructureType structureType, int ingredientTID = 0)
+    public bool CreateStructure(int tid, Vector3 position, int ingredientTID = 0)
     {
         StopPlacement();
         StructureData data = DataTable.Instance.GetStructureData(tid);
@@ -126,7 +129,7 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
                                             _grid,
                                             _previewSystem,
                                             _gridData);
-        TryPlaceStructure(position);
+        return TryPlaceStructure(position);
     }
 
     public bool TryPlaceStructure(Vector3 position)
@@ -149,16 +152,13 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
     [Button("생성 테스트")]
     public async void Test()
     {
-        CreateStructure(10000, new Vector3(-5, 0, 4), EStructureType.Machine);
-        CreateStructure(10002, new Vector3(-3, 0, 4), EStructureType.Machine);
-        CreateStructure(10013, new Vector3(0, 0, 0), EStructureType.Furniture);
-        CreateStructure(10013, new Vector3(-1, 0, 0), EStructureType.Furniture);
-        CreateStructure(10015, new Vector3(-5, 0, 0), EStructureType.Furniture);
-        CreateStructure(10006, new Vector3(0, 0, 2), EStructureType.Machine);
-        CreateStructure(10018, new Vector3(4, 0, 2), EStructureType.Storage, 10000);
-        CreateStructure(10018, new Vector3(4, 0, 4), EStructureType.Storage, 10001);
-        CreateStructure(10016, new Vector3(-1, 0, -5), EStructureType.Furniture);
-        CreateStructure(10017, new Vector3(0, 0, -5), EStructureType.Furniture);
+        CreateStructure(10000, new Vector3(-5, 0, 4));
+        CreateStructure(10002, new Vector3(-3, 0, 4));
+        CreateStructure(10014, new Vector3(0, 0, 0));
+        CreateStructure(10016, new Vector3(-5, 0, 0));
+        CreateStructure(10005, new Vector3(0, 0, 2));
+        CreateStructure(10019, new Vector3(4, 0, 2), 10000);
+        CreateStructure(10019, new Vector3(4, 0, 4), 10001);
     }
 
     public Vector3Int GetGridPosition(Vector3 targetPosition)
@@ -178,5 +178,23 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
         _buildingState.EndState();
         _lastDetectedPosition = Vector3Int.zero;
         _buildingState = null;
+    }
+
+    public ReadOnlyList<Vector3Int> GetPositionByAreaType(EAreaType areaType)
+    {
+        foreach(AreaDefinition areaDefinition in _layout.AllAreaDefinitionList)
+        {
+            if(areaDefinition.AreaType == areaType)
+            {
+                return new ReadOnlyList<Vector3Int>(areaDefinition.GridPositionList);
+            }
+        }
+
+        return null;
+    }
+    
+    public ReadOnlyList<int> GetPlacedStructureTIDList()
+    {
+        return _gridData.PlacedObjectList;
     }
 }

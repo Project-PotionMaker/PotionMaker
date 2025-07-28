@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class GridData
 {
     private Dictionary<Vector3Int, Placement> _placedObjectDict = new();
+    public ReadOnlyList<int> PlacedObjectList => new ReadOnlyList<int>(_placedObjectDict.Values.Select(placement => placement.TID).ToList());
     private Dictionary<Vector3Int, EAreaType> _availableAreaDict;
 
     public GridData(Dictionary<Vector3Int, EAreaType> availableAreaDict)
@@ -56,7 +58,7 @@ public class GridData
                 return false;
             }
         }
-        if (_availableAreaDict.ContainsKey(gridPosition) && _availableAreaDict[gridPosition] != StructureType)
+        if (_availableAreaDict.ContainsKey(gridPosition) && (_availableAreaDict[gridPosition] != StructureType && _availableAreaDict[gridPosition] !=EAreaType.FrontYard))
         {
             return false;
         }

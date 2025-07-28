@@ -95,6 +95,9 @@ public class CraftItemManager : MonoBehaviourSingleton<CraftItemManager>
 
     private GameObject CreateFailureItem(Vector3 machinePosition)
     {
-        return CraftItemFactory.Instance.Create(EInputType.FailureOutput, machinePosition, Quaternion.identity);
+        GameObject output =CraftItemFactory.Instance.Create(EInputType.Output, machinePosition, Quaternion.identity);
+        output.GetComponent<OutputItem>().InitOutputData(EInputType.FailureOutput, 10000);
+
+        return output;
     }
 }

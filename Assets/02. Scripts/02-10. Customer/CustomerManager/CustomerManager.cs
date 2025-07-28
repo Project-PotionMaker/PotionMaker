@@ -148,7 +148,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         int potionTID = customer.GetComponent<Customer>().RequestedPotionTID;
         _orderHandler.AddOrder(potionTID, customer);
         SitOnChair(chairViewID, customer);
-        customer.SetCurrentState(ECustomerStateType.Waiting); // 대기 상태로 변경
+        //customer.SetCurrentState(ECustomerStateType.Waiting); // 대기 상태로 변경
         _lineHandler.ReLining(); // 줄 다시 세우기
         ServePotionOnTakeOrder();
     }

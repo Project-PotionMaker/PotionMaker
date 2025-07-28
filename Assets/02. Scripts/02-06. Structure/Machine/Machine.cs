@@ -65,7 +65,6 @@ public class Machine : MonoBehaviour, IGridItemHandler
             modelInfo.Model.SetActive(false);
             if (modelInfo.TID == _stat.Data.TID)
             {
-                _model = modelInfo.Model.transform;
                 modelInfo.Model.SetActive(true);
             }
         }
@@ -76,7 +75,7 @@ public class Machine : MonoBehaviour, IGridItemHandler
         if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
         {
             _stat.CurrentRotation += 90f;
-            if (_stat.CurrentRotation > 360f)
+            if (_stat.CurrentRotation >= 360f)
             {
                 _stat.CurrentRotation = 0;
             }

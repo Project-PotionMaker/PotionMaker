@@ -27,6 +27,8 @@ public class RentManager : MonoBehaviourPunCallbacksSingleton<RentManager>
         {
             return;
         }
+
+        // 레이아웃 데이터를 들고 있는 매니저로부터 레이아웃 TID 가져옴
         LayoutData data = DataTable.Instance.GetLayoutData(10000);
         _rent = new Rent(1, data.InitialRentCost, data.RentIncrement);
         RequestUpdateRent();

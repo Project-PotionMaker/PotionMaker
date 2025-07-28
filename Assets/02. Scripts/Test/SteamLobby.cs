@@ -47,17 +47,20 @@ public class SteamLobby : MonoBehaviour
         // 새로 추가
         LobbyList = Callback<LobbyMatchList_t>.Create(OnGetLobbyList);
         LobbyDataUpdated = Callback<LobbyDataUpdate_t>.Create(OnLobbyDataUpdated);
+
+        Debug.Log($"현재 게임 Product Name: {Application.productName}");
     }
 
     // 버튼 등으로 로비 호스트할 때 실행
     public void HostLobby()
     {
-        SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypeFriendsOnly, manager.maxConnections);
+        SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypePublic, manager.maxConnections);
     }
 
     // 로비 참가
     public void JoinLobby(CSteamID lobbyID)
     {
+        Debug.Log(lobbyID.ToString());
         SteamMatchmaking.JoinLobby(lobbyID);
     }
 
@@ -77,6 +80,7 @@ public class SteamLobby : MonoBehaviour
         CSteamID newLobbyID = new CSteamID(callback.m_ulSteamIDLobby);
         SteamMatchmaking.SetLobbyData(newLobbyID, HostAddressKey, SteamUser.GetSteamID().ToString());
         SteamMatchmaking.SetLobbyData(newLobbyID, "name", SteamFriends.GetPersonaName() + "'s Lobby");
+        SteamMatchmaking.SetLobbyData(newLobbyID, "game", Application.productName);
         // 로비 인원수 설정 (선택 사항)
         SteamMatchmaking.SetLobbyData(newLobbyID, "maxPlayers", manager.maxConnections.ToString());
     }
@@ -101,7 +105,7 @@ public class SteamLobby : MonoBehaviour
 
         // 중요: 0.1초 (또는 0.2~0.5초) 지연 후 호스트 주소 가져오기 시도
         // 이 딜레이가 데이터 동기화에 충분한 시간을 줄 수 있습니다.
-        Invoke(nameof(RetrieveHostAddressAndConnect), 0.1f);
+        Invoke(nameof(RetrieveHostAddressAndConnect), 0.5f);
     }
 
     private void RetrieveHostAddressAndConnect()
@@ -137,7 +141,7 @@ public class SteamLobby : MonoBehaviour
 
         // 100개의 로비까지 검색, 친구 로비만, 거리가 가까운 순
         SteamMatchmaking.AddRequestLobbyListResultCountFilter(100);
-        //SteamMatchmaking.AddRequestLobbyListStringFilter("game", "potionmaker", ELobbyComparison.k_ELobbyComparisonEqual); // 게임 이름으로 필터링
+        SteamMatchmaking.AddRequestLobbyListStringFilter("game", "potionmaker", ELobbyComparison.k_ELobbyComparisonEqual); // 게임 이름으로 필터링
         SteamMatchmaking.AddRequestLobbyListDistanceFilter(ELobbyDistanceFilter.k_ELobbyDistanceFilterClose);
         SteamMatchmaking.RequestLobbyList();
         Debug.Log("로비 목록을 요청합니다...");

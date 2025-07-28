@@ -88,25 +88,42 @@ public class SteamLobby : MonoBehaviour
         SteamMatchmaking.JoinLobby(callback.m_steamIDLobby);
     }
 
-    // 로비 입장 시
     private void OnLobbyEntered(LobbyEnter_t callback)
     {
         CurrentLobbyID = callback.m_ulSteamIDLobby;
 
-        // 호스트는 이미 서버를 시작했으므로 클라이언트 역할만 하면 됨
+        // 만약 로비 진입자가 호스트라면, 이미 서버를 시작했으므로 클라이언트 역할만 하면 됩니다.
+        // 하지만 이 경우는 오류 메시지가 클라이언트에서 뜨므로 이 조건문은 통과했을 것입니다.
         if (NetworkServer.active)
             return;
 
-        string hostAddress = SteamMatchmaking.GetLobbyData(new CSteamID(callback.m_ulSteamIDLobby), HostAddressKey);
+        Debug.Log($"[Client] 로비 {CurrentLobbyID}에 입장했습니다. 호스트 주소 가져오는 중...");
+
+        // 중요: 0.1초 (또는 0.2~0.5초) 지연 후 호스트 주소 가져오기 시도
+        // 이 딜레이가 데이터 동기화에 충분한 시간을 줄 수 있습니다.
+        Invoke(nameof(RetrieveHostAddressAndConnect), 0.1f);
+    }
+
+    private void RetrieveHostAddressAndConnect()
+    {
+        // OnLobbyEntered에서 저장한 CurrentLobbyID를 사용합니다.
+        // CurrentLobbyID는 ulong 타입이므로, CSteamID로 명시적 변환이 필요합니다.
+        CSteamID currentLobbyCSteamID = new CSteamID(CurrentLobbyID);
+
+        string hostAddress = SteamMatchmaking.GetLobbyData(currentLobbyCSteamID, HostAddressKey);
+
         if (string.IsNullOrEmpty(hostAddress))
         {
-            Debug.LogError("로비 데이터에서 호스트 주소를 찾을 수 없습니다.");
+            Debug.LogError($"[Client ERROR] 로비 데이터에서 호스트 주소를 찾을 수 없습니다. " +
+                           $"(Key: '{HostAddressKey}', 로비ID: {CurrentLobbyID}). " +
+                           $"호스트가 해당 데이터를 설정했는지, 또는 더 많은 지연이 필요한지 확인하세요.");
+            // 오류가 계속되면 사용자에게 피드백을 주거나, 재시도 로직을 고려할 수 있습니다.
             return;
         }
 
         manager.networkAddress = hostAddress;
         manager.StartClient();
-        Debug.Log($"로비에 입장했습니다. 호스트 주소: {hostAddress}");
+        Debug.Log($"[Client] 로비 호스트 주소: {hostAddress}. 클라이언트 연결 시작.");
     }
 
     // 로비 검색 버튼에 연결할 함수

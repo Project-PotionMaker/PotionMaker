@@ -152,13 +152,17 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
     [Button("생성 테스트")]
     public async void Test()
     {
-        CreateStructure(10000, new Vector3(-5, 0, 4));
-        CreateStructure(10002, new Vector3(-3, 0, 4));
-        CreateStructure(10014, new Vector3(0, 0, 0));
-        CreateStructure(10016, new Vector3(-5, 0, 0));
-        CreateStructure(10005, new Vector3(0, 0, 2));
-        CreateStructure(10019, new Vector3(4, 0, 2), 10000);
-        CreateStructure(10019, new Vector3(4, 0, 4), 10001);
+        CreateStructure(10000, new Vector3(-5, 0, 4)); //절구
+        CreateStructure(10002, new Vector3(-3, 0, 4)); //혼합기
+        CreateStructure(10013, new Vector3(-1, 0, 0)); // 픽업테이블
+        CreateStructure(10013, new Vector3(0, 0, 0)); // 픽업테이블
+        CreateStructure(10014, new Vector3(0, 0, 4)); // 쓰레기통
+        CreateStructure(10015, new Vector3(-5, 0, 0)); // 계산기
+        CreateStructure(10016, new Vector3(-1, 0, -5)); // 허름한 의자
+        CreateStructure(10017, new Vector3(0, 0, -5)); // 푹신한 의자
+        CreateStructure(10005, new Vector3(0, 0, 2)); // 병입기
+        CreateStructure(10019, new Vector3(4, 0, 2), 10000); // 동물상자
+        CreateStructure(10019, new Vector3(4, 0, 4), 10001); // 동물상자
     }
 
     public Vector3Int GetGridPosition(Vector3 targetPosition)

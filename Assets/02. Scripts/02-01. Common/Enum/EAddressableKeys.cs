@@ -60,5 +60,4 @@ public enum EAddressableKeys
     Prefab_Furniture = 54,
     Prefab_CustomerNPC = 55,
     Prefab_Storage = 56,
-    UI_Test = 57,
 }

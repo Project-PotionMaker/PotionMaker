@@ -5454,6 +5454,7 @@ GameObject:
   - component: {fileID: 2020175071}
   - component: {fileID: 2020175070}
   - component: {fileID: 2020175073}
+  - component: {fileID: 2020175074}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -5474,8 +5475,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CurrentLobbyID: 0
-  lobbyListContent: {fileID: 0}
-  lobbyItemPrefab: {fileID: 0}
+  lobbyListContent: {fileID: 1770741708}
+  lobbyItemPrefab: {fileID: 5309763453538120734, guid: 08defe506c2013e4389bc1e9ffdc1b04, type: 3}
 --- !u!114 &2020175071
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5553,6 +5554,20 @@ MonoBehaviour:
   Timeout: 25
   AllowSteamRelay: 1
   UseNextGenSteamNetworking: 1
+--- !u!114 &2020175074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2020175069}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6442dc8070ceb41f094e44de0bf87274, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  offsetX: 0
+  offsetY: 0
 --- !u!1001 &2041869832
 PrefabInstance:
   m_ObjectHideFlags: 0

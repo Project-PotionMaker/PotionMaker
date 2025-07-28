@@ -85,11 +85,11 @@ public class MovingHouse
         int index = 0;
         foreach(int structureTID in structureTIDList)
         {
-            _delivery.DeliverStructure(structureTID, EAreaType.Delivery, index, out index);
+            _delivery.DeliverStructure(structureTID, EAreaType.FrontYard, index, out index);
         }
     }
 
     public void RelocateStorages(List<int> ingredientList) => _delivery.DeliverStorages(ingredientList, EAreaType.Storage);
-    public void DeliverUnlockedStorages(List<int> ingredientList) => _delivery.DeliverStorages(ingredientList, EAreaType.Delivery);
+    public void DeliverUnlockedStorages(List<int> ingredientList) => _delivery.DeliverStorages(ingredientList, EAreaType.FrontYard);
    
 }

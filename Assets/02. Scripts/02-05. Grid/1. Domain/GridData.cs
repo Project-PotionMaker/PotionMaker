@@ -58,7 +58,7 @@ public class GridData
                 return false;
             }
         }
-        if (_availableAreaDict.ContainsKey(gridPosition) && (_availableAreaDict[gridPosition] != StructureType && _availableAreaDict[gridPosition] !=EAreaType.Delivery))
+        if (_availableAreaDict.ContainsKey(gridPosition) && (_availableAreaDict[gridPosition] != StructureType && _availableAreaDict[gridPosition] !=EAreaType.FrontYard))
         {
             return false;
         }

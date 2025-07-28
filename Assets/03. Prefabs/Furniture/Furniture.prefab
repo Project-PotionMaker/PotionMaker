@@ -182,7 +182,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1169488936583695763
 Transform:
   m_ObjectHideFlags: 0
@@ -366,7 +366,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 637048921499168276, guid: f6bfb93d9ade6a14db3cf5226dcbb419, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -594,11 +595,45 @@ PrefabInstance:
       propertyPath: m_Name
       value: AWS_Table_003
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 3015452843193287100, guid: 6c292099ee7144a4d9a82be7ffbd1b68, type: 3}
+      propertyPath: m_Convex
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 3015452843193287100, guid: 6c292099ee7144a4d9a82be7ffbd1b68, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 772037419060535573, guid: 6c292099ee7144a4d9a82be7ffbd1b68, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2397024546708955317}
   m_SourcePrefab: {fileID: 100100000, guid: 6c292099ee7144a4d9a82be7ffbd1b68, type: 3}
+--- !u!1 &3812075927712923565 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 772037419060535573, guid: 6c292099ee7144a4d9a82be7ffbd1b68, type: 3}
+  m_PrefabInstance: {fileID: 4490622275712507576}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &2397024546708955317
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3812075927712923565}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.7597368, y: 0.8149619, z: 0.7593913}
+  m_Center: {x: 0, y: 0.40748096, z: 0}
 --- !u!4 &4588295521081566487 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 143274464046087087, guid: 6c292099ee7144a4d9a82be7ffbd1b68, type: 3}

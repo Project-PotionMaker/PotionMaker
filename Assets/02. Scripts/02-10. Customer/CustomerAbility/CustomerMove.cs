@@ -1,5 +1,7 @@
+using DG.Tweening;
 using Photon.Pun;
 using Steamworks;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
 using static UnityEngine.GraphicsBuffer;
@@ -9,6 +11,7 @@ public class CustomerMove : MonoBehaviour
     private NavMeshAgent _agent;
     public NavMeshAgent Agent { get => _agent; set => _agent = value; } // NavMeshAgent 컴포넌트
     private Rigidbody _rigidbody;
+    private Collider _collider;
 
     private Customer _owner;
     private Animator _animator; // 애니메이터 컴포넌트
@@ -23,7 +26,7 @@ public class CustomerMove : MonoBehaviour
         _rigidbody = GetComponent<Rigidbody>();
         _owner = GetComponent<Customer>();
         _animator = GetComponentInChildren<Animator>();
-
+        _collider = GetComponent<Collider>();
         _agent.enabled = true; 
         _rigidbody.isKinematic = false; 
     }
@@ -67,6 +70,11 @@ public class CustomerMove : MonoBehaviour
             return; // 마스터 클라이언트만 이동 가능
         }
         _agent.enabled = true; 
+        if(_owner.CurrentState == ECustomerStateType.PickingUp)
+        {
+            StandingAction();
+        }
+
         target = new Vector3(target.x+0.5f, target.y, target.z+0.5f); // Y축은 현재 위치 유지
         _lastTarget = target; // 마지막 목적지 저장
         _agent.SetDestination(target);
@@ -121,6 +129,17 @@ public class CustomerMove : MonoBehaviour
     private void SittingAction()
     {
         _agent.enabled = false;
+        _collider.enabled = false; // 충돌체 비활성화
+
+        Sequence sitSeq = DOTween.Sequence();
+        sitSeq.Append(transform.DOMove(_owner.ChairPosition.position, 1f).SetEase(Ease.OutSine));
+        sitSeq.Join(transform.DORotate(new Vector3(0,_owner.ChairRotate+90,0), 1f).SetEase(Ease.InOutSine));
+
+    }
+    private void StandingAction()
+    {
+        _agent.enabled = true;
+        _collider.enabled = true; // 충돌체 활성화
     }
     private void LocalMoveing()
     {

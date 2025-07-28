@@ -26,8 +26,10 @@ public class Customer : MonoBehaviour
 
     public event Action OnStateChanged;
 
-    private GameObject _chair;
-    public GameObject Chair { get => _chair; set => _chair = value; } // 의자 오브젝트
+    private Transform _chairPositon;
+    public  Transform ChairPosition { get => _chairPositon; set => _chairPositon = value; } // 의자 위치
+    private  float _chairRotate;
+    public float ChairRotate { get => _chairRotate; set => _chairRotate = value; } // 의자 회전
 
     private void Awake()
     {

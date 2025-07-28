@@ -55,7 +55,6 @@ public class Furniture : MonoBehaviour, IGridItemHandler
             modelInfo.Model.SetActive(false);
             if (modelInfo.TID == _stat.Data.TID)
             {
-                _model = modelInfo.Model.transform;
                 modelInfo.Model.SetActive(true);
             }
         }

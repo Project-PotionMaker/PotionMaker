@@ -8,4 +8,7 @@ EditorOnly,
 MainCamera,
 Player,
 GameController,
+EditorGeneratedWalls,
+Layout,
+Potion,
 }

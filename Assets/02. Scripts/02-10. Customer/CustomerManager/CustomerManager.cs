@@ -136,7 +136,6 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         customer.TransitionState(ECustomerStateType.Sitting); 
         SitOnChair(chairViewID, customer);
         customer.CustomerEndurance.ResetEndurance(); 
-        customer.SetCurrentState(ECustomerStateType.Sitting); // 대기 상태로 변경
         _lineHandler.ReLining(); // 줄 다시 세우기
         ServePotionOnTakeOrder();
     }

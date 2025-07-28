@@ -36,15 +36,16 @@ public class MovingHouse
         SceneManager.sceneLoaded -= OnHouseMoved;
         // 재배치
         List<int> unlockedIngredientTIDList = new List<int>() { 10000, 10001 }; // 임시 이미 해금
-        RelocateStorages(unlockedIngredientTIDList);
+
         RelocateStructures();
+        RelocateStorages(unlockedIngredientTIDList);
 
         // 새로운 해금 배달
-        List<int> newlyUnlockedIngredientTIDList = new List<int>() { 10002, 10003, 20000, 30000 }; // 임시 해금 재료
         List<int> newlyUnlockedStructureTIDList = new List<int>() { 10009, 10017 }; // 임시 해금 가구/조리기구
+        List<int> newlyUnlockedIngredientTIDList = new List<int>() { 10002, 10003, 20000, 30000 }; // 임시 해금 재료
 
-        DeliverUnlockedStorages(newlyUnlockedIngredientTIDList);
         DeliverUnlockedStructures(newlyUnlockedStructureTIDList);
+        DeliverUnlockedStorages(newlyUnlockedIngredientTIDList);
     }
     private void RelocateStructures ()
     {
@@ -89,7 +90,21 @@ public class MovingHouse
         }
     }
 
-    public void RelocateStorages(List<int> ingredientList) => _delivery.DeliverStorages(ingredientList, EAreaType.Storage);
-    public void DeliverUnlockedStorages(List<int> ingredientList) => _delivery.DeliverStorages(ingredientList, EAreaType.FrontYard);
-   
+    public void RelocateStorages(List<int> ingredientList)
+    {
+        int index = 0;
+        foreach(int ingredientTID in ingredientList)
+        {
+            _delivery.DeliverStorage(ingredientTID, EAreaType.Storage, index, out index);
+        }
+    }
+    public void DeliverUnlockedStorages(List<int> ingredientList)
+    {
+        int index = 0;
+        foreach (int ingredientTID in ingredientList)
+        {
+            _delivery.DeliverStorage(ingredientTID, EAreaType.FrontYard, index, out index);
+        }
+    }
+
 }

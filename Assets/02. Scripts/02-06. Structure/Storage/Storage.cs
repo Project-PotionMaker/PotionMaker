@@ -54,7 +54,7 @@ public class Storage : MonoBehaviour, IGridItemHandler
         if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
         {
             _stat.CurrentRotation += 90f;
-            if (_stat.CurrentRotation > 360f)
+            if (_stat.CurrentRotation >= 360f)
             {
                 _stat.CurrentRotation = 0;
             }

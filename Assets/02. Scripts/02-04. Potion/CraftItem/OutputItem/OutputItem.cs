@@ -5,10 +5,11 @@ using UnityEngine;
 using VInspector;
 
 [Serializable]
-public class MeshOnType
+public class ColorOnType
 {
-    public EInputType EInputType;
-    public Mesh Mesh;
+    public EOutputType OuputType;
+    public GameObject TypeObject;
+    public Renderer ColorChangeRenderer;
 }
 
 public class OutputItem : MonoBehaviour, IItem
@@ -18,14 +19,14 @@ public class OutputItem : MonoBehaviour, IItem
 
     private OutputData _outputData;
     public OutputData OutputData => _outputData;
-
-    private MeshFilter _meshFilter;
     private PhotonView _photonView;
+
+    private MaterialPropertyBlock _materialPropertyBlock;
 
     [Foldout("Project")]
     [SerializeField]
-    private List<MeshOnType> _meshList = new List<MeshOnType>();
-    private Dictionary<EInputType, Mesh> _meshDict;
+    private List<ColorOnType> _colorOnTypeList = new List<ColorOnType>();
+    private Dictionary<EOutputType, ColorOnType> _colorOnTypeDict;
 
     private void Awake()
     {
@@ -34,13 +35,14 @@ public class OutputItem : MonoBehaviour, IItem
 
     private void InitOutput()
     {
-        _meshDict = new Dictionary<EInputType, Mesh>();
-        foreach (var meshInfo in _meshList)
+        _colorOnTypeDict = new Dictionary<EOutputType, ColorOnType>();
+        foreach (var objectInfo in _colorOnTypeList)
         {
-            _meshDict.Add(meshInfo.EInputType, meshInfo.Mesh);
+            objectInfo.TypeObject.SetActive(false);
+            _colorOnTypeDict.Add(objectInfo.OuputType, objectInfo);
         }
 
-        _meshFilter = GetComponent<MeshFilter>();
+        _materialPropertyBlock = new MaterialPropertyBlock();
         _photonView = GetComponent<PhotonView>();
     }
 
@@ -53,7 +55,25 @@ public class OutputItem : MonoBehaviour, IItem
 
         _currentInputType = newInputType;
         _outputData = DataTable.Instance.GetOutputData(TID);
-        // _meshFilter.mesh = _meshDict[newInputType];
+
+        foreach (var objectInfo in _colorOnTypeList)
+        {
+            objectInfo.TypeObject.SetActive(false);
+            if (objectInfo.OuputType == _outputData.OutputType)
+            {
+                if (ColorUtility.TryParseHtmlString(_outputData.ColorCode, out Color parsedColor))
+                {
+                    _materialPropertyBlock.SetColor("_BaseColor", parsedColor);
+                }
+                else
+                {
+                    _materialPropertyBlock.SetColor("_BaseColor", Color.white);
+                }
+
+                objectInfo.ColorChangeRenderer.SetPropertyBlock(_materialPropertyBlock);
+                objectInfo.TypeObject.SetActive(true);
+            }
+        }
         _photonView.RPC(nameof(RPC_InitOutputData), RpcTarget.Others, newInputType, TID);
     }
 
@@ -62,7 +82,25 @@ public class OutputItem : MonoBehaviour, IItem
     {
         _currentInputType = newInputType;
         _outputData = DataTable.Instance.GetOutputData(TID);
-        // _meshFilter.mesh = _meshDict[newInputType];
+
+        foreach (var objectInfo in _colorOnTypeList)
+        {
+            objectInfo.TypeObject.SetActive(false);
+            if (objectInfo.OuputType == _outputData.OutputType)
+            {
+                if(ColorUtility.TryParseHtmlString(_outputData.ColorCode, out Color parsedColor))
+                {
+                    _materialPropertyBlock.SetColor("_BaseColor", parsedColor);
+                }
+                else
+                {
+                    _materialPropertyBlock.SetColor("_BaseColor", Color.white);
+                }
+
+                objectInfo.ColorChangeRenderer.SetPropertyBlock(_materialPropertyBlock);
+                objectInfo.TypeObject.SetActive(true);
+            }
+        }
     }
 
     public EInputType GetInputType()

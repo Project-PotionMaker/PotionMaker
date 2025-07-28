@@ -165,6 +165,10 @@ public enum ECustomerStateType
     PickingUp = 2,
     ///<summary>나가기</summary>
     Leaving = 3,
+    ///<summary>줄로 이동</summary>
+    ReturningLine = 4,
+    ///<summary>의자로 이동</summary>
+    ReturningChair = 5,
 }
 
 public enum ETierType

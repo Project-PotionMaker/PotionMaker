@@ -120,7 +120,7 @@ public class CustomerMove : MonoBehaviour
     public bool IsStayOn()
     {
         float distance = Vector3.Distance(transform.position, _lastTarget);
-        if (distance < 1f)
+        if (distance < 0.9f)
         {
             return true;    
         }

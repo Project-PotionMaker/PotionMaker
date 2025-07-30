@@ -6,12 +6,13 @@ using UnityEngine.AI;
 
 public class Customer : MonoBehaviour
 {
-    private ECustomerStateType _currentState;
-    public ECustomerStateType CurrentState { get => _currentState; } // 현재 상태
+    private ECustomerStateType _currentState; // 현재 상태 컴포넌트
+    public ECustomerStateType CurrentState { get => _currentState; set => _currentState = value; } // 현재 상태 컴포넌트
     private CustomerMove _customerMove; // 이동 능력 컴포넌트
     public CustomerMove CustomerMove { get => _customerMove; set => _customerMove = value; } // 이동 능력 컴포넌트
     private CustomerEndurance _customerEndurance; // 인내심
     public CustomerEndurance CustomerEndurance { get => _customerEndurance; set => _customerEndurance = value; } // 인내심 컴포넌트
+
 
     [SerializeField]
     private int _requestedPotionTID = 10000;
@@ -23,36 +24,38 @@ public class Customer : MonoBehaviour
     private PhotonView _photonView;
     public PhotonView PhotonView { get => _photonView; set => _photonView = value; } // PhotonView 컴포넌트
 
-    private int _priorityOffset;
-    public int PriorityOffset { get => _priorityOffset; set => _priorityOffset = value; } // 우선순위 편향
+    public event Action OnStateChanged;
 
-    public event Action OnStateChanged; // 상태 변경 이벤트
+    private Transform _chairPosition;
+    public  Transform ChairPosition { get => _chairPosition; set => _chairPosition = value; } // 의자 위치
+    private  float _chairRotate;
+    public float ChairRotate { get => _chairRotate; set => _chairRotate = value; } // 의자 회전
 
     private void Awake()
     {
         _photonView = GetComponent<PhotonView>();
         _customerMove = GetComponent<CustomerMove>();
         _customerEndurance = GetComponent<CustomerEndurance>();
+
     }
     private void OnEnable()
     {
-        _currentState = ECustomerStateType.Lining; 
+        _currentState = ECustomerStateType.Lining; // 초기 상태 설정
         //_requestedPotionTID = RandomPotion();
     }
 
-    public void SetCurrentState(ECustomerStateType nextState)
+    public void TransitionState(ECustomerStateType nextState)
     {
         if (!PhotonNetwork.IsMasterClient)
         {
             return; // 마스터 클라이언트만 상태를 설정할 수 있음
         }
-        _photonView.RPC(nameof(RPC_SetCurrentState), RpcTarget.All, nextState); 
+        _photonView.RPC(nameof(RPC_TransitionState), RpcTarget.All, nextState); 
     }
     [PunRPC]
-    public void RPC_SetCurrentState(ECustomerStateType nextState)
+    public void RPC_TransitionState(ECustomerStateType nextState)
     {
-        Debug.Log(nextState);
-        _currentState = nextState; 
+        _currentState = nextState;
         OnStateChanged?.Invoke();
     }
 

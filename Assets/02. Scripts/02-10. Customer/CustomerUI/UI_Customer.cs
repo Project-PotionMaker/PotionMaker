@@ -24,8 +24,8 @@ public class UI_Customer : MonoBehaviour
         _owner = GetComponentInParent<Customer>();
         _enduranceSlider.maxValue = 1f;
 
-        _owner.OnStateChanged += SetSlide; // 상태 변경 이벤트에 슬라이더 설정 메서드 등록
-        _owner.OnStateChanged += SetStateImage; // 상태 변경 이벤트에 상태 텍스트 설정 메서드 등록
+        _owner.OnStateChanged += SetSlide;
+        _owner.OnStateChanged += SetStateImage;
         _owner.CustomerEndurance.OnEnduranceChanged += SetSlide; // 인내심 변경 이벤트에 슬라이더 설정 메서드 등록
         SetSlide(); // 초기 슬라이더 설정
         SetStateImage(); // 초기 상태 텍스트 설정

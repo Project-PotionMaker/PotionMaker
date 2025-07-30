@@ -4,9 +4,7 @@ using UnityEngine;
 
 public class MirrorNetworkManager : NetworkManager
 {
-    // NetworkManager의 singleton 변수를 숨기고 Instance로 통일하기 위해 사용 그대로 singleton으로 생성
-    private static new MirrorNetworkManager singleton = (MirrorNetworkManager)NetworkManager.singleton;
-    public static MirrorNetworkManager Instance => singleton;
+    public static MirrorNetworkManager Instance => (MirrorNetworkManager)NetworkManager.singleton;
 
     /// <summary>
     /// Runs on both Server and Client

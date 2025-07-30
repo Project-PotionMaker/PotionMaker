@@ -4,6 +4,7 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceLocations;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Mirror;
 
 public class AssetManager : MonoBehaviourSingleton<AssetManager>
 {
@@ -30,6 +31,15 @@ public class AssetManager : MonoBehaviourSingleton<AssetManager>
             if (typeof(T) == typeof(GameObject))
             {
                 _prefabCacheDict[key] = asset as GameObject;
+
+                // Mirror 추가
+                var identity = _prefabCacheDict[key].GetComponent<NetworkIdentity>();
+                Debug.Log($"[클라이언트] '{key}' 프리팹에 NetworkIdentity가 있는가? {(identity != null ? "있음" : "없음")}");
+                if (_prefabCacheDict[key].GetComponent<NetworkIdentity>() != null)
+                {
+                    Debug.Log($"NetworkManager에 {key}를 추가합니다.");
+                    MirrorNetworkManager.Instance.spawnPrefabs.Add(_prefabCacheDict[key]);
+                }
             }
             Debug.Log($"로드된 에셋명 : {asset.name}");
             return asset;

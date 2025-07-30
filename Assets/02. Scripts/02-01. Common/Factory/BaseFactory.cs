@@ -1,3 +1,4 @@
+using Mirror;
 using Photon.Pun;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,9 @@ public class BaseFactory<TEnum, TFactoryInfo> : MonoBehaviourSingleton<BaseFacto
 
     private Dictionary<TEnum, string> _typeToAddressableKeyMap = new Dictionary<TEnum, string>();
     private HashSet<string> _validAddressableKeys = new HashSet<string>();
+
+    //Mirror 테스트용
+    private Dictionary<TEnum, GameObject> _typeToPrefabKeyDict = new Dictionary<TEnum, GameObject>();
 
     protected override void Awake()
     {
@@ -37,6 +41,9 @@ public class BaseFactory<TEnum, TFactoryInfo> : MonoBehaviourSingleton<BaseFacto
                 _validAddressableKeys.Add(info.AddressableKey);
                 _typeToAddressableKeyMap[info.Type] = info.AddressableKey;
                 defaultPool.ResourceCache.TryAdd(info.AddressableKey, prefab);
+
+                //Mirror 테스트용
+                _typeToPrefabKeyDict.TryAdd(info.Type, prefab);
             }
             else
             {
@@ -46,6 +53,7 @@ public class BaseFactory<TEnum, TFactoryInfo> : MonoBehaviourSingleton<BaseFacto
         }
     }
 
+    [Server]
     public GameObject Create(TEnum type, Vector3 position, Quaternion rotation)
     {
         if (!_typeToAddressableKeyMap.ContainsKey(type))
@@ -53,11 +61,16 @@ public class BaseFactory<TEnum, TFactoryInfo> : MonoBehaviourSingleton<BaseFacto
             Debug.LogError($"타입에 맞는 어드레서블 키가 없습니다. 타입 : {type}");
             return null;
         }
-        string addressableKey = _typeToAddressableKeyMap[type];
-        
-        // PhotonNetwork.Instantiate는 Addressable Key를 사용해야 하므로 캐시도 이름 기준
-        GameObject networkObject = PhotonNetwork.Instantiate(addressableKey, position, rotation);
+        //string addressableKey = _typeToAddressableKeyMap[type];
 
+        //// PhotonNetwork.Instantiate는 Addressable Key를 사용해야 하므로 캐시도 이름 기준
+        //GameObject networkObject = PhotonNetwork.Instantiate(addressableKey, position, rotation);
+
+        // Mirror 추가
+        GameObject networkObject = Instantiate(_typeToPrefabKeyDict[type], position, rotation);
+        NetworkServer.Spawn(networkObject);
+
+        Debug.Log($"서버에서 '{networkObject.name}'를 스폰했습니다.");
         return networkObject;
     }
 
@@ -71,6 +84,7 @@ public class BaseFactory<TEnum, TFactoryInfo> : MonoBehaviourSingleton<BaseFacto
 
         GameObject networkObject = PhotonNetwork.Instantiate(addressableKey, position, rotation);
 
+        NetworkServer.Spawn(networkObject);
         return networkObject;
     }
 

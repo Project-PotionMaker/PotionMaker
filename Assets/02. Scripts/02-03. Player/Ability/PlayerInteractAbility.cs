@@ -8,10 +8,10 @@ public class PlayerInteractAbility : PlayerAbility
 
     private void Start()
     {
-        if (!_photonView.IsMine)
-        {
-            return;
-        }
+        //if (!_photonView.IsMine)
+        //{
+        //    return;
+        //}
 
         InputManager.Instance.OnInteractChanged += ChangeInteractState;
         _animationAbility = _owner.GetAbility<PlayerAnimationAbility>();

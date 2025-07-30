@@ -20,7 +20,6 @@ public class CustomerEndurance : MonoBehaviour
     private void Awake()
     {
         _owner = GetComponent<Customer>();
-        _owner.OnStateChanged += ResetEndurance; // 상태 변경 시 인내심 초기화
     }
     private void OnEnable()
     {
@@ -30,11 +29,11 @@ public class CustomerEndurance : MonoBehaviour
 
     private void Update()
     {
-        if (_owner.CurrentState == ECustomerStateType.Leaving || _owner.CurrentState == ECustomerStateType.PickingUp)
+        if (!PhotonNetwork.IsMasterClient)
         {
             return;
         }
-        if (!PhotonNetwork.IsMasterClient)
+        if (_owner.CurrentState == ECustomerStateType.Leaving || _owner.CurrentState == ECustomerStateType.PickingUp)
         {
             return;
         }
@@ -45,33 +44,25 @@ public class CustomerEndurance : MonoBehaviour
         }
         
     }
-    private void ResetEndurance()
-    {
-        if (_owner.CurrentState == ECustomerStateType.Lining)
-        {
-            _currentEndurance = LINE_ENDURANCE; // 줄 서는 상태에서 인내심 초기화
-        }
-        //else if (_owner.CurrentState == ECustomerStateType.Waiting)
-        //{
-        //    _currentEndurance = HALL_ENDURANCE; // 대기실 상태에서 인내심 초기화
-        //}
+    public void ResetEndurance()
+    { 
+        _currentEndurance = HALL_ENDURANCE;   
     }
 
     private void LosingEndurance()
     {
-        //if (_owner.CurrentState == ECustomerStateType.Lining || _owner.CurrentState == ECustomerStateType.Waiting)
-        //{
-        //    _currentEndurance = Mathf.Max(_currentEndurance -_loseEnduranceSpeed * Time.deltaTime,0); // 인내심 감소
-        //}
+        if (_owner.CurrentState != ECustomerStateType.Leaving && _owner.CurrentState != ECustomerStateType.PickingUp)
+        {
+            _currentEndurance = Mathf.Max(_currentEndurance -_loseEnduranceSpeed * Time.deltaTime,0); // 인내심 감소
+        }
 
         if(_owner.CurrentState == ECustomerStateType.Lining)
         {
             _enduranceRate = _currentEndurance /LINE_ENDURANCE; // 인내심 비율 계산
+        }else if (_owner.CurrentState == ECustomerStateType.Sitting)
+        {
+            _enduranceRate = _currentEndurance / HALL_ENDURANCE; // 인내심 비율 계산
         }
-        //else if (_owner.CurrentState == ECustomerStateType.Waiting)
-        //{
-        //    _enduranceRate = _currentEndurance / HALL_ENDURANCE; // 인내심 비율 계산
-        //}
 
         _owner.PhotonView.RPC(nameof(RPC_SyncEnduranceRate), RpcTarget.All, _enduranceRate);
     }

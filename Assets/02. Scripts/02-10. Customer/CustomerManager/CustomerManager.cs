@@ -14,7 +14,8 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
     private CustomerOrderHandler _orderHandler; // 주문을 처리하는 컴포넌트
     public CustomerOrderHandler OrderHandler { get => _orderHandler; set => _orderHandler = value; }
     private PhotonView _photonView;
-    private bool _canOrdered = false; // 주문을 받을 수 있는 상태인지 여부
+    private bool _canOrdered = false; 
+    public bool CanOrdered { get => _canOrdered; set => _canOrdered = value; }
 
     [Foldout("Inspector")]
     [SerializeField]
@@ -92,23 +93,8 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         PhotonView photonView = PhotonView.Find(viewID);
         Customer customer = photonView.GetComponent<Customer>();
         customer.transform.position = _enterDoor.position; // 손님을 상점 입구에 생성
-        customer.PriorityOffset = _inviteIndex*5; // 우선순위 편향 설정
         _orderHandler.PotionOrderLine.Enqueue(customer);
         _lineHandler.ReLining();
-    }
-
-    public void OnArrivedLine(Customer customer)
-    {
-        if (!PhotonNetwork.IsMasterClient)
-        {
-            return;
-        }
-        if(_orderHandler.PotionOrderLine.Peek() != customer)
-        {
-            return; // 줄에 도착했지만 첫번째 손님이 아니면 무시
-        }
-        PhotonView customerView = _orderHandler.PotionOrderLine.Peek().GetComponent<PhotonView>();
-        _canOrdered = true;
     }
 
     public void RegisterOrder() // 플레이어가 접수를 받으면 호출
@@ -147,8 +133,9 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         Customer customer = _orderHandler.PotionOrderLine.Dequeue();
         int potionTID = customer.GetComponent<Customer>().RequestedPotionTID;
         _orderHandler.AddOrder(potionTID, customer);
+        customer.TransitionState(ECustomerStateType.Sitting); 
         SitOnChair(chairViewID, customer);
-        //customer.SetCurrentState(ECustomerStateType.Waiting); // 대기 상태로 변경
+        customer.CustomerEndurance.ResetEndurance(); 
         _lineHandler.ReLining(); // 줄 다시 세우기
         ServePotionOnTakeOrder();
     }
@@ -159,7 +146,6 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         {
             return;
         }
-        customer.SetCurrentState(ECustomerStateType.Leaving);
         if (_orderHandler.RemoveAnywhere(customer))// 주문 목록에서 손님 제거
         {
             _lineHandler.ReLining(); // 줄 다시 세우기
@@ -218,8 +204,8 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
 
         PlaceOnTable(potionTID, pickupTableViewID);
         Vector3 position = FindPickupTableByViewID(pickupTableViewID).transform.position; // 판매대 위치 찾기
+        customer.TransitionState(ECustomerStateType.PickingUp);
         customer.CustomerMove.MoveTo(position); // 손님을 판매대 위치로 이동
-        customer.SetCurrentState(ECustomerStateType.PickingUp);
         _orderHandler.PickupTableDict[pickupTableViewID].UsingCustomer = customer; // 손님과 판매대 매핑 저장
         _orderHandler.PotionOrderMap[potionTID].Remove(customer);
         LeaveChair(customer);
@@ -242,8 +228,6 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         potion.transform.SetParent(customer.PotionHandler.transform);
         potion.transform.localPosition = Vector3.zero;
         _lineHandler.PutOutCustomer(customer); // 손님을 나가게 하기
-        customer.SetCurrentState(ECustomerStateType.Leaving); // 손님 상태를 나가는 상태로 변경
-
     }
 
     public void OnLastOrderTime() //영업시간 종료되면 호출
@@ -256,7 +240,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         {
             Customer customer = _orderHandler.PotionOrderLine.Dequeue();
             _lineHandler.PutOutCustomer(customer);
-            customer.SetCurrentState(ECustomerStateType.Leaving); // 손님 상태를 나가는 상태로 변경
+            customer.TransitionState(ECustomerStateType.Leaving); // 손님 상태를 나가는 상태로 변경
         }
     }
 

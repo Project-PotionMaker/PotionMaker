@@ -6,7 +6,7 @@ public class Layout : MonoBehaviour
     [Tooltip("에디터에서 설정된 모든 구역 정의")]
     [SerializeField]
     private List<AreaDefinition> _allAreaDefinitionList = new List<AreaDefinition>();
-
+    public ReadOnlyList<AreaDefinition> AllAreaDefinitionList => new ReadOnlyList<AreaDefinition>(_allAreaDefinitionList);
     // 런타임에 사용할 구역 맵 (Key: GridPosition, Value: AreaType)
     private Dictionary<Vector3Int, EAreaType> _areaDict;
 

@@ -70,7 +70,7 @@ public class RoomManager : MonoBehaviourSingleton<RoomManager>, IMatchmakingCall
 
         _playerPrefab = await AssetManager.Instance.LoadAsset<GameObject>(playerAddressableKey);
 
-        defaultPool.ResourceCache.Add(playerAddressableKey, _playerPrefab);
+        defaultPool.ResourceCache.TryAdd(playerAddressableKey, _playerPrefab);
         Init();
     }
 

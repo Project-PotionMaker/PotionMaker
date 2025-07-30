@@ -21,7 +21,7 @@ public class Delivery
         }
         throw new Exception("There is No Available area");
     }
-    public void DeliverStructure(int structureTID, EAreaType areaType, int startIndex, out int newStartIndex)
+    private void DeliverStructure(int structureTID, EAreaType areaType, int startIndex, out int newStartIndex)
     {
         ReadOnlyList<Vector3Int> positionList = GridManager.Instance.GetPositionByAreaType(areaType);
         if (positionList == null)
@@ -92,7 +92,7 @@ public class Delivery
         }
         throw new Exception("There is No Available area");
     }
-    public void DeliverStorage(int ingredientTID, EAreaType areaType, int startIndex, out int newStartIndex)
+    private void DeliverStorage(int ingredientTID, EAreaType areaType, int startIndex, out int newStartIndex)
     {
         ReadOnlyList<Vector3Int> positionList = GridManager.Instance.GetPositionByAreaType(areaType);
         if (positionList == null)
@@ -142,7 +142,7 @@ public class Delivery
         int index = 0;
         foreach (int ingredientTID in ingredientTIDList)
         {
-            DeliverStructure(ingredientTID, areaType, index, out index);
+            DeliverStorage(ingredientTID, areaType, index, out index);
         }
     }
 }

@@ -202,17 +202,17 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
             return;
         }
 
-        PlaceOnTable(potionTID, pickupTableViewID);
         Vector3 position = FindPickupTableByViewID(pickupTableViewID).transform.position; // 판매대 위치 찾기
         customer.TransitionState(ECustomerStateType.PickingUp);
         customer.CustomerMove.MoveTo(position); // 손님을 판매대 위치로 이동
+        customer.PickupTableViewID = pickupTableViewID; // 손님이 판매대의 PhotonView ID 저장
         _orderHandler.PickupTableDict[pickupTableViewID].UsingCustomer = customer; // 손님과 판매대 매핑 저장
         _orderHandler.PotionOrderMap[potionTID].Remove(customer);
         LeaveChair(customer);
 
     }
 
-    public void OnServedSuccess(Customer customer,int pickupTableViewID) // 손님이 판매대에 도착하면 호출 
+    public void OnServedSuccess(Customer customer) // 손님이 판매대에 도착하면 호출 
     {
         if (PhotonNetwork.IsMasterClient == false)
         {
@@ -223,8 +223,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
             //TODO : 구매 성공, Currency 증가
         }
         Debug.Log($"Potion served successfully");
-        RemoveOnTable(pickupTableViewID); // 판매대에서 포션 제거
-        GameObject potion = FindPickupTableByViewID(pickupTableViewID).GetComponent<IGridItemHandler>().TryPickUp(); // 판매대 위치에서 포션 오브젝트 가져오기
+        GameObject potion = FindPickupTableByViewID(customer.PickupTableViewID).GetComponent<IGridItemHandler>().TryPickUp(); // 판매대 위치에서 포션 오브젝트 가져오기
         potion.transform.SetParent(customer.PotionHandler.transform);
         potion.transform.localPosition = Vector3.zero;
         _lineHandler.PutOutCustomer(customer); // 손님을 나가게 하기
@@ -317,7 +316,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         return null;
     }
 
-    private void PlaceOnTable(int potionTID, int pickupTableViewID)
+    public void PlaceOnTable(int potionTID, int pickupTableViewID)
     {
         _orderHandler.PickupTableDict[pickupTableViewID].IsUsing = true;
         _orderHandler.PickupTableDict[pickupTableViewID].HeldItemTID = potionTID;

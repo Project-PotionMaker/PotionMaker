@@ -49,8 +49,8 @@ public class CustomerMove : MonoBehaviour
         {
             if (_hasArrived == false)
             {
+                _hasArrived = true;
                 OnArrived(); // 도착 시 호출
-                _hasArrived=true;
             }
         }
         else
@@ -106,7 +106,7 @@ public class CustomerMove : MonoBehaviour
         }
         else if (_owner.CurrentState == ECustomerStateType.PickingUp)
         {
-            CustomerManager.Instance.OnServedSuccess(_owner, _owner.RequestedPotionTID);
+            CustomerManager.Instance.OnServedSuccess(_owner);
         }
         else if (_owner.CurrentState == ECustomerStateType.Leaving)
         {

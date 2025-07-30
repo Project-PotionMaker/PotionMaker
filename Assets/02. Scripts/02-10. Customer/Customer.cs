@@ -31,6 +31,9 @@ public class Customer : MonoBehaviour
     private  float _chairRotate;
     public float ChairRotate { get => _chairRotate; set => _chairRotate = value; } // 의자 회전
 
+    private int _pickupTableViewID;
+    public int PickupTableViewID { get => _pickupTableViewID; set => _pickupTableViewID = value; } // 픽업 테이블의 PhotonView ID
+
     private void Awake()
     {
         _photonView = GetComponent<PhotonView>();

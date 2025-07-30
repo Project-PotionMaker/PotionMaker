@@ -16,6 +16,7 @@ public class CustomerMove : MonoBehaviour
     private Vector3 _lastTarget;
 
     private bool _hasArrived = true;
+    private const float GRID_OFFSET = 0.5f;
 
     private void Awake()
     {
@@ -71,7 +72,7 @@ public class CustomerMove : MonoBehaviour
             StandingAction();
         }
 
-        target = new Vector3(target.x+0.5f, target.y, target.z+0.5f); // Y축은 현재 위치 유지
+        target = new Vector3(target.x+GRID_OFFSET, target.y, target.z+GRID_OFFSET); // Y축은 현재 위치 유지
         _lastTarget = target; // 마지막 목적지 저장
         _agent.SetDestination(target);
     }

@@ -1,13 +1,13 @@
 using Photon.Pun;
 using UnityEngine;
 
-public class MachineOutputContainer : IOutputContainer<Machine, MachineStat>
+public class MachineOutputContainer : IOutputContainer<Machine>
 {
     private GameObject _output;
 
-    public GameObject TakeItem(Machine machine, MachineStat stat)
+    public GameObject TakeItem(Machine machine)
     {
-        if (stat.IsProcessFinished)
+        if (machine.IsProcessFinished)
         {
             if (!PhotonNetwork.IsMasterClient)
             {
@@ -16,19 +16,18 @@ public class MachineOutputContainer : IOutputContainer<Machine, MachineStat>
             }
             else
             {
-                RPC_TakeOutput(stat, stat.InputTIDList.ToArray(), stat.Data.TID, stat.InputType, machine.transform.position);
+                RPC_TakeOutput(machine, machine.InputTIDList.ToArray(), machine.Data.TID, machine.InputType, machine.transform.position);
             }
 
-            machine.SyncMachineStat();
             return _output;
         }
         return null;
     }
 
     [PunRPC]
-    public void RPC_TakeOutput(MachineStat stat, int[] TIDList, int machineTID, EInputType type, Vector3 machinePosition)
+    public void RPC_TakeOutput(Machine machine, int[] TIDList, int machineTID, EInputType type, Vector3 machinePosition)
     {
-        if(stat.Data.Name == "병입기")
+        if(machine.Data.Name == "병입기")
         {
             _output = CraftItemManager.Instance.TryCreatePotionItem(TIDList, machineTID, machinePosition);
         }
@@ -38,15 +37,15 @@ public class MachineOutputContainer : IOutputContainer<Machine, MachineStat>
         }
 
 
-        stat.LeftOutputAmount--;
-        if (stat.LeftOutputAmount <= 0)
+        machine.LeftOutputAmount--;
+        if (machine.LeftOutputAmount <= 0)
         {
-            stat.ClearMachine();
+            machine.ResetMachineServer();
         }
     }
 
-    public bool CanTake(Machine machine, MachineStat stat)
+    public bool CanTake(Machine machine)
     {
-        return stat.IsProcessFinished;
+        return machine.IsProcessFinished;
     }
 }

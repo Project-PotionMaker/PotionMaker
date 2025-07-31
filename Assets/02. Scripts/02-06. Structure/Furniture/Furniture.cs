@@ -36,8 +36,8 @@ public class Furniture : NetworkBehaviour, IGridItemHandler
 
     private void Start()
     {
-        PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += ResetItem;
-        PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase].OnPhaseExited += ResetItem;
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += ResetMachineServer;
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase].OnPhaseExited += ResetMachineServer;
     }
 
     [ClientRpc]
@@ -165,7 +165,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler
             _effectComponent.Effect(this, _stat, customer);
         }
     }
-    public void ResetItem()
+    public void ResetMachineServer()
     {
         if (!ReferenceEquals(_stat.InputObject, null))
         {

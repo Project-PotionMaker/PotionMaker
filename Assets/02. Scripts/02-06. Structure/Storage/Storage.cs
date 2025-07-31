@@ -100,7 +100,7 @@ public class Storage : NetworkBehaviour, IGridItemHandler
         }
         return false;
     }
-    public void ResetItem()
+    public void ResetMachineServer()
     {
     }
 }

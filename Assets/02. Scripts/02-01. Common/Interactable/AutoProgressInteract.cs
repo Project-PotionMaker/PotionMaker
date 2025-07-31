@@ -1,14 +1,21 @@
+using Mirror;
 using System.Collections;
 using UnityEngine;
 
-public class AutoProgressInteract : IInteractable<Machine, MachineStat>
+public class AutoProgressInteract : IInteractable<Machine>
 {
-    public bool CanInteract(Machine machine, MachineStat stat)
+    public bool CanInteract(Machine machine)
     {
-        return (stat.InputTIDList.Count == stat.Data.MaxInputCount && !stat.IsProcessFinished);
+        return (machine.InputTIDList.Count == machine.Data.MaxInputCount && !machine.IsProcessFinished);
     }
 
-    public bool TryInteract(Machine machine, MachineStat stat)
+    [Command]
+    public bool CmdTryInteract(Machine machine)
+    {
+        return TryInteract(machine);
+    }
+
+    public bool TryInteract(Machine machine)
     {
         if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
         {
@@ -17,32 +24,31 @@ public class AutoProgressInteract : IInteractable<Machine, MachineStat>
         }
         else
         {
-            if (CanInteract(machine, stat) == false)
+            if (CanInteract(machine) == false)
             {
                 return false;
             }
 
-            if (stat.IsProcessStarted)
+            if (machine.IsProcessStarted)
             {
-                stat.IsProcessStarted = false;
+                machine.IsProcessStarted = false;
                 machine.StopAllCoroutines();
             }
             else
             {
-                stat.IsProcessStarted = true;
-                machine.StartCoroutine(Interact_Coroutine(machine, stat));
+                machine.IsProcessStarted = true;
+                machine.StartCoroutine(Interact_Coroutine(machine));
             }
 
-            machine.SyncMachineStat();
             return true;
         }
     }
 
-    public IEnumerator Interact_Coroutine(Machine machine, MachineStat stat)
+    public IEnumerator Interact_Coroutine(Machine machine)
     {
-        while (stat.CurrentProgress < stat.Data.MaxProgress)
+        while (machine.CurrentProgress < machine.Data.MaxProgress)
         {
-            stat.CurrentProgress += stat.Data.ProgressPerTick * Time.deltaTime;
+            machine.CurrentProgress += machine.Data.ProgressPerTick * Time.deltaTime;
             //machine.SyncMachineStat();
             yield return null;
         }

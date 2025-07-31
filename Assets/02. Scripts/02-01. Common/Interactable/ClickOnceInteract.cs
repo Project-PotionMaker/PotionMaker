@@ -1,28 +1,28 @@
 using UnityEngine;
 
-public class ClickOnceInteract : IInteractable<Machine, MachineStat>
+public class ClickOnceInteract : IInteractable<Machine>
 {
-    public bool CanInteract(Machine machine, MachineStat stat)
+    public bool CanInteract(Machine machine)
     {
-        return (stat.InputTIDList.Count == stat.Data.MaxInputCount && !stat.IsProcessFinished);
+        return (machine.InputTIDList.Count == machine.Data.MaxInputCount && !machine.IsProcessFinished);
     }
 
-    public bool TryInteract(Machine machine, MachineStat stat)
+    public bool TryInteract(Machine machine)
     {
-        if (!CanInteract(machine, stat))
+        if (!CanInteract(machine))
         {
             return false;
         }
 
-        if (!stat.IsProcessStarted)
+        if (!machine.IsProcessStarted)
         {
-            CompleteProgress(machine, stat);
+            CompleteProgress(machine);
         }
         return true;
     }
 
-    private void CompleteProgress(Machine machine, MachineStat stat)
+    private void CompleteProgress(Machine machine)
     {
-        stat.CurrentProgress = stat.Data.MaxProgress;
+        machine.CurrentProgress = machine.Data.MaxProgress;
     }
 }

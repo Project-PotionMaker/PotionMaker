@@ -21,7 +21,7 @@ public class StructureManager : MonoBehaviourSingleton<StructureManager>
                 instance.GetComponent<Furniture>().RpcInitFurnitureOnClients(data.TypeTID);
                 break;
             case EStructureType.Machine:
-                instance.GetComponent<Machine>().RpcInitMachineOnClients(data.TypeTID);
+                instance.GetComponent<Machine>().ServerInitMachine(data.TypeTID);
                 break;
             case EStructureType.Storage:
                 instance.GetComponent<Storage>().RpcInitStorageOnClients(data.TypeTID, ingredientTID);

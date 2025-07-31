@@ -1,3 +1,4 @@
+using DG.Tweening;
 using Photon.Pun;
 using UnityEngine;
 using UnityEngine.AI;
@@ -6,24 +7,35 @@ public class CustomerMove : MonoBehaviour
 {
     private NavMeshAgent _agent;
     public NavMeshAgent Agent { get => _agent; set => _agent = value; } // NavMeshAgent 컴포넌트
+    private Rigidbody _rigidbody;
+    private Collider _collider;
 
     private Customer _owner;
-    private bool _hasArrived = true; // 도착 여부
-    private int _priorityOffset;
-    public int PriorityOffset { get => _priorityOffset; set => _priorityOffset = value; } // 우선순위 편향
-
+    private Animator _animator; // 애니메이터 컴포넌트
+    public Animator Animator { get => _animator; set => _animator = value; } // 애니메이터 컴포넌트
     private Vector3 _lastTarget;
+
+    private bool _hasArrived = true;
+    private const float GRID_OFFSET = 0.5f;
 
     private void Awake()
     {
         _agent = GetComponent<NavMeshAgent>();
+        _rigidbody = GetComponent<Rigidbody>();
         _owner = GetComponent<Customer>();
+        _animator = GetComponentInChildren<Animator>();
+        _collider = GetComponent<Collider>();
+        _agent.enabled = true; 
+        _rigidbody.isKinematic = false; 
     }
     private void Update()
     {
-        if (_hasArrived == false)
+        if (_agent.isActiveAndEnabled == true)
         {
             ArriveCheck();
+        }
+        else
+        {
         }
     }
 
@@ -31,77 +43,98 @@ public class CustomerMove : MonoBehaviour
     {
         if(!PhotonNetwork.IsMasterClient)
         {
-            return; 
+            return; // 마스터 클라이언트만 도착 여부 확인
         }
-        if (_agent.remainingDistance <= 1f && !_agent.pathPending)
+        if (IsStayOn())
         {
-            if(_owner.CurrentState == ECustomerStateType.Leaving || _agent.remainingDistance <= 0.1f)
+            if (_hasArrived == false)
             {
-                _hasArrived = true; 
-                _agent.isStopped = true;
-                OnArrived(); 
+                OnArrived(); // 도착 시 호출
+                _hasArrived=true;
             }
+        }
+        else
+        {
+            _hasArrived = false;
+            StartMoving();
         }
     }
 
-    public void MoveTo(Vector3 target)
+    public void MoveTo(Vector3 target) // 목적지만 바꾸는 함수
     {
         if (PhotonNetwork.IsMasterClient == false)
         {
-            return; 
+            return; // 마스터 클라이언트만 이동 가능
+        }
+        _agent.enabled = true; 
+        if(_owner.CurrentState == ECustomerStateType.PickingUp)
+        {
+            StandingAction();
         }
 
-        _hasArrived = false; 
-        _agent.SetDestination(target); 
-        _agent.isStopped = false;
-        SetPriority();
-        _lastTarget = target;
+        target = new Vector3(target.x+GRID_OFFSET, target.y, target.z+GRID_OFFSET); // Y축은 현재 위치 유지
+        _lastTarget = target; // 마지막 목적지 저장
+        _agent.SetDestination(target);
     }
-    private void SetPriority()
+
+    private void StartMoving()
     {
-        //if (_owner.CurrentState == ECustomerStateType.Waiting)
-        //{
-        //    _agent.avoidancePriority = 100;
-        //    return;
-        //}
-        if (_owner.CurrentState == ECustomerStateType.Lining)
+        if (!PhotonNetwork.IsMasterClient)
         {
-            _agent.avoidancePriority = 60;
+            return; // 마스터 클라이언트만 이동 시작
         }
-        else if (_owner.CurrentState == ECustomerStateType.PickingUp)
-        {
-            _agent.avoidancePriority = 30;
-        }
-        else if (_owner.CurrentState == ECustomerStateType.Leaving)
-        {
-            _agent.avoidancePriority = 0;
-        }
-        _agent.avoidancePriority += _priorityOffset;
+        _animator.SetBool("Move", true);
     }
-
-    public void OnArrived()
+    private void OnArrived()
     {
         if(!PhotonNetwork.IsMasterClient)
         {
             return; 
         }
-        if (!PhotonNetwork.IsMasterClient)
-        {
-            return; // 마스터 클라이언트만 호출 가능
-        }
+        _animator.SetBool("Move", false);
         if (_owner.CurrentState == ECustomerStateType.Lining)
         {
-            CustomerManager.Instance.OnArrivedLine(_owner); 
+            _animator.SetTrigger("Stand");
+            if (ReferenceEquals(_owner, CustomerManager.Instance.OrderHandler.PotionOrderLine.Peek()))
+            {
+                CustomerManager.Instance.CanOrdered = true;
+            }
+        } else if (_owner.CurrentState == ECustomerStateType.Sitting)
+        {
+            _animator.SetTrigger("Sit");
+            SittingAction(); // 의자에 앉는 동작 실행
         }
         else if (_owner.CurrentState == ECustomerStateType.PickingUp)
         {
-            int pickupTableViewID = GridManager.Instance.GetObjectOnGrid(_lastTarget).GetComponent<Furniture>().PhotonView.ViewID;
-            CustomerManager.Instance.OnServedSuccess(_owner,pickupTableViewID); 
+            CustomerManager.Instance.OnServedSuccess(_owner, _owner.RequestedPotionTID);
         }
         else if (_owner.CurrentState == ECustomerStateType.Leaving)
         {
-            CustomerManager.Instance.ReturnCustomer(_owner);
-        };
+            CustomerManager.Instance.ReturnCustomer(_owner); // 삭제
+        }
+    }
+    public bool IsStayOn()
+    {
+        float distance = Vector3.Distance(transform.position, _lastTarget);
+        if (distance < _agent.stoppingDistance)
+        {
+            return true;    
+        }
+        return false;
+    }
+    private void SittingAction()
+    {
+        _agent.enabled = false;
+        _collider.enabled = false; // 충돌체 비활성화
 
+        Sequence sitSeq = DOTween.Sequence();
+        sitSeq.Append(transform.DOMove(_owner.ChairPosition.position, 1f).SetEase(Ease.OutSine));
+        sitSeq.Join(transform.DORotate(new Vector3(0,_owner.ChairRotate+90,0), 1f).SetEase(Ease.InOutSine));
+
+    }
+    private void StandingAction()
+    {
+        _agent.enabled = true;
+        _collider.enabled = true; // 충돌체 활성화
     }
 }

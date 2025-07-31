@@ -251,7 +251,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
             return;
         }
         customer.ReturnPotion();
-        CustomerFactory.Instance.Return(customer.gameObject); // TODO : PoolManager완성 후 수정
+        CustomerFactory.Instance.CmdReturn(customer.gameObject); // TODO : PoolManager완성 후 수정
         //CustomerPool.Instance.ReturnObject(customer.gameObject,ENPCType.Customer);
         RemainCustomers--;
     }

@@ -1,9 +1,7 @@
 using Mirror;
-using Photon.Pun;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class BaseFactory<TEnum, TFactoryInfo> : MonoBehaviourSingleton<BaseFactory<TEnum, TFactoryInfo>>
     where TEnum : Enum
@@ -12,24 +10,15 @@ public class BaseFactory<TEnum, TFactoryInfo> : MonoBehaviourSingleton<BaseFacto
     [SerializeField]
     private List<TFactoryInfo> _factoryInfoList;
 
-    private Dictionary<TEnum, string> _typeToAddressableKeyMap = new Dictionary<TEnum, string>();
-    //private HashSet<string> _validAddressableKeys = new HashSet<string>();
-
-    //Mirror 테스트용
     private Dictionary<TEnum, GameObject> _typeToPrefabKeyDict = new Dictionary<TEnum, GameObject>();
 
-    protected override void Awake()
-    {
-        base.Awake();
-    }
+    private Dictionary<TEnum, Queue<GameObject>> _typeToPoolDict = new Dictionary<TEnum, Queue<GameObject>>();
 
     private async void Start()
     {
-        //DefaultPool defaultPool = PhotonNetwork.PrefabPool as DefaultPool;
-
         foreach (TFactoryInfo info in _factoryInfoList)
         {
-            if (_typeToAddressableKeyMap.ContainsKey(info.Type))
+            if (_typeToPrefabKeyDict.ContainsKey(info.Type))
             {
                 Debug.LogError($"Type이 중복되었습니다. Type : {info.Type}");
                 continue;
@@ -39,10 +28,6 @@ public class BaseFactory<TEnum, TFactoryInfo> : MonoBehaviourSingleton<BaseFacto
 
             if (prefab != null)
             {
-                //_validAddressableKeys.Add(info.AddressableKey);
-                _typeToAddressableKeyMap[info.Type] = info.AddressableKey;
-                //defaultPool.ResourceCache.TryAdd(info.AddressableKey, prefab);
-
                 _typeToPrefabKeyDict.TryAdd(info.Type, prefab);
 
                 var identity = prefab.GetComponent<NetworkIdentity>();
@@ -50,6 +35,8 @@ public class BaseFactory<TEnum, TFactoryInfo> : MonoBehaviourSingleton<BaseFacto
                 {
                     MirrorNetworkManager.Instance.spawnPrefabs.Add(prefab);
                 }
+
+                InitializePool(info.Type, prefab, 10);
             }
             else
             {
@@ -59,18 +46,33 @@ public class BaseFactory<TEnum, TFactoryInfo> : MonoBehaviourSingleton<BaseFacto
         }
     }
 
+    private void InitializePool(TEnum type, GameObject prefab, int poolSize)
+    {
+        if (_typeToPoolDict.ContainsKey(type))
+        {
+            Debug.Log($"Type이 중복되었습니다. Type : {type}");
+            return;
+        }
+
+        _typeToPoolDict[type] = new Queue<GameObject>();
+
+        for (int i = 0; i < poolSize; i++)
+        {
+            GameObject poolObject = Instantiate(prefab);
+            poolObject.SetActive(false);
+
+            _typeToPoolDict[type].Enqueue(poolObject);
+        }
+    }
+
     [Server]
     public GameObject Create(TEnum type, Vector3 position, Quaternion rotation)
     {
-        if (!_typeToAddressableKeyMap.ContainsKey(type))
+        if (!_typeToPrefabKeyDict.ContainsKey(type))
         {
-            Debug.LogError($"타입에 맞는 어드레서블 키가 없습니다. 타입 : {type}");
+            Debug.LogError($"타입에 맞는 프리팹이 없습니다. 타입 : {type}");
             return null;
         }
-        //string addressableKey = _typeToAddressableKeyMap[type];
-
-        //// PhotonNetwork.Instantiate는 Addressable Key를 사용해야 하므로 캐시도 이름 기준
-        //GameObject networkObject = PhotonNetwork.Instantiate(addressableKey, position, rotation);
 
         // Mirror 추가
         GameObject networkObject = Instantiate(_typeToPrefabKeyDict[type], position, rotation);
@@ -80,22 +82,16 @@ public class BaseFactory<TEnum, TFactoryInfo> : MonoBehaviourSingleton<BaseFacto
         return networkObject;
     }
 
-    public GameObject Create(string addressableKey, Vector3 position, Quaternion rotation)
+    [Server]
+    private void Return(GameObject obj)
     {
-        //if (!_validAddressableKeys.Contains(addressableKey))
-        //{
-        //    Debug.LogError($"Factory에 등록된 어드레서블 키가 없습니다. Addressable Key : {addressableKey}");
-        //    return null;
-        //}
-
-        GameObject networkObject = PhotonNetwork.Instantiate(addressableKey, position, rotation);
-
-        NetworkServer.Spawn(networkObject);
-        return networkObject;
+        NetworkServer.UnSpawn(obj);
+        obj.SetActive(false);
     }
 
-    public void Return(GameObject obj)
+    [Command]
+    public void CmdReturn(GameObject obj)
     {
-        PhotonNetwork.Destroy(obj);
+        Return(obj);
     }
 }

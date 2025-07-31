@@ -73,7 +73,7 @@ public class Customer : MonoBehaviour
         if(ReferenceEquals(potion, null) == false)
         {
             potion.transform.SetParent(null); 
-            CraftItemFactory.Instance.Return(potion); 
+            CraftItemFactory.Instance.CmdReturn(potion); 
         }
 
     }

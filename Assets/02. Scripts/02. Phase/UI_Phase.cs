@@ -28,9 +28,13 @@ public class UI_Phase : MonoBehaviour
     private void Start()
     {
         _serviceTimer.maxValue = 1f;
+        Debug.Log($"1111111111111111111111111111111111111111");
         PhaseManager.Instance.OnDayPassed += UpdateDayText;
+        Debug.Log($"2222222222222222222222222222222222222222");
         PhaseManager.Instance.OnPhaseChanged += UpdatePhaseText;
+        Debug.Log($"333333333333333333333333333333333333333333");
         PreparingPhase preparingPhase = (PreparingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.PreparingPhase];
+        Debug.Log($"44444444444444444444444444444444444444444");
         preparingPhase.OnPhaseExited += HideStartDay; // 준비 단계가 끝나면 시작 패널 숨김
         preparingPhase.OnPhaseEntered += ShowStartDay; // 준비 단계가 시작되면 시작 패널 표시
 
@@ -102,6 +106,7 @@ public class UI_Phase : MonoBehaviour
 
     private void HideStartDay()
     {
+        Debug.Log("Hide Start Day Panel");
         _startDayPanel.transform.DOLocalMoveY(HIDE_OFFSET, DURATION).SetRelative().SetEase(Ease.OutSine);
     }
     private void ShowStartDay()

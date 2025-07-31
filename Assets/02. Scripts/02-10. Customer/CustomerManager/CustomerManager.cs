@@ -57,22 +57,29 @@ public class CustomerManager : NetworkBehaviour
         _lineHandler = new CustomerLineHandler();
         _orderHandler.Init();
     }
-    private void Start()
+    public override void OnStartServer()
     {
         Dictionary<EPhaseType, BasePhase> phaseDictionary = PhaseManager.Instance.PhaseDictionary;
-        phaseDictionary[EPhaseType.ServingPhase].OnPhaseEntered += PreService;
-        phaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += ForceReturn;
-        phaseDictionary[EPhaseType.PracticingPhase].OnPhaseEntered += PreService;
-        phaseDictionary[EPhaseType.PracticingPhase].OnPhaseExited += ForceReturn;
-        
+        if (isServer)
+        {
+            phaseDictionary[EPhaseType.ServingPhase].OnPhaseEntered += PreService;
+            phaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += ForceReturn;
+            phaseDictionary[EPhaseType.PracticingPhase].OnPhaseEntered += PreService;
+            phaseDictionary[EPhaseType.PracticingPhase].OnPhaseExited += ForceReturn;
+        }
         //CustomerPool.Instance.ObjectSpawnedActions.TryAdd(ENPCType.Customer, null);
         //CustomerPool.Instance.ObjectSpawnedActions[ENPCType.Customer] += OnCustomerIn;
 
     }
     public void PreService()
     {
+        if (!isServer)
+        {
+            return;
+        }
         _orderHandler.SetLists();
         _casherLocation = GridManager.Instance.Casher.transform;
+        Debug.Log(_casherLocation.position);
         _inviteTimer = _inviteCoolTime;
         _remainCustomers = 0;
         _inviteIndex = 0;
@@ -131,6 +138,10 @@ public class CustomerManager : NetworkBehaviour
 
     public void LostCustomer(Customer customer) // 인내심이 바닥나면 호출
     {
+        if(!isServer)
+        {
+            return;
+        }
         if (_orderHandler.RemoveAnywhere(customer))// 주문 목록에서 손님 제거
         {
             _lineHandler.ReLining(); // 줄 다시 세우기
@@ -149,6 +160,10 @@ public class CustomerManager : NetworkBehaviour
 
     private void ServePotionOnTakeOrder()
     {
+        if (!isServer)
+        {
+            return;
+        }
         foreach (KeyValuePair<uint, FurnitureUsingStat> pair in _orderHandler.PickupTableDict)
         {
             if (pair.Value.IsUsing == true && pair.Value.UsingCustomer == null)
@@ -178,7 +193,11 @@ public class CustomerManager : NetworkBehaviour
 
     public void OnServedSuccess(Customer customer) // 손님이 판매대에 도착하면 호출 
     {
-        if(PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase)
+        if (!isServer)
+        {
+            return;
+        }
+        if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase)
         {
             //TODO : 구매 성공, Currency 증가
         }
@@ -191,6 +210,10 @@ public class CustomerManager : NetworkBehaviour
 
     public void OnLastOrderTime() //영업시간 종료되면 호출
     {
+        if (!isServer)
+        {
+            return;
+        }
         while (_orderHandler.PotionOrderLine.Count > 0)
         {
             Customer customer = _orderHandler.PotionOrderLine.Dequeue();
@@ -201,6 +224,10 @@ public class CustomerManager : NetworkBehaviour
 
     public void ReturnCustomer(Customer customer) // 손님이 출구에 도착하면 호출
     {
+        if (!isServer)
+        {
+            return;
+        }
         customer.ReturnPotion();
         CustomerFactory.Instance.Return(customer.gameObject); // TODO : PoolManager완성 후 수정
         //CustomerPool.Instance.ReturnObject(customer.gameObject,ENPCType.Customer);
@@ -208,6 +235,10 @@ public class CustomerManager : NetworkBehaviour
     }
     public void ForceReturn() // 인내심 바닥나서 끝나면 전부 강제로 내보냄, 또는 버그로 큐에 남아있는 손님도 내보냄
     {
+        if (!isServer)
+        {
+            return;
+        }
         Debug.Log("Force returning all customers.");
         while (_orderHandler.PotionOrderLine.Count > 0)
         {
@@ -232,12 +263,18 @@ public class CustomerManager : NetworkBehaviour
         }
     }
 
-    public void PlaceOnTable(int potionTID, uint pickupTableNetworkId)
+    [Command]
+    public void CommandPlaceOnTable(int potionTID, uint pickupTableNetworkId)
     {
+        if (!isServer)
+        {
+            return;
+        }
         _orderHandler.PickupTableDict[pickupTableNetworkId].IsUsing = true;
         _orderHandler.PickupTableDict[pickupTableNetworkId].HeldItemTID = potionTID;
     }
-    public void RemoveOnTable(uint pickupTableNetworkId)
+    [Command]
+    public void CommandRemoveOnTable(uint pickupTableNetworkId)
     {
         _orderHandler.PickupTableDict[pickupTableNetworkId].IsUsing = false;
         _orderHandler.PickupTableDict[pickupTableNetworkId].HeldItemTID = 0;
@@ -245,7 +282,11 @@ public class CustomerManager : NetworkBehaviour
     }
     private void SitOnChair(uint chairNetworkId,Customer customer)
     {
-        if(_orderHandler.LuxuryChairDict.ContainsKey(chairNetworkId))
+        if (!isServer)
+        {
+            return;
+        }
+        if (_orderHandler.LuxuryChairDict.ContainsKey(chairNetworkId))
         {
             _orderHandler.LuxuryChairDict[chairNetworkId].IsUsing = true;
             _orderHandler.LuxuryChairDict[chairNetworkId].UsingCustomer = customer; // 손님과 의자 매핑 저장
@@ -261,6 +302,10 @@ public class CustomerManager : NetworkBehaviour
     }
     private void LeaveChair(Customer customer)
     {
+        if (!isServer)
+        {
+            return;
+        }
         FurnitureUsingStat usedChair = _orderHandler.FindUsingChair(customer);
         if (usedChair != null)
         {

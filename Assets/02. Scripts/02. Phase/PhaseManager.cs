@@ -6,7 +6,7 @@ using Photon.Pun;
 using VInspector;
 using Mirror;
 
-public class PhaseManager : NetworkBehaviour
+public class PhaseManager : MonoBehaviour 
 {
     // TODO :NetworkBehaviourSingleton으로 수정
     public static PhaseManager Instance { get; private set; }
@@ -25,12 +25,15 @@ public class PhaseManager : NetworkBehaviour
     public int Day { get => _day; set => _day = value; }
     public event Action OnDayPassed;
     public event Action OnPhaseChanged;
+    public event Action OnPhaseManagerInit;
 
-    public void Awake()
+    private void Awake()
     {
+        Debug.Log("PhaseManager Awake called");
         if (Instance == null)
         {
             Instance = this;
+            DontDestroyOnLoad(gameObject); // 씬 전환 시에도 유지
         }
         else
         {
@@ -39,11 +42,12 @@ public class PhaseManager : NetworkBehaviour
         }
         _deathCount = 0;
         InitPhase();
+        Debug.Log("PhaseManager Awake completed");
     }
 
     private void Update()
     {
-        if (isServer)
+         //   if (isServer)
         {
             _currentPhase?.Update(Time.deltaTime);
         }
@@ -67,16 +71,17 @@ public class PhaseManager : NetworkBehaviour
         };
         _currentPhase = _phaseDictionary[EPhaseType.PreparingPhase];
         _currentPhase.EnterPhase();
+        OnPhaseManagerInit?.Invoke();
     }
 
     public void TransitionPhase(EPhaseType nextPhase)
     {
-        if (isServer)
+        //  if (isServer)
         {
             RpcTransitionPhase(nextPhase);
         }
     }
-    [ClientRpc]
+   // [ClientRpc]
     public void RpcTransitionPhase(EPhaseType nextPhase)
     {
         _currentPhase?.ExitPhase();

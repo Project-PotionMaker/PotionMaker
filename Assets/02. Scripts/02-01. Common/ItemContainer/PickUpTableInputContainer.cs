@@ -8,7 +8,7 @@ public class PickUpTableInputContainer : IInputContainer<Furniture, FurnitureSta
         {
             stat.InputObject = inputObject;
             stat.InputObject.transform.position = stat.InputPosition.position;
-            CustomerManager.Instance.PlaceOnTable(tid, furniture.netId);
+            CustomerManager.Instance.CommandPlaceOnTable(tid, furniture.netId);
             CustomerManager.Instance.CommandServePotion(tid,furniture.netId);
             return true;
         }

@@ -19,7 +19,7 @@ public class CustomerMove : NetworkBehaviour
     private bool _hasArrived = true;
     private const float GRID_OFFSET = 0.5f;
 
-    private void Awake()
+    private void OnEnable()
     {
 
         _agent = GetComponent<NavMeshAgent>();

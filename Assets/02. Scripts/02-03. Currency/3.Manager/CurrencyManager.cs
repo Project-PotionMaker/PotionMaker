@@ -1,13 +1,11 @@
+using Mirror;
 using Photon.Pun;
 using System;
 using System.Diagnostics;
 
-public class CurrencyManager : MonoBehaviourPunCallbacksSingleton<CurrencyManager>
+public class CurrencyManager:NetworkBehaviourSingleton<CurrencyManager>
 {
     public event Action OnDataChanged;
-
-    private PhotonView _photonView;
-    public PhotonView PhotonView => _photonView;
 
     private Currency _coin;
     public CurrencyDTO Coin => _coin.ToDTO();
@@ -15,65 +13,52 @@ public class CurrencyManager : MonoBehaviourPunCallbacksSingleton<CurrencyManage
     protected override void Awake()
     {
         base.Awake();
-        _photonView = GetComponent<PhotonView>();
+        UnityEngine.Debug.Log("awake");
+
+        InitCurrencyManager();
+
     }
 
-    private void Start()
-    {
-        InitCurrencyManager();
-    }
-
-    // 없애도 됨
-    public override void OnJoinedRoom()
-    {
-        InitCurrencyManager();
-    }
+    // 네트워크 매니저에서 처리
+    //public override void OnJoinedRoom()
+    //{
+    //    InitCurrencyManager();
+    //}
 
     private void InitCurrencyManager()
     {
-        //없애도 됨
-        if (!PhotonNetwork.InRoom)
-        {
-            return;
-        }
         _coin = new Currency(0);
-        RequestUpdateCurrency();
+        CmdRequestUpdateCurrency();
         OnDataChanged?.Invoke();
         // Todo: Save총괄로부터 데이터 받아온 후 초기화
     }
 
-    [PunRPC]
-    public void RequestAddCurrency(int addendValue)
+    [Command(requiresAuthority = false)]
+    public void CmdRequestAddCurrency(int addendValue)
     {
-        if (!PhotonNetwork.IsMasterClient)
-        {
-            _photonView.RPC(nameof(RequestAddCurrency), RpcTarget.MasterClient, addendValue);
-            return;
-        }
-
         AddCurrency(addendValue);
     }
 
+    [Server]
     private void AddCurrency(int addendValue)
     {
-        if (!PhotonNetwork.IsMasterClient)
+        if (!isServer)
         {
-            throw new InvalidOperationException("Only the Master Client may Add currency directly. Use 'RequestAddCurrency' instead.");
+            throw new InvalidOperationException($"{nameof(AddCurrency)}() is server-only. Use {nameof(CmdRequestAddCurrency)}() from client.");
         }
         _coin.AddCurrency(addendValue);
         OnDataChanged?.Invoke();
 
-        _photonView.RPC(nameof(SetCurrency), RpcTarget.Others, _coin.Value);
+        UpdateCurrency(_coin.Value);
     }
 
+    [Server]
     public bool TrySubtractCurrency(int subtrahendValue)
     {
-        if (!PhotonNetwork.IsMasterClient)
+        if (!isServer)
         {
-            throw new InvalidOperationException("Only the Master Client may Subtract currency directly. Request Subtract via a high level action method." +
-                                "\ne.g., \n[RPC] MarketManager.RequestBuy()" +
-                                "\n ->   MarketManager.TryBuy()" +
-                                "\n ->   CurrencyManager.TrySubtractCurrency()");
+            throw new InvalidOperationException($"{nameof(TrySubtractCurrency)}() is sever-only. Request Subtract via a high level action method from client." +
+                                $"\ne.g., \n {nameof(ProductManager)}.Instance.{nameof(ProductManager.CmdRequestBuy)}()");
         }
 
         bool result = _coin.TrySubtractCurrency(subtrahendValue);
@@ -82,7 +67,7 @@ public class CurrencyManager : MonoBehaviourPunCallbacksSingleton<CurrencyManage
         {
             OnDataChanged?.Invoke();
 
-            _photonView.RPC(nameof(SetCurrency), RpcTarget.Others, _coin.Value);
+            UpdateCurrency(_coin.Value);
             UnityEngine.Debug.Log("Subtract succed");
             return true;
         }
@@ -91,30 +76,17 @@ public class CurrencyManager : MonoBehaviourPunCallbacksSingleton<CurrencyManage
     }
 
     // 마스터 클라이언트에서 클라이언트 갱신시키는 용도
-    [PunRPC]
-    public void SetCurrency(int value, PhotonMessageInfo info)
+    [ClientRpc]
+    public void UpdateCurrency(int value)
     {
-        if (!info.Sender.IsMasterClient)
-        {
-            throw new InvalidOperationException("Currency must be Set by the Master Client");
-        }
         _coin.SetCurrency(value);
         OnDataChanged?.Invoke();
     }
 
     // 갱신 요청
-    public void RequestUpdateCurrency()
+    [Command(requiresAuthority = false)]
+    public void CmdRequestUpdateCurrency()
     {
-        _photonView.RPC(nameof(RequestUpdateCurrency), RpcTarget.MasterClient);
-    }
-    [PunRPC]
-    public void RequestUpdateCurrency(PhotonMessageInfo info)
-    {
-        if (!PhotonNetwork.IsMasterClient)
-        {
-            _photonView.RPC(nameof(RequestUpdateCurrency), RpcTarget.MasterClient);
-            return;
-        }
-        _photonView.RPC(nameof(SetCurrency), info.Sender, _coin.Value);
+        UpdateCurrency(_coin.Value);
     }
 }

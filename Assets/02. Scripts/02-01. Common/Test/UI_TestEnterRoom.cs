@@ -30,13 +30,13 @@ public class UI_TestEnterRoom : MonoBehaviourPunCallbacks
 
     public void OnClickEnterRoomButton()
     {
-        // Room 속성 정의
-        RoomOptions roomOptions = new RoomOptions();
-        roomOptions.MaxPlayers = 20;
-        roomOptions.IsOpen = true;      // 룸 입장 가능 여부
-        roomOptions.IsVisible = true;   // 로비 (채널) 룸 목록에 노출시킬지 여부
+        //// Room 속성 정의
+        //RoomOptions roomOptions = new RoomOptions();
+        //roomOptions.MaxPlayers = 20;
+        //roomOptions.IsOpen = true;      // 룸 입장 가능 여부
+        //roomOptions.IsVisible = true;   // 로비 (채널) 룸 목록에 노출시킬지 여부
 
-        PhotonNetwork.JoinOrCreateRoom(roomIDInputField.text, roomOptions, TypedLobby.Default);
+        //PhotonNetwork.JoinOrCreateRoom(roomIDInputField.text, roomOptions, TypedLobby.Default);
     }
 
     public void OnClickInstantiateRoom(int index)

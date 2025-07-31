@@ -7,15 +7,15 @@ public class StorageOutputContainer : IOutputContainer<Storage, StorageStat>
 
     public GameObject TakeItem(Storage storage, StorageStat stat)
     {
-        if (!PhotonNetwork.IsMasterClient)
-        {
-            storage.PhotonView.RPC(nameof(RPC_TakeIngredientItem), RpcTarget.MasterClient,
-                stat.IngredientTID, storage.transform.position);
-        }
-        else
-        {
-            RPC_TakeIngredientItem(stat.IngredientTID, storage.transform.position);
-        }
+        //if (!PhotonNetwork.IsMasterClient)
+        //{
+        //    storage.PhotonView.RPC(nameof(RPC_TakeIngredientItem), RpcTarget.MasterClient,
+        //        stat.IngredientTID, storage.transform.position);
+        //}
+        //else
+        //{
+        //    RPC_TakeIngredientItem(stat.IngredientTID, storage.transform.position);
+        //}
         return _output;
     }
 

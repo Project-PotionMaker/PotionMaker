@@ -1,4 +1,5 @@
 using Google.Apis.Sheets.v4.Data;
+using Mirror;
 using NUnit.Framework;
 using Photon.Pun;
 using System;
@@ -14,7 +15,7 @@ public class ModelOnTID
     public GameObject Model;
 }
 
-public class Machine : MonoBehaviour, IGridItemHandler
+public class Machine : NetworkBehaviour, IGridItemHandler
 {
     [SerializeField]
     private MachineStat _stat;
@@ -27,9 +28,6 @@ public class Machine : MonoBehaviour, IGridItemHandler
     private IInputContainer<Machine, MachineStat> _inputComponent;
     private IOutputContainer<Machine, MachineStat> _outputComponent;
 
-    private PhotonView _photonView;
-    public PhotonView PhotonView => _photonView;
-
     [Foldout("Project")]
     [SerializeField]
     private List<ModelOnTID> _modelObjectList = new List<ModelOnTID>();
@@ -39,7 +37,6 @@ public class Machine : MonoBehaviour, IGridItemHandler
 
     private void Awake()
     {
-        _photonView = GetComponent<PhotonView>();
         _modelObjectDic = new Dictionary<int, GameObject>();
         foreach (var modelInfo in _modelObjectList)
         {
@@ -53,8 +50,20 @@ public class Machine : MonoBehaviour, IGridItemHandler
         PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase].OnPhaseExited += ResetItem;
     }
 
-    public void InitMachine(MachineData data, IInteractable<Machine, MachineStat> interactableComponent, IInputContainer<Machine, MachineStat> inputComponent, IOutputContainer<Machine, MachineStat> outputComponent)
+    [ClientRpc]
+    public void RpcInitMachineOnClients(int machineTID)
     {
+        MachineData machineData = DataTable.Instance.GetMachineData(machineTID);
+        IInteractable<Machine, MachineStat> interactable = GetInteractableComponent(machineData.InteractType);
+        IInputContainer<Machine, MachineStat> inputContainer = new MachineInputContainer();
+        IOutputContainer<Machine, MachineStat> outputContainer = new MachineOutputContainer();
+
+        InitMachineInternal(machineData, interactable, _inputComponent, _outputComponent);
+    }
+
+    private void InitMachineInternal(MachineData data, IInteractable<Machine, MachineStat> interactableComponent, IInputContainer<Machine, MachineStat> inputComponent, IOutputContainer<Machine, MachineStat> outputComponent)
+    {
+
         _stat = new MachineStat(data);
         _interactComponent = interactableComponent;
         _inputComponent = inputComponent;
@@ -68,6 +77,24 @@ public class Machine : MonoBehaviour, IGridItemHandler
                 modelInfo.Model.SetActive(true);
             }
         }
+    }
+
+    private IInteractable<Machine, MachineStat> GetInteractableComponent(EInteractType interactType)
+    {
+        switch (interactType)
+        {
+            case EInteractType.KeepPressing:
+                // 수정 필요
+                return new AutoProgressInteract();
+            case EInteractType.AutoProgress:
+                return new AutoProgressInteract();
+            case EInteractType.ClickRepeatly:
+                return new ClickRepeatlyInteract();
+            case EInteractType.ClickOnce:
+                return new ClickOnceInteract();
+        }
+
+        return null;
     }
 
     public bool TryInteract()
@@ -98,7 +125,7 @@ public class Machine : MonoBehaviour, IGridItemHandler
     [ContextMenu("HI")]
     public void SyncMachineStat()
     {
-        _photonView.RPC(nameof(RPC_SyncMachineStat), RpcTarget.All, _stat.CurrentProgress, _stat.LeftOutputAmount, _stat.IsProcessFinished, _stat.IsProcessStarted, _stat.InputTIDList.ToArray());
+        //_photonView.RPC(nameof(RPC_SyncMachineStat), RpcTarget.All, _stat.CurrentProgress, _stat.LeftOutputAmount, _stat.IsProcessFinished, _stat.IsProcessStarted, _stat.InputTIDList.ToArray());
     }
 
     [PunRPC]

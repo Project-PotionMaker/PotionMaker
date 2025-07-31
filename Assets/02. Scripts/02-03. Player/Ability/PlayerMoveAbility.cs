@@ -23,10 +23,10 @@ public class PlayerMoveAbility : PlayerAbility
 
     private void FixedUpdate()
     {
-        if (!_photonView.IsMine)
-        {
-            return;
-        }
+        //if (!_photonView.IsMine)
+        //{
+        //    return;
+        //}
 
         Vector2 moveInput = InputManager.Instance.MoveInput;
         float inputSize = Mathf.Min(moveInput.magnitude, 1f);

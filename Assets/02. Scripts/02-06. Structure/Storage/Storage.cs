@@ -10,7 +10,7 @@ public class Storage : NetworkBehaviour, IGridItemHandler
     private StorageStat _stat;
     [SerializeField]
     private Transform _model;
-    private IOutputContainer<Storage, StorageStat> _outputComponent;
+    private IOutputContainer<Storage> _outputComponent;
 
     public Action<StorageStat> OnDataChanged;
     [Foldout("Project")]
@@ -32,11 +32,11 @@ public class Storage : NetworkBehaviour, IGridItemHandler
     public void RpcInitStorageOnClients(int storageTID, int ingredientTID)
     {
         StorageData storageData = DataTable.Instance.GetStorageData(storageTID);
-        IOutputContainer<Storage, StorageStat> outputInteractable = new StorageOutputContainer();
+        IOutputContainer<Storage> outputInteractable = new StorageOutputContainer();
         InitStorageInternal(storageData, ingredientTID, outputInteractable);
     }
 
-    private void InitStorageInternal(StorageData data, int ingredientTID, IOutputContainer<Storage, StorageStat> outputComponent)
+    private void InitStorageInternal(StorageData data, int ingredientTID, IOutputContainer<Storage> outputComponent)
     {
         _stat = new StorageStat(data, ingredientTID);
         _outputComponent = outputComponent;
@@ -53,7 +53,8 @@ public class Storage : NetworkBehaviour, IGridItemHandler
         OnDataChanged?.Invoke(_stat);
     }
 
-    public bool TryInteract()
+    [Command(requiresAuthority = false)]
+    public bool CmdTryInteract()
     {
         if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
         {
@@ -69,7 +70,8 @@ public class Storage : NetworkBehaviour, IGridItemHandler
         return false;
     }
 
-    public GameObject TryPickUp()
+    [Command(requiresAuthority = false)]
+    public GameObject CmdTryPickUp()
     {
         if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
         {
@@ -80,16 +82,17 @@ public class Storage : NetworkBehaviour, IGridItemHandler
         {
             if (ReferenceEquals(_outputComponent, null) == false)
             {
-                if (_outputComponent.CanTake(this, _stat))
+                if (_outputComponent.ServerCanTake(this))
                 {
-                    return _outputComponent.TakeItem(this, _stat);
+                    return _outputComponent.ServerTakeItem(this);
                 }
             }
         }
         return null;
     }
 
-    public bool TryDrop(Vector3 targetPosition, int tid = 10000, EInputType inputType = EInputType.None, GameObject inputObject = null)
+    [Command(requiresAuthority = false)]
+    public bool CmdTryDrop(Vector3 targetPosition, int tid = 10000, EInputType inputType = EInputType.None, GameObject inputObject = null)
     {
         if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
         {
@@ -100,7 +103,22 @@ public class Storage : NetworkBehaviour, IGridItemHandler
         }
         return false;
     }
-    public void ResetItem()
+    public void ResetMachineServer()
     {
+    }
+
+    public bool TryInteract()
+    {
+        return CmdTryInteract();
+    }
+
+    public GameObject TryPickUp()
+    {
+        return CmdTryPickUp();
+    }
+
+    public bool TryDrop(Vector3 targetPosition, int tid = 10000, EInputType inputType = EInputType.None, GameObject inputObject = null)
+    {
+        return CmdTryDrop(targetPosition, tid, inputType, inputObject);
     }
 }

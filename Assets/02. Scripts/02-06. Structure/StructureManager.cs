@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
-//using Photon.Pun;
+using Photon.Pun;
 using Unity.VisualScripting;
-//using Photon.Realtime;
+using Photon.Realtime;
 
 public class StructureManager : MonoBehaviourSingleton<StructureManager>
 {
@@ -17,18 +17,18 @@ public class StructureManager : MonoBehaviourSingleton<StructureManager>
 
         switch (data.StructureType)
         {
-            //case EStructureType.Furniture:
-            //    instance.GetComponent<Furniture>().RpcInitFurnitureOnClients(data.TypeTID);
-            //    break;
-            //case EStructureType.Machine:
-            //    instance.GetComponent<Machine>().RpcInitMachineOnClients(data.TypeTID);
-            //    break;
-            //case EStructureType.Storage:
-            //    instance.GetComponent<Storage>().RpcInitStorageOnClients(data.TypeTID, ingredientTID);
-            //    break;
-            //case EStructureType.None:
-            //    Destroy(instance);
-            //    return null;
+            case EStructureType.Furniture:
+                instance.GetComponent<Furniture>().RpcInitFurnitureOnClients(data.TypeTID);
+                break;
+            case EStructureType.Machine:
+                instance.GetComponent<Machine>().ServerInitMachine(data.TypeTID);
+                break;
+            case EStructureType.Storage:
+                instance.GetComponent<Storage>().RpcInitStorageOnClients(data.TypeTID, ingredientTID);
+                break;
+            case EStructureType.None:
+                Destroy(instance);
+                return null;
         }
         return instance;
     }

@@ -1,7 +1,7 @@
 using UnityEngine;
 
-public interface IOutputContainer<TClass, TStat>
+public interface IOutputContainer<TStructure>
 {
-    public bool CanTake(TClass instance, TStat stat);
-    public GameObject TakeItem(TClass instance, TStat stat);
+    public bool ServerCanTake(TStructure instance);
+    public GameObject ServerTakeItem(TStructure instance);
 }

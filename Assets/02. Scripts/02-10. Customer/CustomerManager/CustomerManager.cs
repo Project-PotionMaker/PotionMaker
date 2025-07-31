@@ -344,6 +344,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         customer.CustomerMove.MoveTo(chair.transform.position);
         chair.GetComponent<Furniture>().TryEffect(customer); // 의자 효과 적용
     }
+
     private void LeaveChair(Customer customer)
     {
         FurnitureUsingStat usedChair = _orderHandler.FindUsingChair(customer);

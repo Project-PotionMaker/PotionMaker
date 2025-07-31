@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public interface ICustomerEffectable <TClass,TStat>
+public interface ICustomerEffectable <TStructure>
 {
-    public void Effect(TClass instance, TStat stat, Customer customer = null);
+    public void ServerEffect(TStructure instance, Customer customer = null);
 }

@@ -33,7 +33,7 @@ public class RentManager : NetworkBehaviourSingleton<RentManager>
     //    InitRentManager();
     //}
 
-    [Command]
+    [Command(requiresAuthority = false)]
     public void CmdRequestUpdateRent()
     {
         RentRPCData rentRPCData = new RentRPCData(Rent);
@@ -48,7 +48,7 @@ public class RentManager : NetworkBehaviourSingleton<RentManager>
         _rent.SetRent(rentRPCData.RentDayCounter, rentRPCData.CurrentRentCost, rentRPCData.RentIncrement);
     }
 
-    [Command]
+    [Command(requiresAuthority = false)]
     public void CmdRequestPayRent()
     {
         PayRent();

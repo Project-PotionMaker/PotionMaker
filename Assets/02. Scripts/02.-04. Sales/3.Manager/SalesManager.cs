@@ -30,7 +30,11 @@ public class SalesManager : NetworkBehaviourSingleton<SalesManager>
         CmdRequestUpdateSales(false);
     }
 
-    [Command]
+    public void RequestSell(EPotionType potionType, int price)
+    {
+        CmdRequestSell(potionType, price);
+    }
+    [Command(requiresAuthority = false)]
     public void CmdRequestSell(EPotionType potionType, int price)
     {
         Sell(potionType, price);
@@ -66,7 +70,7 @@ public class SalesManager : NetworkBehaviourSingleton<SalesManager>
         }
     }
 
-    [Command]
+    [Command(requiresAuthority = false)]
     public void CmdRequestUpdateSales(bool isForSummary)
     {
         SalesRPCData salesRPCData = new SalesRPCData(Sales);

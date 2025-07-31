@@ -21,11 +21,11 @@ public class CurrencyTest : MonoBehaviourPunCallbacks
 
         if (Input.GetKeyDown(KeyCode.Alpha9))
         {
-            SalesManager.Instance.CmdRequestSell(EPotionType.Vitality, 1);
+            SalesManager.Instance.RequestSell(EPotionType.Vitality, 1);
         }
         if (Input.GetKeyDown(KeyCode.Alpha0))
         {
-            SalesManager.Instance.CmdRequestSell(EPotionType.Life, 10);
+            SalesManager.Instance.RequestSell(EPotionType.Life, 10);
         }
     }
 

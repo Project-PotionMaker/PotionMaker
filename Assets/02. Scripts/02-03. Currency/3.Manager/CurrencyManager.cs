@@ -29,7 +29,7 @@ public class CurrencyManager:NetworkBehaviourSingleton<CurrencyManager>
         // Todo: Save총괄로부터 데이터 받아온 후 초기화
     }
 
-    [Command]
+    [Command(requiresAuthority = false)]
     public void CmdRequestAddCurrency(int addendValue)
     {
         AddCurrency(addendValue);
@@ -80,7 +80,7 @@ public class CurrencyManager:NetworkBehaviourSingleton<CurrencyManager>
     }
 
     // 갱신 요청
-    [Command]
+    [Command(requiresAuthority = false)]
     public void CmdRequestUpdateCurrency()
     {
         UpdateCurrency(_coin.Value);

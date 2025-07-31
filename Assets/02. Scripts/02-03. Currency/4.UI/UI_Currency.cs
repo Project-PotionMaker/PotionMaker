@@ -6,13 +6,9 @@ public class UI_Currency : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI _coinValueTextUI;
 
-    private void Awake()
-    {
-        CurrencyManager.Instance.OnDataChanged += Refresh;
-    }
-
     private void Start()
     {
+        CurrencyManager.Instance.OnDataChanged += Refresh;
         Refresh();
     }
     public void Refresh()

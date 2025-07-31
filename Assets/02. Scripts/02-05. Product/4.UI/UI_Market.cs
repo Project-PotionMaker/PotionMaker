@@ -23,8 +23,11 @@ public class UI_Market : MonoBehaviour
     {
         _productSlotList = new List<UI_ProductSlot>();
         gameObject.SetActive(false);
-        CurrencyManager.Instance.OnDataChanged += RefreshCoin;
+    }
 
+    private void Start()
+    {
+        CurrencyManager.Instance.OnDataChanged += RefreshCoin;
     }
     private void OnEnable()
     {

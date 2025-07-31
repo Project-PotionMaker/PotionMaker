@@ -64,7 +64,7 @@ public class ProductManager : NetworkBehaviourSingleton<ProductManager>
         }
     }
 
-    [Command]
+    [Command(requiresAuthority =false)]
     public void CmdRequestBuy(EProductType productType, int productID, NetworkConnectionToClient sender = null)
     {
         Product product = _productListDict[productType].Find(product => product.Data.TID == productID);
@@ -119,7 +119,7 @@ public class ProductManager : NetworkBehaviourSingleton<ProductManager>
         Debug.Log($"구매 결과: {result}");
     }
 
-    [Command]
+    [Command(requiresAuthority = false)]
     public void CmdRequestUnlock(int productID)
     {
         Unlock(productID);
@@ -138,7 +138,7 @@ public class ProductManager : NetworkBehaviourSingleton<ProductManager>
         UpdateProduct(targetProduct.Data.TID, targetProduct.IsUnlocked);
     }
 
-    [Command]
+    [Command(requiresAuthority = false)]
     public void CmdRequestUpdateProducts()
     {
         UpdateProducts();

@@ -3,6 +3,7 @@ using Photon.Pun;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class BaseFactory<TEnum, TFactoryInfo> : MonoBehaviourSingleton<BaseFactory<TEnum, TFactoryInfo>>
     where TEnum : Enum
@@ -12,7 +13,7 @@ public class BaseFactory<TEnum, TFactoryInfo> : MonoBehaviourSingleton<BaseFacto
     private List<TFactoryInfo> _factoryInfoList;
 
     private Dictionary<TEnum, string> _typeToAddressableKeyMap = new Dictionary<TEnum, string>();
-    private HashSet<string> _validAddressableKeys = new HashSet<string>();
+    //private HashSet<string> _validAddressableKeys = new HashSet<string>();
 
     //Mirror 테스트용
     private Dictionary<TEnum, GameObject> _typeToPrefabKeyDict = new Dictionary<TEnum, GameObject>();
@@ -24,7 +25,7 @@ public class BaseFactory<TEnum, TFactoryInfo> : MonoBehaviourSingleton<BaseFacto
 
     private async void Start()
     {
-        DefaultPool defaultPool = PhotonNetwork.PrefabPool as DefaultPool;
+        //DefaultPool defaultPool = PhotonNetwork.PrefabPool as DefaultPool;
 
         foreach (TFactoryInfo info in _factoryInfoList)
         {
@@ -38,12 +39,17 @@ public class BaseFactory<TEnum, TFactoryInfo> : MonoBehaviourSingleton<BaseFacto
 
             if (prefab != null)
             {
-                _validAddressableKeys.Add(info.AddressableKey);
+                //_validAddressableKeys.Add(info.AddressableKey);
                 _typeToAddressableKeyMap[info.Type] = info.AddressableKey;
-                defaultPool.ResourceCache.TryAdd(info.AddressableKey, prefab);
+                //defaultPool.ResourceCache.TryAdd(info.AddressableKey, prefab);
 
-                //Mirror 테스트용
                 _typeToPrefabKeyDict.TryAdd(info.Type, prefab);
+
+                var identity = prefab.GetComponent<NetworkIdentity>();
+                if (identity != null)
+                {
+                    MirrorNetworkManager.Instance.spawnPrefabs.Add(prefab);
+                }
             }
             else
             {

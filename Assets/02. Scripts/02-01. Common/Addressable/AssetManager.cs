@@ -4,6 +4,7 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceLocations;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Mirror;
 
 public class AssetManager : MonoBehaviourSingleton<AssetManager>
 {

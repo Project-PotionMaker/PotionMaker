@@ -8,10 +8,10 @@ public class PlayerPickupAbility : PlayerAbility
 
     private void Start()
     {
-        if (!_photonView.IsMine)
-        {
-            return;
-        }
+        //if (!_photonView.IsMine)
+        //{
+        //    return;
+        //}
 
         InputManager.Instance.OnPickupEvent += OnPickupInput;
         _animationAbility = _owner.GetAbility<PlayerAnimationAbility>();
@@ -21,10 +21,10 @@ public class PlayerPickupAbility : PlayerAbility
 
     private void Update()
     {
-        if (!_photonView.IsMine)
-        {
-            return;
-        }
+        //if (!_photonView.IsMine)
+        //{
+        //    return;
+        //}
 
         if( _heldItem != null)
         {

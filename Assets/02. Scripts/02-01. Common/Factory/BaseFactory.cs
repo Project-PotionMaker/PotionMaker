@@ -1,7 +1,9 @@
+using Mirror;
 using Photon.Pun;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class BaseFactory<TEnum, TFactoryInfo> : MonoBehaviourSingleton<BaseFactory<TEnum, TFactoryInfo>>
     where TEnum : Enum
@@ -11,7 +13,10 @@ public class BaseFactory<TEnum, TFactoryInfo> : MonoBehaviourSingleton<BaseFacto
     private List<TFactoryInfo> _factoryInfoList;
 
     private Dictionary<TEnum, string> _typeToAddressableKeyMap = new Dictionary<TEnum, string>();
-    private HashSet<string> _validAddressableKeys = new HashSet<string>();
+    //private HashSet<string> _validAddressableKeys = new HashSet<string>();
+
+    //Mirror 테스트용
+    private Dictionary<TEnum, GameObject> _typeToPrefabKeyDict = new Dictionary<TEnum, GameObject>();
 
     protected override void Awake()
     {
@@ -20,7 +25,7 @@ public class BaseFactory<TEnum, TFactoryInfo> : MonoBehaviourSingleton<BaseFacto
 
     private async void Start()
     {
-        DefaultPool defaultPool = PhotonNetwork.PrefabPool as DefaultPool;
+        //DefaultPool defaultPool = PhotonNetwork.PrefabPool as DefaultPool;
 
         foreach (TFactoryInfo info in _factoryInfoList)
         {
@@ -34,9 +39,17 @@ public class BaseFactory<TEnum, TFactoryInfo> : MonoBehaviourSingleton<BaseFacto
 
             if (prefab != null)
             {
-                _validAddressableKeys.Add(info.AddressableKey);
+                //_validAddressableKeys.Add(info.AddressableKey);
                 _typeToAddressableKeyMap[info.Type] = info.AddressableKey;
-                defaultPool.ResourceCache.TryAdd(info.AddressableKey, prefab);
+                //defaultPool.ResourceCache.TryAdd(info.AddressableKey, prefab);
+
+                _typeToPrefabKeyDict.TryAdd(info.Type, prefab);
+
+                var identity = prefab.GetComponent<NetworkIdentity>();
+                if (identity != null)
+                {
+                    MirrorNetworkManager.Instance.spawnPrefabs.Add(prefab);
+                }
             }
             else
             {
@@ -46,6 +59,7 @@ public class BaseFactory<TEnum, TFactoryInfo> : MonoBehaviourSingleton<BaseFacto
         }
     }
 
+    [Server]
     public GameObject Create(TEnum type, Vector3 position, Quaternion rotation)
     {
         if (!_typeToAddressableKeyMap.ContainsKey(type))
@@ -53,11 +67,16 @@ public class BaseFactory<TEnum, TFactoryInfo> : MonoBehaviourSingleton<BaseFacto
             Debug.LogError($"타입에 맞는 어드레서블 키가 없습니다. 타입 : {type}");
             return null;
         }
-        string addressableKey = _typeToAddressableKeyMap[type];
-        
-        // PhotonNetwork.Instantiate는 Addressable Key를 사용해야 하므로 캐시도 이름 기준
-        GameObject networkObject = PhotonNetwork.Instantiate(addressableKey, position, rotation);
+        //string addressableKey = _typeToAddressableKeyMap[type];
 
+        //// PhotonNetwork.Instantiate는 Addressable Key를 사용해야 하므로 캐시도 이름 기준
+        //GameObject networkObject = PhotonNetwork.Instantiate(addressableKey, position, rotation);
+
+        // Mirror 추가
+        GameObject networkObject = Instantiate(_typeToPrefabKeyDict[type], position, rotation);
+        NetworkServer.Spawn(networkObject);
+
+        Debug.Log($"서버에서 '{networkObject.name}'를 스폰했습니다.");
         return networkObject;
     }
 
@@ -71,6 +90,7 @@ public class BaseFactory<TEnum, TFactoryInfo> : MonoBehaviourSingleton<BaseFacto
 
         GameObject networkObject = PhotonNetwork.Instantiate(addressableKey, position, rotation);
 
+        NetworkServer.Spawn(networkObject);
         return networkObject;
     }
 

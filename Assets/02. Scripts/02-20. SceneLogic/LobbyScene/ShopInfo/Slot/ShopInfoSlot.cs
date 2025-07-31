@@ -10,7 +10,7 @@ public enum SlotState
 public class ShopInfoSlot : MonoBehaviour
 {
     public event Action<ShopInfo> OnShopInfoCreated;
-    public event Action<ShopInfoSlot, ShopInfo, bool> OnShopInfoSelected;
+    public event Action OnShopInfoSelected;
     public event Action OnShopInfoUnSelected;
     public event Action OnShopInfoDeleted;
 
@@ -24,11 +24,12 @@ public class ShopInfoSlot : MonoBehaviour
         _createPopup = createPopup;
     }
 
-    public void CreateShopInfo(ShopInfo shopInfo)
+    public void FillShopInfoSlot(ShopInfo shopInfo)
     {
         _shopInfo = shopInfo;
         CurrentState = SlotState.Filled;
         OnShopInfoCreated.Invoke(_shopInfo);
+        Select();
     }
     
     public void OnSlotButtonClick()
@@ -39,12 +40,22 @@ public class ShopInfoSlot : MonoBehaviour
                 _createPopup.OpenPopup(this);
                 break;
             case SlotState.Filled:
-                OnShopInfoSelected?.Invoke(this, _shopInfo, false);
+                OnShopInfoSelected?.Invoke();
                 break;
         }
     }
 
-    public void OnDeleteButtonClick()
+    public void Select()
+    {
+        OnShopInfoSelected?.Invoke();
+    }
+
+    public void UnSelect()
+    {
+        OnShopInfoUnSelected?.Invoke();
+    }
+
+    public void Delete()
     {
         _shopInfo = null;
         CurrentState = SlotState.Empty;

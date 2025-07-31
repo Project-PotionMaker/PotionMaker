@@ -29,35 +29,40 @@ public class UI_ShopInfoSlot : MonoBehaviour
     private void Start()
     {
         _shopInfoSlot = GetComponent<ShopInfoSlot>();
-        _shopInfoSlot.OnShopInfoCreated += Refresh;
-        _shopInfoSlot.OnShopInfoDeleted += RefreshOnDelete;
+        _shopInfoSlot.OnShopInfoCreated += RefreshOnCreated;
+        _shopInfoSlot.OnShopInfoSelected += RefreshOnSelected;
+        _shopInfoSlot.OnShopInfoUnSelected += RefreshOnUnSelected;
+        _shopInfoSlot.OnShopInfoDeleted += RefreshOnDeleted;
     }
 
-    public void Refresh(ShopInfo shopInfo)
+    public void RefreshOnCreated(ShopInfo shopInfo)
     {
         if (shopInfo != null)
         {
             _textShopName.text = shopInfo.ShopName;
             _buttonCreateNewShop.gameObject.SetActive(false);
             _buttonShopName.gameObject.SetActive(true);
+            _buttonDelete.gameObject.SetActive(true);
         }
     }
 
-    public void RefreshOnDelete()
+    public void RefreshOnDeleted()
     {
         _textShopName.text = string.Empty;
         _buttonCreateNewShop.gameObject.SetActive(true);
         _buttonShopName.gameObject.SetActive(false);
     }
 
-    public void RefreshSelected()
+    public void RefreshOnSelected()
     {
-        _buttonShopName.gameObject.SetActive(true);
+        // _buttonShopName 색깔 변경
+        _buttonDelete.gameObject.SetActive(true);
     }
 
-    public void RefreshUnSelected()
+    public void RefreshOnUnSelected()
     {
-        _buttonShopName.gameObject.SetActive(false);
+        // _buttonShopName 색깔 변경
+        _buttonDelete.gameObject.SetActive(false);
     }
 
 }

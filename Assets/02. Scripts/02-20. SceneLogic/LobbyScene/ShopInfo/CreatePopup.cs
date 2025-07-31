@@ -13,7 +13,7 @@ public class CreatePopup : MonoBehaviour
 
     private ShopInfoSlot _selectedShopInfoSlot;
 
-    public event Action<ShopInfoSlot, ShopInfo, bool> OnCreateNewShopInfo;
+    public event Action<ShopInfoSlot, ShopInfo> OnShopInfoCreated;
 
     public void OpenPopup(ShopInfoSlot shopInfoSlot)
     {
@@ -25,7 +25,8 @@ public class CreatePopup : MonoBehaviour
     public void CreateNewShopInfo()
     {
         ShopInfo newShopInfo = new ShopInfo(_inputFieldShopName.text);
-        OnCreateNewShopInfo?.Invoke(_selectedShopInfoSlot, newShopInfo, true);
+        OnShopInfoCreated?.Invoke(_selectedShopInfoSlot, newShopInfo);
+        ClosePopup();
     }
 
     public void ClosePopup()

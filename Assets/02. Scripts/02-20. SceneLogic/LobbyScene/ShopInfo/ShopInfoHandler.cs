@@ -11,7 +11,7 @@ public class ShopInfoHandler : MonoBehaviour
 
     [Header("Project")]
     [SerializeField]
-    private List<ShopInfoSlot> _shopInfoSlotList = new();
+    private List<ShopInfoSlot> _shopInfoList = new();
 
     private ShopInfo _selectedShopInfo;
 
@@ -22,42 +22,30 @@ public class ShopInfoHandler : MonoBehaviour
 
     private void InitShopInfoHandler()
     {
-        _createPopup.OnCreateNewShopInfo += UpdateSelectedShopInfo;
-        foreach (var slot in _shopInfoSlotList)
+        _createPopup.OnShopInfoCreated += UpdateShopInfoList;
+        foreach (var slot in _shopInfoList)
         {
             slot.InitShopInfoSlot(_createPopup);
-            slot.OnShopInfoSelected += UpdateSelectedShopInfo;
             slot.OnShopInfoDeleted += DeleteSelectedShopInfo;
         }
     }
 
-    public void UpdateSelectedShopInfo(ShopInfoSlot shopInfoSlot, ShopInfo shopInfo, bool isCreated)
+    public void UpdateShopInfoList(ShopInfoSlot shopInfoSlot, ShopInfo shopInfo)
     {
         _selectedShopInfo = shopInfo;
-        foreach (var slot in _shopInfoSlotList)
+        foreach (var slot in _shopInfoList)
         {
             if (ReferenceEquals(slot, shopInfoSlot))
             {
-                if (isCreated)
-                {
-                    slot.CreateShopInfo(shopInfo);
-                }
-                else
-                {
-                }
+                slot.FillShopInfoSlot(shopInfo);
+
             }
             else
             {
-
+                slot.UnSelect();
             }
         }
     }
-
-    public void UpdateSelectedShopInfo()
-    {
-
-    }
-
 
     private void DeleteSelectedShopInfo()
     {

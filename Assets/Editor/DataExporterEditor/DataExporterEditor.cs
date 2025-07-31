@@ -131,7 +131,7 @@ public partial class DataExporterEditor : EditorWindow
             }
         };
 
-        var enumBox = new Box();
+        var enumBox = new UnityEngine.UIElements.Box();
         enumBox.name = "EnumArea";
         enumBox.StretchToParentSize();
         enumBox.style.marginTop = 20;
@@ -189,7 +189,7 @@ public partial class DataExporterEditor : EditorWindow
             toggle.RegisterValueChangedCallback(x => TableInfos[i].IsApply = x.newValue);
         };
 
-        var tableBox = new Box();
+        var tableBox = new UnityEngine.UIElements.Box();
         tableBox.name = "TableArea";
         tableBox.StretchToParentSize();
         tableBox.style.marginTop = 70;
@@ -251,7 +251,7 @@ public partial class DataExporterEditor : EditorWindow
             }
         };
 
-        var logBox = new Box();
+        var logBox = new UnityEngine.UIElements.Box();
         logBox.name = "LogArea";
         logBox.StretchToParentSize();
         logBox.style.marginTop = 20;

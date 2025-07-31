@@ -8,10 +8,8 @@ public class PickUpTableInputContainer : IInputContainer<Furniture, FurnitureSta
         {
             stat.InputObject = inputObject;
             stat.InputObject.transform.position = stat.InputPosition.position;
-           
-            CustomerManager.Instance.PlaceOnTable(tid, furniture.PhotonView.ViewID);
-            CustomerManager.Instance.ServePotion(tid,furniture.PhotonView.ViewID);
-
+            //CustomerManager.Instance.PlaceOnTable(tid, furniture.PhotonView.ViewID);
+            //CustomerManager.Instance.ServePotion(tid,furniture.PhotonView.ViewID);
             return true;
         }
         return false;

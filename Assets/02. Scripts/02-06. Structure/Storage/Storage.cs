@@ -1,18 +1,16 @@
+using Mirror;
 using Photon.Pun;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 using VInspector;
 
-public class Storage : MonoBehaviour, IGridItemHandler
+public class Storage : NetworkBehaviour, IGridItemHandler
 {
     private StorageStat _stat;
     [SerializeField]
     private Transform _model;
     private IOutputContainer<Storage, StorageStat> _outputComponent;
-
-    private PhotonView _photonView;
-    public PhotonView PhotonView => _photonView;
 
     public Action<StorageStat> OnDataChanged;
     [Foldout("Project")]
@@ -22,7 +20,6 @@ public class Storage : MonoBehaviour, IGridItemHandler
 
     private void Awake()
     {
-        _photonView = GetComponent<PhotonView>();
         _modelObjectDic = new Dictionary<int, GameObject>();
         foreach (var modelInfo in _modelObjectList)
         {
@@ -31,7 +28,15 @@ public class Storage : MonoBehaviour, IGridItemHandler
         }
     }
 
-    public void InitStorage(StorageData data, int ingredientTID, IOutputContainer<Storage, StorageStat> outputComponent)
+    [ClientRpc]
+    public void RpcInitStorageOnClients(int storageTID, int ingredientTID)
+    {
+        StorageData storageData = DataTable.Instance.GetStorageData(storageTID);
+        IOutputContainer<Storage, StorageStat> outputInteractable = new StorageOutputContainer();
+        InitStorageInternal(storageData, ingredientTID, outputInteractable);
+    }
+
+    private void InitStorageInternal(StorageData data, int ingredientTID, IOutputContainer<Storage, StorageStat> outputComponent)
     {
         _stat = new StorageStat(data, ingredientTID);
         _outputComponent = outputComponent;

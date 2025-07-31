@@ -11,8 +11,8 @@ public class MachineOutputContainer : IOutputContainer<Machine, MachineStat>
         {
             if (!PhotonNetwork.IsMasterClient)
             {
-                machine.PhotonView.RPC(nameof(RPC_TakeOutput), RpcTarget.MasterClient,
-                stat.InputTIDList.ToArray(), stat.Data.TID, stat.InputType, machine.transform.position);
+                //machine.PhotonView.RPC(nameof(RPC_TakeOutput), RpcTarget.MasterClient,
+                //stat.InputTIDList.ToArray(), stat.Data.TID, stat.InputType, machine.transform.position);
             }
             else
             {

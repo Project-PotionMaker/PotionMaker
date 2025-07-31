@@ -1,10 +1,11 @@
+using Mirror;
 using Photon.Pun;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 using VInspector;
 
-public class Furniture : MonoBehaviour, IGridItemHandler
+public class Furniture : NetworkBehaviour, IGridItemHandler
 {
     [SerializeField]
     private FurnitureStat _stat;
@@ -16,8 +17,6 @@ public class Furniture : MonoBehaviour, IGridItemHandler
     private IOutputContainer<Furniture, FurnitureStat> _outputComponent;
     private ICustomerEffectable<Furniture, FurnitureStat> _effectComponent;
 
-    private PhotonView _photonView;
-    public PhotonView PhotonView => _photonView;
     [Foldout("Project")]
     [SerializeField]
     private List<ModelOnTID> _modelObjectList = new List<ModelOnTID>();
@@ -27,7 +26,6 @@ public class Furniture : MonoBehaviour, IGridItemHandler
 
     private void Awake()
     {
-        _photonView = GetComponent<PhotonView>();
         _modelObjectDic = new Dictionary<int, GameObject>();
         foreach (var modelInfo in _modelObjectList)
         {
@@ -42,7 +40,33 @@ public class Furniture : MonoBehaviour, IGridItemHandler
         PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase].OnPhaseExited += ResetItem;
     }
 
-    public void InitFurniture(FurnitureData data, IInteractable<Furniture, FurnitureStat> interactComponent, IInputContainer<Furniture, FurnitureStat> inputComponent, IOutputContainer<Furniture, FurnitureStat> outputComponent, ICustomerEffectable<Furniture, FurnitureStat>effectComponent)
+    [ClientRpc]
+    public void RpcInitFurnitureOnClients(int furnitureTID)
+    {
+        FurnitureData furnitureData = DataTable.Instance.GetFurnitureData(furnitureTID);
+        IInteractable<Furniture, FurnitureStat> interactable = null;
+        IInputContainer<Furniture, FurnitureStat> inputContainer = null;
+        IOutputContainer<Furniture, FurnitureStat> outputContainer = null;
+        ICustomerEffectable<Furniture, FurnitureStat> customerEffectable = null;
+        // 테스트용
+        if (furnitureData.Name == "계산기")
+        {
+            interactable = new CasherInteract();
+        }
+        if (furnitureData.Name == "픽업 테이블")
+        {
+            inputContainer = new PickUpTableInputContainer();
+            outputContainer = new PickUpTableOutputContainer();
+        }
+        if (furnitureData.Name == "허름한 의자" || furnitureData.Name == "푹신한 의자")
+        {
+            customerEffectable = new ChairEffect();
+        }
+
+        InitFurnitureInternal(furnitureData, _interactComponent, _inputComponent, _outputComponent, _effectComponent);
+    }
+
+    private void InitFurnitureInternal(FurnitureData data, IInteractable<Furniture, FurnitureStat> interactComponent, IInputContainer<Furniture, FurnitureStat> inputComponent, IOutputContainer<Furniture, FurnitureStat> outputComponent, ICustomerEffectable<Furniture, FurnitureStat> effectComponent)
     {
         _stat = new FurnitureStat(data, _stat.InputPosition);
         _interactComponent = interactComponent;

@@ -22,7 +22,5 @@ public class UI_ProductSlot:MonoBehaviour
         _productPriceTextUI.text = productDTO.Data.Price.ToString("N0");
         _slotButton.onClick.RemoveAllListeners();
         _slotButton.onClick.AddListener(() => OnSlotClicked?.Invoke(productDTO));
-
-        //_slotButton.onClick.AddListener(() => ProductManager.Instance.RequestBuy(productDTO.Data.ProductType, productDTO.Data.TID));
     }
 }

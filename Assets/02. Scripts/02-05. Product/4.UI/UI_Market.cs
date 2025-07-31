@@ -68,7 +68,7 @@ public class UI_Market : MonoBehaviour
         for (int deleteIndex = _productSlotList.Count - 1; deleteIndex >= slotIndex; --deleteIndex)
         {
             UI_ProductSlot deleteSlot = _productSlotList[deleteIndex];
-
+            deleteSlot.OnSlotClicked -= RefreshDetailPage;
             _productSlotList.RemoveAt(deleteIndex);
             Destroy(deleteSlot.gameObject);
         }

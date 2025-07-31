@@ -65,7 +65,7 @@ public class BaseFactory<TEnum, TFactoryInfo> : MonoBehaviourSingleton<BaseFacto
         }
     }
 
-    [Server]
+    //[Server]
     public GameObject Create(TEnum type, Vector3 position, Quaternion rotation)
     {
         if (!_typeToPrefabKeyDict.ContainsKey(type))
@@ -82,14 +82,14 @@ public class BaseFactory<TEnum, TFactoryInfo> : MonoBehaviourSingleton<BaseFacto
         return networkObject;
     }
 
-    [Server]
+    //[Server]
     private void Return(GameObject obj)
     {
         NetworkServer.UnSpawn(obj);
         obj.SetActive(false);
     }
 
-    [Command]
+    //[Command]
     public void CmdReturn(GameObject obj)
     {
         Return(obj);

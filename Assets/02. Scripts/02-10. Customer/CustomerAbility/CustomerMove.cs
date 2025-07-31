@@ -1,5 +1,5 @@
 using DG.Tweening;
-using Photon.Pun;
+//using Photon.Pun;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -41,10 +41,10 @@ public class CustomerMove : MonoBehaviour
 
     private void ArriveCheck()
     {
-        if(!PhotonNetwork.IsMasterClient)
-        {
-            return; // 마스터 클라이언트만 도착 여부 확인
-        }
+        //if(!PhotonNetwork.IsMasterClient)
+        //{
+        //    return; // 마스터 클라이언트만 도착 여부 확인
+        //}
         if (IsStayOn())
         {
             if (_hasArrived == false)
@@ -62,10 +62,10 @@ public class CustomerMove : MonoBehaviour
 
     public void MoveTo(Vector3 target) // 목적지만 바꾸는 함수
     {
-        if (PhotonNetwork.IsMasterClient == false)
-        {
-            return; // 마스터 클라이언트만 이동 가능
-        }
+        //if (PhotonNetwork.IsMasterClient == false)
+        //{
+        //    return; // 마스터 클라이언트만 이동 가능
+        //}
         _agent.enabled = true; 
         if(_owner.CurrentState == ECustomerStateType.PickingUp)
         {
@@ -79,18 +79,18 @@ public class CustomerMove : MonoBehaviour
 
     private void StartMoving()
     {
-        if (!PhotonNetwork.IsMasterClient)
-        {
-            return; // 마스터 클라이언트만 이동 시작
-        }
+        //if (!PhotonNetwork.IsMasterClient)
+        //{
+        //    return; // 마스터 클라이언트만 이동 시작
+        //}
         _animator.SetBool("Move", true);
     }
     private void OnArrived()
     {
-        if(!PhotonNetwork.IsMasterClient)
-        {
-            return; 
-        }
+        //if(!PhotonNetwork.IsMasterClient)
+        //{
+        //    return; 
+        //}
         _animator.SetBool("Move", false);
         if (_owner.CurrentState == ECustomerStateType.Lining)
         {

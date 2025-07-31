@@ -1,4 +1,4 @@
-using Photon.Pun;
+//using Photon.Pun;
 using UnityEngine;
 
 public class MachineOutputContainer : IOutputContainer<Machine, MachineStat>
@@ -7,25 +7,25 @@ public class MachineOutputContainer : IOutputContainer<Machine, MachineStat>
 
     public GameObject TakeItem(Machine machine, MachineStat stat)
     {
-        if (stat.IsProcessFinished)
-        {
-            if (!PhotonNetwork.IsMasterClient)
-            {
-                //machine.PhotonView.RPC(nameof(RPC_TakeOutput), RpcTarget.MasterClient,
-                //stat.InputTIDList.ToArray(), stat.Data.TID, stat.InputType, machine.transform.position);
-            }
-            else
-            {
-                RPC_TakeOutput(stat, stat.InputTIDList.ToArray(), stat.Data.TID, stat.InputType, machine.transform.position);
-            }
+        //if (stat.IsProcessFinished)
+        //{
+        //    //if (!PhotonNetwork.IsMasterClient)
+        //    //{
+        //    //    //machine.PhotonView.RPC(nameof(RPC_TakeOutput), RpcTarget.MasterClient,
+        //    //    //stat.InputTIDList.ToArray(), stat.Data.TID, stat.InputType, machine.transform.position);
+        //    //}
+        //    else
+        //    {
+        //        RPC_TakeOutput(stat, stat.InputTIDList.ToArray(), stat.Data.TID, stat.InputType, machine.transform.position);
+        //    }
 
-            machine.SyncMachineStat();
-            return _output;
-        }
+        //    machine.SyncMachineStat();
+        //    return _output;
+        //}
         return null;
     }
 
-    [PunRPC]
+    //[PunRPC]
     public void RPC_TakeOutput(MachineStat stat, int[] TIDList, int machineTID, EInputType type, Vector3 machinePosition)
     {
         if(stat.Data.Name == "병입기")

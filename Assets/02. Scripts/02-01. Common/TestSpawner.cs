@@ -1,9 +1,7 @@
 using Mirror;
-using Photon.Pun;
 using System.Threading.Tasks;
 using UnityEngine;
 
-[RequireComponent(typeof(PhotonView))]
 public class TestSpawner : NetworkBehaviour
 {
     void Update()

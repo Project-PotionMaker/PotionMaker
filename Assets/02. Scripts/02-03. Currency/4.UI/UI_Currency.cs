@@ -8,9 +8,14 @@ public class UI_Currency : MonoBehaviour
 
     private void Start()
     {
-        CurrencyManager.Instance.OnDataChanged += Refresh;
-        Refresh();
+        CurrencyManager.OnInitialized += OnManagerInitialized;
     }
+
+    private void OnManagerInitialized()
+    {
+        CurrencyManager.Instance.OnDataChanged += Refresh;
+    }
+
     public void Refresh()
     {
         _coinValueTextUI.text = CurrencyManager.Instance.Coin.Value.ToString("N0");

@@ -1,7 +1,7 @@
 using Google.Apis.Sheets.v4.Data;
 using Mirror;
 using NUnit.Framework;
-using Photon.Pun;
+//using Photon.Pun;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -128,7 +128,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler
         //_photonView.RPC(nameof(RPC_SyncMachineStat), RpcTarget.All, _stat.CurrentProgress, _stat.LeftOutputAmount, _stat.IsProcessFinished, _stat.IsProcessStarted, _stat.InputTIDList.ToArray());
     }
 
-    [PunRPC]
+    //[PunRPC]
     public void RPC_SyncMachineStat(float currentProgress, int leftOutputAmount, bool isProcessFinished, bool isProcessStarted, int[] inputTIDList)
     {
         _stat.CurrentProgress = currentProgress;

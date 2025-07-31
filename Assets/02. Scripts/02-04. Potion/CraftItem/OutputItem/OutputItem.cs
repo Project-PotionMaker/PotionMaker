@@ -1,4 +1,4 @@
-using Photon.Pun;
+//using Photon.Pun;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,7 +19,7 @@ public class OutputItem : MonoBehaviour, IItem
 
     private OutputData _outputData;
     public OutputData OutputData => _outputData;
-    private PhotonView _photonView;
+    //private PhotonView _photonView;
 
     private MaterialPropertyBlock _materialPropertyBlock;
 
@@ -43,15 +43,15 @@ public class OutputItem : MonoBehaviour, IItem
         }
 
         _materialPropertyBlock = new MaterialPropertyBlock();
-        _photonView = GetComponent<PhotonView>();
+        //_photonView = GetComponent<PhotonView>();
     }
 
     public void InitOutputData(EInputType newInputType, int TID)
     {
-        if (!PhotonNetwork.IsMasterClient)
-        {
-            throw new InvalidOperationException("Output 객체 생성 후 내부 데이터 초기화는 Master만 가능합니다.");
-        }
+        //if (!PhotonNetwork.IsMasterClient)
+        //{
+        //    throw new InvalidOperationException("Output 객체 생성 후 내부 데이터 초기화는 Master만 가능합니다.");
+        //}
 
         _currentInputType = newInputType;
         _outputData = DataTable.Instance.GetOutputData(TID);
@@ -74,10 +74,10 @@ public class OutputItem : MonoBehaviour, IItem
                 objectInfo.TypeObject.SetActive(true);
             }
         }
-        _photonView.RPC(nameof(RPC_InitOutputData), RpcTarget.Others, newInputType, TID);
+        //_photonView.RPC(nameof(RPC_InitOutputData), RpcTarget.Others, newInputType, TID);
     }
 
-    [PunRPC]
+    //[PunRPC]
     public void RPC_InitOutputData(EInputType newInputType, int TID)
     {
         _currentInputType = newInputType;

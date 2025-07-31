@@ -1,4 +1,4 @@
-using Photon.Pun;
+//using Photon.Pun;
 using UnityEngine;
 
 public class StorageOutputContainer : IOutputContainer<Storage, StorageStat>
@@ -19,7 +19,7 @@ public class StorageOutputContainer : IOutputContainer<Storage, StorageStat>
         return _output;
     }
 
-    [PunRPC]
+    //[PunRPC]
     public void RPC_TakeIngredientItem(int ingredientTID, Vector3 machinePosition)
     {
         _output = CraftItemManager.Instance.TryCreateIngredientItem

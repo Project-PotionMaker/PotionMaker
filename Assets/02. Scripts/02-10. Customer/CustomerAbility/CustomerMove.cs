@@ -1,9 +1,10 @@
 using DG.Tweening;
+using Mirror;
 using Photon.Pun;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class CustomerMove : MonoBehaviour
+public class CustomerMove : NetworkBehaviour
 {
     private NavMeshAgent _agent;
     public NavMeshAgent Agent { get => _agent; set => _agent = value; } // NavMeshAgent 컴포넌트
@@ -20,13 +21,18 @@ public class CustomerMove : MonoBehaviour
 
     private void Awake()
     {
+
         _agent = GetComponent<NavMeshAgent>();
+        _collider = GetComponent<Collider>();
+        if (!isServer)
+        {
+            _agent.enabled = false; // 클라이언트에서는 NavMeshAgent 비활성화
+            _collider.enabled = false; // 클라이언트에서는 충돌체 비활성화
+        }
         _rigidbody = GetComponent<Rigidbody>();
+        _rigidbody.isKinematic = false;
         _owner = GetComponent<Customer>();
         _animator = GetComponentInChildren<Animator>();
-        _collider = GetComponent<Collider>();
-        _agent.enabled = true; 
-        _rigidbody.isKinematic = false; 
     }
     private void Update()
     {
@@ -34,16 +40,13 @@ public class CustomerMove : MonoBehaviour
         {
             ArriveCheck();
         }
-        else
-        {
-        }
     }
 
     private void ArriveCheck()
     {
-        if(!PhotonNetwork.IsMasterClient)
+        if (!isServer)
         {
-            return; // 마스터 클라이언트만 도착 여부 확인
+            return;
         }
         if (IsStayOn())
         {
@@ -62,9 +65,9 @@ public class CustomerMove : MonoBehaviour
 
     public void MoveTo(Vector3 target) // 목적지만 바꾸는 함수
     {
-        if (PhotonNetwork.IsMasterClient == false)
+        if (!isServer)
         {
-            return; // 마스터 클라이언트만 이동 가능
+            return;
         }
         _agent.enabled = true; 
         if(_owner.CurrentState == ECustomerStateType.PickingUp)
@@ -79,18 +82,10 @@ public class CustomerMove : MonoBehaviour
 
     private void StartMoving()
     {
-        if (!PhotonNetwork.IsMasterClient)
-        {
-            return; // 마스터 클라이언트만 이동 시작
-        }
         _animator.SetBool("Move", true);
     }
     private void OnArrived()
     {
-        if(!PhotonNetwork.IsMasterClient)
-        {
-            return; 
-        }
         _animator.SetBool("Move", false);
         if (_owner.CurrentState == ECustomerStateType.Lining)
         {

@@ -1,3 +1,4 @@
+using Mirror;
 using Photon.Pun;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,20 +10,20 @@ public class CustomerOrderHandler
     private Queue<Customer> _potionOrderLine; // 손님이 줄을 서는 대기열
     public Queue<Customer> PotionOrderLine { get => _potionOrderLine; set => _potionOrderLine = value; }
 
-    private Dictionary<int, FurnitureUsingStat> _pickupTableDict; // 포션 찾으러 가는 손님들 (제작 완료 번호표)
-    public Dictionary<int, FurnitureUsingStat> PickupTableDict { get => _pickupTableDict; set => _pickupTableDict = value; }
-    private Dictionary<int, FurnitureUsingStat> _oldChairDict;
-    public Dictionary<int, FurnitureUsingStat> OldChairDict { get => _oldChairDict; set => _oldChairDict = value; } 
-    private Dictionary<int, FurnitureUsingStat> _luxuryChairDict;
-    public Dictionary<int, FurnitureUsingStat> LuxuryChairDict { get => _luxuryChairDict; set => _luxuryChairDict = value; }
+    private Dictionary<uint, FurnitureUsingStat> _pickupTableDict; // 포션 찾으러 가는 손님들 (제작 완료 번호표)
+    public Dictionary<uint, FurnitureUsingStat> PickupTableDict { get => _pickupTableDict; set => _pickupTableDict = value; }
+    private Dictionary<uint, FurnitureUsingStat> _oldChairDict;
+    public Dictionary<uint, FurnitureUsingStat> OldChairDict { get => _oldChairDict; set => _oldChairDict = value; } 
+    private Dictionary<uint, FurnitureUsingStat> _luxuryChairDict;
+    public Dictionary<uint, FurnitureUsingStat> LuxuryChairDict { get => _luxuryChairDict; set => _luxuryChairDict = value; }
 
     public void Init()
     {
         _potionOrderMap = new Dictionary<int, LinkedList<Customer>>();
         _potionOrderLine = new Queue<Customer>();
-        _pickupTableDict = new Dictionary<int, FurnitureUsingStat>();
-        _oldChairDict = new Dictionary<int, FurnitureUsingStat>();
-        _luxuryChairDict = new Dictionary<int, FurnitureUsingStat>();
+        _pickupTableDict = new Dictionary<uint, FurnitureUsingStat>();
+        _oldChairDict = new Dictionary<uint, FurnitureUsingStat>();
+        _luxuryChairDict = new Dictionary<uint, FurnitureUsingStat>();
     }
     public void SetLists()
     {
@@ -33,15 +34,15 @@ public class CustomerOrderHandler
         _luxuryChairDict.Clear();
         foreach (GameObject pickupTable in GridManager.Instance.PickUpTableList)
         {
-            _pickupTableDict.Add(pickupTable.GetComponent<PhotonView>().ViewID, new FurnitureUsingStat()); // 각 픽업 테이블에 대해 초기화
+            _pickupTableDict.Add(pickupTable.GetComponent<NetworkIdentity>().netId, new FurnitureUsingStat()); // 각 픽업 테이블에 대해 초기화
         }
         foreach (GameObject oldChair in GridManager.Instance.OldChairList)
         {
-            _oldChairDict.Add(oldChair.GetComponent<PhotonView>().ViewID, new FurnitureUsingStat()); // 각 오래된 의자에 대해 초기화
+            _oldChairDict.Add(oldChair.GetComponent<NetworkIdentity>().netId, new FurnitureUsingStat()); // 각 오래된 의자에 대해 초기화
         }
         foreach (GameObject luxuryChair in GridManager.Instance.LuxuryChairList)
         {
-            _luxuryChairDict.Add(luxuryChair.GetComponent<PhotonView>().ViewID, new FurnitureUsingStat()); // 각 고급 의자에 대해 초기화
+            _luxuryChairDict.Add(luxuryChair.GetComponent<NetworkIdentity>().netId, new FurnitureUsingStat()); // 각 고급 의자에 대해 초기화
         }
     }
 
@@ -88,10 +89,10 @@ public class CustomerOrderHandler
         
         return picker;
     }
-    public int FindAvailableChair()
+    public uint FindAvailableChair()
     {
         // 1. 고급 의자 중 비어있는 것들 수집
-        List<int> availableLuxury = new List<int>();
+        List<uint> availableLuxury = new List<uint>();
         foreach (var pair in _luxuryChairDict)
         {
             if (!pair.Value.IsUsing)
@@ -102,12 +103,12 @@ public class CustomerOrderHandler
 
         if (availableLuxury.Count > 0)
         {
-            int index = Random.Range(0, availableLuxury.Count);
+            int index = (int)Random.Range(0, availableLuxury.Count);
             return availableLuxury[index];
         }
 
         // 2. 허름한 의자 중 비어있는 것들 수집
-        List<int> availableOld = new List<int>();
+        List<uint> availableOld = new List<uint>();
         foreach (var pair in _oldChairDict)
         {
             if (!pair.Value.IsUsing)

@@ -9,10 +9,11 @@ public class CasherInteract : IInteractable<Furniture, FurnitureStat>
 
     public bool TryInteract(Furniture instance, FurnitureStat stat)
     {
+        Debug.Log("계산기 상호작용 시도");
         if (CanInteract(instance, stat))
         {
             // NPC매니저에서 기다리는 NPC들 상호작용
-            CustomerManager.Instance.RegisterOrder();
+            CustomerManager.Instance.CommandRegisterOrder();
         }
         return true;
     }

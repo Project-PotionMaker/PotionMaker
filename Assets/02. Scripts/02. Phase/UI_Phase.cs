@@ -76,9 +76,9 @@ public class UI_Phase : MonoBehaviour
             }
         }
     }
-    private void UpdateServiceTimer(float time)
+    private void UpdateServiceTimer()
     {
-        _serviceTimer.value = time;
+        _serviceTimer.value = ((ServingPhase) PhaseManager.Instance.CurrentPhase).CurrentTimeRate;
     }
 
     private void ShowTimer()

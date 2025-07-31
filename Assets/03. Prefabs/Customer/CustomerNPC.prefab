@@ -220,6 +220,7 @@ GameObject:
   - component: {fileID: -4067509862251401962}
   - component: {fileID: -3969780411837684744}
   - component: {fileID: -3291787108019043276}
+  - component: {fileID: -2639077766120774908}
   m_Layer: 7
   m_Name: CustomerNPC
   m_TagString: Untagged
@@ -256,6 +257,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25c96585767cdb747bc59dd6db4969ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   _requestedPotionTID: 10000
   _potionHandler: {fileID: 1503921476949546083}
 --- !u!114 &7025380960442639212
@@ -347,6 +351,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4349e69d6a59cc54e981cc47ab6001b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
 --- !u!114 &6734802379473287504
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -359,6 +366,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d19e77b13e93644fbf03641350eba70, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
 --- !u!136 &4686799188550312236
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -460,6 +470,23 @@ MonoBehaviour:
   rotationSensitivity: 0.01
   positionPrecision: 0.01
   scalePrecision: 0.01
+--- !u!114 &-2639077766120774908
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4497242523145039684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f6f3bf89aa97405989c802ba270f815, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0.02
+  clientAuthority: 0
+  animator: {fileID: 3436291356719214830}
 --- !u!1 &5144686895079590402
 GameObject:
   m_ObjectHideFlags: 0
@@ -934,6 +961,11 @@ PrefabInstance:
 --- !u!1 &1503921476949546083 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4839300569702601173, guid: c73ae6621f8832748a78dfb8aec6dd12, type: 3}
+  m_PrefabInstance: {fileID: 6338718236767454646}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &3436291356719214830 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 8667052616836904280, guid: c73ae6621f8832748a78dfb8aec6dd12, type: 3}
   m_PrefabInstance: {fileID: 6338718236767454646}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &8741491398664235668 stripped

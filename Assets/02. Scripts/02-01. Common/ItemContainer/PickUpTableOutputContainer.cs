@@ -9,7 +9,7 @@ public class PickUpTableOutputContainer : IOutputContainer<Furniture, FurnitureS
     {
         GameObject output = stat.InputObject;
         stat.InputObject = null;
-        //CustomerManager.Instance.RemoveOnTable(furniture.PhotonView.ViewID);
+        CustomerManager.Instance.RemoveOnTable(furniture.netId);
         return output;
     }
 

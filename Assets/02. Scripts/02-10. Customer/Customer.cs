@@ -1,11 +1,13 @@
+using Mirror;
 using Photon.Pun;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Customer : MonoBehaviour
+public class Customer : NetworkBehaviour
 {
+    [SyncVar (hook = nameof(SyncState))]
     private ECustomerStateType _currentState; // 현재 상태 컴포넌트
     public ECustomerStateType CurrentState { get => _currentState; set => _currentState = value; } // 현재 상태 컴포넌트
     private CustomerMove _customerMove; // 이동 능력 컴포넌트
@@ -15,14 +17,12 @@ public class Customer : MonoBehaviour
 
 
     [SerializeField]
+    [SyncVar]
     private int _requestedPotionTID = 10000;
+    public int RequestedPotionTID { get => _requestedPotionTID; set => _requestedPotionTID = value; } // 요청한 포션 ID
     [SerializeField]
     private GameObject _potionHandler;
-    public GameObject PotionHandler { get => _potionHandler; set => _potionHandler = value; } // 포션 핸들러 오브젝트
-    public int RequestedPotionTID { get => _requestedPotionTID; set=> _requestedPotionTID = value; } // 요청한 포션 ID
-
-    private PhotonView _photonView;
-    public PhotonView PhotonView { get => _photonView; set => _photonView = value; } // PhotonView 컴포넌트
+    public GameObject PotionHandler { get => _potionHandler;} // 포션 핸들러 오브젝트
 
     public event Action OnStateChanged;
 
@@ -31,12 +31,11 @@ public class Customer : MonoBehaviour
     private  float _chairRotate;
     public float ChairRotate { get => _chairRotate; set => _chairRotate = value; } // 의자 회전
 
-    private int _pickupTableViewID;
-    public int PickupTableViewID { get => _pickupTableViewID; set => _pickupTableViewID = value; } // 픽업 테이블의 PhotonView ID
+    private uint _pickupTableNetworkId;
+    public uint PickupTableNetworkId { get => _pickupTableNetworkId; set => _pickupTableNetworkId = value; } // 픽업 테이블의 PhotonView ID
 
     private void Awake()
     {
-        _photonView = GetComponent<PhotonView>();
         _customerMove = GetComponent<CustomerMove>();
         _customerEndurance = GetComponent<CustomerEndurance>();
 
@@ -49,24 +48,22 @@ public class Customer : MonoBehaviour
 
     public void TransitionState(ECustomerStateType nextState)
     {
-        if (!PhotonNetwork.IsMasterClient)
+        if(isServer)
         {
-            return; // 마스터 클라이언트만 상태를 설정할 수 있음
+            _currentState = nextState;
         }
-        _photonView.RPC(nameof(RPC_TransitionState), RpcTarget.All, nextState); 
     }
-    [PunRPC]
-    public void RPC_TransitionState(ECustomerStateType nextState)
+
+    private void SyncState(ECustomerStateType OldValue, ECustomerStateType NewValue)
     {
-        _currentState = nextState;
         OnStateChanged?.Invoke();
     }
 
     public void ReturnPotion()
     {
-        if (!PhotonNetwork.IsMasterClient)
+        if(isServer == false)
         {
-            return; // 마스터 클라이언트만 포션을 반환할 수 있음
+            return; // 서버에서만 실행
         }
         if (_potionHandler.transform.childCount == 0)
         {

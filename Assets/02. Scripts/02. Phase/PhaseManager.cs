@@ -4,9 +4,13 @@ using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
 using VInspector;
+using Mirror;
 
-public class PhaseManager : MonoBehaviourSingleton<PhaseManager>    
+public class PhaseManager : NetworkBehaviour
 {
+    // TODO :NetworkBehaviourSingleton으로 수정
+    public static PhaseManager Instance { get; private set; }
+
     private BasePhase _currentPhase;
     public BasePhase CurrentPhase { get => _currentPhase; set => _currentPhase = value; }
     private Dictionary<EPhaseType, BasePhase> _phaseDictionary;
@@ -21,19 +25,28 @@ public class PhaseManager : MonoBehaviourSingleton<PhaseManager>
     public int Day { get => _day; set => _day = value; }
     public event Action OnDayPassed;
     public event Action OnPhaseChanged;
-    PhotonView _photonView;
 
-    protected override void Awake()
+    public void Awake()
     {
-        base.Awake();
-        _photonView = GetComponent<PhotonView>();
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Debug.LogWarning("중복된 PhaseManager 인스턴스 발견됨. 기존 인스턴스를 유지합니다.");
+            Destroy(gameObject);
+        }
         _deathCount = 0;
         InitPhase();
     }
 
     private void Update()
     {
-        _currentPhase?.Update(Time.deltaTime);
+        if (isServer)
+        {
+            _currentPhase?.Update(Time.deltaTime);
+        }
     }
 
     public void InitPhase()
@@ -58,14 +71,13 @@ public class PhaseManager : MonoBehaviourSingleton<PhaseManager>
 
     public void TransitionPhase(EPhaseType nextPhase)
     {
-        if(PhotonNetwork.IsMasterClient == false)
+        if (isServer)
         {
-            return;
+            RpcTransitionPhase(nextPhase);
         }
-        _photonView.RPC(nameof(RPC_TransitionPhase), RpcTarget.All, nextPhase);
     }
-    [PunRPC]
-    public void RPC_TransitionPhase(EPhaseType nextPhase)
+    [ClientRpc]
+    public void RpcTransitionPhase(EPhaseType nextPhase)
     {
         _currentPhase?.ExitPhase();
         if (_currentPhase is EndingPhase && _phaseDictionary[nextPhase] is PreparingPhase)

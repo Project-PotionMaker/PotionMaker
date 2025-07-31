@@ -31,19 +31,6 @@ public class ShopInfoSlot : MonoBehaviour
         OnShopInfoCreated.Invoke(_shopInfo);
         Select();
     }
-    
-    public void OnSlotButtonClick()
-    {
-        switch (CurrentState)
-        {
-            case SlotState.Empty:
-                _createPopup.OpenPopup(this);
-                break;
-            case SlotState.Filled:
-                OnShopInfoSelected?.Invoke();
-                break;
-        }
-    }
 
     public void Select()
     {

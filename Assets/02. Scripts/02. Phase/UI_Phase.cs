@@ -2,6 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using VInspector;
+using DG.Tweening;
 
 public class UI_Phase : MonoBehaviour
 {
@@ -17,13 +18,22 @@ public class UI_Phase : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI _todaySummaryText;
     [SerializeField]
-    private Button _nextDayButton;
+    private GameObject _startDayPanel;
+    [SerializeField]
+    private GameObject[] _isVoted;
+
+    private const float HIDE_OFFSET = 400f;
+    private const float DURATION = 1f;
 
     private void Start()
     {
         _serviceTimer.maxValue = 1f;
         PhaseManager.Instance.OnDayPassed += UpdateDayText;
         PhaseManager.Instance.OnPhaseChanged += UpdatePhaseText;
+        PreparingPhase preparingPhase = (PreparingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.PreparingPhase];
+        preparingPhase.OnPhaseExited += HideStartDay; // 준비 단계가 끝나면 시작 패널 숨김
+        preparingPhase.OnPhaseEntered += ShowStartDay; // 준비 단계가 시작되면 시작 패널 표시
+
         ServingPhase servingPhase = (ServingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase];
         servingPhase.OnTimerRunning += UpdateServiceTimer;
         servingPhase.OnPhaseEntered += ShowTimer; // 타이머 시작 시 업데이트
@@ -88,6 +98,15 @@ public class UI_Phase : MonoBehaviour
     private void HideSummary()
     {
         _todaySummaryPanel.SetActive(false);
+    }
+
+    private void HideStartDay()
+    {
+        _startDayPanel.transform.DOLocalMoveY(HIDE_OFFSET, DURATION).SetRelative().SetEase(Ease.OutSine);
+    }
+    private void ShowStartDay()
+    {
+        _startDayPanel.transform.DOLocalMoveY(-HIDE_OFFSET, DURATION).SetRelative().SetEase(Ease.OutSine);
     }
 
 }

@@ -10,14 +10,6 @@ public class CurrencyManager:NetworkBehaviourSingleton<CurrencyManager>
     private Currency _coin;
     public CurrencyDTO Coin => _coin.ToDTO();
 
-    protected override void Awake()
-    {
-        base.Awake();
-        UnityEngine.Debug.Log("awake");
-
-        InitCurrencyManager();
-
-    }
 
     // 네트워크 매니저에서 처리
     //public override void OnJoinedRoom()
@@ -25,8 +17,18 @@ public class CurrencyManager:NetworkBehaviourSingleton<CurrencyManager>
     //    InitCurrencyManager();
     //}
 
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        InitCurrencyManager();
+    }
+
     private void InitCurrencyManager()
     {
+        if (!NetworkClient.ready)
+        {
+            return;
+        }
         _coin = new Currency(0);
         CmdRequestUpdateCurrency();
         OnDataChanged?.Invoke();

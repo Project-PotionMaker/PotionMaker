@@ -24,6 +24,6 @@ public class UI_DetailPage : MonoBehaviour
         _productPriceTextUI.text = productDTO.Data.Price.ToString("N0");
 
         _buyButton.onClick.RemoveAllListeners();
-        _buyButton.onClick.AddListener(() => { ProductManager.Instance.RequestBuy(productDTO.Data.ProductType, productDTO.Data.TID); });
+        _buyButton.onClick.AddListener(() => { ProductManager.Instance.CmdRequestBuy(productDTO.Data.ProductType, productDTO.Data.TID); });
     }
 }

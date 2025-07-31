@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
+using Mirror;
 using UnityEngine;
 
-public class Player : MonoBehaviour
+public class Player : NetworkBehaviour
 {
     [SerializeField]
     private PlayerStat _stat;

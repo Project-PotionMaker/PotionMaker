@@ -12,6 +12,8 @@ public class BaseFactory<TEnum, TFactoryInfo> : MonoBehaviourSingleton<BaseFacto
 
     private Dictionary<TEnum, GameObject> _typeToPrefabKeyDict = new Dictionary<TEnum, GameObject>();
 
+    private Dictionary<TEnum, Queue<GameObject>> _typeToPoolDict = new Dictionary<TEnum, Queue<GameObject>>();
+
     private async void Start()
     {
         foreach (TFactoryInfo info in _factoryInfoList)
@@ -33,12 +35,33 @@ public class BaseFactory<TEnum, TFactoryInfo> : MonoBehaviourSingleton<BaseFacto
                 {
                     MirrorNetworkManager.Instance.spawnPrefabs.Add(prefab);
                 }
+
+                InitializePool(info.Type, prefab, 10);
             }
             else
             {
                 Debug.LogError($"프리팹이 없습니다. 키: {info.AddressableKey}");
                 continue;
             }
+        }
+    }
+
+    private void InitializePool(TEnum type, GameObject prefab, int poolSize)
+    {
+        if (_typeToPoolDict.ContainsKey(type))
+        {
+            Debug.Log($"Type이 중복되었습니다. Type : {type}");
+            return;
+        }
+
+        _typeToPoolDict[type] = new Queue<GameObject>();
+
+        for (int i = 0; i < poolSize; i++)
+        {
+            GameObject poolObject = Instantiate(prefab);
+            poolObject.SetActive(false);
+
+            _typeToPoolDict[type].Enqueue(poolObject);
         }
     }
 

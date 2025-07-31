@@ -1,22 +1,28 @@
 using Photon.Pun;
+using System.Linq;
 using UnityEngine;
 
 public class MachineOutputContainer : IOutputContainer<Machine>
 {
     private GameObject _output;
 
-    public GameObject TakeItem(Machine machine)
+    public GameObject ServerTakeItem(Machine machine)
     {
         if (machine.IsProcessFinished)
         {
-            if (!PhotonNetwork.IsMasterClient)
+            if (machine.Data.Name == "병입기")
             {
-                //machine.PhotonView.RPC(nameof(RPC_TakeOutput), RpcTarget.MasterClient,
-                //stat.InputTIDList.ToArray(), stat.Data.TID, stat.InputType, machine.transform.position);
+                _output = CraftItemManager.Instance.TryCreatePotionItem(machine.InputTIDList.ToArray(), machine.DataTID, machine.transform.position);
             }
             else
             {
-                RPC_TakeOutput(machine, machine.InputTIDList.ToArray(), machine.Data.TID, machine.InputType, machine.transform.position);
+                _output = CraftItemManager.Instance.TryCreateOutputItem(machine.InputTIDList.ToArray(), machine.DataTID, machine.InputType, machine.transform.position);
+            }
+
+            machine.ServerDecreaseOutputAmount(1);
+            if (machine.LeftOutputAmount <= 0)
+            {
+                machine.ResetMachineServer();
             }
 
             return _output;
@@ -24,27 +30,7 @@ public class MachineOutputContainer : IOutputContainer<Machine>
         return null;
     }
 
-    [PunRPC]
-    public void RPC_TakeOutput(Machine machine, int[] TIDList, int machineTID, EInputType type, Vector3 machinePosition)
-    {
-        if(machine.Data.Name == "병입기")
-        {
-            _output = CraftItemManager.Instance.TryCreatePotionItem(TIDList, machineTID, machinePosition);
-        }
-        else
-        {
-            _output = CraftItemManager.Instance.TryCreateOutputItem(TIDList, machineTID, type, machinePosition);
-        }
-
-
-        machine.LeftOutputAmount--;
-        if (machine.LeftOutputAmount <= 0)
-        {
-            machine.ResetMachineServer();
-        }
-    }
-
-    public bool CanTake(Machine machine)
+    public bool ServerCanTake(Machine machine)
     {
         return machine.IsProcessFinished;
     }

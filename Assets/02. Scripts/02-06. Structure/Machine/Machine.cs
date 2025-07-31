@@ -235,8 +235,6 @@ public class Machine : NetworkBehaviour, IGridItemHandler
             ServerSetIsProcessFinished(true);
             ServerSetIsProcessStarted(false);
             StopAllCoroutines(); // 서버의 코루틴만 중지
-            // 여기에 결과물 생성/재료 소모 등 서버 로직
-            ServerDecreaseOutputAmount(1); // 예시: 결과물 하나 생성 시
         }
     }
 
@@ -293,19 +291,6 @@ public class Machine : NetworkBehaviour, IGridItemHandler
         InputType = type;
     }
 
-    //// 서버 전용 코루틴
-    //[Server]
-    //public IEnumerator Interact_CoroutineServer()
-    //{
-    //    ServerSetIsProcessStarted(true); // 서버 메서드 호출
-    //    while (CurrentProgress < Data.MaxProgress)
-    //    {
-    //        ServerIncreaseProgress(Data.ProgressPerTick * Time.deltaTime); // 서버 메서드 호출
-    //        yield return null;
-    //    }
-    //    // 코루틴 완료 후 최종 상태 설정은 ServerIncreaseProgress 내부에서 이미 처리될 수 있음
-    //}
-
     // 머신 상태 리셋 (서버에서만 호출)
     [Server]
     public void ResetMachineServer()
@@ -320,6 +305,92 @@ public class Machine : NetworkBehaviour, IGridItemHandler
         InputType = EInputType.None; // SyncVar 초기화
     }
 
+    #endregion
+
+    #region Commands (클라이언트에서 서버로 요청)
+    // 상호작용 요청 커맨드 (클라이언트에서 호출)
+    [Command(requiresAuthority = false)]
+    private bool CmdTryInteract()
+    {
+        if (!isServer)
+        {
+            return false;
+        }
+
+        if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
+        {
+            ServerRotateModel();
+        }
+        else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase
+            || PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
+        {
+            return _interactComponent.ServerTryInteract(this);
+        }
+
+        return false;
+    }
+
+    [Command(requiresAuthority = false)]
+    private bool CmdTryInput(int tid, EInputType inputType)
+    {
+        if (!isServer)
+        {
+            return false;
+        }
+        return _inputComponent.ServerTryInput(this, tid, inputType);
+    }
+
+    [Command(requiresAuthority = false)]
+    private GameObject CmdTryPickUp()
+    {
+        if (!isServer)
+        {
+            return null;
+        }
+
+        if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
+        {
+            return GridManager.Instance.StartPlacement(transform.position);
+        }
+        else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase
+            || PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
+        {
+            if (ReferenceEquals(_outputComponent, null) == false)
+            {
+                if (_outputComponent.ServerCanTake(this))
+                {
+                    return _outputComponent.ServerTakeItem(this);
+                }
+            }
+        }
+        return null;
+    }
+
+    [Command(requiresAuthority = false)]
+    private bool CmdTryDrop(Vector3 targetPosition, int tid = 10000, EInputType inputType = EInputType.None, GameObject inputObject = null)
+    {
+        if (!isServer)
+        {
+            return false;
+        }
+
+        if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
+        {
+            if (GridManager.Instance.TryPlaceStructure(targetPosition))
+            {
+                return true;
+            }
+        }
+        else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase
+            || PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
+        {
+            if (CmdTryInput(tid, inputType))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
     #endregion
 
     // 모델 활성화/비활성화
@@ -354,84 +425,18 @@ public class Machine : NetworkBehaviour, IGridItemHandler
         return null;
     }
 
-    #region Commands (클라이언트에서 서버로 요청)
-    // 상호작용 요청 커맨드 (클라이언트에서 호출)
-    [Command(requiresAuthority = false)]
-    public bool CmdTryInteract()
+    public bool TryInteract()
     {
-        if (!isServer)
-        {
-            return false;
-        }
-
-        if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
-        {
-            ServerRotateModel();
-        }
-        else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase 
-            || PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
-        {
-            return _interactComponent.ServerTryInteract(this);
-        }
-
-        return false;
+        return CmdTryInteract();
     }
 
-    [Command(requiresAuthority = false)]
-    private bool CmdTryInput(int tid, EInputType inputType)
+    public GameObject TryPickUp()
     {
-        if (!isServer)
-        {
-            return false;
-        }
-        return _inputComponent.ServerTryInput(this, tid, inputType);
+        return CmdTryPickUp();
     }
 
-    [Command(requiresAuthority = false)]
-    public GameObject CmdTryPickUp()
+    public bool TryDrop(Vector3 targetPosition, int tid = 10000, EInputType inputType = EInputType.None, GameObject inputObject = null)
     {
-        if (!isServer)
-        {
-            return null;
-        }
-
-        if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
-        {
-            return GridManager.Instance.StartPlacement(transform.position);
-        }
-        else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase 
-            || PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
-        {
-            if(ReferenceEquals(_outputComponent, null) == false)
-            {
-                if(_outputComponent.ServerCanTake(this))
-                {
-                    return _outputComponent.ServerTakeItem(this);
-                }
-            }
-        }
-        return null;
+        return CmdTryDrop(targetPosition, tid, inputType, inputObject);
     }
-
-    [Command(requiresAuthority = false)]
-    public bool CmdTryDrop(Vector3 targetPosition, int tid = 10000, EInputType inputType = EInputType.None, GameObject inputObject = null)
-    {
-        if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
-        {
-            if (GridManager.Instance.TryPlaceStructure(targetPosition))
-            {
-                return true;
-            }
-        }
-        else if(PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase 
-            || PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
-        {
-            if(CmdTryInput(tid, inputType))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-    #endregion
 }

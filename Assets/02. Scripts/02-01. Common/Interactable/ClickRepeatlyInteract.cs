@@ -3,21 +3,21 @@ using UnityEngine;
 
 public class ClickRepeatlyInteract : IInteractable<Machine>
 {
-    public bool CanInteract(Machine machine)
+    public bool ServerCanInteract(Machine machine)
     {
         return (machine.InputTIDList.Count == machine.Data.MaxInputCount && !machine.IsProcessFinished);
     }
 
-    public bool TryInteract(Machine machine)
+    public bool ServerTryInteract(Machine machine)
     {
-        if (!CanInteract(machine))
+        if (!ServerCanInteract(machine))
         {
             return false;
         }
 
         if (!machine.IsProcessStarted)
         {
-            machine.IsProcessStarted = true;
+            machine.ServerSetIsProcessStarted(true);
         }
         IncreaseProgress(machine);
         return true;
@@ -25,6 +25,6 @@ public class ClickRepeatlyInteract : IInteractable<Machine>
 
     private void IncreaseProgress(Machine machine)
     {
-        machine.CurrentProgress += machine.Data.ProgressPerTick;
+        machine.ServerIncreaseProgress(machine.Data.ProgressPerTick);
     }
 }

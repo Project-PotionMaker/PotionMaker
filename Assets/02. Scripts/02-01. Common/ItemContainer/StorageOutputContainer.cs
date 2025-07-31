@@ -1,11 +1,11 @@
 using Photon.Pun;
 using UnityEngine;
 
-public class StorageOutputContainer : IOutputContainer<Storage, StorageStat>
+public class StorageOutputContainer : IOutputContainer<Storage>
 {
     private GameObject _output;
 
-    public GameObject TakeItem(Storage storage, StorageStat stat)
+    public GameObject ServerTakeItem(Storage storage)
     {
         //if (!PhotonNetwork.IsMasterClient)
         //{
@@ -26,11 +26,11 @@ public class StorageOutputContainer : IOutputContainer<Storage, StorageStat>
             (ingredientTID, machinePosition);
     }
 
-    public bool CanTake(Storage storage, StorageStat stat)
+    public bool ServerCanTake(Storage storage)
     {
-        // 창고에서 해당 재료를 빼올 수 있는지 체크하는 부분을 여기 넣어야한다.
-        IngredientData data = DataTable.Instance.GetIngredientData(stat.IngredientTID);
-        //return CurrencyManager.Instance.TrySubtractCurrency(data.Price);
+        //// 창고에서 해당 재료를 빼올 수 있는지 체크하는 부분을 여기 넣어야한다.
+        //IngredientData data = DataTable.Instance.GetIngredientData(stat.IngredientTID);
+        ////return CurrencyManager.Instance.TrySubtractCurrency(data.Price);
 
         return true;
     }

@@ -15,7 +15,7 @@ public class UI_Machine : MonoBehaviour
 
         if (_machine != null)
         {
-            _progressTextUI.text = $"{_machine.GetStat().CurrentProgress:F0}";
+            _progressTextUI.text = $"{_machine.CurrentProgress:F0}";
         }
     }
 }

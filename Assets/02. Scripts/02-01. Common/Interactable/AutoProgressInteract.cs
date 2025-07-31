@@ -4,54 +4,38 @@ using UnityEngine;
 
 public class AutoProgressInteract : IInteractable<Machine>
 {
-    public bool CanInteract(Machine machine)
+    public bool ServerCanInteract(Machine machine)
     {
         return (machine.InputTIDList.Count == machine.Data.MaxInputCount && !machine.IsProcessFinished);
     }
 
-    [Command]
-    public bool CmdTryInteract(Machine machine)
+    public bool ServerTryInteract(Machine machine)
     {
-        return TryInteract(machine);
-    }
-
-    public bool TryInteract(Machine machine)
-    {
-        if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
+        if (ServerCanInteract(machine) == false)
         {
-            machine.transform.Rotate(0, 90, 0);
-            return true;
+            return false;
+        }
+
+        if (machine.IsProcessStarted)
+        {
+            machine.ServerSetIsProcessStarted(false);
+            machine.StopAllCoroutines();
         }
         else
         {
-            if (CanInteract(machine) == false)
-            {
-                return false;
-            }
-
-            if (machine.IsProcessStarted)
-            {
-                machine.IsProcessStarted = false;
-                machine.StopAllCoroutines();
-            }
-            else
-            {
-                machine.IsProcessStarted = true;
-                machine.StartCoroutine(Interact_Coroutine(machine));
-            }
-
-            return true;
+            machine.ServerSetIsProcessStarted(true);
+            machine.StartCoroutine(Interact_CoroutineServer(machine));
         }
+
+        return true;
     }
 
-    public IEnumerator Interact_Coroutine(Machine machine)
+    public IEnumerator Interact_CoroutineServer(Machine machine)
     {
         while (machine.CurrentProgress < machine.Data.MaxProgress)
         {
-            machine.CurrentProgress += machine.Data.ProgressPerTick * Time.deltaTime;
-            //machine.SyncMachineStat();
+            machine.ServerIncreaseProgress(machine.Data.ProgressPerTick * Time.deltaTime);
             yield return null;
         }
-
     }
 }

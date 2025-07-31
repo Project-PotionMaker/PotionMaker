@@ -2,14 +2,14 @@ using UnityEngine;
 
 public class ClickOnceInteract : IInteractable<Machine>
 {
-    public bool CanInteract(Machine machine)
+    public bool ServerCanInteract(Machine machine)
     {
         return (machine.InputTIDList.Count == machine.Data.MaxInputCount && !machine.IsProcessFinished);
     }
 
-    public bool TryInteract(Machine machine)
+    public bool ServerTryInteract(Machine machine)
     {
-        if (!CanInteract(machine))
+        if (!ServerCanInteract(machine))
         {
             return false;
         }
@@ -23,6 +23,6 @@ public class ClickOnceInteract : IInteractable<Machine>
 
     private void CompleteProgress(Machine machine)
     {
-        machine.CurrentProgress = machine.Data.MaxProgress;
+        machine.ServerIncreaseProgress(machine.Data.MaxProgress);
     }
 }

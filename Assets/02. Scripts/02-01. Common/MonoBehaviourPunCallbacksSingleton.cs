@@ -1,7 +1,7 @@
-using Photon.Pun;
+//using Photon.Pun;
 using UnityEngine;
 
-public class MonoBehaviourPunCallbacksSingleton<T> : MonoBehaviourPunCallbacks where T : MonoBehaviourPunCallbacks
+public class MonoBehaviourPunCallbacksSingleton<T> : MonoBehaviour where T : MonoBehaviour
 {
     [SerializeField]
     private bool _dontDestroy;

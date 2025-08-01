@@ -22,7 +22,7 @@ public class UI_DaySummary : MonoBehaviour
 
     public void OnEndingPhaseStarted()
     {
-        SalesManager.Instance.RequestUpdateSales(isForSummary: true);
+        SalesManager.Instance.CmdRequestUpdateSales(isForSummary: true);
     }
     public void ShowSummary()
     {

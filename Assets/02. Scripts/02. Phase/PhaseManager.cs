@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Photon.Pun;
+//using Photon.Pun;
 using VInspector;
 
 public class PhaseManager : MonoBehaviourSingleton<PhaseManager>    
@@ -21,12 +21,12 @@ public class PhaseManager : MonoBehaviourSingleton<PhaseManager>
     public int Day { get => _day; set => _day = value; }
     public event Action OnDayPassed;
     public event Action OnPhaseChanged;
-    PhotonView _photonView;
+    //PhotonView _photonView;
 
     protected override void Awake()
     {
         base.Awake();
-        _photonView = GetComponent<PhotonView>();
+        //_photonView = GetComponent<PhotonView>();
         _deathCount = 0;
         InitPhase();
     }
@@ -58,13 +58,13 @@ public class PhaseManager : MonoBehaviourSingleton<PhaseManager>
 
     public void TransitionPhase(EPhaseType nextPhase)
     {
-        if(PhotonNetwork.IsMasterClient == false)
-        {
-            return;
-        }
-        _photonView.RPC(nameof(RPC_TransitionPhase), RpcTarget.All, nextPhase);
+        //if(PhotonNetwork.IsMasterClient == false)
+        //{
+        //    return;
+        //}
+        //_photonView.RPC(nameof(RPC_TransitionPhase), RpcTarget.All, nextPhase);
     }
-    [PunRPC]
+    //[PunRPC]
     public void RPC_TransitionPhase(EPhaseType nextPhase)
     {
         _currentPhase?.ExitPhase();

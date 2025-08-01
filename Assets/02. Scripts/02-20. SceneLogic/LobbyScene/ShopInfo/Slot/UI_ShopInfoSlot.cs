@@ -1,11 +1,10 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using VInspector;
 
 public class UI_ShopInfoSlot : MonoBehaviour
 {
-    [Header("Project")]
+    [Header("Hierarchy")]
     [SerializeField]
     private Button _buttonCreateNewShop;
 
@@ -17,13 +16,10 @@ public class UI_ShopInfoSlot : MonoBehaviour
 
     [SerializeField]
     private TextMeshProUGUI _textCreateNewShop;
-    public TextMeshProUGUI TextCreateNewShop => _textCreateNewShop;
 
     [SerializeField]
     private TextMeshProUGUI _textShopName;
-    public TextMeshProUGUI TextShopName => _textShopName;
 
-    [Header("Project")]
     private ShopInfoSlot _shopInfoSlot;
 
     private void Start()
@@ -55,14 +51,20 @@ public class UI_ShopInfoSlot : MonoBehaviour
 
     public void RefreshOnSelected()
     {
-        // _buttonShopName 색깔 변경
+        ChangeButtonColor(_buttonShopName, Color.white);
         _buttonDelete.gameObject.SetActive(true);
     }
 
     public void RefreshOnUnSelected()
     {
-        // _buttonShopName 색깔 변경
+        ChangeButtonColor(_buttonShopName, Color.grey);
         _buttonDelete.gameObject.SetActive(false);
     }
 
+    private void ChangeButtonColor(Button button, Color targetColor)
+    {
+        ColorBlock colorBlock = button.colors;
+        colorBlock.normalColor = targetColor;
+        button.colors = colorBlock;
+    }
 }

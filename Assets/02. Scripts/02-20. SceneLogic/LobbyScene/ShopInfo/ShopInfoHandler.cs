@@ -1,9 +1,11 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering.UI;
 
 public class ShopInfoHandler : MonoBehaviour
 {
+    public event Action<ShopInfo> OnShopInfoUpdated;
+
     [Header("Hierarchy")]
     [SerializeField]
     private CreatePopup _createPopup;
@@ -14,6 +16,7 @@ public class ShopInfoHandler : MonoBehaviour
     private List<ShopInfoSlot> _shopInfoList = new();
 
     private ShopInfo _selectedShopInfo;
+    public ShopInfo SelectedShopInfo => _selectedShopInfo;
 
     private void Start()
     {
@@ -45,6 +48,7 @@ public class ShopInfoHandler : MonoBehaviour
                 slot.UnSelect();
             }
         }
+        OnShopInfoUpdated?.Invoke(shopInfo);
     }
 
     private void DeleteSelectedShopInfo()

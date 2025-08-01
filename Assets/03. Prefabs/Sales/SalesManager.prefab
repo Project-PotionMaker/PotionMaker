@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8322404718675394925}
   - component: {fileID: 5652929766499374762}
-  - component: {fileID: 1976581876509992279}
+  - component: {fileID: -3088405670772777057}
   m_Layer: 0
   m_Name: SalesManager
   m_TagString: Untagged
@@ -45,9 +45,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a172c14e92a76aa40a5773aa3618077b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   _dontDestroy: 0
-  _lazyInitialization: 1
---- !u!114 &1976581876509992279
+  _lazyInitialization: 0
+--- !u!114 &-3088405670772777057
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -56,16 +59,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 3585805051992695418}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents: []
-  sceneViewId: 0
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
+  sceneId: 0
+  _assetId: 3581770551
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0

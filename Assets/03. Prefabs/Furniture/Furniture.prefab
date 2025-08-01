@@ -266,6 +266,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b552cbadeef08744f8c8cb8a62d5d526, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   _stat:
     _currentRotation: 0
     _inputObject: {fileID: 0}
@@ -342,6 +345,10 @@ PrefabInstance:
     - target: {fileID: 7373804967036992498, guid: f6bfb93d9ade6a14db3cf5226dcbb419, type: 3}
       propertyPath: m_Name
       value: AWS_Reception_Bell
+      objectReference: {fileID: 0}
+    - target: {fileID: 7373804967036992498, guid: f6bfb93d9ade6a14db3cf5226dcbb419, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7862955234378670408, guid: f6bfb93d9ade6a14db3cf5226dcbb419, type: 3}
       propertyPath: m_LocalScale.x

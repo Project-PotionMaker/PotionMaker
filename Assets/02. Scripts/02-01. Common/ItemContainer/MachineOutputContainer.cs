@@ -1,52 +1,36 @@
-using Photon.Pun;
+using System.Linq;
 using UnityEngine;
 
-public class MachineOutputContainer : IOutputContainer<Machine, MachineStat>
+public class MachineOutputContainer : IOutputContainer<Machine>
 {
     private GameObject _output;
 
-    public GameObject TakeItem(Machine machine, MachineStat stat)
+    public GameObject ServerTakeItem(Machine machine)
     {
-        if (stat.IsProcessFinished)
+        if (machine.IsProcessFinished)
         {
-            if (!PhotonNetwork.IsMasterClient)
+            if (machine.Data.Name == "병입기")
             {
-                //machine.PhotonView.RPC(nameof(RPC_TakeOutput), RpcTarget.MasterClient,
-                //stat.InputTIDList.ToArray(), stat.Data.TID, stat.InputType, machine.transform.position);
+                _output = CraftItemManager.Instance.TryCreatePotionItem(machine.InputTIDList.ToArray(), machine.DataTID, machine.transform.position);
             }
             else
             {
-                RPC_TakeOutput(stat, stat.InputTIDList.ToArray(), stat.Data.TID, stat.InputType, machine.transform.position);
+                _output = CraftItemManager.Instance.TryCreateOutputItem(machine.InputTIDList.ToArray(), machine.DataTID, machine.InputType, machine.transform.position);
             }
 
-            machine.SyncMachineStat();
+            machine.ServerDecreaseOutputAmount(1);
+            if (machine.LeftOutputAmount <= 0)
+            {
+                machine.ResetMachineServer();
+            }
+
             return _output;
         }
         return null;
     }
 
-    [PunRPC]
-    public void RPC_TakeOutput(MachineStat stat, int[] TIDList, int machineTID, EInputType type, Vector3 machinePosition)
+    public bool ServerCanTake(Machine machine)
     {
-        if(stat.Data.Name == "병입기")
-        {
-            _output = CraftItemManager.Instance.TryCreatePotionItem(TIDList, machineTID, machinePosition);
-        }
-        else
-        {
-            _output = CraftItemManager.Instance.TryCreateOutputItem(TIDList, machineTID, type, machinePosition);
-        }
-
-
-        stat.LeftOutputAmount--;
-        if (stat.LeftOutputAmount <= 0)
-        {
-            stat.ClearMachine();
-        }
-    }
-
-    public bool CanTake(Machine machine, MachineStat stat)
-    {
-        return stat.IsProcessFinished;
+        return machine.IsProcessFinished;
     }
 }

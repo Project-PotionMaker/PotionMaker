@@ -1,4 +1,4 @@
-using Photon.Pun;
+//using Photon.Pun;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,7 +15,7 @@ public class CraftItemManager : MonoBehaviourSingleton<CraftItemManager>
     private RecipeCodeHandler _recipeCodeHandler;
     private RecipeCodeVerifier _recipeCodeVerifier;
 
-    private PhotonView _photonView;
+    //private PhotonView _photonView;
 
     public Action<GameObject> OnOutputCreated;
     public Action<GameObject> OnPotionCreated;
@@ -44,7 +44,7 @@ public class CraftItemManager : MonoBehaviourSingleton<CraftItemManager>
 
         _recipeCodeHandler = new RecipeCodeHandler();
         _recipeCodeVerifier = new RecipeCodeVerifier(potionDataList);
-        _photonView = GetComponent<PhotonView>();
+        //_photonView = GetComponent<PhotonView>();
     }
 
     public GameObject TryCreateIngredientItem(int TID, Vector3 machinePosition)

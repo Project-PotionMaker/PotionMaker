@@ -1,14 +1,14 @@
-using Photon.Pun;
+//using Photon.Pun;
 using System;
-using UnityEngine;
-using PhotonPlayer = Photon.Realtime.Player;
+//using UnityEngine;
+//using PhotonPlayer = Photon.Realtime.Player;
 
 public class ReputationManager : MonoBehaviourPunCallbacksSingleton<ReputationManager>
 {
     public event Action OnDataChanged;
 
-    private PhotonView _photonView;
-    public PhotonView PhotonView => _photonView;
+    //private PhotonView _photonView;
+    //public PhotonView PhotonView => _photonView;
 
     private Reputation _reputation;
     public ReputationDTO Reputation => _reputation.ToDTO();
@@ -18,11 +18,11 @@ public class ReputationManager : MonoBehaviourPunCallbacksSingleton<ReputationMa
     private const float _increaseAmountOnSuccessOrder = 0.01f;
     private const float _decreaseAmountOnFailOrder = 0.2f;
 
-    protected override void Awake()
-    {
-        base.Awake();
-        _photonView = GetComponent<PhotonView>();
-    }
+    //protected override void Awake()
+    //{
+    //    base.Awake();
+    //    _photonView = GetComponent<PhotonView>();
+    //}
 
     private void Start()
     {
@@ -40,16 +40,16 @@ public class ReputationManager : MonoBehaviourPunCallbacksSingleton<ReputationMa
 
     public void RequestAddReputation(float addedValue = _increaseAmountOnSuccessOrder)
     {
-        if (!PhotonNetwork.IsMasterClient)
-        {
-            _photonView.RPC(nameof(RPC_AddReputation), RpcTarget.MasterClient, addedValue);
-            return;
-        }
+        //if (!PhotonNetwork.IsMasterClient)
+        //{
+        //    _photonView.RPC(nameof(RPC_AddReputation), RpcTarget.MasterClient, addedValue);
+        //    return;
+        //}
 
         AddReputation(addedValue);
     }
 
-    [PunRPC]
+    //[PunRPC]
     public void RPC_AddReputation(float addedValue)
     {
         AddReputation(addedValue);
@@ -57,29 +57,29 @@ public class ReputationManager : MonoBehaviourPunCallbacksSingleton<ReputationMa
 
     private void AddReputation(float addedValue)
     {
-        if (!PhotonNetwork.IsMasterClient)
-        {
-            throw new InvalidOperationException
-                ("마스터 클라이언트만 평판을 증가시킬 수 있습니다.");
-        }
-        _reputation.AddReputation(addedValue);
-        OnDataChanged?.Invoke();
+        //if (!PhotonNetwork.IsMasterClient)
+        //{
+        //    throw new InvalidOperationException
+        //        ("마스터 클라이언트만 평판을 증가시킬 수 있습니다.");
+        //}
+        //_reputation.AddReputation(addedValue);
+        //OnDataChanged?.Invoke();
 
-        _photonView.RPC(nameof(RPC_UpdateReputation), RpcTarget.Others, _reputation.Value);
+        //_photonView.RPC(nameof(RPC_UpdateReputation), RpcTarget.Others, _reputation.Value);
     }
 
     public void RequestSubtractReputation(float subtractedValue = _decreaseAmountOnFailOrder)
     {
-        if (!PhotonNetwork.IsMasterClient)
-        {
-            _photonView.RPC(nameof(RPC_SubtractReputation), RpcTarget.MasterClient, subtractedValue);
-            return;
-        }
+        //if (!PhotonNetwork.IsMasterClient)
+        //{
+        //    _photonView.RPC(nameof(RPC_SubtractReputation), RpcTarget.MasterClient, subtractedValue);
+        //    return;
+        //}
 
         SubtractReputation(subtractedValue);
     }
 
-    [PunRPC]
+    //[PunRPC]
     public void RPC_SubtractReputation(float subtractedValue)
     {
         SubtractReputation(subtractedValue);
@@ -87,24 +87,24 @@ public class ReputationManager : MonoBehaviourPunCallbacksSingleton<ReputationMa
 
     private void SubtractReputation(float subtractedValue)
     {
-        if (!PhotonNetwork.IsMasterClient)
-        {
-            throw new InvalidOperationException
-                ("마스터 클라이언트만 평판을 감소시킬 수 있습니다.");
-        }
+        //if (!PhotonNetwork.IsMasterClient)
+        //{
+        //    throw new InvalidOperationException
+        //        ("마스터 클라이언트만 평판을 감소시킬 수 있습니다.");
+        //}
 
-        bool result = _reputation.TrySubtractReputation(subtractedValue);
-        if (result)
-        {
-            OnDataChanged?.Invoke();
-            _photonView.RPC(nameof(RPC_UpdateReputation), RpcTarget.Others, _reputation.Value);
-            Debug.Log("평판 감소...");
-            return;
-        }
-        Debug.Log("평판 감소 실패");
+        //bool result = _reputation.TrySubtractReputation(subtractedValue);
+        //if (result)
+        //{
+        //    OnDataChanged?.Invoke();
+        //    _photonView.RPC(nameof(RPC_UpdateReputation), RpcTarget.Others, _reputation.Value);
+        //    Debug.Log("평판 감소...");
+        //    return;
+        //}
+        //Debug.Log("평판 감소 실패");
     }
 
-    [PunRPC]
+    //[PunRPC]
     public void RPC_UpdateReputation(float value)
     {
         UpdateReputation(value);

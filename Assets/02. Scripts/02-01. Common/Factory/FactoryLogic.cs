@@ -25,26 +25,33 @@ public class FactoryLogic<TEnum, TFactoryInfo>
 
             GameObject prefab = await AssetManager.Instance.LoadAsset<GameObject>(info.AddressableKey);
 
-            if (prefab != null)
-            {
-                _typeToPrefabDict.TryAdd(info.Type, prefab);
-
-                var identity = prefab.GetComponent<NetworkIdentity>();
-                if (identity != null)
-                {
-                    if (!MirrorNetworkManager.Instance.spawnPrefabs.Contains(prefab))
-                    {
-                        MirrorNetworkManager.Instance.spawnPrefabs.Add(prefab);
-                    }
-                }
-
-                InitializePool(info.Type, prefab, 10, parent);
-            }
-            else
+            if (prefab == null)
             {
                 Debug.LogError($"프리팹이 없습니다. 키: {info.AddressableKey}");
                 continue;
             }
+            
+            _typeToPrefabDict.TryAdd(info.Type, prefab);
+
+            var identity = prefab.GetComponent<NetworkIdentity>();
+            if (identity != null)
+            {
+                if (!MirrorNetworkManager.Instance.spawnPrefabs.Contains(prefab))
+                {
+                    MirrorNetworkManager.Instance.spawnPrefabs.Add(prefab);
+                }
+
+                if (!NetworkClient.prefabs.ContainsKey(identity.assetId))
+                {
+                    NetworkClient.RegisterPrefab(
+                        prefab,
+                        spawnHandler: (position, assetId) => GetObject(info.Type, position, Quaternion.identity),
+                        unspawnHandler: obj => ReturnObject(obj)
+                    );
+                }
+            }
+
+            InitializePool(info.Type, prefab, 10, parent);
         }
     }
 
@@ -60,10 +67,15 @@ public class FactoryLogic<TEnum, TFactoryInfo>
 
         for (int i = 0; i < poolSize; i++)
         {
-            GameObject poolObject = UnityEngine.Object.Instantiate(prefab);
-            poolObject.transform.SetParent(parent);
-            poolObject.SetActive(false);
+            GameObject poolObject = UnityEngine.Object.Instantiate(prefab, parent);
 
+            var identity = poolObject.GetComponent<NetworkIdentity>();
+            if (identity != null)
+            {
+                identity.enabled = false;
+            }
+
+            poolObject.SetActive(false);
             _typeToPoolDict[type].Enqueue(poolObject);
         }
     }
@@ -76,18 +88,26 @@ public class FactoryLogic<TEnum, TFactoryInfo>
             return null;
         }
 
+        GameObject networkObject;
+
+        // 풀이 비어있으면 새 오브젝트 생성
         if (_typeToPoolDict[type].Count <= 0)
         {
-            GameObject newObj = UnityEngine.Object.Instantiate(_typeToPrefabDict[type]);
-            newObj.SetActive(false);
-            _typeToPoolDict[type].Enqueue(newObj);
+            networkObject = UnityEngine.Object.Instantiate(_typeToPrefabDict[type]);
+        }
+        else
+        {
+            networkObject = _typeToPoolDict[type].Dequeue();
         }
 
-        // Mirror 추가
-        GameObject networkObject = _typeToPoolDict[type].Dequeue();
+        var identity = networkObject.GetComponent<NetworkIdentity>();
+        if (identity != null)
+        {
+            identity.enabled = true;
+        }
+
         networkObject.SetActive(true);
-        networkObject.transform.position = position;
-        networkObject.transform.rotation = rotation;
+        networkObject.transform.SetPositionAndRotation(position, rotation);
 
         _objectToTypeDict[networkObject] = type;
 
@@ -109,6 +129,13 @@ public class FactoryLogic<TEnum, TFactoryInfo>
 
     public void ReturnObject(GameObject obj, TEnum type)
     {
+
+        var identity = obj.GetComponent<NetworkIdentity>();
+        if (identity != null)
+        {
+            identity.enabled = false;
+        }
+
         obj.SetActive(false);
         if (_typeToPoolDict.ContainsKey(type))
         {

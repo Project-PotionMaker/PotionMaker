@@ -19,7 +19,13 @@ public class UI_DaySummary : MonoBehaviour
         SalesManager.Instance.OnSummaryReady += ShowSummary;
         gameObject.SetActive(false);
     }
-
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            gameObject.SetActive(false);
+        }
+    }
     public void OnEndingPhaseStarted()
     {
         SalesManager.Instance.CmdRequestUpdateSales(isForSummary: true);

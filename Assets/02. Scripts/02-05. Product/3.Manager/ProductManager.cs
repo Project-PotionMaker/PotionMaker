@@ -23,6 +23,12 @@ public class ProductManager : NetworkBehaviourSingleton<ProductManager>
         _delivery = new Delivery();
         _movingHouse = new MovingHouse();
         _movingHouse.InitMovingHouse(_delivery);
+        _productListDict = new Dictionary<EProductType, List<Product>>()
+        {
+            { EProductType.Machine, new List<Product>() },
+            { EProductType.Furniture, new List<Product>() },
+            { EProductType.HouseMoving, new List<Product>() },
+        };
     }
     private void Start()
     {
@@ -43,13 +49,6 @@ public class ProductManager : NetworkBehaviourSingleton<ProductManager>
         {
             return;
         }
-
-        _productListDict = new Dictionary<EProductType, List<Product>>()
-        {
-            { EProductType.Machine, new List<Product>() },
-            { EProductType.Furniture, new List<Product>() },
-            { EProductType.HouseMoving, new List<Product>() },
-        };
 
         LoadProductData();
         CmdRequestUpdateProducts();

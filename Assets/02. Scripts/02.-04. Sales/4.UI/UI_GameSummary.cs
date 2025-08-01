@@ -17,6 +17,13 @@ public class UI_GameSummary : MonoBehaviour
         _salesVolumeSlotList = new List<UI_SalesVolumeSlot>();
         gameObject.SetActive(false);
     }
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            gameObject.SetActive(false);
+        }
+    }
     public void ShowSummary()
     {
         _totalSalesTextUI.text = SalesManager.Instance.Sales.TotalSales.ToString("N0");

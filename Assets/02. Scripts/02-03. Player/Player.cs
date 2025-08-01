@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class Player : NetworkBehaviour
 {
@@ -19,6 +20,11 @@ public class Player : NetworkBehaviour
     public Transform HeldPosition => _heldPosition;
 
     private Dictionary<Type, PlayerAbility> _abilityMap = new Dictionary<Type, PlayerAbility>();
+
+    private void Awake()
+    {
+        int a = 3;
+    }
 
     private void Update()
     {

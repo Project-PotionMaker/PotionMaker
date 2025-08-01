@@ -12,23 +12,24 @@ public class UI_Visibility : MonoBehaviour
     private TextMeshProUGUI _textVisibilityOption;
 
     private int _visibilityIndex;
+    private int _visibilityEnumSize;
 
     private void Start()
     {
         _visibilityIndex = 0;
+        _visibilityEnumSize = Enum.GetNames(typeof(Visibility)).Length;
         Refresh();
     }
 
     public void OnClickLeftButton()
     {
-        _visibilityIndex = (_visibilityIndex - 1 + Enum.GetNames(typeof(Visibility)).Length)
-                           % Enum.GetNames(typeof(Visibility)).Length;
+        _visibilityIndex = (_visibilityIndex - 1 + _visibilityEnumSize) % _visibilityEnumSize;
         Refresh();
     }
 
     public void OnClickRightButton()
     {
-        _visibilityIndex = (_visibilityIndex + 1) % Enum.GetNames(typeof(Visibility)).Length;
+        _visibilityIndex = (_visibilityIndex + 1) % _visibilityEnumSize;
         Refresh();
     }
 

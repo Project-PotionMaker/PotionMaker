@@ -562,7 +562,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: fef45cc204351a9458f02ad7c0243f18, type: 2}
+  - {fileID: 2895064947943234598, guid: e7170b34430d5ef44bb8add062be7881, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1289,12 +1289,18 @@ MonoBehaviour:
   Group: 0
   prefixField: -1
   Synchronization: 3
+  mixedModeIsReliable: 0
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents: []
+  RpcMonoBehaviours: []
+  <IsMine>k__BackingField: 0
+  <CreatorActorNr>k__BackingField: 0
+  <AmOwner>k__BackingField: 0
   sceneViewId: 1
   InstantiationId: 0
   isRuntimeInstantiated: 0
+  removedFromLocalViewList: 0
 --- !u!4 &505207099
 Transform:
   m_ObjectHideFlags: 0
@@ -1384,6 +1390,7 @@ GameObject:
   - component: {fileID: 526694402}
   - component: {fileID: 526694401}
   - component: {fileID: 526694400}
+  - component: {fileID: 526694404}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -1479,6 +1486,13 @@ MonoBehaviour:
   evaluationMethod: 0
   evaluationInterval: 3
   timeInterpolationGui: 0
+  showRoomGUI: 1
+  minPlayers: 1
+  roomPlayerPrefab: {fileID: 0}
+  RoomScene: 
+  GameplayScene: 
+  _allPlayersReady: 0
+  clientIndex: 0
 --- !u!4 &526694403
 Transform:
   m_ObjectHideFlags: 0
@@ -1494,6 +1508,51 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &526694404
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 526694399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8aab4c8111b7c411b9b92cf3dbc5bd4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dontDestroyOnLoad: 1
+  runInBackground: 1
+  headlessStartMode: 0
+  editorAutoStart: 0
+  sendRate: 60
+  offlineScene: 
+  onlineScene: 
+  offlineSceneLoadDelay: 0
+  transport: {fileID: 0}
+  networkAddress: localhost
+  maxConnections: 100
+  disconnectInactiveConnections: 0
+  disconnectInactiveTimeout: 60
+  authenticator: {fileID: 0}
+  playerPrefab: {fileID: 0}
+  autoCreatePlayer: 1
+  playerSpawnMethod: 0
+  spawnPrefabs: []
+  exceptionsDisconnect: 1
+  snapshotSettings:
+    bufferTimeMultiplier: 2
+    bufferLimit: 32
+    catchupNegativeThreshold: -1
+    catchupPositiveThreshold: 1
+    catchupSpeed: 0.019999999552965164
+    slowdownSpeed: 0.03999999910593033
+    driftEmaDuration: 1
+    dynamicAdjustment: 1
+    dynamicAdjustmentTolerance: 1
+    deliveryTimeEmaDuration: 2
+  evaluationMethod: 0
+  evaluationInterval: 3
+  timeInterpolationGui: 0
 --- !u!1 &569446827
 GameObject:
   m_ObjectHideFlags: 0
@@ -4310,8 +4369,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cb8fc3b2b5815148a130c670e222f6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   _dontDestroy: 0
-  _lazyInitialization: 0
 --- !u!4 &1786805708
 Transform:
   m_ObjectHideFlags: 0

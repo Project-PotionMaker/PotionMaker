@@ -249,6 +249,33 @@ public partial class DataTable
         }
     }
     #endregion
+    #region Tip
+    private ReadOnlyList<TipData> TipList = null;
+    private ReadOnlyDictionary<int, TipData> TipTable = null;
+
+    public ReadOnlyList<TipData> GetTipDataList()
+    {
+        return TipList;
+    }
+
+    public TipData GetTipData(int key)
+    {
+        if (key == 0)
+        {
+            return null;
+        }
+
+        if (TipTable.TryGetValue(key, out TipData retVal) == true)
+        {
+            return retVal;
+        }
+        else
+        {
+            Debug.LogError($"Can not find UniqueID of TipData: <{key}>");
+            return null;
+        }
+    }
+    #endregion
 
     public IEnumerator LoadRoutine()
     {
@@ -309,6 +336,12 @@ public partial class DataTable
             LoadLayoutData(bytes);
             loadedCount++;
         });
+        allCount++;
+        GetBytes_FromResources("Tip", (bytes) =>
+        {
+            LoadTipData(bytes);
+            loadedCount++;
+        });
 
         yield return new WaitUntil(() => allCount == loadedCount);
     }
@@ -333,6 +366,8 @@ public partial class DataTable
         LoadFurnitureData(furnitureBytes);
         byte[] layoutBytes = GetBytes_ForEditor("LayoutData");
         LoadLayoutData(layoutBytes);
+        byte[] tipBytes = GetBytes_ForEditor("TipData");
+        LoadTipData(tipBytes);
     }
 
     private void LoadPotionData(byte[] bytes)
@@ -612,6 +647,37 @@ public partial class DataTable
 
         LayoutList = new ReadOnlyList<LayoutData>(layoutList);
         LayoutTable = new ReadOnlyDictionary<int, LayoutData>(layoutTable);
+    }
+
+    private void LoadTipData(byte[] bytes)
+    {
+        List<TipData> tipList = new List<TipData>();
+        Dictionary<int, TipData> tipTable = new Dictionary<int, TipData>();
+
+        Reader = new BinaryReader(new MemoryStream(bytes));
+
+        while (Reader.BaseStream.Position < bytes.Length)
+        {
+            TipData data = new TipData(Reader);
+            if (tipTable.ContainsKey(data.TID) == true)
+            {
+                Debug.LogError("The duplicate TID: " + data.TID + " in Tip");
+                continue;
+            }
+            else if (data.TID == 0)
+            {
+                Debug.LogError("TID is 0 in Tip");
+                continue;
+            }
+
+            tipList.Add(data);
+            tipTable.Add(data.TID, data);
+        }
+
+        Reader.Close();
+
+        TipList = new ReadOnlyList<TipData>(tipList);
+        TipTable = new ReadOnlyDictionary<int, TipData>(tipTable);
     }
 
 }

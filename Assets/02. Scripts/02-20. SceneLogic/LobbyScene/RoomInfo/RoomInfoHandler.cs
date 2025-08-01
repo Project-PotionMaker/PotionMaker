@@ -9,7 +9,7 @@ public class RoomInfoHandler : MonoBehaviour
     private RoomInfo _roomInfo;
     public RoomInfo RoomInfo => _roomInfo;
 
-    private Visibility _selectedVisibilty = Visibility.Public;
+    private Visibility _selectedVisibility = Visibility.Public;
 
     private void Start()
     {
@@ -20,7 +20,7 @@ public class RoomInfoHandler : MonoBehaviour
     {
         if (_roomInfo == null)
         {
-            _roomInfo = new RoomInfo(shopInfo, _selectedVisibilty);
+            _roomInfo = new RoomInfo(shopInfo, _selectedVisibility);
         }
         else
         {
@@ -28,15 +28,15 @@ public class RoomInfoHandler : MonoBehaviour
         }
     }
 
-    public void UpdateRoomInfo(Visibility visibilty)
+    public void UpdateRoomInfo(Visibility visibility)
     {
         if (_roomInfo == null)
         {
-            _roomInfo = new RoomInfo(_shopInfoHandler.SelectedShopInfo, _selectedVisibilty);
+            _roomInfo = new RoomInfo(_shopInfoHandler.SelectedShopInfo, _selectedVisibility);
         }
         else
         {
-            _roomInfo.Visibility = visibilty;
+            _roomInfo.Visibility = visibility;
         }
     }
     

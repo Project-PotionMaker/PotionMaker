@@ -24,6 +24,11 @@ public class CreatePopup : MonoBehaviour
 
     public void CreateNewShopInfo()
     {
+        if (string.IsNullOrEmpty(_inputFieldShopName.text))
+        {
+            Debug.LogWarning("방 제목은 빈 문자열일 수 없습니다.");
+            return;
+        }
         ShopInfo newShopInfo = new ShopInfo(_inputFieldShopName.text);
         OnShopInfoCreated?.Invoke(_selectedShopInfoSlot, newShopInfo);
         ClosePopup();

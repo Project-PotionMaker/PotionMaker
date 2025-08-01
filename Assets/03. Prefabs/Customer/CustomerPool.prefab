@@ -9,9 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 386909598082071668}
-  - component: {fileID: 817784354011301390}
-  - component: {fileID: 8230870407313527401}
   - component: {fileID: 395777406234830051}
+  - component: {fileID: 537523599864049265}
   m_Layer: 0
   m_Name: CustomerPool
   m_TagString: Untagged
@@ -34,48 +33,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &817784354011301390
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7535748361274180503}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents: []
-  sceneViewId: 0
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
---- !u!114 &8230870407313527401
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7535748361274180503}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1db3a808825b43a4ba48ab6b237ea9a3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _dontDestroy: 1
-  _lazyInitialization: 1
-  _poolInfoList:
-  - Type: 0
-    InitCount: 10
-    AddressableKeyEnum: 2
-    Container: {fileID: 386909598082071668}
-  _factory: {fileID: 395777406234830051}
 --- !u!114 &395777406234830051
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -88,3 +45,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c60edaac814e254e8f188e124bdb301, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  _dontDestroy: 0
+  _factoryInfoList:
+  - Type: 0
+    AddressableKeyEnum: 55
+--- !u!114 &537523599864049265
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7535748361274180503}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 3485766770
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0

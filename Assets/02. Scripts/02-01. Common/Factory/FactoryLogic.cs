@@ -3,22 +3,21 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BaseFactory<TEnum, TFactoryInfo> : MonoBehaviourSingleton<BaseFactory<TEnum, TFactoryInfo>>
+public class FactoryLogic<TEnum, TFactoryInfo>
     where TEnum : Enum
     where TFactoryInfo : BaseFactoryInfo<TEnum>
 {
-    [SerializeField]
-    private List<TFactoryInfo> _factoryInfoList;
-
-    private Dictionary<TEnum, GameObject> _typeToPrefabKeyDict = new Dictionary<TEnum, GameObject>();
+    private Dictionary<TEnum, GameObject> _typeToPrefabDict = new Dictionary<TEnum, GameObject>();
 
     private Dictionary<TEnum, Queue<GameObject>> _typeToPoolDict = new Dictionary<TEnum, Queue<GameObject>>();
 
-    private async void Start()
+    private Dictionary<GameObject, TEnum> _objectToTypeDict = new Dictionary<GameObject, TEnum>();
+
+    public async void Initialize(List<TFactoryInfo> factoryInfoList)
     {
-        foreach (TFactoryInfo info in _factoryInfoList)
+        foreach (TFactoryInfo info in factoryInfoList)
         {
-            if (_typeToPrefabKeyDict.ContainsKey(info.Type))
+            if (_typeToPrefabDict.ContainsKey(info.Type))
             {
                 Debug.LogError($"Type이 중복되었습니다. Type : {info.Type}");
                 continue;
@@ -28,7 +27,7 @@ public class BaseFactory<TEnum, TFactoryInfo> : MonoBehaviourSingleton<BaseFacto
 
             if (prefab != null)
             {
-                _typeToPrefabKeyDict.TryAdd(info.Type, prefab);
+                _typeToPrefabDict.TryAdd(info.Type, prefab);
 
                 var identity = prefab.GetComponent<NetworkIdentity>();
                 if (identity != null)
@@ -58,40 +57,58 @@ public class BaseFactory<TEnum, TFactoryInfo> : MonoBehaviourSingleton<BaseFacto
 
         for (int i = 0; i < poolSize; i++)
         {
-            GameObject poolObject = Instantiate(prefab);
+            GameObject poolObject = UnityEngine.Object.Instantiate(prefab);
             poolObject.SetActive(false);
 
             _typeToPoolDict[type].Enqueue(poolObject);
         }
     }
 
-    //[Server]
-    public GameObject Create(TEnum type, Vector3 position, Quaternion rotation)
+    public GameObject GetObject(TEnum type, Vector3 position, Quaternion rotation)
     {
-        if (!_typeToPrefabKeyDict.ContainsKey(type))
+        if (!_typeToPrefabDict.ContainsKey(type))
         {
             Debug.LogError($"타입에 맞는 프리팹이 없습니다. 타입 : {type}");
             return null;
         }
 
-        // Mirror 추가
-        GameObject networkObject = Instantiate(_typeToPrefabKeyDict[type], position, rotation);
-        NetworkServer.Spawn(networkObject);
+        if (_typeToPoolDict[type].Count <= 0)
+        {
+            GameObject newObj = UnityEngine.Object.Instantiate(_typeToPrefabDict[type]);
+            newObj.SetActive(false);
+            _typeToPoolDict[type].Enqueue(newObj);
+        }
 
-        Debug.Log($"서버에서 '{networkObject.name}'를 스폰했습니다.");
+        // Mirror 추가
+        GameObject networkObject = _typeToPoolDict[type].Dequeue();
+        networkObject.SetActive(true);
+        networkObject.transform.position = position;
+        networkObject.transform.rotation = rotation;
+
+        _objectToTypeDict[networkObject] = type;
+
         return networkObject;
     }
 
-    //[Server]
-    private void Return(GameObject obj)
+    public void ReturnObject(GameObject obj)
     {
-        NetworkServer.UnSpawn(obj);
-        obj.SetActive(false);
+        if (_objectToTypeDict.TryGetValue(obj, out TEnum type))
+        {
+            ReturnObject(obj, type);
+            _objectToTypeDict.Remove(obj);
+        }
+        else
+        {
+            Debug.LogError("오브젝트의 타입을 찾을 수 없습니다.");
+        }
     }
 
-    //[Command]
-    public void CmdReturn(GameObject obj)
+    public void ReturnObject(GameObject obj, TEnum type)
     {
-        Return(obj);
+        obj.SetActive(false);
+        if (_typeToPoolDict.ContainsKey(type))
+        {
+            _typeToPoolDict[type].Enqueue(obj);
+        }
     }
 }

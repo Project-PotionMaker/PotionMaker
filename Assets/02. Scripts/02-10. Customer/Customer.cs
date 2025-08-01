@@ -1,8 +1,5 @@
-//using Photon.Pun;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 
 public class Customer : MonoBehaviour
 {
@@ -61,10 +58,6 @@ public class Customer : MonoBehaviour
 
     public void ReturnPotion()
     {
-        //if (!PhotonNetwork.IsMasterClient)
-        //{
-        //    return; // 마스터 클라이언트만 포션을 반환할 수 있음
-        //}
         if (_potionHandler.transform.childCount == 0)
         {
             return; 
@@ -73,8 +66,7 @@ public class Customer : MonoBehaviour
         if(ReferenceEquals(potion, null) == false)
         {
             potion.transform.SetParent(null); 
-            CraftItemFactory.Instance.CmdReturn(potion); 
+            CraftItemFactory.Instance.ReturnObject(potion); 
         }
-
     }
 }

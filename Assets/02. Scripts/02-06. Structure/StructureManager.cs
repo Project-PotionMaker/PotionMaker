@@ -8,7 +8,7 @@ public class StructureManager : NetworkBehaviourSingleton<StructureManager>
     public GameObject CreateStructure(int structureTID, int ingredientTID = 10000)
     {
         StructureData data = DataTable.Instance.GetStructureData(structureTID);
-        GameObject instance = StructureFactory.Instance.Create(data.StructureType, Vector3.zero, Quaternion.identity);
+        GameObject instance = StructureFactory.Instance.CreateObject(data.StructureType, Vector3.zero, Quaternion.identity);
 
         switch (data.StructureType)
         {

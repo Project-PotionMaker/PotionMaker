@@ -5,10 +5,22 @@ public class UI_LoadingScene : MonoBehaviour
 {
     [Header("Hierarchy")]
     [SerializeField]
+    private LoadingScene _loadingScene;
+
+    [SerializeField]
     private TextMeshProUGUI _textProgressPercentage;
 
     [SerializeField]
     private TextMeshProUGUI _textTip;
+
+    private void Start()
+    {
+        _loadingScene.OnTipChanged += RefreshTip;
+        Global.Instance.OnDataLoaded += () =>
+        {
+            RefreshTip(DataTable.Instance.GetTipData(10000).Description);
+        };
+    }
 
     public void RefreshProgressPercentage(float progress)
     {

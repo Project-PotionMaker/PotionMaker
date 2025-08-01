@@ -28,7 +28,7 @@ public class ShopInfoSlot : MonoBehaviour
     {
         _shopInfo = shopInfo;
         CurrentState = SlotState.Filled;
-        OnShopInfoCreated.Invoke(_shopInfo);
+        OnShopInfoCreated?.Invoke(_shopInfo);
         Select();
     }
 

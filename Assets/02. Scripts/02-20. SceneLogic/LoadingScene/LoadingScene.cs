@@ -30,8 +30,8 @@ public class LoadingScene : MonoBehaviour
 
     private IEnumerator Coroutine_ChangeTip()
     {
-        int index = 0;
         int tipDataCount = _tipDataList.Count;
+        int index = UnityEngine.Random.Range(0, tipDataCount);
         while (true)
         {
             string tipText = _tipDataList[index].Description;

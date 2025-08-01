@@ -282,13 +282,13 @@ public class MirrorNetworkManager : NetworkRoomManager
     /// <param name="sceneName">Name of the new scene.</param>
     public override void OnRoomServerSceneChanged(string sceneName)
     {
-        if (sceneName == RoomScene)
-        {
+        //if (sceneName == RoomScene)
+        //{
             //GameObject currencyManager = Instantiate(spawnPrefabs.Find(x => x.GetComponent<CurrencyManager>() != null));
             //NetworkServer.Spawn(currencyManager);
 
-            GameObject structureManager = Instantiate(spawnPrefabs.Find(x => x.GetComponent<StructureManager>() != null));
-            NetworkServer.Spawn(structureManager);
+            //GameObject structureManager = Instantiate(spawnPrefabs.Find(x => x.GetComponent<StructureManager>() != null));
+            //NetworkServer.Spawn(structureManager);
 
             //GameObject salesManager = Instantiate(spawnPrefabs.Find(x => x.GetComponent<SalesManager>() != null));
             //NetworkServer.Spawn(salesManager);
@@ -300,7 +300,7 @@ public class MirrorNetworkManager : NetworkRoomManager
             //NetworkServer.Spawn(productManager);
 
             NetworkServer.SpawnObjects();
-        }
+        //}
     }
 
     ///// <summary>

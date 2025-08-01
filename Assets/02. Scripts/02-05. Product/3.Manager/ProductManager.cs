@@ -30,7 +30,7 @@ public class ProductManager : NetworkBehaviourSingleton<ProductManager>
             { EProductType.HouseMoving, new List<Product>() },
         };
     }
-    private void Start()
+    public override void OnStartClient()
     {
         Global.Instance.OnDataLoaded += InitProductManager;
         InitProductManager();
@@ -51,6 +51,9 @@ public class ProductManager : NetworkBehaviourSingleton<ProductManager>
         }
 
         LoadProductData();
+        ProductManager.Instance.CmdRequestUnlock(10000);
+        ProductManager.Instance.CmdRequestUnlock(10001);
+
         CmdRequestUpdateProducts();
     }
 

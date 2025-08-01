@@ -8,7 +8,7 @@ public class SalesRPCData
     [Serializable]
     public class SalesVolumeKeyValue
     {
-        public EPotionType Key;
+        public int Key;
         public int Value;
     }
 

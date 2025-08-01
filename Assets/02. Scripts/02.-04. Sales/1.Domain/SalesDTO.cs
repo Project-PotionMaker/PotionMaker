@@ -9,8 +9,8 @@ public class SalesDTO
     public readonly int TotalSales;
     public readonly int DailySales;
 
-    public readonly Dictionary<EPotionType, int> TotalSalesVolumeDict;
-    public readonly Dictionary<EPotionType, int> DailySalesVolumeDict;
+    public readonly Dictionary<int, int> TotalSalesVolumeDict;
+    public readonly Dictionary<int, int> DailySalesVolumeDict;
 
 
     //public Dictionary<EPotionType, int> SalesVolumeDict => SalesVolumeKeyValueList.ToDictionary(kv => kv.Key, kv => kv.Value);
@@ -25,7 +25,7 @@ public class SalesDTO
         //SalesVolumeKeyValueList = sales.SalesVolumeDict.Select(kv => new SalesVolumeKeyValue { Key = kv.Key, Value = kv.Value }).ToList();
     }
 
-    public SalesDTO(int totalSales, int dailySales, Dictionary<EPotionType, int> totalSalesVolumeDict, Dictionary<EPotionType, int> dailySalesVolumeDict)
+    public SalesDTO(int totalSales, int dailySales, Dictionary<int, int> totalSalesVolumeDict, Dictionary<int, int> dailySalesVolumeDict)
     {
         DailySales = dailySales;
         TotalSales = totalSales;

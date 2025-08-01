@@ -1,9 +1,10 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
-using Photon.Pun;
+//using Photon.Pun;
 using UnityEditor;
 using VInspector;
+using Mirror;
 public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
 {
     //접수 받기, 포션 제공하기만 클라이언트에서 마스터에게 요청 가능
@@ -13,7 +14,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
     public CustomerLineHandler LineHandler { get => _lineHandler; set => _lineHandler = value; }
     private CustomerOrderHandler _orderHandler; // 주문을 처리하는 컴포넌트
     public CustomerOrderHandler OrderHandler { get => _orderHandler; set => _orderHandler = value; }
-    private PhotonView _photonView;
+    //private PhotonView _photonView;
     private bool _canOrdered = false; 
     public bool CanOrdered { get => _canOrdered; set => _canOrdered = value; }
 
@@ -47,7 +48,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
     }
     private void Start()
     {
-        _photonView = GetComponent<PhotonView>();
+        //_photonView = GetComponent<PhotonView>();
         Dictionary<EPhaseType, BasePhase> phaseDictionary = PhaseManager.Instance.PhaseDictionary;
         phaseDictionary[EPhaseType.ServingPhase].OnPhaseEntered += PreService;
         phaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += ForceReturn; 
@@ -68,10 +69,10 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
 
     public void InviteCustomer(float deltaTime)
     {
-        if (!PhotonNetwork.IsMasterClient)
-        {
-            return;
-        }
+        //if (!PhotonNetwork.IsMasterClient)
+        //{
+        //    return;
+        //}
         _inviteTimer -= deltaTime;
         if (_inviteTimer > 0)
         {
@@ -81,7 +82,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         _inviteTimer = _inviteCoolTime;
         Debug.Log("손님 초대");
         GameObject customer = CustomerFactory.Instance.Create(ENPCType.Customer,Vector3.zero,Quaternion.identity); // TODO : PoolManager완성 후 수정
-        OnCustomerIn(customer.GetComponent<PhotonView>().ViewID); //TODO : PoolManager완성 후 수정
+        //OnCustomerIn(customer.GetComponent<PhotonView>().ViewID); //TODO : PoolManager완성 후 수정
         //CustomerPool.Instance.GetObjectAsync(0);
         RemainCustomers++;
         _inviteIndex++;
@@ -90,25 +91,25 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
     public void OnCustomerIn(int viewID)
     {
         Debug.Log($"손님 생성: {viewID}");
-        PhotonView photonView = PhotonView.Find(viewID);
-        Customer customer = photonView.GetComponent<Customer>();
-        customer.transform.position = _enterDoor.position; // 손님을 상점 입구에 생성
-        _orderHandler.PotionOrderLine.Enqueue(customer);
+        //PhotonView photonView = PhotonView.Find(viewID);
+        //Customer customer = photonView.GetComponent<Customer>();
+        //customer.transform.position = _enterDoor.position; // 손님을 상점 입구에 생성
+        //_orderHandler.PotionOrderLine.Enqueue(customer);
         _lineHandler.ReLining();
     }
 
     public void RegisterOrder() // 플레이어가 접수를 받으면 호출
     {
-        if (PhotonNetwork.IsMasterClient)
-        {
-            RegisterOrderInternal();
-        }
-        else
-        {
-            _photonView.RPC(nameof(RPC_RegisterOrder), RpcTarget.MasterClient);
-        }
+        //if (PhotonNetwork.IsMasterClient)
+        //{
+        //    RegisterOrderInternal();
+        //}
+        //else
+        //{
+        //    _photonView.RPC(nameof(RPC_RegisterOrder), RpcTarget.MasterClient);
+        //}
     }
-    [PunRPC]
+    //[PunRPC]
     private void RPC_RegisterOrder()
     {
         RegisterOrderInternal();
@@ -142,10 +143,10 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
 
     public void LostCustomer(Customer customer) // 인내심이 바닥나면 호출
     {
-        if(PhotonNetwork.IsMasterClient == false)
-        {
-            return;
-        }
+        //if(PhotonNetwork.IsMasterClient == false)
+        //{
+        //    return;
+        //}
         if (_orderHandler.RemoveAnywhere(customer))// 주문 목록에서 손님 제거
         {
             _lineHandler.ReLining(); // 줄 다시 세우기
@@ -175,16 +176,16 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
 
     public void ServePotion(int potionTID, int pickupTableViewID)// 판매대에 올려놓으면 호출
     {
-        if (PhotonNetwork.IsMasterClient)
-        {
-            ServePotionInternal(potionTID,pickupTableViewID); 
-        }
-        else
-        {
-            _photonView.RPC(nameof(RPC_ServePotion), RpcTarget.MasterClient, potionTID);
-        }
+        //if (PhotonNetwork.IsMasterClient)
+        //{
+        //    ServePotionInternal(potionTID,pickupTableViewID); 
+        //}
+        //else
+        //{
+        //    _photonView.RPC(nameof(RPC_ServePotion), RpcTarget.MasterClient, potionTID);
+        //}
     }
-    [PunRPC]
+    //[PunRPC]
     public void RPC_ServePotion(int potionTID, int pickupTableViewID)
     {
         ServePotionInternal(potionTID,pickupTableViewID);
@@ -192,10 +193,10 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
 
     public void ServePotionInternal(int potionTID,int pickupTableViewID)
     {
-        if (PhotonNetwork.IsMasterClient == false)
-        {
-            return;
-        }
+        //if (PhotonNetwork.IsMasterClient == false)
+        //{
+        //    return;
+        //}
         Customer customer = _orderHandler.FindPicker(potionTID); // 포션을 가져갈 손님 찾기
         if (ReferenceEquals(customer, null)) 
         {
@@ -214,10 +215,10 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
 
     public void OnServedSuccess(Customer customer,int pickupTableViewID) // 손님이 판매대에 도착하면 호출 
     {
-        if (PhotonNetwork.IsMasterClient == false)
-        {
-            return;
-        }
+        //if (PhotonNetwork.IsMasterClient == false)
+        //{
+        //    return;
+        //}
         if(PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase)
         {
             //TODO : 구매 성공, Currency 증가
@@ -232,10 +233,10 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
 
     public void OnLastOrderTime() //영업시간 종료되면 호출
     {
-        if (PhotonNetwork.IsMasterClient == false)
-        {
-            return;
-        }
+        //if (PhotonNetwork.IsMasterClient == false)
+        //{
+        //    return;
+        //}
         while (_orderHandler.PotionOrderLine.Count > 0)
         {
             Customer customer = _orderHandler.PotionOrderLine.Dequeue();
@@ -246,21 +247,21 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
 
     public void ReturnCustomer(Customer customer) // 손님이 출구에 도착하면 호출
     {
-        if(PhotonNetwork.IsMasterClient == false)
-        {
-            return;
-        }
+        //if(PhotonNetwork.IsMasterClient == false)
+        //{
+        //    return;
+        //}
         customer.ReturnPotion();
-        CustomerFactory.Instance.Return(customer.gameObject); // TODO : PoolManager완성 후 수정
+        CustomerFactory.Instance.CmdReturn(customer.gameObject); // TODO : PoolManager완성 후 수정
         //CustomerPool.Instance.ReturnObject(customer.gameObject,ENPCType.Customer);
         RemainCustomers--;
     }
     public void ForceReturn() // 인내심 바닥나서 끝나면 전부 강제로 내보냄, 또는 버그로 큐에 남아있는 손님도 내보냄
     {
-        if (PhotonNetwork.IsMasterClient == false)
-        {
-            return;
-        }
+        //if (PhotonNetwork.IsMasterClient == false)
+        //{
+        //    return;
+        //}
         Debug.Log("Force returning all customers.");
         while (_orderHandler.PotionOrderLine.Count > 0)
         {
@@ -289,10 +290,10 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
     {
         foreach (GameObject pickupTable in GridManager.Instance.PickUpTableList)
         {
-            if (pickupTable.GetComponent<PhotonView>().ViewID == pickupTableViewID)
-            {
-                return pickupTable;
-            }
+            //if (pickupTable.GetComponent<PhotonView>().ViewID == pickupTableViewID)
+            //{
+            //    return pickupTable;
+            //}
         }
         Debug.LogError("Pickup table not found.");
         return null;
@@ -302,17 +303,17 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
     {
         foreach (GameObject luxuryChair in GridManager.Instance.LuxuryChairList)
         {
-            if (luxuryChair.GetComponent<PhotonView>().ViewID == chairViewID)
-            {
-                return luxuryChair;
-            }
+            //if (luxuryChair.GetComponent<PhotonView>().ViewID == chairViewID)
+            //{
+            //    return luxuryChair;
+            //}
         }
         foreach (GameObject oldChair in GridManager.Instance.OldChairList)
         {
-            if (oldChair.GetComponent<PhotonView>().ViewID == chairViewID)
-            {
-                return oldChair;
-            }
+            //if (oldChair.GetComponent<PhotonView>().ViewID == chairViewID)
+            //{
+            //    return oldChair;
+            //}
         }
         return null;
     }
@@ -342,8 +343,11 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         }
         GameObject chair = FindChairByViewID(chairViewID);
         customer.CustomerMove.MoveTo(chair.transform.position);
-        chair.GetComponent<Furniture>().TryEffect(customer); // 의자 효과 적용
+
+        // Mirror 임시
+        chair.GetComponent<Furniture>().TryEffect(customer.gameObject.GetComponent<NetworkIdentity>()); // 의자 효과 적용
     }
+
     private void LeaveChair(Customer customer)
     {
         FurnitureUsingStat usedChair = _orderHandler.FindUsingChair(customer);

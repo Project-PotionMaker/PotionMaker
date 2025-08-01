@@ -1,21 +1,20 @@
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class MachineInputContainer : IInputContainer<Machine, MachineStat>
+public class MachineInputContainer : IInputContainer<Machine>
 {
-    public bool TryInput(Machine machine, MachineStat stat, int tid, EInputType inputType, GameObject inputObject = null)
+    public bool ServerTryInput(Machine machine, int tid, EInputType inputType, GameObject inputObject = null)
     {
-        if (stat.InputTIDList.Count + 1 > stat.Data.MaxInputCount ||
-            stat.IsProcessFinished ||
-            stat.InputTIDList.Contains(tid))
+        if (machine.InputTIDList.Count + 1 > machine.Data.MaxInputCount ||
+            machine.IsProcessFinished ||
+            machine.InputTIDList.Contains(tid))
         {
             return false;
         }
 
-        stat.InputType = inputType;
-        stat.InputTIDList.Add(tid);
+        machine.ServerSetInputType(inputType);
+        machine.ServerAddInputTID(tid);
 
-        machine.SyncMachineStat();
         return true;
     }
 }

@@ -8,5 +8,5 @@ public interface IGridItemHandler
 
     public bool TryDrop(Vector3 targetPosition, int tid = 10000, EInputType inputType = EInputType.None, GameObject inputObject = null);
 
-    public void ResetItem();
+    public void ResetMachineServer();
 }

@@ -1,29 +1,22 @@
-using Photon.Pun;
+using Mirror;
+//using Photon.Pun;
 using System;
 using UnityEngine;
 
-public class RentManager : MonoBehaviourPunCallbacksSingleton<RentManager>
+public class RentManager : NetworkBehaviourSingleton<RentManager>
 {
     private Rent _rent;
     public RentDTO Rent => _rent.ToDTO();
 
-    private PhotonView _photonView;
-    public PhotonView PhotonView => _photonView;
-
-    protected override void Awake()
-    {
-        base.Awake();
-        _photonView = GetComponent<PhotonView>();
-    }
     private void Start()
     {
         Global.Instance.OnDataLoaded += InitRentManager;
         InitRentManager();
     }
+
     private void InitRentManager()
     {
-        // InRoom은 나중에 만들어지면 없애도 될 듯? 이미 방 들어온 채로 이 씬으로 오니까
-        if (!Global.Instance.IsDataLoaded || !PhotonNetwork.InRoom)
+        if (!Global.Instance.IsDataLoaded)
         {
             return;
         }
@@ -31,50 +24,44 @@ public class RentManager : MonoBehaviourPunCallbacksSingleton<RentManager>
         // 레이아웃 데이터를 들고 있는 매니저로부터 레이아웃 TID 가져옴
         LayoutData data = DataTable.Instance.GetLayoutData(10000);
         _rent = new Rent(1, data.InitialRentCost, data.RentIncrement);
-        RequestUpdateRent();
+        CmdRequestUpdateRent();
     }
 
-    // 이것도 없애도 되고
-    public override void OnJoinedRoom()
-    {
-        InitRentManager();
-    }
-    public void RequestUpdateRent()
-    {
-        _photonView.RPC(nameof(RequestUpdateRent), RpcTarget.MasterClient);
-    }
+    // 네트워크 매니저에서 처리
+    //public override void OnJoinedRoom()
+    //{
+    //    InitRentManager();
+    //}
 
-    [PunRPC]
-    public void RequestUpdateRent(PhotonMessageInfo info)
+    [Command(requiresAuthority = false)]
+    public void CmdRequestUpdateRent()
     {
-        if (!PhotonNetwork.IsMasterClient)
-        {
-            _photonView.RPC(nameof(RequestUpdateRent), RpcTarget.MasterClient);
-            return;
-        }
-
         RentRPCData rentRPCData = new RentRPCData(Rent);
         string rentJson = JsonUtility.ToJson(rentRPCData);
-        _photonView.RPC(nameof(SetRent), info.Sender, rentJson);
+        UpdateRent(rentJson);
     }
 
-    [PunRPC]
-    public void SetRent(string rentJson, PhotonMessageInfo info)
+    [ClientRpc]
+    public void UpdateRent(string rentJson)
     {
-        if (!info.Sender.IsMasterClient)
-        {
-            throw new InvalidOperationException("Rent must be Set by the Master Client");
-        }
         RentRPCData rentRPCData = JsonUtility.FromJson<RentRPCData>(rentJson);
         _rent.SetRent(rentRPCData.RentDayCounter, rentRPCData.CurrentRentCost, rentRPCData.RentIncrement);
     }
 
-    public void PayRent()
+    [Command(requiresAuthority = false)]
+    public void CmdRequestPayRent()
     {
-        if (!PhotonNetwork.IsMasterClient)
+        PayRent();
+    }
+
+    [Server]
+    private void PayRent()
+    {
+        if (!isServer)
         {
-            throw new InvalidOperationException("Rent must be Paid by the Master Client");
+            throw new InvalidOperationException($"{nameof(PayRent)}() is server-only. Use {nameof(CmdRequestPayRent)}() from client.");
         }
+
         bool result = CurrencyManager.Instance.TrySubtractCurrency(_rent.CurrentRentCost);
         if (!result)
         {
@@ -84,6 +71,6 @@ public class RentManager : MonoBehaviourPunCallbacksSingleton<RentManager>
         _rent.OnRentPaid();
         RentRPCData rentRPCData = new RentRPCData(Rent);
         string rentJson = JsonUtility.ToJson(rentRPCData);
-        _photonView.RPC(nameof(SetRent), RpcTarget.Others, rentJson);
+        UpdateRent(rentJson);
     }
 }

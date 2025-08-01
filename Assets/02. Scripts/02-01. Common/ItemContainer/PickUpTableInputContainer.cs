@@ -1,17 +1,17 @@
 using UnityEngine;
 
-public class PickUpTableInputContainer : IInputContainer<Furniture, FurnitureStat>
+public class PickUpTableInputContainer : IInputContainer<Furniture>
 {
-    public bool TryInput(Furniture furniture, FurnitureStat stat, int tid, EInputType inputType, GameObject inputObject = null)
+    public bool ServerTryInput(Furniture furniture, int tid, EInputType inputType, GameObject inputObject = null)
     {
-        if(stat.InputObject == null)
-        {
-            stat.InputObject = inputObject;
-            stat.InputObject.transform.position = stat.InputPosition.position;
+        //if(stat.InputObject == null)
+        //{
+        //    stat.InputObject = inputObject;
+        //    stat.InputObject.transform.position = stat.InputPosition.position;
 
-            //CustomerManager.Instance.ServePotion(tid,furniture.PhotonView.ViewID);
-            return true;
-        }
+        //    //CustomerManager.Instance.ServePotion(tid,furniture.PhotonView.ViewID);
+        //    return true;
+        //}
         return false;
     }
 }

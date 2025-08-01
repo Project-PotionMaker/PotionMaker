@@ -1,37 +1,24 @@
 using Mirror;
-using System.Collections.Generic;
-using System;
 using UnityEngine;
 
-public class CraftItemFactory : NetworkFactoryBase<CraftItemFactory>
+public class CraftItemFactory : NetworkFactoryBase<EInputType, CraftItemFactoryInfo, CraftItemFactory>
 {
-    [SerializeField]
-    private List<CraftItemFactoryInfo> _factoryInfoList;
-
-    private FactoryLogic<EInputType, CraftItemFactoryInfo> _factoryLogic = new FactoryLogic<EInputType, CraftItemFactoryInfo>();
-
-
     private void Start()
     {
         _factoryLogic.Initialize(_factoryInfoList, _poolParentObject);
     }
 
     [Server]
-    public override GameObject CreateObject(Enum type, Vector3 position, Quaternion rotation)
+    public override GameObject CreateObject(EInputType type, Vector3 position, Quaternion rotation)
     {
-        if (type is EInputType inputType)
-        {
-            GameObject networkObject = _factoryLogic.GetObject(inputType, position, rotation);
-            if (networkObject != null)
-            {
-                NetworkServer.Spawn(networkObject);
-            }
+        GameObject networkObject = _factoryLogic.GetObject(type, position, rotation);
 
-            return networkObject;
+        if (networkObject != null)
+        {
+            NetworkServer.Spawn(networkObject);
         }
 
-        Debug.LogError("스폰하려는 오브젝트의 type이 EInputType 아닙니다.");
-        return null;
+        return networkObject;
     }
 
 

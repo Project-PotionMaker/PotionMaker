@@ -1,37 +1,24 @@
 using Mirror;
-using System.Collections.Generic;
-using System;
 using UnityEngine;
 
-public class CustomerFactory : NetworkFactoryBase<CustomerFactory>
+public class CustomerFactory : NetworkFactoryBase<ENPCType, CustomerFactoryInfo, CustomerFactory>
 {
-    [SerializeField]
-    private List<CustomerFactoryInfo> _factoryInfoList;
-
-    private FactoryLogic<ENPCType, CustomerFactoryInfo> _factoryLogic = new FactoryLogic<ENPCType, CustomerFactoryInfo>();
-
-
     private void Start()
     {
         _factoryLogic.Initialize(_factoryInfoList, _poolParentObject);
     }
 
     [Server]
-    public override GameObject CreateObject(Enum type, Vector3 position, Quaternion rotation)
+    public override GameObject CreateObject(ENPCType type, Vector3 position, Quaternion rotation)
     {
-        if (type is ENPCType npcType)
-        {
-            GameObject networkObject = _factoryLogic.GetObject(npcType, position, rotation);
-            if (networkObject != null)
-            {
-                NetworkServer.Spawn(networkObject);
-            }
+        GameObject networkObject = _factoryLogic.GetObject(type, position, rotation);
 
-            return networkObject;
+        if (networkObject != null)
+        {
+            NetworkServer.Spawn(networkObject);
         }
 
-        Debug.LogError("스폰하려는 오브젝트의 type이 ENPCType 아닙니다.");
-        return null;
+        return networkObject;
     }
 
 

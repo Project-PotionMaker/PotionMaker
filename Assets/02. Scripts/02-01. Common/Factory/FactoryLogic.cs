@@ -13,7 +13,7 @@ public class FactoryLogic<TEnum, TFactoryInfo>
 
     private Dictionary<GameObject, TEnum> _objectToTypeDict = new Dictionary<GameObject, TEnum>();
 
-    public async void Initialize(List<TFactoryInfo> factoryInfoList)
+    public async void Initialize(List<TFactoryInfo> factoryInfoList, Transform parent)
     {
         foreach (TFactoryInfo info in factoryInfoList)
         {
@@ -32,10 +32,13 @@ public class FactoryLogic<TEnum, TFactoryInfo>
                 var identity = prefab.GetComponent<NetworkIdentity>();
                 if (identity != null)
                 {
-                    MirrorNetworkManager.Instance.spawnPrefabs.Add(prefab);
+                    if (!MirrorNetworkManager.Instance.spawnPrefabs.Contains(prefab))
+                    {
+                        MirrorNetworkManager.Instance.spawnPrefabs.Add(prefab);
+                    }
                 }
 
-                InitializePool(info.Type, prefab, 10);
+                InitializePool(info.Type, prefab, 10, parent);
             }
             else
             {
@@ -45,7 +48,7 @@ public class FactoryLogic<TEnum, TFactoryInfo>
         }
     }
 
-    private void InitializePool(TEnum type, GameObject prefab, int poolSize)
+    private void InitializePool(TEnum type, GameObject prefab, int poolSize, Transform parent)
     {
         if (_typeToPoolDict.ContainsKey(type))
         {
@@ -58,6 +61,7 @@ public class FactoryLogic<TEnum, TFactoryInfo>
         for (int i = 0; i < poolSize; i++)
         {
             GameObject poolObject = UnityEngine.Object.Instantiate(prefab);
+            poolObject.transform.SetParent(parent);
             poolObject.SetActive(false);
 
             _typeToPoolDict[type].Enqueue(poolObject);

@@ -13,8 +13,9 @@ public class StructureFactory : NetworkFactoryBase<StructureFactory>
 
     private void Start()
     {
-        _factoryLogic.Initialize(_factoryInfoList);
+        _factoryLogic.Initialize(_factoryInfoList, _poolParentObject);   
     }
+
 
     [Server]
     public override GameObject CreateObject(Enum type, Vector3 position, Quaternion rotation)

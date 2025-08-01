@@ -13,7 +13,7 @@ public class CustomerFactory : NetworkFactoryBase<CustomerFactory>
 
     private void Start()
     {
-        _factoryLogic.Initialize(_factoryInfoList);
+        _factoryLogic.Initialize(_factoryInfoList, _poolParentObject);
     }
 
     [Server]

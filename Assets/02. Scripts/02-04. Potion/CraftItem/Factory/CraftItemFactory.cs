@@ -13,7 +13,7 @@ public class CraftItemFactory : NetworkFactoryBase<CraftItemFactory>
 
     private void Start()
     {
-        _factoryLogic.Initialize(_factoryInfoList);
+        _factoryLogic.Initialize(_factoryInfoList, _poolParentObject);
     }
 
     [Server]

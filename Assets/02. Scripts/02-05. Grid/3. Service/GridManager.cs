@@ -1,13 +1,9 @@
-//using Photon.Pun;
-using System;
+using Mirror;
 using System.Collections.Generic;
-using System.Linq;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using VInspector;
 
-public class GridManager : MonoBehaviourSingleton<GridManager>
+public class GridManager : NetworkBehaviourSingleton<GridManager>
 {
     [Foldout("Hierarchy")]
     [SerializeField]
@@ -50,6 +46,14 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
         _pickUpTableList = new List<GameObject>();
         _oldChairList = new List<GameObject>();
         _luxuryChairList = new List<GameObject>();
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Alpha8))
+        {
+            Test();
+        }
     }
 
     public void UpdatePlacementPosition(Vector3 targetPosition)
@@ -150,7 +154,14 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
     }
 
     [Button("생성 테스트")]
-    public async void Test()
+    public void TestButton()
+    {
+        Test();
+    }
+
+    
+    [Command(requiresAuthority = false)]
+    public void Test()
     {
         CreateStructure(10000, new Vector3(-5, 0, 4)); //절구
         CreateStructure(10002, new Vector3(-3, 0, 4)); //혼합기

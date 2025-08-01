@@ -121,7 +121,7 @@ public class PlayerPickupAbility : PlayerAbility
         if(!ReferenceEquals(_heldItem, null))
         {
             _heldItem.transform.SetParent(null);
-            CraftItemFactory.Instance.Return(_heldItem);
+            CraftItemFactory.Instance.CmdReturn(_heldItem);
         }
     }
 }

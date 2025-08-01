@@ -1,7 +1,8 @@
+using Mirror;
 using UnityEngine;
 
-public interface IInteractable<TClass, TStat>
+public interface IInteractable<TStructure>
 {
-    public bool CanInteract(TClass instance, TStat stat);
-    public bool TryInteract(TClass instance, TStat stat);
+    public bool ServerCanInteract(TStructure instance);
+    public bool ServerTryInteract(TStructure instance);
 }

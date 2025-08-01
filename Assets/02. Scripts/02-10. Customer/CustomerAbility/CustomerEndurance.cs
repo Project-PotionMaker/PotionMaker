@@ -1,4 +1,4 @@
-using Photon.Pun;
+//using Photon.Pun;
 using System;
 using UnityEngine;
 
@@ -29,10 +29,10 @@ public class CustomerEndurance : MonoBehaviour
 
     private void Update()
     {
-        if (!PhotonNetwork.IsMasterClient)
-        {
-            return;
-        }
+        //if (!PhotonNetwork.IsMasterClient)
+        //{
+        //    return;
+        //}
         if (_owner.CurrentState == ECustomerStateType.Leaving || _owner.CurrentState == ECustomerStateType.PickingUp)
         {
             return;
@@ -64,11 +64,11 @@ public class CustomerEndurance : MonoBehaviour
             _enduranceRate = _currentEndurance / HALL_ENDURANCE; // 인내심 비율 계산
         }
 
-        _owner.PhotonView.RPC(nameof(RPC_SyncEnduranceRate), RpcTarget.All, _enduranceRate);
+        //_owner.PhotonView.RPC(nameof(RPC_SyncEnduranceRate), RpcTarget.All, _enduranceRate);
     }
 
 
-    [PunRPC]
+    //[PunRPC]
     private void RPC_SyncEnduranceRate(float rate)
     {
         _enduranceRate = rate;

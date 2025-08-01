@@ -1,11 +1,11 @@
-using Photon.Pun;
+//using Photon.Pun;
 using UnityEngine;
 
-public class CurrencyTest : MonoBehaviourPunCallbacks
+public class CurrencyTest : MonoBehaviour
 {
     private void Start()
     {
-        PhotonNetwork.ConnectUsingSettings();
+        //PhotonNetwork.ConnectUsingSettings();
     }
 
     void Update()
@@ -29,13 +29,13 @@ public class CurrencyTest : MonoBehaviourPunCallbacks
         }
     }
 
-    public override void OnConnectedToMaster()
-    {
-        PhotonNetwork.JoinLobby();
-    }
+    //public override void OnConnectedToMaster()
+    //{
+    //    PhotonNetwork.JoinLobby();
+    //}
 
-    public override void OnJoinedLobby()
-    {
-        PhotonNetwork.JoinRandomOrCreateRoom();
-    }
+    //public override void OnJoinedLobby()
+    //{
+    //    PhotonNetwork.JoinRandomOrCreateRoom();
+    //}
 }

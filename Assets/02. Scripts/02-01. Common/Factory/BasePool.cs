@@ -1,10 +1,9 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
-using Photon.Pun;
 using System.Threading.Tasks;
 
-[RequireComponent(typeof(PhotonView))]
+//[RequireComponent(typeof(PhotonView))]
 public class BasePool<TEnum, TPoolInfo>
     where TEnum : Enum
     where TPoolInfo : BasePoolInfo<TEnum>
@@ -13,7 +12,7 @@ public class BasePool<TEnum, TPoolInfo>
     [SerializeField]
     private List<TPoolInfo> _poolInfoList;
 
-    private PhotonView _photonView;
+    //private PhotonView _photonView;
 
     // PoolList의 타입별 정보 저장
     private Dictionary<TEnum, TPoolInfo> _poolInfoDictionary = new Dictionary<TEnum, TPoolInfo>();
@@ -29,14 +28,14 @@ public class BasePool<TEnum, TPoolInfo>
             _poolInfoDictionary[info.Type] = info;
         }
 
-        if (PhotonNetwork.IsMasterClient)
-        {
-            // 초기 오브젝트 생성
-            foreach (TPoolInfo info in _poolInfoList)
-            {
-                await CreateInitialObjects(info);
-            }
-        }
+        //if (PhotonNetwork.IsMasterClient)
+        //{
+        //    // 초기 오브젝트 생성
+        //    foreach (TPoolInfo info in _poolInfoList)
+        //    {
+        //        await CreateInitialObjects(info);
+        //    }
+        //}
     }
 
     private async Task CreateInitialObjects(TPoolInfo info)
@@ -46,12 +45,12 @@ public class BasePool<TEnum, TPoolInfo>
             GameObject newObject = await CreateNewObjectAsync(info, string.Empty);
             if (newObject != null)
             {
-                PhotonView targetPhotonView = newObject.GetComponent<PhotonView>();
-                if (targetPhotonView != null)
-                {
-                    int typeInt = Convert.ToInt32(info.Type);
-                    _photonView.RPC(nameof(AddObjectToPool), RpcTarget.All, targetPhotonView.ViewID, typeInt);
-                }
+                //PhotonView targetPhotonView = newObject.GetComponent<PhotonView>();
+                //if (targetPhotonView != null)
+                //{
+                //    int typeInt = Convert.ToInt32(info.Type);
+                //    _photonView.RPC(nameof(AddObjectToPool), RpcTarget.All, targetPhotonView.ViewID, typeInt);
+                //}
             }
         }
     }
@@ -72,19 +71,19 @@ public class BasePool<TEnum, TPoolInfo>
         return newobject;
     }
 
-    [PunRPC]
+    //[PunRPC]
     public void AddObjectToPool(int viewID, int typeInt)
     {
-        TEnum type = (TEnum)Enum.ToObject(typeof(TEnum), typeInt);
+        //TEnum type = (TEnum)Enum.ToObject(typeof(TEnum), typeInt);
 
-        TPoolInfo info = GetPoolByType(type);
-        if (info == null) return;
+        //TPoolInfo info = GetPoolByType(type);
+        //if (info == null) return;
 
-        PhotonView targetPhotonView = PhotonView.Find(viewID);
-        if (targetPhotonView == null) return;
+        //PhotonView targetPhotonView = PhotonView.Find(viewID);
+        //if (targetPhotonView == null) return;
 
-        info.PoolQueue.Enqueue(targetPhotonView.gameObject);
-        targetPhotonView.gameObject.SetActive(false);
+        //info.PoolQueue.Enqueue(targetPhotonView.gameObject);
+        //targetPhotonView.gameObject.SetActive(false);
     }
 
     private TPoolInfo GetPoolByType(TEnum type)
@@ -99,18 +98,18 @@ public class BasePool<TEnum, TPoolInfo>
 
     public void GetObjectAsync(TEnum type)
     {
-        int typeInt = Convert.ToInt32(type);
-        if (PhotonNetwork.IsMasterClient)
-        {
-            GetObjectAsyncMaster(typeInt);
-        }
-        else
-        {
-            _photonView.RPC(nameof(GetObjectAsyncMaster), RpcTarget.MasterClient, typeInt);
-        }
+        //int typeInt = Convert.ToInt32(type);
+        //if (PhotonNetwork.IsMasterClient)
+        //{
+        //    GetObjectAsyncMaster(typeInt);
+        //}
+        //else
+        //{
+        //    _photonView.RPC(nameof(GetObjectAsyncMaster), RpcTarget.MasterClient, typeInt);
+        //}
     }
 
-    [PunRPC]
+    //[PunRPC]
     private async void GetObjectAsyncMaster(int typeInt)
     {
         TEnum type = (TEnum)Enum.ToObject(typeof(TEnum), typeInt);
@@ -122,20 +121,20 @@ public class BasePool<TEnum, TPoolInfo>
             GameObject newObject = await CreateNewObjectAsync(info, string.Empty);
             if (newObject != null)
             {
-                PhotonView targetPhotonView = newObject.GetComponent<PhotonView>();
-                if (targetPhotonView != null)
-                {
-                    // 새로 생성한 오브젝트를 모든 클라이언트의 풀에 추가
-                    _photonView.RPC(nameof(GetObjectFromPoolWithViewID), RpcTarget.All, targetPhotonView.ViewID, type);
-                    return;
-                }
+                //PhotonView targetPhotonView = newObject.GetComponent<PhotonView>();
+                //if (targetPhotonView != null)
+                //{
+                //    // 새로 생성한 오브젝트를 모든 클라이언트의 풀에 추가
+                //    //_photonView.RPC(nameof(GetObjectFromPoolWithViewID), RpcTarget.All, targetPhotonView.ViewID, type);
+                //    return;
+                //}
             }
         }
 
-        _photonView.RPC(nameof(GetObjectFromPool), RpcTarget.All, typeInt);
+        //_photonView.RPC(nameof(GetObjectFromPool), RpcTarget.All, typeInt);
     }
 
-    [PunRPC]
+    //[PunRPC]
     private void GetObjectFromPool(int typeInt)
     {
         TEnum type = (TEnum)Enum.ToObject(typeof(TEnum), typeInt);
@@ -147,68 +146,68 @@ public class BasePool<TEnum, TPoolInfo>
         {
             obj.SetActive(true);
 
-            PhotonView targetPhotonView = obj.GetComponent<PhotonView>();
+            //PhotonView targetPhotonView = obj.GetComponent<PhotonView>();
 
-            ObjectSpawnedActions[type]?.Invoke(targetPhotonView.ViewID);
+            //ObjectSpawnedActions[type]?.Invoke(targetPhotonView.ViewID);
         }
     }
 
-    [PunRPC]
+    //[PunRPC]
     private void GetObjectFromPoolWithViewID(int viewID, int typeInt)
     {
-        TEnum type = (TEnum)Enum.ToObject(typeof(TEnum), typeInt);
-        TPoolInfo info = GetPoolByType(type);
-        if (info == null) return;
+        //TEnum type = (TEnum)Enum.ToObject(typeof(TEnum), typeInt);
+        //TPoolInfo info = GetPoolByType(type);
+        //if (info == null) return;
 
-        PhotonView targetPhotonView = PhotonView.Find(viewID);
-        if (targetPhotonView == null) return;
+        ////PhotonView targetPhotonView = PhotonView.Find(viewID);
+        //if (targetPhotonView == null) return;
 
-        GameObject obj = targetPhotonView.gameObject;
+        //GameObject obj = targetPhotonView.gameObject;
 
-        if (obj != null)
-        {
-            obj.SetActive(true);
+        //if (obj != null)
+        //{
+        //    obj.SetActive(true);
 
-            ObjectSpawnedActions[type]?.Invoke(targetPhotonView.ViewID);
-        }
+        //    //ObjectSpawnedActions[type]?.Invoke(targetPhotonView.ViewID);
+        //}
     }
 
     public void ReturnObject(GameObject obj, TEnum type)
     {
-        PhotonView targePhotonView = obj.GetComponent<PhotonView>();
-        if (targePhotonView == null) return;
+        //PhotonView targePhotonView = obj.GetComponent<PhotonView>();
+        //if (targePhotonView == null) return;
 
-        int viewID = targePhotonView.ViewID;
-        int typeInt = Convert.ToInt32(type);
-        if (PhotonNetwork.IsMasterClient)
-        {
-            ReturnObjectMaster(viewID, typeInt);
-        }
-        else
-        {
-            _photonView.RPC(nameof(ReturnObjectMaster), RpcTarget.MasterClient, obj, typeInt);
-        }
+        //int viewID = targePhotonView.ViewID;
+        //int typeInt = Convert.ToInt32(type);
+        //if (PhotonNetwork.IsMasterClient)
+        //{
+        //    ReturnObjectMaster(viewID, typeInt);
+        //}
+        //else
+        //{
+        //    //_photonView.RPC(nameof(ReturnObjectMaster), RpcTarget.MasterClient, obj, typeInt);
+        //}
     }
 
-    [PunRPC]
+    //[PunRPC]
     private void ReturnObjectMaster(int viewID, int typeInt)
     {
         TEnum type = (TEnum)Enum.ToObject(typeof(TEnum), typeInt);
-        _photonView.RPC(nameof(ReturnObjectToPool), RpcTarget.All, viewID, typeInt);
+        //_photonView.RPC(nameof(ReturnObjectToPool), RpcTarget.All, viewID, typeInt);
     }
 
-    [PunRPC]
+    //[PunRPC]
     private void ReturnObjectToPool(int viewID, int typeInt)
     {
         TEnum type = (TEnum)Enum.ToObject(typeof(TEnum), typeInt);
         TPoolInfo info = GetPoolByType(type);
         if (info == null) return;
 
-        PhotonView targetPhotonView = PhotonView.Find(viewID);
-        if (targetPhotonView == null) return;
+        //PhotonView targetPhotonView = PhotonView.Find(viewID);
+        //if (targetPhotonView == null) return;
 
-        info.PoolQueue.Enqueue(targetPhotonView.gameObject);
+        //info.PoolQueue.Enqueue(targetPhotonView.gameObject);
 
-        targetPhotonView.gameObject.SetActive(false);
+        //targetPhotonView.gameObject.SetActive(false);
     }
 }

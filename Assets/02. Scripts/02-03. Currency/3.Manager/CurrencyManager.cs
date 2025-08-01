@@ -1,28 +1,24 @@
 using Mirror;
-using Photon.Pun;
+//using Photon.Pun;
 using System;
 using System.Diagnostics;
 
-public class CurrencyManager:NetworkBehaviourSingleton<CurrencyManager>
+public class CurrencyManager : NetworkBehaviourSingleton<CurrencyManager>
 {
     public event Action OnDataChanged;
+    public static Action OnInitialized;
 
     private Currency _coin;
     public CurrencyDTO Coin => _coin.ToDTO();
 
 
-    // 네트워크 매니저에서 처리
-    //public override void OnJoinedRoom()
-    //{
-    //    InitCurrencyManager();
-    //}
-
     public override void OnStartClient()
     {
         base.OnStartClient();
+        OnInitialized?.Invoke();
         InitCurrencyManager();
     }
-
+    
     private void InitCurrencyManager()
     {
         if (!NetworkClient.ready)

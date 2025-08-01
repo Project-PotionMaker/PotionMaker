@@ -1,4 +1,4 @@
-using Photon.Pun;
+//using Photon.Pun;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -31,18 +31,18 @@ public class CustomerOrderHandler
         _pickupTableDict.Clear();
         _oldChairDict.Clear();
         _luxuryChairDict.Clear();
-        foreach (GameObject pickupTable in GridManager.Instance.PickUpTableList)
-        {
-            _pickupTableDict.Add(pickupTable.GetComponent<PhotonView>().ViewID, new FurnitureUsingStat()); // 각 픽업 테이블에 대해 초기화
-        }
-        foreach (GameObject oldChair in GridManager.Instance.OldChairList)
-        {
-            _oldChairDict.Add(oldChair.GetComponent<PhotonView>().ViewID, new FurnitureUsingStat()); // 각 오래된 의자에 대해 초기화
-        }
-        foreach (GameObject luxuryChair in GridManager.Instance.LuxuryChairList)
-        {
-            _luxuryChairDict.Add(luxuryChair.GetComponent<PhotonView>().ViewID, new FurnitureUsingStat()); // 각 고급 의자에 대해 초기화
-        }
+        //foreach (GameObject pickupTable in GridManager.Instance.PickUpTableList)
+        //{
+        //    _pickupTableDict.Add(pickupTable.GetComponent<PhotonView>().ViewID, new FurnitureUsingStat()); // 각 픽업 테이블에 대해 초기화
+        //}
+        //foreach (GameObject oldChair in GridManager.Instance.OldChairList)
+        //{
+        //    _oldChairDict.Add(oldChair.GetComponent<PhotonView>().ViewID, new FurnitureUsingStat()); // 각 오래된 의자에 대해 초기화
+        //}
+        //foreach (GameObject luxuryChair in GridManager.Instance.LuxuryChairList)
+        //{
+        //    _luxuryChairDict.Add(luxuryChair.GetComponent<PhotonView>().ViewID, new FurnitureUsingStat()); // 각 고급 의자에 대해 초기화
+        //}
     }
 
     public void AddOrder(int potionTID, Customer customer)

@@ -1,4 +1,4 @@
-using Photon.Pun;
+//using Photon.Pun;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -21,8 +21,8 @@ public class Customer : MonoBehaviour
     public GameObject PotionHandler { get => _potionHandler; set => _potionHandler = value; } // 포션 핸들러 오브젝트
     public int RequestedPotionTID { get => _requestedPotionTID; set=> _requestedPotionTID = value; } // 요청한 포션 ID
 
-    private PhotonView _photonView;
-    public PhotonView PhotonView { get => _photonView; set => _photonView = value; } // PhotonView 컴포넌트
+    //private PhotonView _photonView;
+    //public PhotonView PhotonView { get => _photonView; set => _photonView = value; } // PhotonView 컴포넌트
 
     public event Action OnStateChanged;
 
@@ -33,7 +33,7 @@ public class Customer : MonoBehaviour
 
     private void Awake()
     {
-        _photonView = GetComponent<PhotonView>();
+        //_photonView = GetComponent<PhotonView>();
         _customerMove = GetComponent<CustomerMove>();
         _customerEndurance = GetComponent<CustomerEndurance>();
 
@@ -46,13 +46,13 @@ public class Customer : MonoBehaviour
 
     public void TransitionState(ECustomerStateType nextState)
     {
-        if (!PhotonNetwork.IsMasterClient)
-        {
-            return; // 마스터 클라이언트만 상태를 설정할 수 있음
-        }
-        _photonView.RPC(nameof(RPC_TransitionState), RpcTarget.All, nextState); 
+        //if (!PhotonNetwork.IsMasterClient)
+        //{
+        //    return; // 마스터 클라이언트만 상태를 설정할 수 있음
+        //}
+        //_photonView.RPC(nameof(RPC_TransitionState), RpcTarget.All, nextState); 
     }
-    [PunRPC]
+    //[PunRPC]
     public void RPC_TransitionState(ECustomerStateType nextState)
     {
         _currentState = nextState;
@@ -61,10 +61,10 @@ public class Customer : MonoBehaviour
 
     public void ReturnPotion()
     {
-        if (!PhotonNetwork.IsMasterClient)
-        {
-            return; // 마스터 클라이언트만 포션을 반환할 수 있음
-        }
+        //if (!PhotonNetwork.IsMasterClient)
+        //{
+        //    return; // 마스터 클라이언트만 포션을 반환할 수 있음
+        //}
         if (_potionHandler.transform.childCount == 0)
         {
             return; 
@@ -73,7 +73,7 @@ public class Customer : MonoBehaviour
         if(ReferenceEquals(potion, null) == false)
         {
             potion.transform.SetParent(null); 
-            CraftItemFactory.Instance.Return(potion); 
+            CraftItemFactory.Instance.CmdReturn(potion); 
         }
 
     }

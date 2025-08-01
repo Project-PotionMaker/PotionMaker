@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public interface IInputContainer<TClass, TStat>
+public interface IInputContainer<TStucture>
 {
-    public bool TryInput(TClass instance, TStat stat, int tid, EInputType inputType, GameObject inputObject = null);
+    public bool ServerTryInput(TStucture instance, int tid, EInputType inputType, GameObject inputObject = null);
 }

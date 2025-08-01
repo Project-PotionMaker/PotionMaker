@@ -85,91 +85,92 @@ public class Furniture : NetworkBehaviour, IGridItemHandler
     }
 
     [Command(requiresAuthority = false)]
-    public bool CmdTryDrop(Vector3 targetPosition, int tid = 10000, EInputType inputType = EInputType.None, GameObject inputObject = null)
+    public void CmdTryDrop(Vector3 targetPosition, int tid, EInputType inputType, GameObject inputObject)
     {
-        if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
-        {
-            if (GridManager.Instance.TryPlaceStructure(targetPosition))
-            {
-                return true;
-            }
-        }
-        else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase
-            ||PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
-        {
-            if (CmdTryInput(tid, inputType, inputObject))
-            {
-                return true;
-            }
-        }
-        return false;
+        //if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
+        //{
+        //    if (GridManager.Instance.TryPlaceStructure(targetPosition))
+        //    {
+        //        return true;
+        //    }
+        //}
+        //else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase
+        //    ||PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
+        //{
+        //    if (CmdTryInput(tid, inputType, inputObject))
+        //    {
+        //        return true;
+        //    }
+        //}
+        //return false;
     }
 
     [Command(requiresAuthority = false)]
-    public bool CmdTryInteract()
+    public void CmdTryInteract()
     {
-        if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
-        {
-            _stat.CurrentRotation += 90f;
-            if (_stat.CurrentRotation >= 360f)
-            {
-                _stat.CurrentRotation = 0;
-            }
+        //if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
+        //{
+        //    _stat.CurrentRotation += 90f;
+        //    if (_stat.CurrentRotation >= 360f)
+        //    {
+        //        _stat.CurrentRotation = 0;
+        //    }
 
-            _model.rotation = Quaternion.Euler(0, _stat.CurrentRotation, 0);
-            return true;
-        }
-        else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase
-            || PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
-        {
-            if(ReferenceEquals(_interactComponent, null) == false)
-            {
-                return _interactComponent.ServerTryInteract(this);
-            }
-        }
+        //    _model.rotation = Quaternion.Euler(0, _stat.CurrentRotation, 0);
+        //    return true;
+        //}
+        //else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase
+        //    || PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
+        //{
+        //    if(ReferenceEquals(_interactComponent, null) == false)
+        //    {
+        //        return _interactComponent.ServerTryInteract(this);
+        //    }
+        //}
 
-        return false;
+        //return false;
     }
 
     [Command(requiresAuthority = false)]
-    public GameObject CmdTryPickUp()
+    public void CmdTryPickUp()
     {
-        if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
-        {
-            return GridManager.Instance.StartPlacement(transform.position);
-        }
-        else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase 
-            || PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
-        {
-            if (ReferenceEquals(_outputComponent, null) == false)
-            {
-                if (_outputComponent.ServerCanTake(this))
-                {
-                    return _outputComponent.ServerTakeItem(this);
-                }
-            }
-        }
-        return null;
+        //if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
+        //{
+        //    return GridManager.Instance.StartPlacement(transform.position);
+        //}
+        //else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase 
+        //    || PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
+        //{
+        //    if (ReferenceEquals(_outputComponent, null) == false)
+        //    {
+        //        if (_outputComponent.ServerCanTake(this))
+        //        {
+        //            return _outputComponent.ServerTakeItem(this);
+        //        }
+        //    }
+        //}
+        //return null;
     }
 
     [Command(requiresAuthority = false)]
-    public bool CmdTryInput(int tid, EInputType inputType, GameObject inputObject)
+    public void CmdTryInput(int tid, EInputType inputType, GameObject inputObject)
     {
-        if(ReferenceEquals(_inputComponent, null) == false)
-        {
-            return _inputComponent.ServerTryInput(this, tid, inputType, inputObject);
-        }
-        return false;
+        //if(ReferenceEquals(_inputComponent, null) == false)
+        //{
+        //    return _inputComponent.ServerTryInput(this, tid, inputType, inputObject);
+        //}
+        //return false;
     }
     
     [Command(requiresAuthority = false)]
-    public void CmdTryEffect(Customer customer)
+    public void CmdTryEffect(NetworkIdentity customerIdentity)
     {
         if (ReferenceEquals(_effectComponent, null) == false)
         {
-            _effectComponent.ServerEffect(this, customer);
+            _effectComponent.ServerEffect(this, customerIdentity);
         }
     }
+
     public void ResetMachineServer()
     {
         if (!ReferenceEquals(_stat.InputObject, null))
@@ -181,21 +182,24 @@ public class Furniture : NetworkBehaviour, IGridItemHandler
 
     public bool TryInteract()
     {
-        return CmdTryInteract();
+        //return CmdTryInteract();
+        return false;
     }
 
     public GameObject TryPickUp()
     {
-        return CmdTryPickUp();
+        //return CmdTryPickUp();
+        return null;
     }
 
     public bool TryDrop(Vector3 targetPosition, int tid = 10000, EInputType inputType = EInputType.None, GameObject inputObject = null)
     {
-        return CmdTryDrop(targetPosition, tid, inputType, inputObject);
+        //return CmdTryDrop(targetPosition, tid, inputType, inputObject);
+        return true;
     }
 
-    public void TryEffect(Customer customer)
+    public void TryEffect(NetworkIdentity customerIdentity)
     {
-        CmdTryEffect(customer);
+        CmdTryEffect(customerIdentity);
     }
 }

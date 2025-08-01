@@ -310,86 +310,86 @@ public class Machine : NetworkBehaviour, IGridItemHandler
     #region Commands (클라이언트에서 서버로 요청)
     // 상호작용 요청 커맨드 (클라이언트에서 호출)
     [Command(requiresAuthority = false)]
-    private bool CmdTryInteract()
+    private void CmdTryInteract()
     {
-        if (!isServer)
-        {
-            return false;
-        }
+        //if (!isServer)
+        //{
+        //    return false;
+        //}
 
-        if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
-        {
-            ServerRotateModel();
-        }
-        else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase
-            || PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
-        {
-            return _interactComponent.ServerTryInteract(this);
-        }
+        //if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
+        //{
+        //    ServerRotateModel();
+        //}
+        //else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase
+        //    || PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
+        //{
+        //    return _interactComponent.ServerTryInteract(this);
+        //}
 
-        return false;
+        //return false;
     }
 
     [Command(requiresAuthority = false)]
-    private bool CmdTryInput(int tid, EInputType inputType)
+    private void CmdTryInput(int tid, EInputType inputType)
     {
-        if (!isServer)
-        {
-            return false;
-        }
-        return _inputComponent.ServerTryInput(this, tid, inputType);
+        //if (!isServer)
+        //{
+        //    return false;
+        //}
+        //return _inputComponent.ServerTryInput(this, tid, inputType);
     }
 
     [Command(requiresAuthority = false)]
-    private GameObject CmdTryPickUp()
+    private void CmdTryPickUp()
     {
-        if (!isServer)
-        {
-            return null;
-        }
+        //if (!isServer)
+        //{
+        //    return null;
+        //}
 
-        if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
-        {
-            return GridManager.Instance.StartPlacement(transform.position);
-        }
-        else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase
-            || PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
-        {
-            if (ReferenceEquals(_outputComponent, null) == false)
-            {
-                if (_outputComponent.ServerCanTake(this))
-                {
-                    return _outputComponent.ServerTakeItem(this);
-                }
-            }
-        }
-        return null;
+        //if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
+        //{
+        //    return GridManager.Instance.StartPlacement(transform.position);
+        //}
+        //else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase
+        //    || PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
+        //{
+        //    if (ReferenceEquals(_outputComponent, null) == false)
+        //    {
+        //        if (_outputComponent.ServerCanTake(this))
+        //        {
+        //            return _outputComponent.ServerTakeItem(this);
+        //        }
+        //    }
+        //}
+        //return null;
     }
 
     [Command(requiresAuthority = false)]
-    private bool CmdTryDrop(Vector3 targetPosition, int tid = 10000, EInputType inputType = EInputType.None, GameObject inputObject = null)
+    private void CmdTryDrop(Vector3 targetPosition, int tid, EInputType inputType, GameObject inputObject)
     {
-        if (!isServer)
-        {
-            return false;
-        }
+        //if (!isServer)
+        //{
+        //    return false;
+        //}
 
-        if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
-        {
-            if (GridManager.Instance.TryPlaceStructure(targetPosition))
-            {
-                return true;
-            }
-        }
-        else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase
-            || PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
-        {
-            if (CmdTryInput(tid, inputType))
-            {
-                return true;
-            }
-        }
-        return false;
+        //if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
+        //{
+        //    if (GridManager.Instance.TryPlaceStructure(targetPosition))
+        //    {
+        //        return true;
+        //    }
+        //}
+        //else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase
+        //    || PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
+        //{
+        //    if (CmdTryInput(tid, inputType))
+        //    {
+        //        return true;
+        //    }
+        //}
+        //return false;
     }
     #endregion
 
@@ -427,16 +427,19 @@ public class Machine : NetworkBehaviour, IGridItemHandler
 
     public bool TryInteract()
     {
-        return CmdTryInteract();
+        //return CmdTryInteract();
+        return false;
     }
 
     public GameObject TryPickUp()
     {
-        return CmdTryPickUp();
+        //return CmdTryPickUp();
+        return null;
     }
 
     public bool TryDrop(Vector3 targetPosition, int tid = 10000, EInputType inputType = EInputType.None, GameObject inputObject = null)
     {
-        return CmdTryDrop(targetPosition, tid, inputType, inputObject);
+        //return CmdTryDrop(targetPosition, tid, inputType, inputObject);
+        return false;
     }
 }

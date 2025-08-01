@@ -54,54 +54,54 @@ public class Storage : NetworkBehaviour, IGridItemHandler
     }
 
     [Command(requiresAuthority = false)]
-    public bool CmdTryInteract()
+    public void CmdTryInteract()
     {
-        if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
-        {
-            _stat.CurrentRotation += 90f;
-            if (_stat.CurrentRotation >= 360f)
-            {
-                _stat.CurrentRotation = 0;
-            }
+        //if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
+        //{
+        //    _stat.CurrentRotation += 90f;
+        //    if (_stat.CurrentRotation >= 360f)
+        //    {
+        //        _stat.CurrentRotation = 0;
+        //    }
 
-            _model.rotation = Quaternion.Euler(0, _stat.CurrentRotation, 0);
-            return true;
-        }
-        return false;
+        //    _model.rotation = Quaternion.Euler(0, _stat.CurrentRotation, 0);
+        //    return true;
+        //}
+        //return false;
     }
 
     [Command(requiresAuthority = false)]
-    public GameObject CmdTryPickUp()
+    public void CmdTryPickUp()
     {
-        if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
-        {
-            return GridManager.Instance.StartPlacement(transform.position);
-        }
-        else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase 
-            || PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
-        {
-            if (ReferenceEquals(_outputComponent, null) == false)
-            {
-                if (_outputComponent.ServerCanTake(this))
-                {
-                    return _outputComponent.ServerTakeItem(this);
-                }
-            }
-        }
-        return null;
+        //if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
+        //{
+        //    return GridManager.Instance.StartPlacement(transform.position);
+        //}
+        //else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase 
+        //    || PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
+        //{
+        //    if (ReferenceEquals(_outputComponent, null) == false)
+        //    {
+        //        if (_outputComponent.ServerCanTake(this))
+        //        {
+        //            return _outputComponent.ServerTakeItem(this);
+        //        }
+        //    }
+        //}
+        //return null;
     }
 
     [Command(requiresAuthority = false)]
-    public bool CmdTryDrop(Vector3 targetPosition, int tid = 10000, EInputType inputType = EInputType.None, GameObject inputObject = null)
+    public void CmdTryDrop(Vector3 targetPosition, int tid, EInputType inputType, GameObject inputObject)
     {
-        if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
-        {
-            if (GridManager.Instance.TryPlaceStructure(targetPosition))
-            {
-                return true;
-            }
-        }
-        return false;
+        //if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
+        //{
+        //    if (GridManager.Instance.TryPlaceStructure(targetPosition))
+        //    {
+        //        return true;
+        //    }
+        //}
+        //return false;
     }
     public void ResetMachineServer()
     {
@@ -109,16 +109,19 @@ public class Storage : NetworkBehaviour, IGridItemHandler
 
     public bool TryInteract()
     {
-        return CmdTryInteract();
+        //return CmdTryInteract();
+        return false;
     }
 
     public GameObject TryPickUp()
     {
-        return CmdTryPickUp();
+        //return CmdTryPickUp();
+        return null;
     }
 
     public bool TryDrop(Vector3 targetPosition, int tid = 10000, EInputType inputType = EInputType.None, GameObject inputObject = null)
     {
-        return CmdTryDrop(targetPosition, tid, inputType, inputObject);
+        //return CmdTryDrop(targetPosition, tid, inputType, inputObject);
+        return false;
     }
 }

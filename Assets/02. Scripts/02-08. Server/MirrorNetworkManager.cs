@@ -286,6 +286,9 @@ public class MirrorNetworkManager : NetworkRoomManager
         {
             GameObject currencyManager = Instantiate(spawnPrefabs.Find(x => x.GetComponent<CurrencyManager>() != null));
             NetworkServer.Spawn(currencyManager);
+
+            GameObject structureManager = Instantiate(spawnPrefabs.Find(x => x.GetComponent<StructureManager>() != null));
+            NetworkServer.Spawn(structureManager);
         }
     }
 

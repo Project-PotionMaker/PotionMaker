@@ -4,6 +4,7 @@ using System;
 //using Photon.Pun;
 using UnityEditor;
 using VInspector;
+using Mirror;
 public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
 {
     //접수 받기, 포션 제공하기만 클라이언트에서 마스터에게 요청 가능
@@ -342,7 +343,9 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         }
         GameObject chair = FindChairByViewID(chairViewID);
         customer.CustomerMove.MoveTo(chair.transform.position);
-        chair.GetComponent<Furniture>().TryEffect(customer); // 의자 효과 적용
+
+        // Mirror 임시
+        chair.GetComponent<Furniture>().TryEffect(customer.gameObject.GetComponent<NetworkIdentity>()); // 의자 효과 적용
     }
 
     private void LeaveChair(Customer customer)

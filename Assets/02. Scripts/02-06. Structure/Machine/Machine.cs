@@ -4,7 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using VInspector;
-using static UnityEngine.Rendering.DebugUI;
 
 [Serializable]
 public class ModelOnTID

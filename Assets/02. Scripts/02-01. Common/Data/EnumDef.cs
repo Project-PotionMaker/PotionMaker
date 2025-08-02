@@ -169,3 +169,13 @@ public enum ETierType
     Tier3 = 2,
 }
 
+public enum EUnlockType
+{
+    ///<summary>포션</summary>
+    Potion = 0,
+    ///<summary>구조물</summary>
+    Structure = 1,
+    ///<summary>재료</summary>
+    Ingredient = 2,
+}
+

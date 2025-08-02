@@ -141,6 +141,33 @@ public partial class DataTable
         }
     }
     #endregion
+    #region Unlock
+    private ReadOnlyList<UnlockData> UnlockList = null;
+    private ReadOnlyDictionary<int, UnlockData> UnlockTable = null;
+
+    public ReadOnlyList<UnlockData> GetUnlockDataList()
+    {
+        return UnlockList;
+    }
+
+    public UnlockData GetUnlockData(int key)
+    {
+        if (key == 0)
+        {
+            return null;
+        }
+
+        if (UnlockTable.TryGetValue(key, out UnlockData retVal) == true)
+        {
+            return retVal;
+        }
+        else
+        {
+            Debug.LogError($"Can not find UniqueID of UnlockData: <{key}>");
+            return null;
+        }
+    }
+    #endregion
     #region Machine
     private ReadOnlyList<MachineData> MachineList = null;
     private ReadOnlyDictionary<int, MachineData> MachineTable = null;
@@ -313,6 +340,12 @@ public partial class DataTable
             loadedCount++;
         });
         allCount++;
+        GetBytes_FromResources("Unlock", (bytes) =>
+        {
+            LoadUnlockData(bytes);
+            loadedCount++;
+        });
+        allCount++;
         GetBytes_FromResources("Machine", (bytes) =>
         {
             LoadMachineData(bytes);
@@ -358,6 +391,8 @@ public partial class DataTable
         LoadProductData(productBytes);
         byte[] structureBytes = GetBytes_ForEditor("StructureData");
         LoadStructureData(structureBytes);
+        byte[] unlockBytes = GetBytes_ForEditor("UnlockData");
+        LoadUnlockData(unlockBytes);
         byte[] machineBytes = GetBytes_ForEditor("MachineData");
         LoadMachineData(machineBytes);
         byte[] storageBytes = GetBytes_ForEditor("StorageData");
@@ -523,6 +558,37 @@ public partial class DataTable
 
         StructureList = new ReadOnlyList<StructureData>(structureList);
         StructureTable = new ReadOnlyDictionary<int, StructureData>(structureTable);
+    }
+
+    private void LoadUnlockData(byte[] bytes)
+    {
+        List<UnlockData> unlockList = new List<UnlockData>();
+        Dictionary<int, UnlockData> unlockTable = new Dictionary<int, UnlockData>();
+
+        Reader = new BinaryReader(new MemoryStream(bytes));
+
+        while (Reader.BaseStream.Position < bytes.Length)
+        {
+            UnlockData data = new UnlockData(Reader);
+            if (unlockTable.ContainsKey(data.TID) == true)
+            {
+                Debug.LogError("The duplicate TID: " + data.TID + " in Unlock");
+                continue;
+            }
+            else if (data.TID == 0)
+            {
+                Debug.LogError("TID is 0 in Unlock");
+                continue;
+            }
+
+            unlockList.Add(data);
+            unlockTable.Add(data.TID, data);
+        }
+
+        Reader.Close();
+
+        UnlockList = new ReadOnlyList<UnlockData>(unlockList);
+        UnlockTable = new ReadOnlyDictionary<int, UnlockData>(unlockTable);
     }
 
     private void LoadMachineData(byte[] bytes)

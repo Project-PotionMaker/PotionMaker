@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+/// <summary>
+/// 그리드에 배치된 오브젝트의 정보를 관리하는 클래스입니다.
+/// 이 클래스는 서버에서만 사용됩니다.
+/// </summary>
 public class GridData
 {
     private Dictionary<Vector3Int, Placement> _placedObjectDict = new();
@@ -11,8 +15,8 @@ public class GridData
 
     public GridData(Dictionary<Vector3Int, EAreaType> availableAreaDict)
     {
-        if(ReferenceEquals(availableAreaDict, null) ||
-            (ReferenceEquals(availableAreaDict, null) == false && availableAreaDict.Count == 0))
+        if (ReferenceEquals(availableAreaDict, null) ||
+           (ReferenceEquals(availableAreaDict, null) == false && availableAreaDict.Count == 0))
         {
             throw new Exception("가능한 구역이 존재해야 합니다.");
         }
@@ -22,9 +26,9 @@ public class GridData
 
     public void AddObjectAt(Vector3Int gridPosition, Vector2Int objectSize, int tid, EStructureType type, GameObject sturctureObject)
     {
-        List<Vector3Int> positionToOccupyList = CalculatePositions(gridPosition, objectSize);
+        List<Vector3Int> positionToOccupyList = CalculatePositionList(gridPosition, objectSize);
         Placement placement = new Placement(positionToOccupyList, tid, type, sturctureObject);
-        foreach(Vector3Int pos in positionToOccupyList)
+        foreach (Vector3Int pos in positionToOccupyList)
         {
             if (_placedObjectDict.ContainsKey(pos))
             {
@@ -35,12 +39,16 @@ public class GridData
         }
     }
 
-    private List<Vector3Int> CalculatePositions(Vector3Int gridPosition, Vector2Int objectSize)
+    /// <summary>
+    /// 주어진 위치와 크기에 해당하는 모든 그리드 셀 위치를 계산합니다.
+    /// 서버와 클라이언트 모두에서 사용됩니다.
+    /// </summary>
+    public List<Vector3Int> CalculatePositionList(Vector3Int gridPosition, Vector2Int objectSize)
     {
         List<Vector3Int> returnValList = new();
-        for(int x = 0; x < objectSize.x; x++)
+        for (int x = 0; x < objectSize.x; x++)
         {
-            for(int y = 0; y < objectSize.y; y++)
+            for (int y = 0; y < objectSize.y; y++)
             {
                 returnValList.Add(gridPosition + new Vector3Int(x, 0, y));
             }
@@ -50,15 +58,17 @@ public class GridData
 
     public bool CanPlaceObjectAt(Vector3Int gridPosition, Vector2Int objectSize, EAreaType StructureType)
     {
-        List<Vector3Int> positionToOccupyList = CalculatePositions(gridPosition, objectSize);
-        foreach(Vector3Int pos in positionToOccupyList)
+        List<Vector3Int> positionToOccupyList = CalculatePositionList(gridPosition, objectSize);
+        foreach (Vector3Int pos in positionToOccupyList)
         {
             if (_placedObjectDict.ContainsKey(pos))
             {
                 return false;
             }
         }
-        if (_availableAreaDict.ContainsKey(gridPosition) && (_availableAreaDict[gridPosition] != StructureType && _availableAreaDict[gridPosition] !=EAreaType.FrontYard))
+
+        // 배치하려는 첫 번째 위치의 AreaType을 확인합니다.
+        if (_availableAreaDict.ContainsKey(gridPosition) && (_availableAreaDict[gridPosition] != StructureType && _availableAreaDict[gridPosition] != EAreaType.FrontYard))
         {
             return false;
         }
@@ -67,7 +77,7 @@ public class GridData
 
     public Placement GetPlacement(Vector3Int gridPosition)
     {
-        if(_placedObjectDict.TryGetValue(gridPosition, out Placement placement))
+        if (_placedObjectDict.TryGetValue(gridPosition, out Placement placement))
         {
             return placement;
         }
@@ -76,14 +86,12 @@ public class GridData
 
     public void RemoveObjectAt(Vector3Int gridPosition)
     {
-        foreach(Vector3Int pos in _placedObjectDict[gridPosition].OccupiedPositionList)
+        if (_placedObjectDict.ContainsKey(gridPosition))
         {
-            _placedObjectDict.Remove(pos);
+            foreach (Vector3Int pos in _placedObjectDict[gridPosition].OccupiedPositionList)
+            {
+                _placedObjectDict.Remove(pos);
+            }
         }
-    }
-
-    public GridDataDTO ToDTO()
-    {
-        return new GridDataDTO(_placedObjectDict, _availableAreaDict);
     }
 }

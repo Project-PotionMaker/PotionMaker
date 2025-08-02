@@ -357,9 +357,18 @@ public class Machine : NetworkBehaviour, IGridItemHandler
         GameObject pickedUpItem = null;
         EPhaseType currentPhase = PhaseManager.Instance.CurrentPhase.PhaseType;
 
-        if(currentPhase == EPhaseType.PreparingPhase)
+        if (currentPhase == EPhaseType.PreparingPhase)
         {
-            pickedUpItem = GridManager.Instance.StartPlacement(transform.position);
+            // GridManager의 서버 전용 메서드를 호출하여 서버에서 그리드 정보만 제거하고 오브젝트를 반환받음
+            GameObject pickedUpObject = GridManager.Instance.ServerRemovePlacementDataOnly(transform.position);
+
+            // 반환받은 오브젝트가 있다면, 픽업한 플레이어에게 권한을 할당함
+            if (pickedUpObject != null && sender != null)
+            {
+                NetworkServer.spawned[pickedUpObject.GetComponent<NetworkIdentity>().netId].AssignClientAuthority(sender);
+                // GridManager의 TargetRpc를 호출하여 클라이언트에서 배치 상태를 시작하도록 지시
+                GridManager.Instance.TargetRpcStartPlacement(sender, pickedUpObject.GetComponent<NetworkIdentity>().netId);
+            }
         }
         else
         {
@@ -397,15 +406,20 @@ public class Machine : NetworkBehaviour, IGridItemHandler
         bool success = false;
         EPhaseType currentPhase = PhaseManager.Instance.CurrentPhase.PhaseType;
 
-        if(NetworkServer.spawned.TryGetValue(dropItemNetId, out NetworkIdentity droppItemIdentity))
+        if(NetworkServer.spawned.TryGetValue(dropItemNetId, out NetworkIdentity dropItemIdentity))
         {
-            GameObject inputObject = droppItemIdentity.gameObject;
+            GameObject inputObject = dropItemIdentity.gameObject;
 
             if (currentPhase == EPhaseType.PreparingPhase)
             {
-                if (GridManager.Instance.TryPlaceStructure(targetPosition))
+                if(GridManager.Instance.GetObjectOnGrid(targetPosition) != null)
                 {
+                    GridManager.Instance.CmdTryPlaceStructure(sender, targetPosition, dropItemNetId);
                     success = true;
+                }
+                else
+                {
+                    success = false;
                 }
             }
             else
@@ -413,9 +427,12 @@ public class Machine : NetworkBehaviour, IGridItemHandler
                 success = _inputComponent.ServerTryInput(this, tid, inputType, inputObject);
             }
 
-            droppItemIdentity.RemoveClientAuthority();
         }
 
+        if (success)
+        {
+            dropItemIdentity.RemoveClientAuthority();
+        }
 
         TargetRpcOnDrop(sender, success);
     }

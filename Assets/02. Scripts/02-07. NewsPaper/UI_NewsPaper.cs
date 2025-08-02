@@ -32,8 +32,10 @@ public class UI_NewsPaper : MonoBehaviour
                 _slotDailyPotionList[i - 1].gameObject.SetActive(false);
             }
         }
+        OpenNewsPaperPopup();
     }
 
+    // 신문 팝업을 여는 메서드는 PreparingPhase의 EnterPhase에서 호출해주세요.
     public void OpenNewsPaperPopup()
     {
         gameObject.SetActive(true);

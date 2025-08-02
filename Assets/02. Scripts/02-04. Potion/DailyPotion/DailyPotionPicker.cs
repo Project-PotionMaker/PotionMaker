@@ -27,6 +27,7 @@ public class DailyPotionPicker
     public DailyPotionPicker()
     {
         InitDailyPotionPicker();
+        InitDailyPotionsInfoByReputation();
     }
 
     private void InitDailyPotionPicker()

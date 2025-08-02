@@ -3,8 +3,6 @@ using Mirror;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using VInspector;
 
@@ -151,9 +149,8 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
     }
 
     // --- 서버로 배치를 요청하는 Command ---
-    // gridPosition 대신 targetPosition을 받도록 수정
     [Command(requiresAuthority = false)]
-    public void CmdTryPlaceStructure(NetworkConnectionToClient sender, Vector3 targetPosition, uint structureNetId)
+    public void CmdTryPlaceStructure(Vector3 targetPosition, uint structureNetId, NetworkConnectionToClient sender = null)
     {
         if (!isServer) return;
 
@@ -163,7 +160,7 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
         if (NetworkServer.spawned.TryGetValue(structureNetId, out NetworkIdentity structureIdentity))
         {
             GameObject structure = structureIdentity.gameObject;
-            StructureData data = DataTable.Instance.GetStructureData(structure.GetComponent<IItem>().GetTID());
+            StructureData data = DataTable.Instance.GetStructureData(structure.GetComponent<IGridItemHandler>().GetStructureTID());
 
             bool isValid = _serverGridData.CanPlaceObjectAt(gridPosition, new Vector2Int(data.Width, data.Length), data.AreaType);
 

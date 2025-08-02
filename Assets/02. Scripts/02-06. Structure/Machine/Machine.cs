@@ -340,7 +340,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler
     [TargetRpc]
     private void TargetRpcOnInteract(NetworkConnectionToClient target, bool success)
     {
-        if(target.identity.TryGetComponent<Player>(out Player player))
+        if (NetworkClient.connection.identity.TryGetComponent<Player>(out Player player))
         {
             player.GetAbility<PlayerInteractAbility>().ReceiveInteractResult(success);
         }
@@ -360,14 +360,14 @@ public class Machine : NetworkBehaviour, IGridItemHandler
         if (currentPhase == EPhaseType.PreparingPhase)
         {
             // GridManager의 서버 전용 메서드를 호출하여 서버에서 그리드 정보만 제거하고 오브젝트를 반환받음
-            GameObject pickedUpObject = GridManager.Instance.ServerRemovePlacementDataOnly(transform.position);
+            pickedUpItem = GridManager.Instance.ServerRemovePlacementDataOnly(transform.position);
 
             // 반환받은 오브젝트가 있다면, 픽업한 플레이어에게 권한을 할당함
-            if (pickedUpObject != null && sender != null)
+            if (pickedUpItem != null && sender != null)
             {
-                NetworkServer.spawned[pickedUpObject.GetComponent<NetworkIdentity>().netId].AssignClientAuthority(sender);
+                NetworkServer.spawned[pickedUpItem.GetComponent<NetworkIdentity>().netId].AssignClientAuthority(sender);
                 // GridManager의 TargetRpc를 호출하여 클라이언트에서 배치 상태를 시작하도록 지시
-                GridManager.Instance.TargetRpcStartPlacement(sender, pickedUpObject.GetComponent<NetworkIdentity>().netId);
+                GridManager.Instance.TargetRpcStartPlacement(sender, pickedUpItem.GetComponent<NetworkIdentity>().netId);
             }
         }
         else
@@ -389,14 +389,14 @@ public class Machine : NetworkBehaviour, IGridItemHandler
     [TargetRpc]
     private void TargetRpcOnPickUp(NetworkConnectionToClient target, GameObject item)
     {
-        if(target.identity.TryGetComponent<Player>(out Player player))
+        if (NetworkClient.connection.identity.TryGetComponent<Player>(out Player player))
         {
             player.GetAbility<PlayerPickupAbility>().ReceivePickedUpItem(item);
         }
     }
 
     [Command(requiresAuthority = false)]
-    private void CmdTryDrop(NetworkConnectionToClient sender, Vector3 targetPosition, int tid, EInputType inputType, uint dropItemNetId)
+    private void CmdTryDrop(Vector3 targetPosition, int tid, EInputType inputType, uint dropItemNetId, NetworkConnectionToClient sender = null)
     {
         if (isServer == false)
         {
@@ -412,9 +412,9 @@ public class Machine : NetworkBehaviour, IGridItemHandler
 
             if (currentPhase == EPhaseType.PreparingPhase)
             {
-                if(GridManager.Instance.GetObjectOnGrid(targetPosition) != null)
+                if(GridManager.Instance.GetObjectOnGrid(targetPosition) == null)
                 {
-                    GridManager.Instance.CmdTryPlaceStructure(sender, targetPosition, dropItemNetId);
+                    GridManager.Instance.CmdTryPlaceStructure(targetPosition, dropItemNetId, sender);
                     success = true;
                 }
                 else
@@ -440,7 +440,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler
     [TargetRpc]
     private void TargetRpcOnDrop(NetworkConnectionToClient target, bool success)
     {
-        if(target.identity.TryGetComponent<Player>(out Player player))
+        if (NetworkClient.connection.identity.TryGetComponent<Player>(out Player player))
         {
             player.GetAbility<PlayerPickupAbility>().ReceiveDroppedItem(success);
         }
@@ -493,7 +493,12 @@ public class Machine : NetworkBehaviour, IGridItemHandler
     {
         if(inputObject != null && inputObject.TryGetComponent<NetworkIdentity>(out NetworkIdentity netIdentity))
         {
-            CmdTryDrop(conn, targetPosition, tid, inputType, netIdentity.netId);
+            CmdTryDrop(targetPosition, tid, inputType, netIdentity.netId, conn);
         }
+    }
+
+    public int GetStructureTID()
+    {
+        return _data.StructureTID;
     }
 }

@@ -61,9 +61,9 @@ public class PlacementState : IBuildingState
         }
 
         GridManager.Instance.CmdTryPlaceStructure(
-            NetworkClient.localPlayer.connectionToClient,
             gridPosition,
-            _structureIdentity.netId);
+            _structureIdentity.netId,
+            NetworkClient.localPlayer.connectionToClient);
 
         return true;
     }

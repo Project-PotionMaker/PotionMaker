@@ -10,4 +10,6 @@ public interface IGridItemHandler
     public void TryDrop(NetworkConnectionToClient conn, Vector3 targetPosition, GameObject inputObject, int tid = 10000, EInputType inputType = EInputType.None);
 
     public void ResetData();
+
+    public int GetStructureTID();
 }

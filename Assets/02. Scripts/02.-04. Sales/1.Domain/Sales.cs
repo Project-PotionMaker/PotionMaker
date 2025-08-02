@@ -9,12 +9,12 @@ public class Sales
     private int _dailySales;
     public int DailySales => _dailySales;
 
-    private Dictionary<EPotionType, int> _totalSalesVolumeDict;
-    public Dictionary<EPotionType, int> TotalSalesVolumeDict => _totalSalesVolumeDict;
+    private Dictionary<int, int> _totalSalesVolumeDict;
+    public Dictionary<int, int> TotalSalesVolumeDict => _totalSalesVolumeDict;
 
-    private Dictionary<EPotionType, int> _dailySalesVolumeDict;
-    public Dictionary<EPotionType, int> DailySalesVolumeDict => _dailySalesVolumeDict;
-    public Sales(int totalSales, int dailySales = 0, Dictionary<EPotionType, int> totalSalesVolumeDict = null, Dictionary<EPotionType, int> dailySalesVolumeDict = null)
+    private Dictionary<int, int> _dailySalesVolumeDict;
+    public Dictionary<int, int> DailySalesVolumeDict => _dailySalesVolumeDict;
+    public Sales(int totalSales, int dailySales = 0, Dictionary<int, int> totalSalesVolumeDict = null, Dictionary<int, int> dailySalesVolumeDict = null)
     {
         if (totalSales < 0)
         {
@@ -37,7 +37,7 @@ public class Sales
 
         if (ReferenceEquals(totalSalesVolumeDict, null))
         {
-            _totalSalesVolumeDict = new Dictionary<EPotionType, int>();
+            _totalSalesVolumeDict = new Dictionary<int, int>();
         }
         else
         {
@@ -46,7 +46,7 @@ public class Sales
 
         if (ReferenceEquals(dailySalesVolumeDict, null))
         {
-            _dailySalesVolumeDict = new Dictionary<EPotionType, int>();
+            _dailySalesVolumeDict = new Dictionary<int, int>();
         }
         else
         {
@@ -74,25 +74,25 @@ public class Sales
         return sum;
     }
 
-    public void Sell(EPotionType potionType, int price)
+    public void Sell(int TID, int price)
     {
-        if (!_totalSalesVolumeDict.ContainsKey(potionType))
+        if (!_totalSalesVolumeDict.ContainsKey(TID))
         {
-            _totalSalesVolumeDict.Add(potionType, 0);
+            _totalSalesVolumeDict.Add(TID, 0);
         }
-        ++_totalSalesVolumeDict[potionType];
+        ++_totalSalesVolumeDict[TID];
 
-        if (!_dailySalesVolumeDict.ContainsKey(potionType))
+        if (!_dailySalesVolumeDict.ContainsKey(TID))
         {
-            _dailySalesVolumeDict.Add(potionType, 0);
+            _dailySalesVolumeDict.Add(TID, 0);
         }
-        ++_dailySalesVolumeDict[potionType];
+        ++_dailySalesVolumeDict[TID];
 
         _totalSales += price;
         _dailySales += price;
     }
 
-    public void SetSales(int totalSales, int dailySales, Dictionary<EPotionType, int> totalSalesVolumeDict, Dictionary<EPotionType, int> dailySalesVolumeDict)
+    public void SetSales(int totalSales, int dailySales, Dictionary<int, int> totalSalesVolumeDict, Dictionary<int, int> dailySalesVolumeDict)
     {
         if(totalSales < 0)
         {

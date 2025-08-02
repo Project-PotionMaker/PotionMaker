@@ -26,6 +26,9 @@ public class PhaseManager : MonoBehaviourSingleton<PhaseManager>
     private DailyPotionPicker _dailyPotionPicker;
     public DailyPotionPicker DailyPotionPicker => _dailyPotionPicker;
 
+    private List<PotionData> _potionDataList = new();
+    public List<PotionData> PotionDataList => _potionDataList;
+
     //PhotonView _photonView;
 
     protected override void Awake()
@@ -33,6 +36,7 @@ public class PhaseManager : MonoBehaviourSingleton<PhaseManager>
         base.Awake();
         //_photonView = GetComponent<PhotonView>();
         _deathCount = 0;
+        InitializePotionDataList();
         InitPhase();
     }
 
@@ -59,7 +63,12 @@ public class PhaseManager : MonoBehaviourSingleton<PhaseManager>
         };
         _currentPhase = _phaseDictionary[EPhaseType.PreparingPhase];
         _currentPhase.EnterPhase();
+    }
+
+    private void InitializePotionDataList()
+    {
         _dailyPotionPicker = new DailyPotionPicker();
+        // _potionDataList = _dailyPotionPicker.PickDailyPotion(int currentPotionHouseTier);
     }
 
     public void TransitionPhase(EPhaseType nextPhase)
@@ -78,7 +87,7 @@ public class PhaseManager : MonoBehaviourSingleton<PhaseManager>
         {
             _day++;
             OnDayPassed?.Invoke();
-            // _dailyPotionPicker.PickDailyPotion(int currentPotionHouseTier);
+            // _potionDataList = _dailyPotionPicker.PickDailyPotion(int currentPotionHouseTier);
         }
         _currentPhase = _phaseDictionary[nextPhase];
         _currentPhase.EnterPhase();

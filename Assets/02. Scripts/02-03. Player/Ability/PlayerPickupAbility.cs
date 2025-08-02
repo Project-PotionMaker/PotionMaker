@@ -1,7 +1,5 @@
 using Mirror;
-using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
-using static UnityEditor.Progress;
 
 public class PlayerPickupAbility : PlayerAbility
 {

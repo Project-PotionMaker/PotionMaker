@@ -1,4 +1,5 @@
 //using Photon.Pun;
+using Mirror;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using VInspector;
 
-public class GridManager : MonoBehaviourSingleton<GridManager>
+public class GridManager : NetworkBehaviourSingleton<GridManager>
 {
     [Foldout("Hierarchy")]
     [SerializeField]
@@ -37,12 +38,27 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
     private List<GameObject> _luxuryChairList;
     public List<GameObject> LuxuryChairList => _luxuryChairList;
 
+    public Action OnInitialized;
 
     // private GridRepository _repository;
 
-    protected override void Awake()
+    public override void OnStartClient()
     {
-        base.Awake();
+        base.OnStartClient();
+        OnInitialized?.Invoke();
+        InitGridManager();
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.F2))
+        {
+            Test();
+        }
+    }
+
+    private void InitGridManager()
+    {
         StopPlacement();
 
         _layout = GameObject.FindGameObjectWithTag(nameof(ETags.Layout)).GetComponent<Layout>();
@@ -149,8 +165,8 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
         return false;
     }
 
-    [Button("생성 테스트")]
-    public async void Test()
+    [Command(requiresAuthority = false)]
+    public void Test()
     {
         CreateStructure(10000, new Vector3(-5, 0, 4)); //절구
         CreateStructure(10002, new Vector3(-3, 0, 4)); //혼합기

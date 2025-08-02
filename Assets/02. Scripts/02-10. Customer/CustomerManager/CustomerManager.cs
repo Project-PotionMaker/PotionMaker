@@ -225,11 +225,11 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         }
         Debug.Log($"Potion served successfully");
         RemoveOnTable(pickupTableViewID); // 판매대에서 포션 제거
-        GameObject potion = FindPickupTableByViewID(pickupTableViewID).GetComponent<IGridItemHandler>().TryPickUp(customer.connectionToClient); // 판매대 위치에서 포션 오브젝트 가져오기
+        //GameObject potion = FindPickupTableByViewID(pickupTableViewID).GetComponent<IGridItemHandler>().TryPickUp(customer.connectionToClient); // 판매대 위치에서 포션 오브젝트 가져오기
 
 
-        potion.transform.SetParent(customer.PotionHandler.transform);
-        potion.transform.localPosition = Vector3.zero;
+        //potion.transform.SetParent(customer.PotionHandler.transform);
+        //potion.transform.localPosition = Vector3.zero;
         _lineHandler.PutOutCustomer(customer); // 손님을 나가게 하기
     }
 

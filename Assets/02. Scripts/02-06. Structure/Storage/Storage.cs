@@ -51,9 +51,9 @@ public class Storage : NetworkBehaviour, IGridItemHandler
     {
         base.OnStartClient();
 
-        OnDataTIDChanged(0, _dataTID);
         OnIngredientTIDChanged(0, _ingredientTID);
         OnCurrentRotationChanged(0, _currentRotation);
+        OnDataTIDChanged(0, _dataTID);
     }
 
     #region SyncVar Hook Functions

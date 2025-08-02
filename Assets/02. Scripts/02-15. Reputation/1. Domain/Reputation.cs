@@ -62,7 +62,7 @@ public class Reputation
                 $"{nameof(value)} must be zero or greater");
         }
         Value = value;
-
+        ValueYesterday = value;
     }
 
     public Reputation(ReputationDTO reputationDto)

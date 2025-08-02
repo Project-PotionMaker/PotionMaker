@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -115,20 +116,7 @@ public class DailyPotionPicker
 
     public List<PotionData> PickDailyPotion(ETierType tier)
     {
-        ResetIsPicked();
-
-        List<int> potionTierList = GetPotionTierList((int)tier + 1);
-        List<PotionData> dailyPotionDataList = new List<PotionData>();
-        foreach (int potionTier in potionTierList)
-        {
-            if (potionTier < 1 || Enum.GetValues(typeof(ETierType)).Length < potionTier)
-            {
-                Debug.LogWarning($"올바르지 않은 티어 값입니다. 1 ~ 3 사이의 티어값인지 확인해주세요.");
-            }
-            dailyPotionDataList.Add(PickPotion((ETierType)potionTier - 1));
-        }
-        OnPickCompleted?.Invoke(dailyPotionDataList);
-        return dailyPotionDataList;
+        return PickDailyPotion((int)tier + 1);
     }
 
     private List<int> GetPotionTierList(int tier)

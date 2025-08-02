@@ -35,24 +35,27 @@ public class SalesManager : NetworkBehaviourSingleton<SalesManager>
 
         InitSalesManager();
     }
-    public void RequestSell(EPotionType potionType, int price)
+
+    public void RequestSell(int TID)
     {
-        CmdRequestSell(potionType, price);
+        CmdRequestSell(TID);
     }
     [Command(requiresAuthority = false)]
-    public void CmdRequestSell(EPotionType potionType, int price)
+    public void CmdRequestSell(int TID)
     {
-        Sell(potionType, price);
+        Sell(TID);
     }
 
     [Server]
-    private void Sell(EPotionType potionType, int price)
+    private void Sell(int TID)
     {
         if (!isServer)
         {
             throw new InvalidOperationException($"{nameof(Sell)}() is server-only. Use {nameof(CmdRequestSell)}() from client.");
         }
-        _sales.Sell(potionType, price);
+        int price = DataTable.Instance.GetPotionData(TID).Price;
+
+        _sales.Sell(TID, price);
 
         SalesRPCData salesRPCData = new SalesRPCData(Sales);
         string salesJson = JsonUtility.ToJson(salesRPCData);
@@ -65,8 +68,8 @@ public class SalesManager : NetworkBehaviourSingleton<SalesManager>
     public void UpdateSales(string salesJson, bool isForSummary)
     {
         SalesRPCData salesRPCData = JsonUtility.FromJson<SalesRPCData>(salesJson);
-        Dictionary<EPotionType, int> totalSalesVolumeDict = salesRPCData.TotalSalesVolumeKeyValueList.ToDictionary(keyValuePair => keyValuePair.Key, keyValuePair => keyValuePair.Value);
-        Dictionary<EPotionType, int> dailySalesVolumeDict = salesRPCData.DailySalesVolumeKeyValueList.ToDictionary(keyValuePair => keyValuePair.Key, keyValuePair => keyValuePair.Value);
+        Dictionary<int, int> totalSalesVolumeDict = salesRPCData.TotalSalesVolumeKeyValueList.ToDictionary(keyValuePair => keyValuePair.Key, keyValuePair => keyValuePair.Value);
+        Dictionary<int, int> dailySalesVolumeDict = salesRPCData.DailySalesVolumeKeyValueList.ToDictionary(keyValuePair => keyValuePair.Key, keyValuePair => keyValuePair.Value);
 
         _sales.SetSales(salesRPCData.TotalSales, salesRPCData.DailySales, totalSalesVolumeDict, dailySalesVolumeDict);
         if (isForSummary)

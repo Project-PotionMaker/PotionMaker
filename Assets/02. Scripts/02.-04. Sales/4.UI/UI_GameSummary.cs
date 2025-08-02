@@ -29,14 +29,14 @@ public class UI_GameSummary : MonoBehaviour
         _totalSalesTextUI.text = SalesManager.Instance.Sales.TotalSales.ToString("N0");
 
         int slotIndex = 0;
-        foreach (EPotionType potionType in SalesManager.Instance.Sales.TotalSalesVolumeDict.Keys)
+        foreach (int potionTID in SalesManager.Instance.Sales.TotalSalesVolumeDict.Keys)
         {
             if (slotIndex >= _salesVolumeSlotList.Count)
             {
                 UI_SalesVolumeSlot newSlot = GameObject.Instantiate(_salesVolumeSlotPrefab, _slotContainer);
                 _salesVolumeSlotList.Add(newSlot);
             }
-            _salesVolumeSlotList[slotIndex].Refresh(potionType, true);
+            _salesVolumeSlotList[slotIndex].Refresh(potionTID, true);
             ++slotIndex;
         }
 

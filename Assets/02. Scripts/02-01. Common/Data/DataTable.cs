@@ -141,6 +141,33 @@ public partial class DataTable
         }
     }
     #endregion
+    #region Unlock
+    private ReadOnlyList<UnlockData> UnlockList = null;
+    private ReadOnlyDictionary<int, UnlockData> UnlockTable = null;
+
+    public ReadOnlyList<UnlockData> GetUnlockDataList()
+    {
+        return UnlockList;
+    }
+
+    public UnlockData GetUnlockData(int key)
+    {
+        if (key == 0)
+        {
+            return null;
+        }
+
+        if (UnlockTable.TryGetValue(key, out UnlockData retVal) == true)
+        {
+            return retVal;
+        }
+        else
+        {
+            Debug.LogError($"Can not find UniqueID of UnlockData: <{key}>");
+            return null;
+        }
+    }
+    #endregion
     #region Machine
     private ReadOnlyList<MachineData> MachineList = null;
     private ReadOnlyDictionary<int, MachineData> MachineTable = null;
@@ -249,6 +276,33 @@ public partial class DataTable
         }
     }
     #endregion
+    #region Tip
+    private ReadOnlyList<TipData> TipList = null;
+    private ReadOnlyDictionary<int, TipData> TipTable = null;
+
+    public ReadOnlyList<TipData> GetTipDataList()
+    {
+        return TipList;
+    }
+
+    public TipData GetTipData(int key)
+    {
+        if (key == 0)
+        {
+            return null;
+        }
+
+        if (TipTable.TryGetValue(key, out TipData retVal) == true)
+        {
+            return retVal;
+        }
+        else
+        {
+            Debug.LogError($"Can not find UniqueID of TipData: <{key}>");
+            return null;
+        }
+    }
+    #endregion
 
     public IEnumerator LoadRoutine()
     {
@@ -286,6 +340,12 @@ public partial class DataTable
             loadedCount++;
         });
         allCount++;
+        GetBytes_FromResources("Unlock", (bytes) =>
+        {
+            LoadUnlockData(bytes);
+            loadedCount++;
+        });
+        allCount++;
         GetBytes_FromResources("Machine", (bytes) =>
         {
             LoadMachineData(bytes);
@@ -309,6 +369,12 @@ public partial class DataTable
             LoadLayoutData(bytes);
             loadedCount++;
         });
+        allCount++;
+        GetBytes_FromResources("Tip", (bytes) =>
+        {
+            LoadTipData(bytes);
+            loadedCount++;
+        });
 
         yield return new WaitUntil(() => allCount == loadedCount);
     }
@@ -325,6 +391,8 @@ public partial class DataTable
         LoadProductData(productBytes);
         byte[] structureBytes = GetBytes_ForEditor("StructureData");
         LoadStructureData(structureBytes);
+        byte[] unlockBytes = GetBytes_ForEditor("UnlockData");
+        LoadUnlockData(unlockBytes);
         byte[] machineBytes = GetBytes_ForEditor("MachineData");
         LoadMachineData(machineBytes);
         byte[] storageBytes = GetBytes_ForEditor("StorageData");
@@ -333,6 +401,8 @@ public partial class DataTable
         LoadFurnitureData(furnitureBytes);
         byte[] layoutBytes = GetBytes_ForEditor("LayoutData");
         LoadLayoutData(layoutBytes);
+        byte[] tipBytes = GetBytes_ForEditor("TipData");
+        LoadTipData(tipBytes);
     }
 
     private void LoadPotionData(byte[] bytes)
@@ -490,6 +560,37 @@ public partial class DataTable
         StructureTable = new ReadOnlyDictionary<int, StructureData>(structureTable);
     }
 
+    private void LoadUnlockData(byte[] bytes)
+    {
+        List<UnlockData> unlockList = new List<UnlockData>();
+        Dictionary<int, UnlockData> unlockTable = new Dictionary<int, UnlockData>();
+
+        Reader = new BinaryReader(new MemoryStream(bytes));
+
+        while (Reader.BaseStream.Position < bytes.Length)
+        {
+            UnlockData data = new UnlockData(Reader);
+            if (unlockTable.ContainsKey(data.TID) == true)
+            {
+                Debug.LogError("The duplicate TID: " + data.TID + " in Unlock");
+                continue;
+            }
+            else if (data.TID == 0)
+            {
+                Debug.LogError("TID is 0 in Unlock");
+                continue;
+            }
+
+            unlockList.Add(data);
+            unlockTable.Add(data.TID, data);
+        }
+
+        Reader.Close();
+
+        UnlockList = new ReadOnlyList<UnlockData>(unlockList);
+        UnlockTable = new ReadOnlyDictionary<int, UnlockData>(unlockTable);
+    }
+
     private void LoadMachineData(byte[] bytes)
     {
         List<MachineData> machineList = new List<MachineData>();
@@ -612,6 +713,37 @@ public partial class DataTable
 
         LayoutList = new ReadOnlyList<LayoutData>(layoutList);
         LayoutTable = new ReadOnlyDictionary<int, LayoutData>(layoutTable);
+    }
+
+    private void LoadTipData(byte[] bytes)
+    {
+        List<TipData> tipList = new List<TipData>();
+        Dictionary<int, TipData> tipTable = new Dictionary<int, TipData>();
+
+        Reader = new BinaryReader(new MemoryStream(bytes));
+
+        while (Reader.BaseStream.Position < bytes.Length)
+        {
+            TipData data = new TipData(Reader);
+            if (tipTable.ContainsKey(data.TID) == true)
+            {
+                Debug.LogError("The duplicate TID: " + data.TID + " in Tip");
+                continue;
+            }
+            else if (data.TID == 0)
+            {
+                Debug.LogError("TID is 0 in Tip");
+                continue;
+            }
+
+            tipList.Add(data);
+            tipTable.Add(data.TID, data);
+        }
+
+        Reader.Close();
+
+        TipList = new ReadOnlyList<TipData>(tipList);
+        TipTable = new ReadOnlyDictionary<int, TipData>(tipTable);
     }
 
 }

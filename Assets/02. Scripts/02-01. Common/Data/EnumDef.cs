@@ -39,14 +39,6 @@ public enum ENPCType
     Customer = 0,
 }
 
-public enum EPotionType
-{
-    ///<summary>활력</summary>
-    Vitality = 0,
-    ///<summary>생명</summary>
-    Life = 1,
-}
-
 public enum EAreaType
 {
     ///<summary>없음</summary>
@@ -57,7 +49,7 @@ public enum EAreaType
     Kitchen = 2,
     ///<summary>창고</summary>
     Storage = 3,
-    ///<summary>배달</summary>
+    ///<summary>앞마당</summary>
     FrontYard = 4,
 }
 
@@ -165,10 +157,6 @@ public enum ECustomerStateType
     PickingUp = 2,
     ///<summary>나가기</summary>
     Leaving = 3,
-    ///<summary>줄로 이동</summary>
-    ReturningLine = 4,
-    ///<summary>의자로 이동</summary>
-    ReturningChair = 5,
 }
 
 public enum ETierType
@@ -179,5 +167,15 @@ public enum ETierType
     Tier2 = 1,
     ///<summary>티어 3</summary>
     Tier3 = 2,
+}
+
+public enum EUnlockType
+{
+    ///<summary>포션</summary>
+    Potion = 0,
+    ///<summary>구조물</summary>
+    Structure = 1,
+    ///<summary>재료</summary>
+    Ingredient = 2,
 }
 

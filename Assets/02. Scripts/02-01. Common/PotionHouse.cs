@@ -58,4 +58,12 @@ public class PotionHouse : MonoBehaviourSingleton<PotionHouse>
 
         OnInitialized?.Invoke();
     }
+
+    private void OnDestroy()
+    {
+        if (Global.Instance != null)
+        {
+            Global.Instance.OnDataLoaded -= InitPotionHouse;
+        }
+    }
 }

@@ -118,6 +118,6 @@ public class ReputationManager : MonoBehaviourPunCallbacksSingleton<ReputationMa
 
     public void OnServingPhaseEnd()
     {
-        _reputation.UpdateValueYesterDay();
+        _reputation.UpdateValueYesterday();
     }
 }

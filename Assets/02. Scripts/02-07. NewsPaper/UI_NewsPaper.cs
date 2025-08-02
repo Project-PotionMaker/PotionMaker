@@ -15,16 +15,16 @@ public class UI_NewsPaper : MonoBehaviour
     private void Refresh(List<PotionData> dailyPotionDataList)
     {
         int dailyPotionListSize = dailyPotionDataList.Count;
-        for (int i = 1; i <= _slotDailyPotionList.Count; i++)
+        for (int i = 0; i < _slotDailyPotionList.Count; i++)
         {
-            if (i <= dailyPotionListSize)
+            if (i < dailyPotionListSize)
             {
-                _slotDailyPotionList[i - 1].gameObject.SetActive(true);
-                _slotDailyPotionList[i - 1].RefreshSlot(dailyPotionDataList[i - 1]);
+                _slotDailyPotionList[i].gameObject.SetActive(true);
+                _slotDailyPotionList[i].RefreshSlot(dailyPotionDataList[i]);
             }
             else
             {
-                _slotDailyPotionList[i - 1].gameObject.SetActive(false);
+                _slotDailyPotionList[i].gameObject.SetActive(false);
             }
         }
         OpenNewsPaperPopup();

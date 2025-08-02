@@ -1,9 +1,12 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class UI_ProductSlot:MonoBehaviour
 {
+    public event Action<ProductDTO> OnSlotClicked;
+
     [SerializeField]
     private Image _productImage;
     [SerializeField]
@@ -11,13 +14,13 @@ public class UI_ProductSlot:MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI _productPriceTextUI;
     [SerializeField]
-    private Button _buyButton;
+    private Button _slotButton;
 
     public void Refresh(ProductDTO productDTO)
     {
         _productNameTextUI.text = productDTO.Data.Name;
         _productPriceTextUI.text = productDTO.Data.Price.ToString("N0");
-        _buyButton.onClick.RemoveAllListeners();
-        _buyButton.onClick.AddListener(() => ProductManager.Instance.RequestBuy(productDTO.Data.ProductType, productDTO.Data.TID));
+        _slotButton.onClick.RemoveAllListeners();
+        _slotButton.onClick.AddListener(() => OnSlotClicked?.Invoke(productDTO));
     }
 }

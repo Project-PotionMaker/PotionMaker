@@ -1,84 +1,69 @@
-using Photon.Pun;
+using Mirror;
+//using Photon.Pun;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class SalesManager : MonoBehaviourPunCallbacksSingleton<SalesManager>
+public class SalesManager : NetworkBehaviourSingleton<SalesManager>
 {
     public event Action OnSummaryReady;
 
-    private PhotonView _photonView;
-    public PhotonView PhotonView => _photonView;
     private Sales _sales;
     public SalesDTO Sales => _sales.ToDTO();
 
-
-    protected override void Awake()
-    {
-        base.Awake();
-        _photonView = GetComponent<PhotonView>();
-    }
     private void Start()
     {
         PhaseManager.Instance.OnDayPassed += OnDayChanged;
         InitSalesManager();
     }
 
-    // 없애도 됨
-    public override void OnJoinedRoom()
-    {
-        InitSalesManager();
-    }
+    // 네트워크 매니저에서 처리
+    //public override void OnJoinedRoom()
+    //{
+    //    InitSalesManager();
+    //}
 
     private void InitSalesManager()
     {
-        //없애도 됨
-        if (!PhotonNetwork.InRoom)
-        {
-            return;
-        }
         _sales = new Sales(0);
-        RequestUpdateSales();
+        CmdRequestUpdateSales(false);
     }
 
-    [PunRPC]
-    public void RequestSell(EPotionType potionType, int price)
+    public void RequestSell(int TID)
     {
-        if (!PhotonNetwork.IsMasterClient)
-        {
-            _photonView.RPC(nameof(RequestSell), RpcTarget.MasterClient, potionType, price);
-            return;
-        }
-        Sell(potionType, price);
+        CmdRequestSell(TID);
+    }
+    [Command(requiresAuthority = false)]
+    public void CmdRequestSell(int TID)
+    {
+        Sell(TID);
     }
 
-    private void Sell(EPotionType potionType, int price)
+    [Server]
+    private void Sell(int TID)
     {
-        if (!PhotonNetwork.IsMasterClient)
+        if (!isServer)
         {
-            throw new InvalidOperationException("Sale must be processed only by the Master Client.");
+            throw new InvalidOperationException($"{nameof(Sell)}() is server-only. Use {nameof(CmdRequestSell)}() from client.");
         }
-        _sales.Sell(potionType, price);
+        int price = DataTable.Instance.GetPotionData(TID).Price;
+
+        _sales.Sell(TID, price);
 
         SalesRPCData salesRPCData = new SalesRPCData(Sales);
         string salesJson = JsonUtility.ToJson(salesRPCData);
-        _photonView.RPC(nameof(SetSales), RpcTarget.Others, salesJson, false);
+        UpdateSales(salesJson, false);
 
-        CurrencyManager.Instance.RequestAddCurrency(price);
+        CurrencyManager.Instance.CmdRequestAddCurrency(price);
     }
 
-    [PunRPC]
-    public void SetSales(string salesJson, bool isForSummary, PhotonMessageInfo info)
+    [ClientRpc]
+    public void UpdateSales(string salesJson, bool isForSummary)
     {
-        if (!info.Sender.IsMasterClient)
-        {
-            throw new InvalidOperationException("Sales must be Set by the Master Client");
-        }
-
         SalesRPCData salesRPCData = JsonUtility.FromJson<SalesRPCData>(salesJson);
-        Dictionary<EPotionType, int> totalSalesVolumeDict = salesRPCData.TotalSalesVolumeKeyValueList.ToDictionary(keyValuePair => keyValuePair.Key, keyValuePair => keyValuePair.Value);
-        Dictionary<EPotionType, int> dailySalesVolumeDict = salesRPCData.DailySalesVolumeKeyValueList.ToDictionary(keyValuePair => keyValuePair.Key, keyValuePair => keyValuePair.Value);
+        Dictionary<int, int> totalSalesVolumeDict = salesRPCData.TotalSalesVolumeKeyValueList.ToDictionary(keyValuePair => keyValuePair.Key, keyValuePair => keyValuePair.Value);
+        Dictionary<int, int> dailySalesVolumeDict = salesRPCData.DailySalesVolumeKeyValueList.ToDictionary(keyValuePair => keyValuePair.Key, keyValuePair => keyValuePair.Value);
 
         _sales.SetSales(salesRPCData.TotalSales, salesRPCData.DailySales, totalSalesVolumeDict, dailySalesVolumeDict);
         if (isForSummary)
@@ -87,35 +72,25 @@ public class SalesManager : MonoBehaviourPunCallbacksSingleton<SalesManager>
         }
     }
 
-    public void RequestUpdateSales(bool isForSummary = false)
+    [Command(requiresAuthority = false)]
+    public void CmdRequestUpdateSales(bool isForSummary)
     {
-        _photonView.RPC(nameof(RequestUpdateSales), RpcTarget.MasterClient, isForSummary);
-    }
-
-    [PunRPC]
-    public void RequestUpdateSales(bool isForSummary, PhotonMessageInfo info)
-    {
-        if (!PhotonNetwork.IsMasterClient)
-        {
-            _photonView.RPC(nameof(RequestUpdateSales), RpcTarget.MasterClient);
-            return;
-        }
-
         SalesRPCData salesRPCData = new SalesRPCData(Sales);
         string salesJson = JsonUtility.ToJson(salesRPCData);
-        _photonView.RPC(nameof(SetSales), info.Sender, salesJson, isForSummary);
+        UpdateSales(salesJson, isForSummary);
     }
-     
+
+    [Server]
     public void OnDayChanged()
     {
-        if (!PhotonNetwork.IsMasterClient)
+        if (!isServer)
         {
-            return;
+            throw new InvalidOperationException($"{nameof(OnDayChanged)}() is server-only.");
         }
         _sales.OnDayChanged();
         
         SalesRPCData salesRPCData = new SalesRPCData(Sales);
         string salesJson = JsonUtility.ToJson(salesRPCData);
-        _photonView.RPC(nameof(SetSales), RpcTarget.Others, salesJson, false);
+        UpdateSales(salesJson, false);
     }
 }

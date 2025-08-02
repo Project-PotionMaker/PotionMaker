@@ -1,6 +1,4 @@
 using DG.Tweening;
-using Mirror;
-using Photon.Pun;
 using UnityEngine;
 using UnityEngine.AI;
 

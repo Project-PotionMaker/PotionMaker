@@ -1,5 +1,3 @@
-using Mirror;
-using Photon.Pun;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -73,7 +71,7 @@ public class Customer : NetworkBehaviour
         if(ReferenceEquals(potion, null) == false)
         {
             potion.transform.SetParent(null); 
-            CraftItemFactory.Instance.Return(potion); 
+            CraftItemFactory.Instance.CmdReturn(potion); 
         }
 
     }

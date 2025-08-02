@@ -1,4 +1,4 @@
-using Photon.Pun;
+//using Photon.Pun;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,7 +11,7 @@ public class IngredientItem : MonoBehaviour, IItem
 
     private MeshFilter _ingredientMeshFilter;
     private Renderer _ingredientRenderer;
-    private PhotonView _photonView;
+    //private PhotonView _photonView;
 
     [Foldout("Project")]
     [SerializeField]
@@ -34,7 +34,7 @@ public class IngredientItem : MonoBehaviour, IItem
 
         _ingredientMeshFilter = GetComponent<MeshFilter>();
         _ingredientRenderer = GetComponent<Renderer>();
-        _photonView = GetComponent<PhotonView>();
+        //_photonView = GetComponent<PhotonView>();
     }
 
     public void InitIngredientData(int TID)
@@ -49,10 +49,10 @@ public class IngredientItem : MonoBehaviour, IItem
             }
         }
 
-        _photonView.RPC(nameof(RPC_InitIngredientData), RpcTarget.Others, TID);
+        //_photonView.RPC(nameof(RPC_InitIngredientData), RpcTarget.Others, TID);
     }
 
-    [PunRPC]
+    //[PunRPC]
     public void RPC_InitIngredientData(int TID)
     {
         _data = DataTable.Instance.GetIngredientData(TID);

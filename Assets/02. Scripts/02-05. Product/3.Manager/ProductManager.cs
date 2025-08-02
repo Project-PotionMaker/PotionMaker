@@ -1,15 +1,13 @@
-using Photon.Pun;
+using Mirror;
+//using Photon.Pun;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class ProductManager : MonoBehaviourPunCallbacksSingleton<ProductManager>
+public class ProductManager : NetworkBehaviourSingleton<ProductManager>
 {
-    private PhotonView _photonView;
-    public PhotonView PhotonView => _photonView;
-
     private Dictionary<EProductType, List<Product>> _productListDict;
     public Dictionary<EProductType, List<ProductDTO>> ProductListDict =>
         _productListDict.ToDictionary
@@ -22,7 +20,6 @@ public class ProductManager : MonoBehaviourPunCallbacksSingleton<ProductManager>
     protected override void Awake()
     {
         base.Awake();
-        _photonView = GetComponent<PhotonView>();
         _delivery = new Delivery();
         _movingHouse = new MovingHouse();
         _movingHouse.InitMovingHouse(_delivery);
@@ -33,16 +30,16 @@ public class ProductManager : MonoBehaviourPunCallbacksSingleton<ProductManager>
         InitProductManager();
     }
 
-    // 없애도 됨
-    public override void OnJoinedRoom()
-    {
-        InitProductManager();
-    }
+    // 네트워크 매니저에서 처리
+    //public override void OnJoinedRoom()
+    //{
+    //    InitProductManager();
+    //}
 
     private void InitProductManager()
     {
         // 룸 관련 검사는 게임이 만들어지면 없애도 됨
-        if (!PhotonNetwork.InRoom || !Global.Instance.IsDataLoaded)
+        if (!Global.Instance.IsDataLoaded)
         {
             return;
         }
@@ -55,7 +52,7 @@ public class ProductManager : MonoBehaviourPunCallbacksSingleton<ProductManager>
         };
 
         LoadProductData();
-        RequestUpdateProducts();
+        CmdRequestUpdateProducts();
     }
 
     private void LoadProductData()
@@ -67,27 +64,22 @@ public class ProductManager : MonoBehaviourPunCallbacksSingleton<ProductManager>
         }
     }
 
-    public void RequestBuy(EProductType productType, int productID)
+    [Command(requiresAuthority =false)]
+    public void CmdRequestBuy(EProductType productType, int productID, NetworkConnectionToClient sender = null)
     {
-        _photonView.RPC(nameof(RequestBuy), RpcTarget.MasterClient, productType, productID);
-    }
-    [PunRPC]
-    public void RequestBuy(EProductType productType, int productID, PhotonMessageInfo info)
-    {
-        if (!PhotonNetwork.IsMasterClient)
-        {
-            _photonView.RPC(nameof(RequestBuy), RpcTarget.MasterClient, productType, productID);
-            return;
-        }
-
         Product product = _productListDict[productType].Find(product => product.Data.TID == productID);
-        bool result = TryBuy(product);
 
-        _photonView.RPC(nameof(ShowResultUI), info.Sender, result);
+        bool result = TryBuy(product);
+        TargetShowResultUI(sender, result);
     }
 
+    [Server]
     private bool TryBuy(Product product)
     {
+        if (!isServer)
+        {
+            throw new InvalidOperationException($"{nameof(TryBuy)}() is server-only. Use {nameof(CmdRequestBuy)}() from client.");
+        }
         if (!CurrencyManager.Instance.TrySubtractCurrency(product.Data.Price))
         {
             return false;
@@ -120,65 +112,57 @@ public class ProductManager : MonoBehaviourPunCallbacksSingleton<ProductManager>
         return true;
     }
 
-    [PunRPC]
-    public void ShowResultUI(bool result)
+    [TargetRpc]
+    public void TargetShowResultUI(NetworkConnection taraget, bool result)
     {
         // Todo: 팝업매니저를 통한 구매 성공 여부 팝업?
         Debug.Log($"구매 결과: {result}");
     }
 
-    [PunRPC]
-    public void RequestUnlock(int productID)
+    [Command(requiresAuthority = false)]
+    public void CmdRequestUnlock(int productID)
     {
-        if (!PhotonNetwork.IsMasterClient)
-        {
-            _photonView.RPC(nameof(RequestUnlock), RpcTarget.MasterClient, productID);
-            return;
-        }
         Unlock(productID);
     }
 
+    [Server]
     private void Unlock(int productTID)
     {
-        if (!PhotonNetwork.IsMasterClient)
+        if (!isServer)
         {
-            return;
+            throw new InvalidOperationException($"{nameof(Unlock)}() is server-only. Use {nameof(CmdRequestUnlock)}() from client.");
         }
 
         Product targetProduct = _productListDict.SelectMany(keyValuePair => keyValuePair.Value).FirstOrDefault(product => product.Data.TID == productTID);
         targetProduct.Unlock();
-        _photonView.RPC(nameof(SetProduct), RpcTarget.Others, targetProduct.Data.TID, targetProduct.IsUnlocked);
+        UpdateProduct(targetProduct.Data.TID, targetProduct.IsUnlocked);
     }
 
-    [PunRPC]
-    public void SetProduct(int productTID, bool isUnlocked, PhotonMessageInfo info)
+    [Command(requiresAuthority = false)]
+    public void CmdRequestUpdateProducts()
     {
-        if (!info.Sender.IsMasterClient)
+        UpdateProducts();
+    }
+
+    [Server]
+    private void UpdateProducts()
+    {
+        if (!isServer)
         {
-            throw new InvalidOperationException("Product must be Set by the Master Client");
-        }
-        Product targetProduct = _productListDict.SelectMany(keyValuePair => keyValuePair.Value).FirstOrDefault(product => product.Data.TID == productTID);
-        targetProduct.SetProduct(isUnlocked);
-    }
-
-    public void RequestUpdateProducts()
-    {
-        _photonView.RPC(nameof(RequestUpdateProducts), RpcTarget.MasterClient);
-    }
-
-    [PunRPC]
-    public void RequestUpdateProducts(PhotonMessageInfo info)
-    {
-        if (!PhotonNetwork.IsMasterClient)
-        {
-            _photonView.RPC(nameof(RequestUpdateProducts), RpcTarget.MasterClient);
-            return;
+            throw new InvalidOperationException("UpdateProducts() is server-only. Use CmdRequestUpdateProducts() from client.");
         }
 
         List<ProductDTO> targetProductList = ProductListDict.SelectMany(keyValuePair => keyValuePair.Value).ToList();
         foreach (ProductDTO productDTO in targetProductList)
         {
-            _photonView.RPC(nameof(SetProduct), info.Sender, productDTO.Data.TID, productDTO.IsUnlocked);
+            UpdateProduct(productDTO.Data.TID, productDTO.IsUnlocked);
         }
+    }
+
+    [ClientRpc]
+    public void UpdateProduct(int productTID, bool isUnlocked)
+    {
+        Product targetProduct = _productListDict.SelectMany(keyValuePair => keyValuePair.Value).FirstOrDefault(product => product.Data.TID == productTID);
+        targetProduct.SetProduct(isUnlocked);
     }
 }

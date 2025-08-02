@@ -1,30 +1,30 @@
 using System.Collections;
 using UnityEngine;
 
-public class ClickRepeatlyInteract : IInteractable<Machine, MachineStat>
+public class ClickRepeatlyInteract : IInteractable<Machine>
 {
-    public bool CanInteract(Machine machine, MachineStat stat)
+    public bool ServerCanInteract(Machine machine)
     {
-        return (stat.InputTIDList.Count == stat.Data.MaxInputCount && !stat.IsProcessFinished);
+        return (machine.InputTIDList.Count == machine.Data.MaxInputCount && !machine.IsProcessFinished);
     }
 
-    public bool TryInteract(Machine machine, MachineStat stat)
+    public bool ServerTryInteract(Machine machine)
     {
-        if (!CanInteract(machine, stat))
+        if (!ServerCanInteract(machine))
         {
             return false;
         }
 
-        if (!stat.IsProcessStarted)
+        if (!machine.IsProcessStarted)
         {
-            stat.IsProcessStarted = true;
+            machine.ServerSetIsProcessStarted(true);
         }
-        IncreaseProgress(machine, stat);
+        IncreaseProgress(machine);
         return true;
     }
 
-    private void IncreaseProgress(Machine machine, MachineStat stat)
+    private void IncreaseProgress(Machine machine)
     {
-        stat.CurrentProgress += stat.Data.ProgressPerTick;
+        machine.ServerIncreaseProgress(machine.Data.ProgressPerTick);
     }
 }

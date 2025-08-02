@@ -1,4 +1,4 @@
-using Photon.Pun;
+//using Photon.Pun;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,7 +11,7 @@ public class PotionItem : MonoBehaviour, IItem
 
     [Header("Component")]
     private GameObject _currentModel;
-    private PhotonView _photonView;
+    //private PhotonView _photonView;
     private Renderer _potionBottleRenderer;
     private Light _pointLight;
     private ParticleSystem _particles;
@@ -30,7 +30,7 @@ public class PotionItem : MonoBehaviour, IItem
 
     private void InitPotionItem()
     {
-        _photonView = GetComponent<PhotonView>();
+        //_photonView = GetComponent<PhotonView>();
         _mpb = new MaterialPropertyBlock();
         InitPotionModelDictionary();
     }
@@ -47,15 +47,15 @@ public class PotionItem : MonoBehaviour, IItem
 
     public void UpdatePotionData(int TID)
     {
-        if (!PhotonNetwork.IsMasterClient)
-        {
-            throw new InvalidOperationException("Potion 객체 생성 후 내부 데이터 초기화는 Master만 가능합니다.");
-        }
-        RPC_UpdatePotionData(TID);
-        _photonView.RPC(nameof(RPC_UpdatePotionData), RpcTarget.Others, TID);
+        //if (!PhotonNetwork.IsMasterClient)
+        //{
+        //    throw new InvalidOperationException("Potion 객체 생성 후 내부 데이터 초기화는 Master만 가능합니다.");
+        //}
+        //RPC_UpdatePotionData(TID);
+        //_photonView.RPC(nameof(RPC_UpdatePotionData), RpcTarget.Others, TID);
     }
 
-    [PunRPC]
+    //[PunRPC]
     public void RPC_UpdatePotionData(int TID)
     {
         _potionData = DataTable.Instance.GetPotionData(TID);

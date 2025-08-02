@@ -8,10 +8,10 @@ public class PlayerPickupAbility : PlayerAbility
 
     private void Start()
     {
-        //if (!_photonView.IsMine)
-        //{
-        //    return;
-        //}
+        if (!_owner.isLocalPlayer)
+        {
+            return;
+        }
 
         InputManager.Instance.OnPickupEvent += OnPickupInput;
         _animationAbility = _owner.GetAbility<PlayerAnimationAbility>();
@@ -21,10 +21,10 @@ public class PlayerPickupAbility : PlayerAbility
 
     private void Update()
     {
-        //if (!_photonView.IsMine)
-        //{
-        //    return;
-        //}
+        if (!_owner.isLocalPlayer)
+        {
+            return;
+        }
 
         if( _heldItem != null)
         {
@@ -67,26 +67,33 @@ public class PlayerPickupAbility : PlayerAbility
     private void TryPutDown()
     {
         Vector3 targetPosition = _owner.GetFrontPosition();
-        IGridItemHandler itemHandler = _heldItem.GetComponent<IGridItemHandler>();
-        if(ReferenceEquals(itemHandler, null) == false)
+
+        EPhaseType phaseType = PhaseManager.Instance.CurrentPhase.PhaseType;
+        
+        if (phaseType == EPhaseType.PreparingPhase)
         {
+            IGridItemHandler itemHandler = _heldItem.GetComponent<IGridItemHandler>();
+            if (ReferenceEquals(itemHandler, null) == true)
+            {
+                return;
+            }
+
             if (itemHandler.TryDrop(targetPosition))
             {
                 _heldItem.transform.SetParent(null);
-
                 _heldItem = null;
             }
         }
-        else
+        else if (phaseType == EPhaseType.ServingPhase || phaseType == EPhaseType.PracticingPhase)
         {
             GameObject gridObject = FindFrontPickupItem();
-            if(gridObject != null)
+            if (gridObject != null)
             {
                 IItem item = _heldItem.GetComponent<IItem>();
                 if (item != null && gridObject.GetComponent<IGridItemHandler>().TryDrop(targetPosition, item.GetTID(), item.GetInputType(), _heldItem))
                 {
                     _heldItem.transform.SetParent(null);
-                    if(item.GetInputType() != EInputType.Potion)
+                    if (item.GetInputType() != EInputType.Potion)
                     {
                         Destroy(_heldItem);
                     }
@@ -114,7 +121,7 @@ public class PlayerPickupAbility : PlayerAbility
         if(!ReferenceEquals(_heldItem, null))
         {
             _heldItem.transform.SetParent(null);
-            CraftItemFactory.Instance.Return(_heldItem);
+            CraftItemFactory.Instance.CmdReturn(_heldItem);
         }
     }
 }

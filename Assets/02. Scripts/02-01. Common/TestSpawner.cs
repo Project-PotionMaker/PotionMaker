@@ -1,16 +1,9 @@
-using Photon.Pun;
+using Mirror;
 using System.Threading.Tasks;
 using UnityEngine;
 
-[RequireComponent(typeof(PhotonView))]
-public class TestSpawner : MonoBehaviour
+public class TestSpawner : NetworkBehaviour
 {
-    private PhotonView _photonView;
-    private void Awake()
-    {
-        _photonView = GetComponent<PhotonView>();
-    }
-
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
@@ -25,48 +18,20 @@ public class TestSpawner : MonoBehaviour
 
     public void RequestCreate(ETestType type)
     {
-        if (!PhotonNetwork.IsMasterClient)
-        {
-            _photonView.RPC(nameof(Create), RpcTarget.MasterClient, type);
-            return;
-        }
-        Photon.Realtime.Player sender = PhotonNetwork.LocalPlayer;
-        int timestamp = PhotonNetwork.ServerTimestamp;
-
-        Create(type, new PhotonMessageInfo(sender, timestamp, _photonView));
+        CmdCreate(type);
     }
 
-    [PunRPC]
-    public void Create(ETestType type, PhotonMessageInfo info)
+    [Command]
+    private void CmdCreate(ETestType type)
     {
-        Debug.Log(PhotonNetwork.MasterClient.NickName);
-        if (!PhotonNetwork.IsMasterClient)
-        {
-            return;
-        }
-
         GameObject newObject = TestFactory.Instance.Create(type, transform.position, transform.rotation);
-        PhotonView targetPhotonView = newObject.GetComponent<PhotonView>();
-        if (targetPhotonView == null)
-        {
-            return;
-        }
 
-        int viewID = targetPhotonView.ViewID;
-        if (info.Sender.IsMasterClient)
-        {
-            Response(viewID);
-        }
-        else
-        {
-            _photonView.RPC(nameof(Response), info.Sender, viewID);
-        }
+        Response(connectionToClient, newObject);
     }
 
-    [PunRPC]
-    public void Response(int viewID)
+    [TargetRpc]
+    public void Response(NetworkConnection target, GameObject newObject)
     {
-        GameObject newObject = PhotonView.Find(viewID).gameObject;
-        Debug.Log($"{newObject.name}");
+        
     }
 }

@@ -22,21 +22,21 @@ public class UI_DaySummary : MonoBehaviour
 
     public void OnEndingPhaseStarted()
     {
-        SalesManager.Instance.RequestUpdateSales(isForSummary: true);
+        SalesManager.Instance.CmdRequestUpdateSales(isForSummary: true);
     }
     public void ShowSummary()
     {
         _dailySalesTextUI.text = SalesManager.Instance.Sales.DailySales.ToString("N0");
 
         int slotIndex = 0;
-        foreach (EPotionType potionType in SalesManager.Instance.Sales.DailySalesVolumeDict.Keys)
+        foreach (int potionTID in SalesManager.Instance.Sales.DailySalesVolumeDict.Keys)
         {
             if (slotIndex >= _salesVolumeSlotList.Count)
             {
                 UI_SalesVolumeSlot newSlot = GameObject.Instantiate(_salesVolumeSlotPrefab, _slotContainer);
                 _salesVolumeSlotList.Add(newSlot);
             }
-            _salesVolumeSlotList[slotIndex].Refresh(potionType, false);
+            _salesVolumeSlotList[slotIndex].Refresh(potionTID, false);
             ++slotIndex;
         }
 

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Photon.Realtime;
+//using Photon.Realtime;
 
 [Serializable]
 public class MachineStat

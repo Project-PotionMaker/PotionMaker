@@ -1,6 +1,4 @@
 using Mirror;
-using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class StructureFactory : NetworkFactoryBase<EStructureType, StructureFactoryInfo, StructureFactory>
@@ -28,6 +26,12 @@ public class StructureFactory : NetworkFactoryBase<EStructureType, StructureFact
     [Command(requiresAuthority = false)]
     protected override void CmdReturnObject(GameObject obj)
     {
+        if (obj == null)
+        {
+            return;
+        }
+        
+        NetworkServer.UnSpawn(obj);
         _factoryLogic.ReturnObject(obj);
     }
 }

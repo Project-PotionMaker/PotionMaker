@@ -74,7 +74,7 @@ public class PreviewSystem : MonoBehaviour
         _cellIndicator.SetActive(false);
         if(ReferenceEquals(_previewObject, null) == false)
         {
-            Destroy(_previewObject);
+            StructureFactory.Instance.ReturnObject(_previewObject);
         }
     }
 

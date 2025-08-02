@@ -46,25 +46,15 @@ public class PotionHouse : MonoBehaviourSingleton<PotionHouse>
         _unlockedTIDDict = new ReadOnlyDictionary<EUnlockType, ReadOnlyList<int>>(tempDict);
 
         // 포션 데이터 삽입
-        Dictionary<int, List<int>> potionDict = new();
-        for(int i = 1; i <= PotionHouseTier; i++)
-        {
-            potionDict.Add(i, new List<int>());
-        }
-        
-        foreach(int potionTID in _unlockedTIDDict[EUnlockType.Potion])
-        {
-            int tier = DataTable.Instance.GetPotionData(potionTID).Tier;
-            potionDict[tier].Add(potionTID);
-        }
-
-        Dictionary<int, ReadOnlyList<int>> tempUnlockedPotionTierDict = new();
-        for(int i = 1; i <= PotionHouseTier; i++)
-        {
-            tempUnlockedPotionTierDict.Add(i, new ReadOnlyList<int>(potionDict[i]));
-        }
-
-        _unlockedPotionTierDict = new ReadOnlyDictionary<int, ReadOnlyList<int>>(tempUnlockedPotionTierDict);
+        _unlockedPotionTierDict = new ReadOnlyDictionary<int, ReadOnlyList<int>>(
+            _unlockedTIDDict[EUnlockType.Potion]
+                .Select(potionTID => DataTable.Instance.GetPotionData(potionTID))
+                .GroupBy(potionData => potionData.Tier)
+                .ToDictionary(
+                    group => group.Key,
+                    group => new ReadOnlyList<int>(group.Select(data => data.TID).ToList())
+                )
+        );
 
         OnInitialized?.Invoke();
     }

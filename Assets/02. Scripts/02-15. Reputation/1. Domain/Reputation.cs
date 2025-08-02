@@ -31,7 +31,7 @@ public class Reputation
         get => _valueYesterday;
         private set
         {
-            _value = Mathf.Clamp(value, _minValue, _maxValue);
+            _valueYesterday = Mathf.Clamp(value, _minValue, _maxValue);
         }
     }
 
@@ -41,7 +41,7 @@ public class Reputation
         get => _difference;
         private set
         {
-            _value = Mathf.Clamp(value, _minValue, _maxValue);
+            _difference = Mathf.Clamp(value, _minValue, _maxValue);
         }
     }
 
@@ -119,7 +119,7 @@ public class Reputation
         return true;
     }
 
-    public void UpdateValueYesterDay()
+    public void UpdateValueYesterday()
     {
         ValueYesterday = _value;
     }

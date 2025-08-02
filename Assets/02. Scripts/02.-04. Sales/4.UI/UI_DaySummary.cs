@@ -30,9 +30,9 @@ public class UI_DaySummary : MonoBehaviour
     [SerializeField]
     private Image _reputationRateView;
     [SerializeField]
-    private TextMeshProUGUI _currentReputation;
+    private TextMeshProUGUI _currentReputationTextUI;
     [SerializeField]
-    private TextMeshProUGUI _deltaReputation;
+    private TextMeshProUGUI _deltaReputationTextUI;
 
     [Header("자산")]
     [SerializeField]
@@ -90,8 +90,9 @@ public class UI_DaySummary : MonoBehaviour
 
         // 평판
         // max value도 받아오도록 수정
-        _reputationRateView.fillAmount = ReputationManager.Instance.Reputation.Value / 5;
-
+        float currentReputation = ReputationManager.Instance.Reputation.Value;
+        _reputationRateView.fillAmount = currentReputation / 5;
+        _currentReputationTextUI.text = currentReputation.ToString();
         //float deltaReputationRate = ReputationManager.Instance.DeltaReputationRate;
         //string color = deltaReputationRate >= 0 ? POSITIVE_COLOR : NEGATIVE_COLOR;
         //_deltaReputation.text = $"<color={color}>{_deltaReputationRate}</color>;

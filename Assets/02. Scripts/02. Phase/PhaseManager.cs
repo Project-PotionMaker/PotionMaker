@@ -7,6 +7,9 @@ using VInspector;
 
 public class PhaseManager : MonoBehaviourSingleton<PhaseManager>    
 {
+    public event Action OnDayPassed;
+    public event Action OnPhaseChanged;
+
     private BasePhase _currentPhase;
     public BasePhase CurrentPhase { get => _currentPhase; set => _currentPhase = value; }
     private Dictionary<EPhaseType, BasePhase> _phaseDictionary;
@@ -19,8 +22,10 @@ public class PhaseManager : MonoBehaviourSingleton<PhaseManager>
     public int MaxDeathCount { get => _maxDeathCount; set => _maxDeathCount = value; }
     private int _day;
     public int Day { get => _day; set => _day = value; }
-    public event Action OnDayPassed;
-    public event Action OnPhaseChanged;
+
+    private DailyPotionPicker _dailyPotionPicker;
+    public DailyPotionPicker DailyPotionPicker => _dailyPotionPicker;
+
     //PhotonView _photonView;
 
     protected override void Awake()
@@ -54,6 +59,7 @@ public class PhaseManager : MonoBehaviourSingleton<PhaseManager>
         };
         _currentPhase = _phaseDictionary[EPhaseType.PreparingPhase];
         _currentPhase.EnterPhase();
+        _dailyPotionPicker = new DailyPotionPicker();
     }
 
     public void TransitionPhase(EPhaseType nextPhase)
@@ -72,6 +78,7 @@ public class PhaseManager : MonoBehaviourSingleton<PhaseManager>
         {
             _day++;
             OnDayPassed?.Invoke();
+            // _dailyPotionPicker.PickDailyPotion(int currentPotionHouseTier);
         }
         _currentPhase = _phaseDictionary[nextPhase];
         _currentPhase.EnterPhase();

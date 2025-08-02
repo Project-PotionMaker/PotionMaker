@@ -9,16 +9,11 @@ public class UI_NewsPaper : MonoBehaviour
 
     public void Start()
     {
-        // PhaseManager.Instance.DailyPotionPicker.OnPickCompleted += Refresh;
+        PhaseManager.Instance.DailyPotionPicker.OnPickCompleted += Refresh;
     }
 
     private void Refresh(List<PotionData> dailyPotionDataList)
     {
-        //PhaseManager에서 DailyPotionPicker를 들고있고, 날짜가 바뀔때마다
-        //DailyPotionPicker.PickDailyPotion을 통해 DailyPotionList를 갱신해주면 됩니다.
-        // 매니저에서는 현재 포션 상점의 티어만 넣어주시면, PickDailyPotion에서 평판까지 고려한
-        // 오늘 등장하는 포션데이터 리스트를 던져줄 것입니다.
-
         int dailyPotionListSize = dailyPotionDataList.Count;
         for (int i = 1; i <= _slotDailyPotionList.Count; i++)
         {
@@ -35,7 +30,6 @@ public class UI_NewsPaper : MonoBehaviour
         OpenNewsPaperPopup();
     }
 
-    // 신문 팝업을 여는 메서드는 PreparingPhase의 EnterPhase에서 호출해주세요.
     public void OpenNewsPaperPopup()
     {
         gameObject.SetActive(true);

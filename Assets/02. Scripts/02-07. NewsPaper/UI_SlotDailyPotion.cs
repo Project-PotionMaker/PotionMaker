@@ -12,11 +12,6 @@ public class UI_SlotDailyPotion : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI _textPotionArticle;
 
-    private void Start()
-    {
-        
-    }
-
     public void RefreshSlot(PotionData potionData)
     {
         // 포션에 대응하는 이미지를 어디서, 어떻게 관리해줄 것인가?

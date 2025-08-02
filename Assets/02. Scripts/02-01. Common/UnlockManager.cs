@@ -77,4 +77,9 @@ public class UnlockManager : MonoBehaviourSingleton<UnlockManager>
 
         PotionHouse.Instance.OnInitialized -= CheckForNewUnlocks;
     }
+
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
 }

@@ -25,7 +25,6 @@ public class PotionHouse : MonoBehaviourSingleton<PotionHouse>
 
     private void Start()
     {
-        _layout = GameObject.FindGameObjectWithTag("Layout").GetComponent<Layout>();
         Global.Instance.OnDataLoaded += InitPotionHouse;
     }
 

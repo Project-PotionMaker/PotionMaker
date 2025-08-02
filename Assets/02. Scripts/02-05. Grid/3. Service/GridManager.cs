@@ -102,7 +102,7 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
     {
         StopPlacement();
         StructureData data = DataTable.Instance.GetStructureData(tid);
-        GameObject newObject = StructureManager.Instance.CreateStructure(tid, ingredientTID);
+        GameObject newObject = StructureManager.Instance.ServerCreateStructure(tid, ingredientTID);
 
         switch (data.SpecialStructureType)
         {

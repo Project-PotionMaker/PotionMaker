@@ -1,28 +1,49 @@
 using Mirror;
-//using Photon.Pun;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 using VInspector;
 
+/// <summary>
+/// 플레이어가 상호작용할 수 있는 가구 클래스입니다.
+/// Storage와 마찬가지로 SyncVar를 사용하여 네트워크 동기화를 처리합니다.
+/// </summary>
 public class Furniture : NetworkBehaviour, IGridItemHandler
 {
-    [SerializeField]
-    private FurnitureStat _stat;
+    [SyncVar(hook = nameof(OnDataTIDChanged))]
+    private int _dataTID;
+    public int DataTID { get => _dataTID; private set => _dataTID = value; }
+
+    [SyncVar(hook = nameof(OnCurrentRotationChanged))]
+    private float _currentRotation;
+    public float CurrentRotation { get => _currentRotation; private set => _currentRotation = value; }
+
+    [SyncVar(hook = nameof(OnInputObjectChanged))]
+    private GameObject _inputObject;
+    public GameObject InputObject { get => _inputObject; private set => _inputObject = value; }
+
+    private FurnitureData _data;
+    public FurnitureData Data => _data;
+
     [SerializeField]
     private Transform _model;
 
+    [SerializeField]
+    private Transform _inputPosition;
+    public Transform InputPosition => _inputPosition;
+
+    // 서버 전용 컴포넌트들
     private IInteractable<Furniture> _interactComponent;
     private IInputContainer<Furniture> _inputComponent;
     private IOutputContainer<Furniture> _outputComponent;
     private ICustomerEffectable<Furniture> _effectComponent;
 
+    public Action OnDataChanged;
+
     [Foldout("Project")]
     [SerializeField]
     private List<ModelOnTID> _modelObjectList = new List<ModelOnTID>();
     private Dictionary<int, GameObject> _modelObjectDic;
-
-    public Action OnDataChanged;
 
     private void Awake()
     {
@@ -34,172 +55,293 @@ public class Furniture : NetworkBehaviour, IGridItemHandler
         }
     }
 
-    private void Start()
+    public override void OnStartClient()
     {
-        PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += ResetMachineServer;
-        PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase].OnPhaseExited += ResetMachineServer;
+        base.OnStartClient();
+
+        if (isServer)
+        {
+            PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += ResetData;
+            PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase].OnPhaseExited += ResetData;
+        }
+
+        OnDataTIDChanged(0, _dataTID);
+        OnCurrentRotationChanged(0, _currentRotation);
+        OnInputObjectChanged(null, _inputObject);
     }
 
-    [ClientRpc]
-    public void RpcInitFurnitureOnClients(int furnitureTID)
+    public override void OnStopClient()
     {
-        FurnitureData furnitureData = DataTable.Instance.GetFurnitureData(furnitureTID);
-        IInteractable<Furniture> interactable = null;
-        IInputContainer<Furniture> inputContainer = null;
-        IOutputContainer<Furniture> outputContainer = null;
-        ICustomerEffectable<Furniture> customerEffectable = null;
+        base.OnStopClient();
+
+        if (isServer)
+        {
+            PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseExited -= ResetData;
+            PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase].OnPhaseExited -= ResetData;
+        }
+    }
+
+    #region SyncVar Hook Functions
+    private void OnDataTIDChanged(int oldTID, int newTID)
+    {
+        _data = DataTable.Instance.GetFurnitureData(newTID);
+        ActivateModelForTID(newTID);
+        OnDataChanged?.Invoke();
+        Debug.Log($"Client: Furniture Data (TID: {newTID}) loaded.");
+    }
+
+    private void OnCurrentRotationChanged(float oldVal, float newVal)
+    {
+        _model.rotation = Quaternion.Euler(0, newVal, 0);
+        OnDataChanged?.Invoke();
+    }
+
+    private void OnInputObjectChanged(GameObject oldObj, GameObject newObj)
+    {
+        if (newObj != null)
+        {
+            newObj.transform.position = _inputPosition.position;
+        }
+        OnDataChanged?.Invoke();
+    }
+    #endregion
+
+    #region Server-Only Methods
+    [Server]
+    public void ServerInitFurniture(int furnitureTID)
+    {
+        DataTID = furnitureTID;
+        _data = DataTable.Instance.GetFurnitureData(furnitureTID);
+        CurrentRotation = 0f;
+
+        // 서버에서만 인터페이스 컴포넌트들을 할당
         // 테스트용
-        if (furnitureData.Name == "계산기")
+        if (_data.SpecialStructureType == ESpecialStructureType.Casher)
         {
-            interactable = new CasherInteract();
+            _interactComponent = new CasherInteract();
         }
-        if (furnitureData.Name == "픽업 테이블")
+        if (_data.SpecialStructureType == ESpecialStructureType.PickUpTable)
         {
-            inputContainer = new PickUpTableInputContainer();
-            outputContainer = new PickUpTableOutputContainer();
+            _inputComponent = new PickUpTableInputContainer();
+            _outputComponent = new PickUpTableOutputContainer();
         }
-        if (furnitureData.Name == "허름한 의자" || furnitureData.Name == "푹신한 의자")
+        if (_data.SpecialStructureType == ESpecialStructureType.OldChair || _data.SpecialStructureType == ESpecialStructureType.LuxuryChair)
         {
-            customerEffectable = new ChairEffect();
+            _effectComponent = new ChairEffect();
         }
 
-        InitFurnitureInternal(furnitureData, _interactComponent, _inputComponent, _outputComponent, _effectComponent);
+        OnDataChanged?.Invoke();
+        Debug.Log($"Server: Furniture (TID: {furnitureTID}) initialized.");
     }
 
-    private void InitFurnitureInternal(FurnitureData data, IInteractable<Furniture> interactComponent, IInputContainer<Furniture> inputComponent, IOutputContainer<Furniture> outputComponent, ICustomerEffectable<Furniture> effectComponent)
+    [Server]
+    public void ServerRotateModel()
     {
-        _stat = new FurnitureStat(data, _stat.InputPosition);
-        _interactComponent = interactComponent;
-        _inputComponent = inputComponent;
-        _outputComponent = outputComponent;
-        _effectComponent = effectComponent;
-
-        foreach (var modelInfo in _modelObjectList)
+        CurrentRotation += 90f;
+        if (CurrentRotation >= 360f)
         {
-            modelInfo.Model.SetActive(false);
-            if (modelInfo.TID == _stat.Data.TID)
+            CurrentRotation = 0;
+        }
+        _model.rotation = Quaternion.Euler(0, _currentRotation, 0);
+    }
+    #endregion
+
+    #region Commands
+    [Command(requiresAuthority = false)]
+    private void CmdTryInteract(NetworkConnectionToClient sender = null)
+    {
+        if (isServer == false)
+        {
+            return;
+        }
+
+        bool success = false;
+        EPhaseType currentPhase = PhaseManager.Instance.CurrentPhase.PhaseType;
+
+        if (currentPhase == EPhaseType.PreparingPhase)
+        {
+            ServerRotateModel();
+            success = true;
+        }
+        else
+        {
+            if (ReferenceEquals(_interactComponent, null) == false)
             {
-                modelInfo.Model.SetActive(true);
+                success = _interactComponent.ServerTryInteract(this);
+            }
+        }
+
+        TargetRpcOnInteract(sender, success);
+    }
+
+    [Command(requiresAuthority = false)]
+    private void CmdTryPickUp(NetworkConnectionToClient sender = null)
+    {
+        if (isServer == false)
+        {
+            return;
+        }
+
+        GameObject pickedUpItem = null;
+        EPhaseType currentPhase = PhaseManager.Instance.CurrentPhase.PhaseType;
+
+        if (currentPhase == EPhaseType.PreparingPhase)
+        {
+            pickedUpItem = GridManager.Instance.StartPlacement(transform.position);
+        }
+        else
+        {
+            if (ReferenceEquals(_outputComponent, null) == false)
+            {
+                if (_outputComponent.ServerCanTake(this))
+                {
+                    pickedUpItem = _outputComponent.ServerTakeItem(this);
+                }
+            }
+        }
+
+        if (pickedUpItem != null && sender != null)
+        {
+            NetworkServer.spawned[pickedUpItem.GetComponent<NetworkIdentity>().netId].AssignClientAuthority(sender);
+        }
+
+        TargetRpcOnPickUp(sender, pickedUpItem);
+    }
+
+    [Command(requiresAuthority = false)]
+    private void CmdTryDrop(NetworkConnectionToClient sender, Vector3 targetPosition, uint dropItemNetId, int tid, EInputType inputType)
+    {
+        if (isServer == false)
+        {
+            return;
+        }
+
+        bool success = false;
+        EPhaseType currentPhase = PhaseManager.Instance.CurrentPhase.PhaseType;
+
+        if (NetworkServer.spawned.TryGetValue(dropItemNetId, out NetworkIdentity dropItemIdentity))
+        {
+            GameObject inputObject = dropItemIdentity.gameObject;
+
+            if (currentPhase == EPhaseType.PreparingPhase)
+            {
+                if (GridManager.Instance.TryPlaceStructure(targetPosition))
+                {
+                    success = true;
+                }
+            }
+            else
+            {
+                if (ReferenceEquals(_inputComponent, null) == false)
+                {
+                    success = _inputComponent.ServerTryInput(this, tid, inputType, inputObject);
+                    if (success)
+                    {
+                        InputObject = inputObject;
+                    }
+                }
+            }
+
+            dropItemIdentity.RemoveClientAuthority();
+        }
+
+        TargetRpcOnDrop(sender, success);
+    }
+
+    [Command(requiresAuthority = false)]
+    private void CmdTryEffect(uint customerNetId)
+    {
+        if (isServer == false)
+        {
+            return;
+        }
+
+        if (NetworkServer.spawned.TryGetValue(customerNetId, out NetworkIdentity customerIdentity))
+        {
+            if (ReferenceEquals(_effectComponent, null) == false)
+            {
+                _effectComponent.ServerEffect(this, customerIdentity);
             }
         }
     }
+    #endregion
 
-    [Command(requiresAuthority = false)]
-    public void CmdTryDrop(Vector3 targetPosition, int tid, EInputType inputType, GameObject inputObject)
+    #region TargetRpc
+    [TargetRpc]
+    private void TargetRpcOnInteract(NetworkConnectionToClient target, bool success)
     {
-        //if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
-        //{
-        //    if (GridManager.Instance.TryPlaceStructure(targetPosition))
-        //    {
-        //        return true;
-        //    }
-        //}
-        //else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase
-        //    ||PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
-        //{
-        //    if (CmdTryInput(tid, inputType, inputObject))
-        //    {
-        //        return true;
-        //    }
-        //}
-        //return false;
-    }
-
-    [Command(requiresAuthority = false)]
-    public void CmdTryInteract()
-    {
-        //if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
-        //{
-        //    _stat.CurrentRotation += 90f;
-        //    if (_stat.CurrentRotation >= 360f)
-        //    {
-        //        _stat.CurrentRotation = 0;
-        //    }
-
-        //    _model.rotation = Quaternion.Euler(0, _stat.CurrentRotation, 0);
-        //    return true;
-        //}
-        //else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase
-        //    || PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
-        //{
-        //    if(ReferenceEquals(_interactComponent, null) == false)
-        //    {
-        //        return _interactComponent.ServerTryInteract(this);
-        //    }
-        //}
-
-        //return false;
-    }
-
-    [Command(requiresAuthority = false)]
-    public void CmdTryPickUp()
-    {
-        //if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
-        //{
-        //    return GridManager.Instance.StartPlacement(transform.position);
-        //}
-        //else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase 
-        //    || PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
-        //{
-        //    if (ReferenceEquals(_outputComponent, null) == false)
-        //    {
-        //        if (_outputComponent.ServerCanTake(this))
-        //        {
-        //            return _outputComponent.ServerTakeItem(this);
-        //        }
-        //    }
-        //}
-        //return null;
-    }
-
-    [Command(requiresAuthority = false)]
-    public void CmdTryInput(int tid, EInputType inputType, GameObject inputObject)
-    {
-        //if(ReferenceEquals(_inputComponent, null) == false)
-        //{
-        //    return _inputComponent.ServerTryInput(this, tid, inputType, inputObject);
-        //}
-        //return false;
-    }
-    
-    [Command(requiresAuthority = false)]
-    public void CmdTryEffect(NetworkIdentity customerIdentity)
-    {
-        if (ReferenceEquals(_effectComponent, null) == false)
+        if (target.identity.TryGetComponent<Player>(out Player player))
         {
-            _effectComponent.ServerEffect(this, customerIdentity);
+            player.GetAbility<PlayerInteractAbility>().ReceiveInteractResult(success);
         }
     }
 
-    public void ResetMachineServer()
+    [TargetRpc]
+    private void TargetRpcOnPickUp(NetworkConnectionToClient target, GameObject item)
     {
-        if (!ReferenceEquals(_stat.InputObject, null))
+        if (target.identity.TryGetComponent<Player>(out Player player))
         {
-            CraftItemFactory.Instance.CmdReturn(_stat.InputObject);
-            _stat.InputObject = null;
+            player.GetAbility<PlayerPickupAbility>().ReceivePickedUpItem(item);
         }
     }
 
-    public bool TryInteract()
+    [TargetRpc]
+    private void TargetRpcOnDrop(NetworkConnectionToClient target, bool success)
     {
-        //return CmdTryInteract();
-        return false;
+        if (target.identity.TryGetComponent<Player>(out Player player))
+        {
+            player.GetAbility<PlayerPickupAbility>().ReceiveDroppedItem(success);
+        }
+    }
+    #endregion
+
+    #region Public Interface (IGridItemHandler)
+    private void ActivateModelForTID(int tid)
+    {
+        if (_modelObjectDic == null) return;
+        foreach (var modelInfo in _modelObjectList)
+        {
+            modelInfo.Model.SetActive(false);
+        }
+        if (_modelObjectDic.TryGetValue(tid, out GameObject modelToActivate))
+        {
+            modelToActivate.SetActive(true);
+        }
     }
 
-    public GameObject TryPickUp()
+    public void TryInteract(NetworkConnectionToClient conn)
     {
-        //return CmdTryPickUp();
-        return null;
+        CmdTryInteract(conn);
     }
 
-    public bool TryDrop(Vector3 targetPosition, int tid = 10000, EInputType inputType = EInputType.None, GameObject inputObject = null)
+    public void TryPickUp(NetworkConnectionToClient conn)
     {
-        //return CmdTryDrop(targetPosition, tid, inputType, inputObject);
-        return true;
+        CmdTryPickUp(conn);
     }
 
-    public void TryEffect(NetworkIdentity customerIdentity)
+    public void TryDrop(NetworkConnectionToClient conn, Vector3 targetPosition, GameObject inputObject, int tid = 10000, EInputType inputType = EInputType.None)
     {
-        CmdTryEffect(customerIdentity);
+        if (inputObject != null && inputObject.TryGetComponent<NetworkIdentity>(out NetworkIdentity netIdentity))
+        {
+            CmdTryDrop(conn, targetPosition, netIdentity.netId, tid, inputType);
+        }
     }
+
+    public void TryEffect(uint customerNetId)
+    {
+        CmdTryEffect(customerNetId);
+    }
+
+    [Server]
+    public void ResetData()
+    {
+        if (!isServer) return;
+
+        if (!ReferenceEquals(InputObject, null))
+        {
+            CraftItemFactory.Instance.CmdReturn(InputObject);
+            InputObject = null;
+        }
+    }
+    #endregion
 }

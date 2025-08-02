@@ -1,4 +1,7 @@
+using Mirror;
+using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 public class PlayerPickupAbility : PlayerAbility
 {
@@ -51,15 +54,12 @@ public class PlayerPickupAbility : PlayerAbility
     private void TryPickup()
     {
         GameObject item = FindFrontPickupItem();
-        if (ReferenceEquals(item, null) == false)
+        if(item != null)
         {
-            GameObject newItem = item.GetComponent<IGridItemHandler>()?.TryPickUp();
-            if(newItem != null)
+            IGridItemHandler itemHandler = item.GetComponent<IGridItemHandler>();
+            if(ReferenceEquals(itemHandler, null) == false)
             {
-                _heldItem = newItem;
-                _heldItem.transform.SetParent(_owner.HeldPosition);
-                _heldItem.transform.localPosition = -0.5f * Vector3.one;
-                _heldItem.transform.localRotation = Quaternion.Euler(Vector3.zero);
+                itemHandler.TryPickUp(_owner.connectionToClient);
             }
         }
     }
@@ -78,11 +78,7 @@ public class PlayerPickupAbility : PlayerAbility
                 return;
             }
 
-            if (itemHandler.TryDrop(targetPosition))
-            {
-                _heldItem.transform.SetParent(null);
-                _heldItem = null;
-            }
+            itemHandler.TryDrop(_owner.connectionToClient, targetPosition, _heldItem);
         }
         else if (phaseType == EPhaseType.ServingPhase || phaseType == EPhaseType.PracticingPhase)
         {
@@ -90,16 +86,16 @@ public class PlayerPickupAbility : PlayerAbility
             if (gridObject != null)
             {
                 IItem item = _heldItem.GetComponent<IItem>();
-                if (item != null && gridObject.GetComponent<IGridItemHandler>().TryDrop(targetPosition, item.GetTID(), item.GetInputType(), _heldItem))
+                if(ReferenceEquals(item, null) == false)
                 {
-                    _heldItem.transform.SetParent(null);
-                    if (item.GetInputType() != EInputType.Potion)
-                    {
-                        Destroy(_heldItem);
-                    }
-                    _heldItem = null;
+                    gridObject.GetComponent<IGridItemHandler>().TryDrop(
+                        _owner.connectionToClient,
+                        targetPosition,
+                        _heldItem,
+                        item.GetTID(),
+                        item.GetInputType()
+                        );
                 }
-
             }
         }
     }
@@ -123,5 +119,31 @@ public class PlayerPickupAbility : PlayerAbility
             _heldItem.transform.SetParent(null);
             CraftItemFactory.Instance.CmdReturn(_heldItem);
         }
+    }
+
+    [Client]
+    public void ReceivePickedUpItem(GameObject item)
+    {
+        if(item == null)
+        {
+            return;
+        }
+
+        _heldItem = item;
+        _heldItem.transform.SetParent(_owner.HeldPosition);
+        _heldItem.transform.localPosition = -0.5f * Vector3.one;
+        _heldItem.transform.localRotation = Quaternion.Euler(Vector3.zero);
+    }
+
+    [Client]
+    public void ReceiveDroppedItem(bool success)
+    {
+        if(success == false || _heldItem == null)
+        {
+            return;
+        }
+
+        _heldItem.transform.SetParent(null);
+        _heldItem = null;
     }
 }

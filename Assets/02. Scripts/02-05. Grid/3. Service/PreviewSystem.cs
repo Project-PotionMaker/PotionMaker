@@ -28,7 +28,7 @@ public class PreviewSystem : MonoBehaviour
 
     public void StartShowingPlacementPreview(int structureTID, Vector2Int size)
     {
-        _previewObject = StructureManager.Instance.CreateStructure(structureTID);
+        _previewObject = StructureManager.Instance.ServerCreateStructure(structureTID);
         PreparePreview(_previewObject);
         PrepareCursor(size);
         _cellIndicator.SetActive(true);

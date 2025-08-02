@@ -1,9 +1,11 @@
+using Mirror;
 using UnityEngine;
 
 public class PlayerInteractAbility : PlayerAbility
 {
     private bool _isInteract = false;
     private PlayerAnimationAbility _animationAbility;
+    private IGridItemHandler _currentInteractable = null;
 
 
     private void Start()
@@ -17,13 +19,13 @@ public class PlayerInteractAbility : PlayerAbility
         _animationAbility = _owner.GetAbility<PlayerAnimationAbility>();
     }
 
-    private void Update()
-    {
-        if (_isInteract)
-        {
-            ProcessInteract();
-        }
-    }
+    //private void Update()
+    //{
+    //    if (_isInteract)
+    //    {
+    //        ProcessInteract();
+    //    }
+    //}
 
     private void ChangeInteractState(bool isInteract)
     {
@@ -43,20 +45,37 @@ public class PlayerInteractAbility : PlayerAbility
     {
         Vector3 targetPosition = _owner.GetFrontPosition();
         GameObject structure = GridManager.Instance.GetObjectOnGrid(targetPosition);
-        IGridItemHandler itemHandler = structure?.GetComponent<IGridItemHandler>();
-        if (ReferenceEquals(itemHandler, null) == false)
+        _currentInteractable = structure?.GetComponent<IGridItemHandler>();
+        if(ReferenceEquals(_currentInteractable, null) == false)
         {
-            itemHandler.TryInteract();
+            _currentInteractable.TryInteract(_owner.connectionToClient);
         }
     }
 
-    private void ProcessInteract()
-    {
+    //private void ProcessInteract()
+    //{
 
-    }
+    //}
 
     private void EndInteract()
     {
         Debug.Log("EndInteract");
+        if(_currentInteractable != null && _owner.isLocalPlayer)
+        {
+            // _currentInteractable의 TryEndInteract 호출 (아직 미구현)
+        }
+    }
+
+    [Client]
+    public void ReceiveInteractResult(bool success)
+    {
+        if (success)
+        {
+            Debug.Log("Interact 성공");
+        }
+        else
+        {
+            Debug.Log("Interact 실패");
+        }
     }
 }

@@ -1,17 +1,43 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UI_DaySummary : MonoBehaviour
 {
-    [SerializeField]
-    private TextMeshProUGUI _dailySalesTextUI;
+    private const string POSITIVE_COLOR = "65BC04";
+    private const string NEGATIVE_COLOR = "CB0000";
 
     [SerializeField]
     private Transform _slotContainer;
     private List<UI_SalesVolumeSlot> _salesVolumeSlotList;
     [SerializeField]
     private UI_SalesVolumeSlot _salesVolumeSlotPrefab;
+
+    [Header("데스카운트")]
+    [SerializeField]
+    private Image _deathCountView;
+
+    [Header("일매출")]
+    [SerializeField]
+    private TextMeshProUGUI _dailySalesTextUI;
+
+    [Header("방세")]
+    [SerializeField]
+    private TextMeshProUGUI _rentTextUI;
+
+    [Header("평판")]
+    [SerializeField]
+    private Image _reputationRateView;
+    [SerializeField]
+    private TextMeshProUGUI _currentReputation;
+    [SerializeField]
+    private TextMeshProUGUI _deltaReputation;
+
+    [Header("자산")]
+    [SerializeField]
+    private TextMeshProUGUI _currentCurrencyTextUI;
+
     private void Start()
     {
         _salesVolumeSlotList = new List<UI_SalesVolumeSlot>();
@@ -32,8 +58,7 @@ public class UI_DaySummary : MonoBehaviour
     }
     public void ShowSummary()
     {
-        _dailySalesTextUI.text = SalesManager.Instance.Sales.DailySales.ToString("N0");
-
+        // 포션 별 판매 기록
         int slotIndex = 0;
         foreach (EPotionType potionType in SalesManager.Instance.Sales.DailySalesVolumeDict.Keys)
         {
@@ -53,6 +78,28 @@ public class UI_DaySummary : MonoBehaviour
             _salesVolumeSlotList.RemoveAt(deleteIndex);
             Destroy(deleteSlot.gameObject);
         }
+
+        // 데스카운트
+        _deathCountView.fillAmount = 1 - (PhaseManager.Instance.DeathCount) / PhaseManager.Instance.MaxDeathCount;
+
+        // 일 매출
+        _dailySalesTextUI.text = SalesManager.Instance.Sales.DailySales.ToString("N0");
+
+        // 방세
+        _rentTextUI.text = $"-{RentManager.Instance.Rent.CurrentRentCost.ToString("N0")}";
+
+        // 평판
+        // max value도 받아오도록 수정
+        _reputationRateView.fillAmount = ReputationManager.Instance.Reputation.Value / 5;
+
+        //float deltaReputationRate = ReputationManager.Instance.DeltaReputationRate;
+        //string color = deltaReputationRate >= 0 ? POSITIVE_COLOR : NEGATIVE_COLOR;
+        //_deltaReputation.text = $"<color={color}>{_deltaReputationRate}</color>;
+
+
+        // 자산
+        // 미리 방세 빼는 로직이 들어가있어야함? 아니면 표시만?
+        _currentCurrencyTextUI.text = CurrencyManager.Instance.Coin.Value.ToString("N0");
         gameObject.SetActive(true);
     }
 }

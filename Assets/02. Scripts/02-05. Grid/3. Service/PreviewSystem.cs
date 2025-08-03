@@ -36,7 +36,7 @@ public class PreviewSystem : MonoBehaviour
         // 주의: StructureManager.Instance.ServerCreateStructure가 아닌
         // 클라이언트에서 로컬 미리보기 오브젝트를 생성합니다.
         EStructureType type = DataTable.Instance.GetStructureData(tid).StructureType;
-        _previewObject = StructureFactory.Instance.Create(type, transform.position, Quaternion.identity);
+        _previewObject = StructureFactory.Instance.CreateObject(type, transform.position, Quaternion.identity);
 
         PreparePreview(_previewObject);
         PrepareCursor(size);

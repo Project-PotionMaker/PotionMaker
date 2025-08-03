@@ -16,16 +16,6 @@ public class MonoBehaviourSingleton<T> : MonoBehaviour where T : MonoBehaviour
             if (ReferenceEquals(_instance, null))
             {
                 _instance = FindAnyObjectByType<T>();
-                if (ReferenceEquals(_instance, null))
-                {
-                    GameObject obj = new GameObject();
-                    obj.name = typeof(T).Name;
-                    _instance = obj.AddComponent<T>();
-                    if (_instance is MonoBehaviourSingleton<T> singletonInstance && singletonInstance._dontDestroy)
-                    {
-                        DontDestroyOnLoad(obj);
-                    }
-                }
             }
             return _instance;
         }

@@ -1690,7 +1690,7 @@ GameObject:
   - component: {fileID: 599584241}
   m_Layer: 6
   m_Name: GridVisualization
-  m_TagString: Untagged
+  m_TagString: GridVisualization
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2746,7 +2746,7 @@ MonoBehaviour:
   _dontDestroy: 0
   _lazyInitialization: 0
   PotionHouseTier: 1
-  _layout: {fileID: 0}
+  _layout: {fileID: 84351118}
 --- !u!4 &986934946
 Transform:
   m_ObjectHideFlags: 0
@@ -2774,7 +2774,7 @@ GameObject:
   - component: {fileID: 1011031358}
   m_Layer: 0
   m_Name: Grid
-  m_TagString: Untagged
+  m_TagString: Grid
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2912,6 +2912,7 @@ MonoBehaviour:
     AddressableKeyEnum: 54
   - Type: 3
     AddressableKeyEnum: 56
+  _poolParentObject: {fileID: 0}
 --- !u!4 &1061309447
 Transform:
   m_ObjectHideFlags: 0
@@ -3944,52 +3945,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 4.000001, y: 4, z: 1.000001}
   m_Center: {x: 0, y: 2, z: -0.00000032782563}
---- !u!1 &1380629792
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1380629794}
-  - component: {fileID: 1380629793}
-  m_Layer: 0
-  m_Name: Global
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1380629793
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1380629792}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e231640d52e000f4e834fa6841920adc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _dontDestroy: 0
-  _lazyInitialization: 0
---- !u!4 &1380629794
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1380629792}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1431969859
 GameObject:
   m_ObjectHideFlags: 0
@@ -3999,12 +3954,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1431969863}
-  - component: {fileID: 1431969862}
   - component: {fileID: 1431969860}
-  - component: {fileID: 1431969864}
   m_Layer: 0
   m_Name: GridSystem
-  m_TagString: Untagged
+  m_TagString: PreviewSystem
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4024,25 +3977,6 @@ MonoBehaviour:
   _previewYOffset: 0.06
   _cellIndicator: {fileID: 924084170}
   _previewMaterial: {fileID: 2100000, guid: 67d14db0f4b08c34c9525bb82f478f79, type: 2}
---- !u!114 &1431969862
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1431969859}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d9f0c191dcd5de54aae6aa6be873a998, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  _dontDestroy: 0
-  _grid: {fileID: 1011031358}
-  _gridVisualization: {fileID: 599584240}
-  _previewSystem: {fileID: 1431969860}
 --- !u!4 &1431969863
 Transform:
   m_ObjectHideFlags: 0
@@ -4060,23 +3994,6 @@ Transform:
   - {fileID: 924084171}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1431969864
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1431969859}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 1674475410
-  _assetId: 0
-  serverOnly: 0
-  visibility: 0
-  hasSpawned: 0
 --- !u!4 &1444628346 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7293939636563935316, guid: 9a961b6c5c1adee4da8a646ae71cc04c, type: 3}
@@ -5272,7 +5189,6 @@ PrefabInstance:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 1380629794}
   - {fileID: 1449249182}
   - {fileID: 806927017}
   - {fileID: 185393248}

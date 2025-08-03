@@ -36,8 +36,8 @@ public class PhaseManager : MonoBehaviourSingleton<PhaseManager>
         base.Awake();
         //_photonView = GetComponent<PhotonView>();
         _deathCount = 0;
-        InitializePotionDataList();
         InitPhase();
+        Global.Instance.OnDataLoaded += InitializePotionDataList;
     }
 
     private void Update()

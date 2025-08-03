@@ -138,7 +138,7 @@ public class PlayerPickupAbility : PlayerAbility
             return;
         }
 
-        _heldItemIdentity = null;
+        CmdDropItem();
     }
 
     private void OnHeldItemChanged(NetworkIdentity oldIdentity, NetworkIdentity newIdentity)

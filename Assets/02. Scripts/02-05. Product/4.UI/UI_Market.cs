@@ -25,23 +25,18 @@ public class UI_Market : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    private void Start()
-    {
-        CurrencyManager.OnInitialized += OnManagerInitialized;
-    }
-
-
-    private void OnManagerInitialized()
-    {
-        CurrencyManager.Instance.OnDataChanged += RefreshCoin;
-    }
-
     private void OnEnable()
     {
         RefreshCoin();
         OnProductTypeButtonClicked(EProductType.Machine);
         //RefreshDetailPage(_productSlotList[0])
     }
+
+    private void Start()
+    {
+        CurrencyManager.Instance.OnDataChanged += RefreshCoin;
+    }
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))

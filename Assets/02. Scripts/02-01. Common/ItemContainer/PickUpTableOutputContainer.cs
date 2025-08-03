@@ -1,24 +1,24 @@
-using Photon.Pun;
 using UnityEngine;
 
-public class PickUpTableOutputContainer : IOutputContainer<Furniture, FurnitureStat>
+public class PickUpTableOutputContainer : IOutputContainer<Furniture>
 {
     private GameObject _output;
 
-    public GameObject TakeItem(Furniture furniture, FurnitureStat stat)
+    public GameObject ServerTakeItem(Furniture furniture)
     {
-        GameObject output = stat.InputObject;
-        stat.InputObject = null;
-        CustomerManager.Instance.CommandRemoveOnTable(furniture.netId);
-        return output;
+        //GameObject output = stat.InputObject;
+        //stat.InputObject = null;
+        //CustomerManager.Instance.CommandRemoveOnTable(furniture.netId);
+        //return output;
+        return null;
     }
 
-    public bool CanTake(Furniture furniture, FurnitureStat stat)
+    public bool ServerCanTake(Furniture furniture)
     {
-        if(stat.InputObject == null)
-        {
-            return false;
-        }
+        //if(stat.InputObject == null)
+        //{
+        //    return false;
+        //}
         return true;
     }
 }

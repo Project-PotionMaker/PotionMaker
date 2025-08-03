@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-//using Photon.Pun;
 using VInspector;
+using Mirror;
 
-public class PhaseManager : MonoBehaviourSingleton<PhaseManager>    
+public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>    
 {
     public event Action OnDayPassed;
     public event Action OnPhaseChanged;
@@ -29,12 +29,9 @@ public class PhaseManager : MonoBehaviourSingleton<PhaseManager>
     private List<PotionData> _potionDataList = new();
     public List<PotionData> PotionDataList => _potionDataList;
 
-    //PhotonView _photonView;
-
     protected override void Awake()
     {
         base.Awake();
-        //_photonView = GetComponent<PhotonView>();
         _deathCount = 0;
         InitPhase();
         Global.Instance.OnDataLoaded += InitializePotionDataList;
@@ -71,16 +68,14 @@ public class PhaseManager : MonoBehaviourSingleton<PhaseManager>
         // _potionDataList = _dailyPotionPicker.PickDailyPotion(int currentPotionHouseTier);
     }
 
+    [Server]
     public void TransitionPhase(EPhaseType nextPhase)
     {
-        //if(PhotonNetwork.IsMasterClient == false)
-        //{
-        //    return;
-        //}
-        //_photonView.RPC(nameof(RPC_TransitionPhase), RpcTarget.All, nextPhase);
+        RpcTransitionPhase(nextPhase);
     }
-    //[PunRPC]
-    public void RPC_TransitionPhase(EPhaseType nextPhase)
+
+    [ClientRpc]
+    public void RpcTransitionPhase(EPhaseType nextPhase)
     {
         _currentPhase?.ExitPhase();
         if (_currentPhase is EndingPhase && _phaseDictionary[nextPhase] is PreparingPhase)

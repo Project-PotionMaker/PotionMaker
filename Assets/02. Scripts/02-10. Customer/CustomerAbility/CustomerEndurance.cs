@@ -1,6 +1,6 @@
 using System;
 using UnityEngine;
-
+using Mirror;
 public class CustomerEndurance : NetworkBehaviour
 {
     Customer _owner; // Customer 컴포넌트

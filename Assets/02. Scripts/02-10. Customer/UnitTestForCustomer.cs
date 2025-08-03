@@ -20,7 +20,7 @@ public class UnitTestForCustomer : MonoBehaviour
     }
     public void TestRegisterOrder()
     {
-        CustomerManager.Instance.CommandRegisterOrder();
+        CustomerManager.Instance.CmdRegisterOrder();
     }
     public void StashHall()
     {

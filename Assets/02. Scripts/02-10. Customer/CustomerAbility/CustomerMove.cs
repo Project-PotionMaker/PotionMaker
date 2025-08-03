@@ -1,7 +1,7 @@
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.AI;
-
+using Mirror;
 public class CustomerMove : NetworkBehaviour
 {
     private NavMeshAgent _agent;
@@ -99,7 +99,7 @@ public class CustomerMove : NetworkBehaviour
         }
         else if (_owner.CurrentState == ECustomerStateType.PickingUp)
         {
-            CustomerManager.Instance.OnServedSuccess(_owner);
+            CustomerManager.Instance.OnServedSuccess(_owner, _owner.PickupTableId);
         }
         else if (_owner.CurrentState == ECustomerStateType.Leaving)
         {

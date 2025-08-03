@@ -31,6 +31,8 @@ public class Customer : NetworkBehaviour
     public  Transform ChairPosition { get => _chairPosition; set => _chairPosition = value; } // 의자 위치
     private  float _chairRotate;
     public float ChairRotate { get => _chairRotate; set => _chairRotate = value; } // 의자 회전
+    private uint _pickupTableId;
+    public uint PickupTableId { get => _pickupTableId; set => _pickupTableId = value; }
 
     private void Awake()
     {

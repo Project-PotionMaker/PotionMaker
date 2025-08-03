@@ -1,8 +1,7 @@
-//using Photon.Pun;
+using Mirror;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using VInspector;
 
 [Serializable]
 public class ColorOnType
@@ -12,18 +11,21 @@ public class ColorOnType
     public Renderer ColorChangeRenderer;
 }
 
-public class OutputItem : MonoBehaviour, IItem
+public class OutputItem : NetworkBehaviour, IItem
 {
+    [SyncVar]
     private EInputType _currentInputType;
     public EInputType CurrentInputType => _currentInputType;
 
+    [SyncVar]
+    private int _outputTID;
+    public int OutputTID => _outputTID;
+
     private OutputData _outputData;
     public OutputData OutputData => _outputData;
-    //private PhotonView _photonView;
 
-    private MaterialPropertyBlock _materialPropertyBlock;
+    private MaterialPropertyBlock _mpb;
 
-    [Foldout("Project")]
     [SerializeField]
     private List<ColorOnType> _colorOnTypeList = new List<ColorOnType>();
     private Dictionary<EOutputType, ColorOnType> _colorOnTypeDict;
@@ -31,6 +33,12 @@ public class OutputItem : MonoBehaviour, IItem
     private void Awake()
     {
         InitOutput();
+    }
+
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        ClientUpdateOutputData();
     }
 
     private void InitOutput()
@@ -41,75 +49,45 @@ public class OutputItem : MonoBehaviour, IItem
             objectInfo.TypeObject.SetActive(false);
             _colorOnTypeDict.Add(objectInfo.OuputType, objectInfo);
         }
-
-        _materialPropertyBlock = new MaterialPropertyBlock();
-        //_photonView = GetComponent<PhotonView>();
+        _mpb = new MaterialPropertyBlock();
     }
 
-    public void InitOutputData(EInputType newInputType, int TID)
+    [Server]
+    public void ServerUpdateOutputData(EInputType newInputType, int TID)
     {
-        //if (!PhotonNetwork.IsMasterClient)
-        //{
-        //    throw new InvalidOperationException("Output 객체 생성 후 내부 데이터 초기화는 Master만 가능합니다.");
-        //}
-
         _currentInputType = newInputType;
-        _outputData = DataTable.Instance.GetOutputData(TID);
-
-        foreach (var objectInfo in _colorOnTypeList)
-        {
-            objectInfo.TypeObject.SetActive(false);
-            if (objectInfo.OuputType == _outputData.OutputType)
-            {
-                if (ColorUtility.TryParseHtmlString(_outputData.ColorCode, out Color parsedColor))
-                {
-                    _materialPropertyBlock.SetColor("_BaseColor", parsedColor);
-                }
-                else
-                {
-                    _materialPropertyBlock.SetColor("_BaseColor", Color.white);
-                }
-
-                objectInfo.ColorChangeRenderer.SetPropertyBlock(_materialPropertyBlock);
-                objectInfo.TypeObject.SetActive(true);
-            }
-        }
-        //_photonView.RPC(nameof(RPC_InitOutputData), RpcTarget.Others, newInputType, TID);
+        _outputTID = TID;
     }
 
-    //[PunRPC]
-    public void RPC_InitOutputData(EInputType newInputType, int TID)
+    private void ClientUpdateOutputData()
     {
-        _currentInputType = newInputType;
-        _outputData = DataTable.Instance.GetOutputData(TID);
+        // 클라이언트에서 초기화 시 SyncVar로 받은 TID와 Type을 사용
+        _outputData = DataTable.Instance.GetOutputData(_outputTID);
 
-        foreach (var objectInfo in _colorOnTypeList)
+        // 데이터에 따라 모델 및 색상을 한 번만 설정
+        if (_colorOnTypeDict.TryGetValue(_outputData.OutputType, out ColorOnType objectInfo))
         {
-            objectInfo.TypeObject.SetActive(false);
-            if (objectInfo.OuputType == _outputData.OutputType)
+            if (ColorUtility.TryParseHtmlString(_outputData.ColorCode, out Color parsedColor))
             {
-                if(ColorUtility.TryParseHtmlString(_outputData.ColorCode, out Color parsedColor))
-                {
-                    _materialPropertyBlock.SetColor("_BaseColor", parsedColor);
-                }
-                else
-                {
-                    _materialPropertyBlock.SetColor("_BaseColor", Color.white);
-                }
-
-                objectInfo.ColorChangeRenderer.SetPropertyBlock(_materialPropertyBlock);
-                objectInfo.TypeObject.SetActive(true);
+                _mpb.SetColor("_BaseColor", parsedColor);
             }
+            else
+            {
+                _mpb.SetColor("_BaseColor", Color.white);
+            }
+
+            objectInfo.ColorChangeRenderer.SetPropertyBlock(_mpb);
+            objectInfo.TypeObject.SetActive(true);
         }
     }
 
     public EInputType GetInputType()
     {
-        return EInputType.Output;
+        return _currentInputType;
     }
 
     public int GetTID()
     {
-        return _outputData.TID;
+        return _outputTID;
     }
 }

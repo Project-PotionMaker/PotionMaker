@@ -1,41 +1,40 @@
-//using Photon.Pun;
+using Mirror;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using VInspector;
 
-public class PotionItem : MonoBehaviour, IItem
+public class PotionItem : NetworkBehaviour, IItem
 {
+    [SyncVar]
+    private int _potionTID;
+    public int PotionTID => _potionTID;
+
     private PotionData _potionData;
     public PotionData PotionData => _potionData;
 
-    [Header("Component")]
     private GameObject _currentModel;
-    //private PhotonView _photonView;
     private Renderer _potionBottleRenderer;
     private Light _pointLight;
     private ParticleSystem _particles;
 
     private MaterialPropertyBlock _mpb;
 
-    [Foldout("Project")]
     [SerializeField]
     private List<ModelOnTID> _potionModelList = new List<ModelOnTID>();
     private Dictionary<int, GameObject> _potionModelDict;
 
     private void Awake()
     {
-        InitPotionItem();
+        InitPotion();
     }
 
-    private void InitPotionItem()
+    public override void OnStartClient()
     {
-        //_photonView = GetComponent<PhotonView>();
-        _mpb = new MaterialPropertyBlock();
-        InitPotionModelDictionary();
+        base.OnStartClient();
+        ClientUpdatePotionData();
     }
 
-    private void InitPotionModelDictionary()
+    private void InitPotion()
     {
         _potionModelDict = new Dictionary<int, GameObject>();
         foreach (var potionModel in _potionModelList)
@@ -43,26 +42,20 @@ public class PotionItem : MonoBehaviour, IItem
             potionModel.Model.SetActive(false);
             _potionModelDict.Add(potionModel.TID, potionModel.Model);
         }
+
+        _mpb = new MaterialPropertyBlock();
     }
 
-    public void UpdatePotionData(int TID)
+    [Server]
+    public void ServerUpdatePotionData(int TID)
     {
-        //if (!PhotonNetwork.IsMasterClient)
-        //{
-        //    throw new InvalidOperationException("Potion 객체 생성 후 내부 데이터 초기화는 Master만 가능합니다.");
-        //}
-        //RPC_UpdatePotionData(TID);
-        //_photonView.RPC(nameof(RPC_UpdatePotionData), RpcTarget.Others, TID);
+        _potionTID = TID;
     }
 
-    //[PunRPC]
-    public void RPC_UpdatePotionData(int TID)
+    private void ClientUpdatePotionData()
     {
-        _potionData = DataTable.Instance.GetPotionData(TID);
-        if (!ReferenceEquals(_currentModel, null))
-        {
-            _currentModel.SetActive(false);
-        }
+        // 클라이언트에서 초기화 시 SyncVar로 받은 TID를 사용
+        _potionData = DataTable.Instance.GetPotionData(_potionTID);
 
         if (_potionModelDict.TryGetValue(_potionData.TID, out _currentModel))
         {
@@ -92,18 +85,25 @@ public class PotionItem : MonoBehaviour, IItem
                 _mpb.SetFloat("_Epic", 0);
                 _mpb.SetFloat("_Efect_emission", 0);
                 _pointLight.enabled = false;
+                if (_particles) _particles.gameObject.SetActive(false);
                 break;
             case 2:
                 _mpb.SetFloat("_Epic", 1);
                 _mpb.SetFloat("_Efect_emission", 1.5f);
+                if (_pointLight) _pointLight.enabled = true;
+                if (_particles) _particles.gameObject.SetActive(false);
                 break;
             case 3:
                 _particles.gameObject.SetActive(true);
+                _mpb.SetFloat("_Epic", 1);
+                _mpb.SetFloat("_Efect_emission", 1.5f);
+                if (_pointLight) _pointLight.enabled = true;
                 break;
             default:
                 _mpb.SetFloat("_Epic", 0);
                 _mpb.SetFloat("_Efect_emission", 0);
-                _pointLight.enabled = false;
+                if (_pointLight) _pointLight.enabled = false;
+                if (_particles) _particles.gameObject.SetActive(false);
                 break;
         }
         _potionBottleRenderer.SetPropertyBlock(_mpb);
@@ -116,6 +116,6 @@ public class PotionItem : MonoBehaviour, IItem
 
     public int GetTID()
     {
-        return _potionData.TID;
+        return _potionTID;
     }
 }

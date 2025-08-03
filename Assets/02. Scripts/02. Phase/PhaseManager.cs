@@ -7,6 +7,9 @@ using VInspector;
 
 public class PhaseManager : MonoBehaviourSingleton<PhaseManager>    
 {
+    public event Action OnDayPassed;
+    public event Action OnPhaseChanged;
+
     private BasePhase _currentPhase;
     public BasePhase CurrentPhase { get => _currentPhase; set => _currentPhase = value; }
     private Dictionary<EPhaseType, BasePhase> _phaseDictionary;
@@ -19,8 +22,13 @@ public class PhaseManager : MonoBehaviourSingleton<PhaseManager>
     public int MaxDeathCount { get => _maxDeathCount; set => _maxDeathCount = value; }
     private int _day;
     public int Day { get => _day; set => _day = value; }
-    public event Action OnDayPassed;
-    public event Action OnPhaseChanged;
+
+    private DailyPotionPicker _dailyPotionPicker;
+    public DailyPotionPicker DailyPotionPicker => _dailyPotionPicker;
+
+    private List<PotionData> _potionDataList = new();
+    public List<PotionData> PotionDataList => _potionDataList;
+
     //PhotonView _photonView;
 
     protected override void Awake()
@@ -29,6 +37,7 @@ public class PhaseManager : MonoBehaviourSingleton<PhaseManager>
         //_photonView = GetComponent<PhotonView>();
         _deathCount = 0;
         InitPhase();
+        Global.Instance.OnDataLoaded += InitializePotionDataList;
     }
 
     private void Update()
@@ -56,6 +65,12 @@ public class PhaseManager : MonoBehaviourSingleton<PhaseManager>
         _currentPhase.EnterPhase();
     }
 
+    private void InitializePotionDataList()
+    {
+        _dailyPotionPicker = new DailyPotionPicker();
+        // _potionDataList = _dailyPotionPicker.PickDailyPotion(int currentPotionHouseTier);
+    }
+
     public void TransitionPhase(EPhaseType nextPhase)
     {
         //if(PhotonNetwork.IsMasterClient == false)
@@ -72,6 +87,7 @@ public class PhaseManager : MonoBehaviourSingleton<PhaseManager>
         {
             _day++;
             OnDayPassed?.Invoke();
+            // _potionDataList = _dailyPotionPicker.PickDailyPotion(int currentPotionHouseTier);
         }
         _currentPhase = _phaseDictionary[nextPhase];
         _currentPhase.EnterPhase();

@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class CraftItemManager : NetworkBehaviourSingleton<CraftItemManager>
 {
+    public Action<GameObject> OnOutputCreated;
+    public Action<GameObject> OnPotionCreated;
+
     // 어드레서블에서 로드해올 예정
     [SerializeField]
     private GameObject _failureOutput;
@@ -15,10 +18,7 @@ public class CraftItemManager : NetworkBehaviourSingleton<CraftItemManager>
     private RecipeCodeHandler _recipeCodeHandler;
     private RecipeCodeVerifier _recipeCodeVerifier;
 
-    //private PhotonView _photonView;
-
-    public Action<GameObject> OnOutputCreated;
-    public Action<GameObject> OnPotionCreated;
+    private const int FailureOutputTID = 10000;
 
     protected override void Awake()
     {
@@ -99,7 +99,7 @@ public class CraftItemManager : NetworkBehaviourSingleton<CraftItemManager>
     private GameObject CreateFailureItem(Vector3 machinePosition)
     {
         GameObject output =CraftItemFactory.Instance.Create(EInputType.Output, machinePosition, Quaternion.identity);
-        output.GetComponent<OutputItem>().ServerUpdateOutputData(EInputType.FailureOutput, 10000);
+        output.GetComponent<OutputItem>().ServerUpdateOutputData(EInputType.FailureOutput, FailureOutputTID);
 
         return output;
     }

@@ -83,7 +83,7 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
         _lineHandler.ReLining();
     }
 
-    [Command]
+    [Command(requiresAuthority = false)]
     public void CmdRegisterOrder() // 플레이어가 접수를 받으면 호출
     {
         if (_orderHandler.PotionOrderLine.Count == 0)
@@ -94,8 +94,8 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
         {
             return;
         }
-        uint chairViewID = _orderHandler.FindAvailableChair(); // 사용 가능한 의자 찾기
-        if (chairViewID == 0)
+        uint chairNetId = _orderHandler.FindAvailableChair(); // 사용 가능한 의자 찾기
+        if (chairNetId == 0)
         {
             Debug.Log("No available chair found for the customer.");
             return; // 사용 가능한 의자가 없으면 주문을 받지 않음
@@ -105,7 +105,7 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
         int potionTID = customer.GetComponent<Customer>().RequestedPotionTID;
         _orderHandler.AddOrder(potionTID, customer);
         customer.TransitionState(ECustomerStateType.Sitting);
-        CmdSitOnChair(chairViewID, customer);
+        CmdSitOnChair(chairNetId, customer);
         customer.CustomerEndurance.ResetEndurance();
         _lineHandler.ReLining(); // 줄 다시 세우기
         ServePotionOnTakeOrder();
@@ -139,8 +139,8 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
             }
         }
     }
-    [Command]
-    public void CmdServePotion(int potionTID, uint pickupTableViewID)// 판매대에 올려놓으면 호출
+    [Command(requiresAuthority = false)]
+    public void CmdServePotion(int potionTID, uint pickupTableNetId)// 판매대에 올려놓으면 호출
     {
         Customer customer = _orderHandler.FindPicker(potionTID); // 포션을 가져갈 손님 찾기
         if (ReferenceEquals(customer, null))
@@ -148,11 +148,11 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
             return;
         }
 
-        CmdPlaceOnTable(potionTID, pickupTableViewID);
-        Vector3 position = FindPickupTableByViewID(pickupTableViewID).transform.position; // 판매대 위치 찾기
+        CmdPlaceOnTable(potionTID, pickupTableNetId);
+        Vector3 position = NetworkServer.spawned[pickupTableNetId].transform.position; // 판매대 위치 찾기
         customer.TransitionState(ECustomerStateType.PickingUp);
         customer.CustomerMove.MoveTo(position); // 손님을 판매대 위치로 이동
-        _orderHandler.PickupTableDict[pickupTableViewID].UsingCustomer = customer; // 손님과 판매대 매핑 저장
+        _orderHandler.PickupTableDict[pickupTableNetId].UsingCustomer = customer; // 손님과 판매대 매핑 저장
         _orderHandler.PotionOrderMap[potionTID].Remove(customer);
         CmdLeaveChair(customer);
     }
@@ -162,25 +162,17 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
     {
         if(PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase)
         {
-            //TODO : 구매 성공, Currency 증가
+            SalesManager.Instance.RequestSell(customer.RequestedPotionTID);
         }
         Debug.Log($"Potion served successfully");
         CmdRemoveOnTable(pickupTableViewID); // 판매대에서 포션 제거
-        //GameObject potion = FindPickupTableByViewID(pickupTableViewID).GetComponent<IGridItemHandler>().TryPickUp(customer.connectionToClient); // 판매대 위치에서 포션 오브젝트 가져오기
-
-        //TODO : RPC로 Client의 Customer도 포션을 집을 수 있게
-        //potion.transform.SetParent(customer.PotionHandler.transform);
-        //potion.transform.localPosition = Vector3.zero;
+        customer.HandlePotion();
         _lineHandler.PutOutCustomer(customer); // 손님을 나가게 하기
     }
 
     [Server]
     public void OnLastOrderTime() //영업시간 종료되면 호출
     {
-        //if (PhotonNetwork.IsMasterClient == false)
-        //{
-        //    return;
-        //}
         while (_orderHandler.PotionOrderLine.Count > 0)
         {
             Customer customer = _orderHandler.PotionOrderLine.Dequeue();
@@ -191,22 +183,13 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
     [Server]
     public void ReturnCustomer(Customer customer) // 손님이 출구에 도착하면 호출
     {
-        //if(PhotonNetwork.IsMasterClient == false)
-        //{
-        //    return;
-        //}
         customer.ReturnPotion();
-        CustomerFactory.Instance.CmdReturn(customer.gameObject); // TODO : PoolManager완성 후 수정
-        //CustomerPool.Instance.ReturnObject(customer.gameObject,ENPCType.Customer);
+        CustomerFactory.Instance.CmdReturn(customer.gameObject); 
         RemainCustomers--;
     }
     [Server]
     public void ForceReturn() // 인내심 바닥나서 끝나면 전부 강제로 내보냄, 또는 버그로 큐에 남아있는 손님도 내보냄
     {
-        //if (PhotonNetwork.IsMasterClient == false)
-        //{
-        //    return;
-        //}
         Debug.Log("Force returning all customers.");
         while (_orderHandler.PotionOrderLine.Count > 0)
         {
@@ -231,70 +214,39 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
         }
     }
 
-    private GameObject FindPickupTableByViewID(uint pickupTableViewID)
+    [Command(requiresAuthority = false)]
+    private void CmdPlaceOnTable(int potionTID, uint pickupTableNetId)
     {
-        foreach (GameObject pickupTable in GridManager.Instance.PickUpTableList)
-        {
-            //if (pickupTable.GetComponent<PhotonView>().ViewID == pickupTableViewID)
-            //{
-            //    return pickupTable;
-            //}
-        }
-        Debug.LogError("Pickup table not found.");
-        return null;
+        _orderHandler.PickupTableDict[pickupTableNetId].IsUsing = true;
+        _orderHandler.PickupTableDict[pickupTableNetId].HeldItemTID = potionTID;
     }
-
-    private GameObject FindChairByViewID(uint chairViewID)
+    [Command(requiresAuthority = false)]
+    public void CmdRemoveOnTable(uint pickupTableNetId)
     {
-        foreach (GameObject luxuryChair in GridManager.Instance.LuxuryChairList)
-        {
-            //if (luxuryChair.GetComponent<PhotonView>().ViewID == chairViewID)
-            //{
-            //    return luxuryChair;
-            //}
-        }
-        foreach (GameObject oldChair in GridManager.Instance.OldChairList)
-        {
-            //if (oldChair.GetComponent<PhotonView>().ViewID == chairViewID)
-            //{
-            //    return oldChair;
-            //}
-        }
-        return null;
+        _orderHandler.PickupTableDict[pickupTableNetId].IsUsing = false;
+        _orderHandler.PickupTableDict[pickupTableNetId].HeldItemTID = 0;
+        _orderHandler.PickupTableDict[pickupTableNetId].UsingCustomer = null; 
     }
-    [Command]
-    private void CmdPlaceOnTable(int potionTID, uint pickupTableViewID)
+    [Command(requiresAuthority = false)]
+    private void CmdSitOnChair(uint chairNetId,Customer customer)
     {
-        _orderHandler.PickupTableDict[pickupTableViewID].IsUsing = true;
-        _orderHandler.PickupTableDict[pickupTableViewID].HeldItemTID = potionTID;
-    }
-    [Command]
-    public void CmdRemoveOnTable(uint pickupTableViewID)
-    {
-        _orderHandler.PickupTableDict[pickupTableViewID].IsUsing = false;
-        _orderHandler.PickupTableDict[pickupTableViewID].HeldItemTID = 0;
-        _orderHandler.PickupTableDict[pickupTableViewID].UsingCustomer = null; 
-    }
-    [Command]
-    private void CmdSitOnChair(uint chairViewID,Customer customer)
-    {
-        if(_orderHandler.LuxuryChairDict.ContainsKey(chairViewID))
+        if(_orderHandler.LuxuryChairDict.ContainsKey(chairNetId))
         {
-            _orderHandler.LuxuryChairDict[chairViewID].IsUsing = true;
-            _orderHandler.LuxuryChairDict[chairViewID].UsingCustomer = customer; // 손님과 의자 매핑 저장
+            _orderHandler.LuxuryChairDict[chairNetId].IsUsing = true;
+            _orderHandler.LuxuryChairDict[chairNetId].UsingCustomer = customer; // 손님과 의자 매핑 저장
         }
-        else if (_orderHandler.OldChairDict.ContainsKey(chairViewID))
+        else if (_orderHandler.OldChairDict.ContainsKey(chairNetId))
         {
-            _orderHandler.OldChairDict[chairViewID].IsUsing = true;
-            _orderHandler.OldChairDict[chairViewID].UsingCustomer = customer; // 손님과 의자 매핑 저장
+            _orderHandler.OldChairDict[chairNetId].IsUsing = true;
+            _orderHandler.OldChairDict[chairNetId].UsingCustomer = customer; // 손님과 의자 매핑 저장
         }
-        GameObject chair = FindChairByViewID(chairViewID);
+        GameObject chair = NetworkServer.spawned[chairNetId].gameObject;
         customer.CustomerMove.MoveTo(chair.transform.position);
 
         // Mirror 임시
         chair.GetComponent<Furniture>().TryEffect(customer.netId); // 의자 효과 적용
     }
-    [Command]
+    [Command(requiresAuthority = false)]
     private void CmdLeaveChair(Customer customer)
     {
         FurnitureUsingStat usedChair = _orderHandler.FindUsingChair(customer);

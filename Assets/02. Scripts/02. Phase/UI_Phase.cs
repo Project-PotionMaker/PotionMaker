@@ -18,13 +18,20 @@ public class UI_Phase : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI _todaySummaryText;
     [SerializeField]
-    private GameObject _startDayPanel;
+    private GameObject _readyPanel;
     [SerializeField]
     private TextMeshProUGUI _startDayText;
     [SerializeField]
     private GameObject[] _isVoted;
+    [SerializeField]
+    private TextMeshProUGUI[] _playerName;
+    [SerializeField]
+    private GameObject[] _playerPanel;
+    [SerializeField]
+    private GameObject[] _playerMask;
 
-    private const float HIDE_OFFSET = 400f;
+    private const float READY_HIDE_OFFSET = 400f;
+    private const float PLAYER_HIDE_OFFSET = 200f;
     private const float DURATION = 1f;
 
     private void Start()
@@ -41,13 +48,18 @@ public class UI_Phase : MonoBehaviour
         servingPhase.OnTimerRunning += UpdateServiceTimer;
         servingPhase.OnPhaseEntered += ShowTimer; // 타이머 시작 시 업데이트
         servingPhase.OnPhaseExited += HideTimer;
-        servingPhase.OnPhaseEntered += HideStartDay; // 준비 단계가 끝나면 시작 패널 숨김
+        servingPhase.OnPhaseEntered += HideReady; // 준비 단계가 끝나면 시작 패널 숨김
         HideTimer();
         EndingPhase endingPhase = (EndingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.EndingPhase];
         endingPhase.OnPhaseEntered += ShowSummary; // 영업 종료 시 요약 패널 표시
         endingPhase.OnPhaseExited += HideSummary; // 영업 종료 후 요약 패널 숨김
-        endingPhase.OnPhaseExited += ShowStartDay; // 준비 단계가 시작되면 시작 패널 표시
+        endingPhase.OnPhaseExited += ShowReady; // 준비 단계가 시작되면 시작 패널 표시
         HideSummary();
+
+        HidePlayerPanel(0);
+        HidePlayerPanel(1);
+        HidePlayerPanel(2);
+        HidePlayerPanel(3);
     }
 
     private void UpdateDayText()
@@ -105,15 +117,28 @@ public class UI_Phase : MonoBehaviour
         _todaySummaryPanel.SetActive(false);
     }
 
-    private void HideStartDay()
+    private void HideReady()
     {
         Debug.Log("Hide Start Day Panel");
-        _startDayPanel.transform.DOLocalMoveY(HIDE_OFFSET, DURATION).SetRelative().SetEase(Ease.OutSine);
+        _readyPanel.transform.DOLocalMoveY(READY_HIDE_OFFSET, DURATION).SetRelative().SetEase(Ease.OutSine);
     }
-    private void ShowStartDay()
+    private void ShowReady()
     {
-        _startDayPanel.transform.DOLocalMoveY(-HIDE_OFFSET, DURATION).SetRelative().SetEase(Ease.OutSine);
+        _readyPanel.transform.DOLocalMoveY(-READY_HIDE_OFFSET, DURATION).SetRelative().SetEase(Ease.OutSine);
     }
+
+    private void HidePlayerPanel(int index)
+    {
+        _playerMask[index].SetActive(true);
+        _playerPanel[index].transform.DOLocalMoveY(-PLAYER_HIDE_OFFSET,DURATION).SetRelative().SetEase(Ease.OutSine);
+    }
+    private void ShowPlayerPanel(int index)
+    {
+        //TODO : Player이름 받아와서 적어두기
+        _playerMask[index].SetActive(false);
+        _playerPanel[index].transform.DOLocalMoveY(PLAYER_HIDE_OFFSET, DURATION).SetRelative().SetEase(Ease.OutSine);
+    }
+
     private void ChangeTextStartDay()
     {
         _startDayText.text = "영업 시작";

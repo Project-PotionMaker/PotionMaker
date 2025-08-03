@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using VInspector;
 using Mirror;
+using System.Linq;
 
 public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>    
 {
@@ -14,12 +15,13 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>
     public BasePhase CurrentPhase { get => _currentPhase; set => _currentPhase = value; }
     private Dictionary<EPhaseType, BasePhase> _phaseDictionary;
     public Dictionary<EPhaseType, BasePhase> PhaseDictionary { get => _phaseDictionary; set => _phaseDictionary = value; }
-
+    [SyncVar]
     private int _deathCount;
     public int DeathCount { get => _deathCount; set => _deathCount = value; }
     [SerializeField]
     private int _maxDeathCount = 5;
     public int MaxDeathCount { get => _maxDeathCount; set => _maxDeathCount = value; }
+    [SyncVar] 
     private int _day;
     public int Day { get => _day; set => _day = value; }
 
@@ -82,10 +84,46 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>
         {
             _day++;
             OnDayPassed?.Invoke();
-            // _potionDataList = _dailyPotionPicker.PickDailyPotion(int currentPotionHouseTier);
+            if (isServer)
+            {
+                // _potionDataList = _dailyPotionPicker.PickDailyPotion(int currentPotionHouseTier);
+                SyncDailyPotionsToClients();
+            }
         }
         _currentPhase = _phaseDictionary[nextPhase];
         _currentPhase.EnterPhase();
         OnPhaseChanged?.Invoke();
     }
+
+    [Server]
+    public void SyncDailyPotionsToClients()
+    {
+        int[] potionIDs = new int[_potionDataList.Count];
+        for (int i = 0; i < _potionDataList.Count; i++)
+        {
+            potionIDs[i] = _potionDataList[i].TID;
+        }
+
+        RpcSyncPotionList(potionIDs);
+    }
+
+    [ClientRpc]
+    private void RpcSyncPotionList(int[] potionIDs)
+    {
+        _potionDataList = new List<PotionData>();
+
+        for (int i = 0; i < potionIDs.Length; i++)
+        {
+            PotionData data = DataTable.Instance.GetPotionData(potionIDs[i]);
+            if (data != null)
+            {
+                _potionDataList.Add(data);
+            }
+            else
+            {
+                Debug.LogWarning($"ID {potionIDs[i]}에 해당하는 포션 데이터를 찾을 수 없습니다.");
+            }
+        }
+    }
+
 }

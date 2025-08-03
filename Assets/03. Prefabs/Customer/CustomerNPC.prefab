@@ -210,9 +210,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2800509601246330592}
   - component: {fileID: 2948193554950447955}
-  - component: {fileID: 7025380960442639212}
   - component: {fileID: -6873602761233271238}
-  - component: {fileID: -7738749382215406061}
   - component: {fileID: -257228372655191728}
   - component: {fileID: 3683271026840316626}
   - component: {fileID: 6734802379473287504}
@@ -262,29 +260,6 @@ MonoBehaviour:
   syncInterval: 0
   _requestedPotionTID: 10000
   _potionHandler: {fileID: 1503921476949546083}
---- !u!114 &7025380960442639212
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4497242523145039684}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents:
-  - {fileID: -7738749382215406061}
-  sceneViewId: 0
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
 --- !u!195 &-6873602761233271238
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -307,22 +282,6 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &-7738749382215406061
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4497242523145039684}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SynchronizePosition: 1
-  m_SynchronizeRotation: 1
-  m_SynchronizeScale: 1
-  m_UseLocal: 1
 --- !u!114 &-257228372655191728
 MonoBehaviour:
   m_ObjectHideFlags: 0

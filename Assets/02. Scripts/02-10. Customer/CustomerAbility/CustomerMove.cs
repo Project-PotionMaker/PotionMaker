@@ -39,7 +39,7 @@ public class CustomerMove : NetworkBehaviour
             ArriveCheck();
         }
     }
-
+    [Server]
     private void ArriveCheck()
     {
         if (!isServer)
@@ -60,7 +60,7 @@ public class CustomerMove : NetworkBehaviour
             StartMoving();
         }
     }
-
+    [Server]
     public void MoveTo(Vector3 target) // 목적지만 바꾸는 함수
     {
         if (!isServer)

@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class PotionItem : NetworkBehaviour, IItem
 {
-    [SyncVar(hook = nameof(OnTIDUpdated))]
+    [SyncVar(hook = nameof(OnPotionItemTIDUpdated))]
     private int _potionTID;
     public int PotionTID => _potionTID;
 
@@ -45,7 +45,7 @@ public class PotionItem : NetworkBehaviour, IItem
         base.OnStartClient();
     }
 
-    private void OnTIDUpdated()
+    private void OnPotionItemTIDUpdated()
     {
         ClientUpdatePotionData();
     }

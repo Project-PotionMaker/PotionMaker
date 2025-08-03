@@ -13,7 +13,7 @@ public class ColorOnType
 
 public class OutputItem : NetworkBehaviour, IItem
 {
-    [SyncVar(hook = nameof(OnTIDUpdated))]
+    [SyncVar(hook = nameof(OnOutputItemTIDUpdated))]
     private int _outputTID;
     public int OutputTID => _outputTID;
 
@@ -51,7 +51,7 @@ public class OutputItem : NetworkBehaviour, IItem
         base.OnStartClient();
     }
 
-    private void OnTIDUpdated()
+    private void OnOutputItemTIDUpdated()
     {
         ClientUpdateOutputData();
     }

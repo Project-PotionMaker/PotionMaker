@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class IngredientItem : NetworkBehaviour, IItem
 {
-    [SyncVar(hook = nameof(OnTIDUpdated))]
+    [SyncVar(hook = nameof(OnIngredientItemTIDUpdated))]
     private int _dataTID;
     public int DataTID => _dataTID;
 
@@ -36,7 +36,7 @@ public class IngredientItem : NetworkBehaviour, IItem
         base.OnStartClient();
     }
 
-    private void OnTIDUpdated()
+    private void OnIngredientItemTIDUpdated()
     {
         ClientUpdateIngredientData();
     }

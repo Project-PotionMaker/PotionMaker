@@ -2881,13 +2881,14 @@ GameObject:
   m_Component:
   - component: {fileID: 1061309447}
   - component: {fileID: 1061309446}
+  - component: {fileID: 1061309448}
   m_Layer: 0
   m_Name: StructureFactory
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1061309446
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2900,8 +2901,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 061cbfb3fa42aca488f2bccea6292810, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   _dontDestroy: 0
-  _lazyInitialization: 0
   _factoryInfoList:
   - Type: 1
     AddressableKeyEnum: 51
@@ -2924,6 +2927,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1061309448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1061309445}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 512661329
+  _assetId: 0
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
 --- !u!1001 &1062038831
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3124,6 +3144,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c36a12c62a21c9f4884ee4a4582111eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  UI_Market: {fileID: 0}
 --- !u!4 &1123912398
 Transform:
   m_ObjectHideFlags: 0
@@ -3981,6 +4002,7 @@ GameObject:
   - component: {fileID: 1431969863}
   - component: {fileID: 1431969862}
   - component: {fileID: 1431969860}
+  - component: {fileID: 1431969864}
   m_Layer: 0
   m_Name: GridSystem
   m_TagString: Untagged
@@ -4015,8 +4037,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9f0c191dcd5de54aae6aa6be873a998, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   _dontDestroy: 0
-  _lazyInitialization: 0
   _grid: {fileID: 1011031358}
   _gridVisualization: {fileID: 599584240}
   _previewSystem: {fileID: 1431969860}
@@ -4037,6 +4061,23 @@ Transform:
   - {fileID: 924084171}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1431969864
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1431969859}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 1674475410
+  _assetId: 0
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
 --- !u!4 &1444628346 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7293939636563935316, guid: 9a961b6c5c1adee4da8a646ae71cc04c, type: 3}

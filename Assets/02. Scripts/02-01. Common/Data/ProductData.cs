@@ -26,6 +26,9 @@ public class ProductData
     ///<summary>타겟 TID</summary>
     public readonly int TargetTID;
 
+    ///<summary>임시설명</summary>
+    public readonly string Description;
+
     public ProductData(BinaryReader reader)
     {
         TID = reader.ReadInt32();
@@ -36,5 +39,7 @@ public class ProductData
         Description_LocalizationTID = reader.ReadInt32();
         Price = reader.ReadInt32();
         TargetTID = reader.ReadInt32();
+        int description = reader.ReadInt32();
+        Description = Encoding.UTF8.GetString(reader.ReadBytes(description));
     }
 }

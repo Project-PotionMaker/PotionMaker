@@ -122,7 +122,7 @@ namespace Mirror
         {
             //Debug.Log($"NetworkRoom SceneLoadedForPlayer scene: {SceneManager.GetActiveScene().path} {conn}");
 
-            if (Utils.IsSceneActive(RoomScene))
+            if (!Utils.IsSceneActive(GameplayScene))
             {
                 // cant be ready in room, add to ready list
                 PendingPlayer pending;

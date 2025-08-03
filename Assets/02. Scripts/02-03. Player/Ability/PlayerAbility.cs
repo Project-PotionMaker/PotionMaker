@@ -1,6 +1,7 @@
+using Mirror;
 using UnityEngine;
 
-public class PlayerAbility : MonoBehaviour
+public class PlayerAbility : NetworkBehaviour
 {
     protected Player _owner { get; private set; }
     

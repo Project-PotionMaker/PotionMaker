@@ -927,8 +927,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: An empty table where you can put anything
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d70f485aa27dc43f79a8fd168f58435c, type: 2}
-  m_sharedMaterial: {fileID: 5416806443266638455, guid: d70f485aa27dc43f79a8fd168f58435c, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 7f7911d70c3bbfb4594a8ede2ef13f8f, type: 2}
+  m_sharedMaterial: {fileID: 7815968947248841172, guid: 7f7911d70c3bbfb4594a8ede2ef13f8f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1603,9 +1603,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3de4f6b4f9ddc44bab7d7bab71a7ec9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _coinValueTextUI: {fileID: 3674106865991067083}
   _slotContainer: {fileID: 5719622108623116956}
-  _productSlotPrefab: {fileID: 7104858945080528871, guid: c6eb7f445a680284faa3790a6fb4ddb8, type: 3}
-  _detailPage: {fileID: 0}
+  _productSlotPrefab: {fileID: 7399087198876332350, guid: 4a76358293e9d5f41ae2ce9fce4c310f, type: 3}
+  _detailPage: {fileID: 4027120781339512903}
 --- !u!1 &1776315346301926304
 GameObject:
   m_ObjectHideFlags: 0
@@ -1802,7 +1803,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1250534580225261346}
   m_HandleRect: {fileID: 9094903673622662836}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -2405,6 +2406,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3859690914890266407}
   - component: {fileID: 6309493682781628737}
+  - component: {fileID: 4027120781339512903}
   m_Layer: 5
   m_Name: Detail
   m_TagString: Untagged
@@ -2440,6 +2442,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3529817982109456276}
   m_CullTransparentMesh: 1
+--- !u!114 &4027120781339512903
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3529817982109456276}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5aeff84e675173489ef8765acaa1606, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _productImage: {fileID: 3253179974921304720}
+  _productNameTextUI: {fileID: 4216197116301584815}
+  _productDescriptionTextUI: {fileID: 5804955619487475025}
+  _productPriceTextUI: {fileID: 8487117358988610025}
+  _buyButton: {fileID: 7445279973627498857}
 --- !u!1 &3601046412477510721
 GameObject:
   m_ObjectHideFlags: 0
@@ -2809,7 +2828,7 @@ GameObject:
   - component: {fileID: 665016265493528603}
   - component: {fileID: 6791374260320041399}
   m_Layer: 5
-  m_Name: Price
+  m_Name: Coin
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2935,10 +2954,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Market
+  m_text: "\uB9C8\uCF13"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d70f485aa27dc43f79a8fd168f58435c, type: 2}
-  m_sharedMaterial: {fileID: 5416806443266638455, guid: d70f485aa27dc43f79a8fd168f58435c, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 7f7911d70c3bbfb4594a8ede2ef13f8f, type: 2}
+  m_sharedMaterial: {fileID: 7815968947248841172, guid: 7f7911d70c3bbfb4594a8ede2ef13f8f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4679,8 +4698,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Buy
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 7f7911d70c3bbfb4594a8ede2ef13f8f, type: 2}
+  m_sharedMaterial: {fileID: 7815968947248841172, guid: 7f7911d70c3bbfb4594a8ede2ef13f8f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4813,17 +4832,17 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Furniture
+  m_text: "\uAC00\uAD6C"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d70f485aa27dc43f79a8fd168f58435c, type: 2}
-  m_sharedMaterial: {fileID: 5416806443266638455, guid: d70f485aa27dc43f79a8fd168f58435c, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 7f7911d70c3bbfb4594a8ede2ef13f8f, type: 2}
+  m_sharedMaterial: {fileID: 7815968947248841172, guid: 7f7911d70c3bbfb4594a8ede2ef13f8f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -4896,7 +4915,7 @@ GameObject:
   - component: {fileID: 4740121496488487202}
   - component: {fileID: 3674106865991067083}
   m_Layer: 5
-  m_Name: PriceText
+  m_Name: CoinText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4949,10 +4968,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: ' 9000'
+  m_text: ' 9,000'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d70f485aa27dc43f79a8fd168f58435c, type: 2}
-  m_sharedMaterial: {fileID: 5416806443266638455, guid: d70f485aa27dc43f79a8fd168f58435c, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 7f7911d70c3bbfb4594a8ede2ef13f8f, type: 2}
+  m_sharedMaterial: {fileID: 7815968947248841172, guid: 7f7911d70c3bbfb4594a8ede2ef13f8f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -5085,17 +5104,17 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uC870\uB9AC\uB3C4\uAD6C"
+  m_text: "\uC870\uB9AC\uAE30\uAD6C"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: b1f6e8d66973a0145b97dcd33f80f838, type: 2}
-  m_sharedMaterial: {fileID: 2877714319601948688, guid: b1f6e8d66973a0145b97dcd33f80f838, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 7f7911d70c3bbfb4594a8ede2ef13f8f, type: 2}
+  m_sharedMaterial: {fileID: 7815968947248841172, guid: 7f7911d70c3bbfb4594a8ede2ef13f8f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -5771,7 +5790,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8754648267350188288}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1526263114804921970}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &8630200361597924306
 GameObject:
   m_ObjectHideFlags: 0
@@ -5839,8 +5870,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 1,000
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d70f485aa27dc43f79a8fd168f58435c, type: 2}
-  m_sharedMaterial: {fileID: 5416806443266638455, guid: d70f485aa27dc43f79a8fd168f58435c, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 7f7911d70c3bbfb4594a8ede2ef13f8f, type: 2}
+  m_sharedMaterial: {fileID: 7815968947248841172, guid: 7f7911d70c3bbfb4594a8ede2ef13f8f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -6113,8 +6144,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Empty Table
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: d70f485aa27dc43f79a8fd168f58435c, type: 2}
-  m_sharedMaterial: {fileID: 5416806443266638455, guid: d70f485aa27dc43f79a8fd168f58435c, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 7f7911d70c3bbfb4594a8ede2ef13f8f, type: 2}
+  m_sharedMaterial: {fileID: 7815968947248841172, guid: 7f7911d70c3bbfb4594a8ede2ef13f8f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -6247,17 +6278,17 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: HouseMoving
+  m_text: "\uC774\uC0AC"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 16c283dd52649ef42bec009270d8b7a9, type: 2}
-  m_sharedMaterial: {fileID: 612888973333723204, guid: 16c283dd52649ef42bec009270d8b7a9, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 7f7911d70c3bbfb4594a8ede2ef13f8f, type: 2}
+  m_sharedMaterial: {fileID: 7815968947248841172, guid: 7f7911d70c3bbfb4594a8ede2ef13f8f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:

@@ -1,13 +1,17 @@
-//using Photon.Pun;
+// 수정된 GridManager 클래스
+using Mirror;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using VInspector;
 
-public class GridManager : MonoBehaviourSingleton<GridManager>
+/// <summary>
+/// 그리드 및 가구 배치를 관리하는 싱글턴 클래스입니다.
+/// 모든 배치 정보의 진실의 근원(Source of Truth)은 서버이며,
+/// 클라이언트는 서버의 데이터를 동기화 받아 시각화만 처리합니다.
+/// </summary>
+public class GridManager : NetworkBehaviourSingleton<GridManager>
 {
     [Foldout("Hierarchy")]
     [SerializeField]
@@ -18,14 +22,22 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
     [SerializeField]
     private PreviewSystem _previewSystem;
 
+    // Layout은 클라이언트/서버 모두에서 초기화 시 사용됩니다.
     private Layout _layout;
-    
-    private GridData _gridData;
-    private Vector3Int _lastDetectedPosition = Vector3Int.zero;
-    private IBuildingState _buildingState;
 
-    private GameObject _cahser;
-    public GameObject Casher => _cahser;
+    // 서버 전용: 배치 데이터를 관리합니다.
+    private GridData _serverGridData;
+
+    // 클라이언트 전용: 현재 배치 중인 상태를 관리합니다.
+    private IBuildingState _buildingState;
+    private Vector3Int _lastDetectedPosition = Vector3Int.zero;
+
+    // 모든 클라이언트에 동기화되는 배치 정보
+    private readonly SyncDictionary<Vector3Int, PlacementData> _placedObjectSyncDict = new SyncDictionary<Vector3Int, PlacementData>();
+
+    // 고객 관련 오브젝트는 서버에서만 관리합니다.
+    private GameObject _casher;
+    public GameObject Casher => _casher;
     private GameObject _enterDoor;
     public GameObject EnterDoor => _enterDoor;
     private GameObject _exitDoor;
@@ -37,21 +49,49 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
     private List<GameObject> _luxuryChairList;
     public List<GameObject> LuxuryChairList => _luxuryChairList;
 
+    public Action OnInitialized;
 
-    // private GridRepository _repository;
-
-    protected override void Awake()
+    public override void OnStartClient()
     {
-        base.Awake();
-        StopPlacement();
+        base.OnStartClient();
+        InitGridManager();
+    }
 
+    [Server]
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+        // 서버에서만 GridData와 고객 관련 리스트를 초기화합니다.
         _layout = GameObject.FindGameObjectWithTag(nameof(ETags.Layout)).GetComponent<Layout>();
-        _gridData = new GridData(_layout.GetAvailableAreaDict());
+        _serverGridData = new GridData(_layout.GetAvailableAreaDict());
         _pickUpTableList = new List<GameObject>();
         _oldChairList = new List<GameObject>();
         _luxuryChairList = new List<GameObject>();
     }
 
+    // 서버와 클라이언트 모두에서 호출되는 초기화 로직
+    private void InitGridManager()
+    {
+        // 클라이언트 전용 초기화
+        if (isClientOnly)
+        {
+            _layout = GameObject.FindGameObjectWithTag(nameof(ETags.Layout)).GetComponent<Layout>();
+        }
+
+        StopPlacement();
+        OnInitialized?.Invoke();
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.F2))
+        {
+            CmdTest();
+        }
+    }
+
+    // --- 클라이언트 전용 로직: 미리보기 업데이트 ---
+    [Client]
     public void UpdatePlacementPosition(Vector3 targetPosition)
     {
         if (ReferenceEquals(_buildingState, null))
@@ -67,43 +107,174 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
         }
     }
 
+    // --- 클라이언트 전용 로직: 그리드 위의 오브젝트 정보를 가져옴 ---
+    [Client]
     public GameObject GetObjectOnGrid(Vector3 targetPosition)
     {
         Vector3Int gridPosition = GetGridPosition(targetPosition);
-        Placement placement = _gridData.GetPlacement(gridPosition);
+
+        if (_placedObjectSyncDict.TryGetValue(gridPosition, out PlacementData placementData))
+        {
+            if (NetworkClient.spawned.TryGetValue(placementData.netId, out NetworkIdentity identity))
+            {
+                return identity.gameObject;
+            }
+        }
+        return null;
+    }
+
+    // --- 서버 전용: 그리드에 있는 오브젝트를 반환 ---
+    [Server]
+    public GameObject ServerGetObjectOnGrid(Vector3 targetPosition)
+    {
+        Vector3Int gridPosition = GetGridPosition(targetPosition);
+        Placement placement = _serverGridData.GetPlacement(gridPosition);
+
+        if(ReferenceEquals(placement, null))
+        {
+            return placement.StructureObject;
+        }
+        return null;
+    }
+
+
+    // --- 클라이언트 전용 로직: 배치 상태 시작 ---
+    [Client]
+    public void StartPlacement(GameObject structure, StructureData data)
+    {
+        _gridVisualization.SetActive(true);
+        StopPlacement();
+        _buildingState = new PlacementState(structure, data, _grid, _previewSystem);
+        _buildingState.StartState();
+    }
+
+    [Server]
+    public bool ServerCanPlaceObjectAt(Vector3 targetPosition, EAreaType areaType)
+    {
+        Vector3Int gridPosition = GetGridPosition(targetPosition);
+        if (_serverGridData != null)
+        {
+            return _serverGridData.CanPlaceObjectAt(gridPosition, areaType);
+        }
+        return false;
+    }
+
+    // --- 서버로 배치를 요청하는 Command ---
+    [Command(requiresAuthority = false)]
+    public void CmdPlaceStructure(Vector3 targetPosition, uint structureNetId, NetworkConnectionToClient sender = null)
+    {
+        if (!isServer) return;
+
+        // targetPosition을 gridPosition으로 변환
+        Vector3Int gridPosition = GetGridPosition(targetPosition);
+
+        if (NetworkServer.spawned.TryGetValue(structureNetId, out NetworkIdentity structureIdentity))
+        {
+            GameObject structure = structureIdentity.gameObject;
+            StructureData data = DataTable.Instance.GetStructureData(structure.GetComponent<IGridItemHandler>().GetStructureTID());
+
+            structure.transform.position = _grid.CellToWorld(gridPosition);
+            structure.transform.rotation = Quaternion.identity;
+            _serverGridData.AddObjectAt(gridPosition, new Vector2Int(data.Width, data.Length), data.TID, data.StructureType, structure);
+
+            PlacementData newPlacementData = new PlacementData(structureNetId, data.TID, structure.transform.rotation);
+            foreach (var pos in _serverGridData.CalculatePositionList(gridPosition, new Vector2Int(data.Width, data.Length)))
+            {
+                _placedObjectSyncDict[pos] = newPlacementData;
+            }
+
+            TargetRpcOnPlaceStructure(sender, true, structureNetId);
+        }
+    }
+
+    // --- 클라이언트에게 배치 결과를 전달하는 TargetRpc ---
+    [TargetRpc]
+    private void TargetRpcOnPlaceStructure(NetworkConnectionToClient target, bool success, uint structureNetId)
+    {
+        if (target == null || target.identity == null)
+        {
+            return;
+        }
+
+        if (target.identity.isLocalPlayer)
+        {
+            if (_buildingState != null)
+            {
+                _buildingState.ReceivePlaceResult(success, structureNetId);
+                if (success)
+                {
+                    StopPlacement();
+                }
+            }
+        }
+    }
+
+    // === (새로운 함수) 그리드에서 오브젝트를 제거하지만 파괴하지는 않음 ===
+    // gridPosition 대신 targetPosition을 받도록 수정
+    [Server]
+    public GameObject ServerRemovePlacementDataOnly(Vector3 targetPosition)
+    {
+        // targetPosition을 gridPosition으로 변환
+        Vector3Int gridPosition = GetGridPosition(targetPosition);
+
+        Placement placement = _serverGridData.GetPlacement(gridPosition);
         if(ReferenceEquals(placement, null))
         {
             return null;
         }
-        return placement.StructureObject;
+
+        GameObject structureObject = placement.StructureObject;
+
+        // 그리드 데이터와 SyncDictionary에서 객체 정보 삭제
+        _serverGridData.RemoveObjectAt(gridPosition);
+        foreach (var pos in placement.OccupiedPositionList)
+        {
+            _placedObjectSyncDict.Remove(pos);
+        }
+
+        // GameObject는 파괴하지 않고 반환
+        return structureObject;
     }
 
-    public GameObject StartPlacement(Vector3 targetPosition)
+    // === (기존 함수) 그리드에서 오브젝트를 제거하고 파괴함 (환불 시스템용) ===
+    // gridPosition 대신 targetPosition을 받도록 수정
+    [Server]
+    public void ServerRemovePlacementAndDestroy(Vector3 targetPosition)
     {
-        StopPlacement();
-        _gridVisualization.SetActive(true);
-        Debug.Log(targetPosition);
+        // targetPosition을 gridPosition으로 변환
         Vector3Int gridPosition = GetGridPosition(targetPosition);
-        Placement placement = _gridData.GetPlacement(gridPosition);
-        GameObject structure = placement.StructureObject;
-        _gridData.RemoveObjectAt(gridPosition);
 
-        StructureData data = DataTable.Instance.GetStructureData(placement.TID);
-        _buildingState = new PlacementState(structure,
-                                            data,
-                                            _grid,
-                                            _previewSystem,
-                                            _gridData);
-
-        return structure;
+        GameObject objectToRemove = ServerRemovePlacementDataOnly(gridPosition);
+        if (objectToRemove != null)
+        {
+            NetworkServer.Destroy(objectToRemove);
+        }
     }
 
-    public bool CreateStructure(int tid, Vector3 position, int ingredientTID = 0)
+    // === (새로운 함수) 픽업한 플레이어의 클라이언트에서 PlacementState를 시작하도록 지시 ===
+    [TargetRpc]
+    public void TargetRpcStartPlacement(NetworkConnectionToClient target, uint structureNetId)
     {
-        StopPlacement();
-        StructureData data = DataTable.Instance.GetStructureData(tid);
-        GameObject newObject = StructureManager.Instance.CreateStructure(tid, ingredientTID);
+        if (target == null || target.identity == null) return;
 
+        if (target.identity.isLocalPlayer)
+        {
+            if (NetworkClient.spawned.TryGetValue(structureNetId, out NetworkIdentity itemIdentity))
+            {
+                StructureData data = DataTable.Instance.GetStructureData(itemIdentity.gameObject.GetComponent<IItem>().GetTID());
+                StartPlacement(itemIdentity.gameObject, data);
+            }
+        }
+    }
+
+    // --- 서버 전용: 구조물 생성 ---
+    [Server]
+    public bool ServerCreateStructure(int tid, Vector3 position, int ingredientTID = 0)
+    {
+        StructureData data = DataTable.Instance.GetStructureData(tid);
+        GameObject newObject = StructureManager.Instance.ServerCreateStructure(tid, ingredientTID);
+
+        // _pickUpTableList 등은 서버에서만 접근합니다.
         switch (data.SpecialStructureType)
         {
             case ESpecialStructureType.PickUpTable:
@@ -112,7 +283,7 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
             case ESpecialStructureType.TrashCan:
                 break;
             case ESpecialStructureType.Casher:
-                _cahser = newObject;
+                _casher = newObject;
                 break;
             case ESpecialStructureType.OldChair:
                 _oldChairList.Add(newObject);
@@ -124,53 +295,27 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
                 break;
         }
 
-        _buildingState = new PlacementState(newObject,
-                                            data,
-                                            _grid,
-                                            _previewSystem,
-                                            _gridData);
-        return TryPlaceStructure(position);
-    }
-
-    public bool TryPlaceStructure(Vector3 position)
-    {
         Vector3Int gridPosition = GetGridPosition(position);
-        if(ReferenceEquals(_buildingState, null))
+        if (_serverGridData.CanPlaceObjectAt(gridPosition, data.AreaType))
         {
-            return false;
-        }
+            newObject.transform.position = _grid.CellToWorld(gridPosition);
+            newObject.transform.rotation = Quaternion.identity;
+            _serverGridData.AddObjectAt(gridPosition, new Vector2Int(data.Width, data.Length), data.TID, data.StructureType, newObject);
 
-        if (_buildingState.TryAction(gridPosition))
-        {
-            StopPlacement();
+            PlacementData newPlacementData = new PlacementData(newObject.GetComponent<NetworkIdentity>().netId, data.TID, newObject.transform.rotation);
+            foreach (var pos in _serverGridData.CalculatePositionList(gridPosition, new Vector2Int(data.Width, data.Length)))
+            {
+                _placedObjectSyncDict[pos] = newPlacementData;
+            }
             return true;
         }
 
+        NetworkServer.Destroy(newObject);
         return false;
     }
 
-    [Button("생성 테스트")]
-    public async void Test()
-    {
-        CreateStructure(10000, new Vector3(-5, 0, 4)); //절구
-        CreateStructure(10003, new Vector3(-3, 0, 4)); //가열냄비
-        CreateStructure(10013, new Vector3(-1, 0, 0)); // 픽업테이블
-        CreateStructure(10013, new Vector3(0, 0, 0)); // 픽업테이블
-        CreateStructure(10014, new Vector3(0, 0, 4)); // 쓰레기통
-        CreateStructure(10015, new Vector3(-5, 0, 0)); // 계산기
-        CreateStructure(10016, new Vector3(-1, 0, -5)); // 허름한 의자
-        CreateStructure(10017, new Vector3(0, 0, -5)); // 푹신한 의자
-        CreateStructure(10006, new Vector3(0, 0, 2)); // 병입기
-        CreateStructure(10018, new Vector3(4, 0, 2), 10006); // 동물상자
-        CreateStructure(10018, new Vector3(4, 0, 4), 10007); // 동물상자
-    }
-
-    public Vector3Int GetGridPosition(Vector3 targetPosition)
-    {
-        targetPosition = new Vector3(targetPosition.x, 0, targetPosition.z);
-        return _grid.WorldToCell(targetPosition);
-    }
-
+    // --- 클라이언트 전용: 현재 배치 상태 종료 ---
+    [Client]
     private void StopPlacement()
     {
         if (ReferenceEquals(_buildingState, null))
@@ -184,11 +329,37 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
         _buildingState = null;
     }
 
+    // --- 서버 전용 테스트 커맨드 ---
+    [Command(requiresAuthority = false)]
+    public void CmdTest()
+    {
+        if (!isServer) return;
+
+        ServerCreateStructure(10000, new Vector3(-5, 0, 4)); //절구
+        ServerCreateStructure(10002, new Vector3(-3, 0, 4)); //혼합기
+        ServerCreateStructure(10013, new Vector3(-1, 0, 0)); // 픽업테이블
+        ServerCreateStructure(10013, new Vector3(0, 0, 0)); // 픽업테이블
+        ServerCreateStructure(10014, new Vector3(0, 0, 4)); // 쓰레기통
+        ServerCreateStructure(10015, new Vector3(-5, 0, 0)); // 계산기
+        ServerCreateStructure(10016, new Vector3(-1, 0, -5)); // 허름한 의자
+        ServerCreateStructure(10017, new Vector3(0, 0, -5)); // 푹신한 의자
+        ServerCreateStructure(10005, new Vector3(0, 0, 2)); // 병입기
+        ServerCreateStructure(10019, new Vector3(4, 0, 2), 10000); // 동물상자
+        ServerCreateStructure(10019, new Vector3(4, 0, 4), 10001); // 동물상자
+    }
+
+    // --- 클라이언트/서버 공용 메서드 ---
+    public Vector3Int GetGridPosition(Vector3 targetPosition)
+    {
+        targetPosition = new Vector3(targetPosition.x, 0, targetPosition.z);
+        return _grid.WorldToCell(targetPosition);
+    }
+
     public ReadOnlyList<Vector3Int> GetPositionByAreaType(EAreaType areaType)
     {
-        foreach(AreaDefinition areaDefinition in _layout.AllAreaDefinitionList)
+        foreach (AreaDefinition areaDefinition in _layout.AllAreaDefinitionList)
         {
-            if(areaDefinition.AreaType == areaType)
+            if (areaDefinition.AreaType == areaType)
             {
                 return new ReadOnlyList<Vector3Int>(areaDefinition.GridPositionList);
             }
@@ -196,9 +367,41 @@ public class GridManager : MonoBehaviourSingleton<GridManager>
 
         return null;
     }
-    
+
     public ReadOnlyList<int> GetPlacedStructureTIDList()
     {
-        return _gridData.PlacedObjectList;
+        if (isClient)
+        {
+            return new ReadOnlyList<int>(_placedObjectSyncDict.Values.Select(p => p.TID).ToList());
+        }
+
+        return _serverGridData.PlacedObjectList;
+    }
+}
+
+
+
+[System.Serializable]
+public struct PlacementData : IEqualityComparer<PlacementData>
+{
+    public uint netId;
+    public int TID;
+    public Quaternion rotation;
+
+    public PlacementData(uint netId, int tid, Quaternion rotation)
+    {
+        this.netId = netId;
+        this.TID = tid;
+        this.rotation = rotation;
+    }
+
+    public bool Equals(PlacementData x, PlacementData y)
+    {
+        return x.netId == y.netId && x.TID == y.TID;
+    }
+
+    public int GetHashCode(PlacementData obj)
+    {
+        return obj.netId.GetHashCode() ^ obj.TID.GetHashCode();
     }
 }

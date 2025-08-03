@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class Player : NetworkBehaviour
 {
@@ -20,6 +21,10 @@ public class Player : NetworkBehaviour
 
     private Dictionary<Type, PlayerAbility> _abilityMap = new Dictionary<Type, PlayerAbility>();
 
+    private void Awake()
+    {
+    }
+
     private void Update()
     {
         if (CheckObjectInFront())
@@ -32,7 +37,11 @@ public class Player : NetworkBehaviour
     {
         Vector3 targetPosition = GetFrontPosition();
 
-        return GridManager.Instance.GetObjectOnGrid(targetPosition) != null;
+        if (GridManager.Instance != null)
+        {
+            return GridManager.Instance.GetObjectOnGrid(targetPosition) != null;
+        }
+        else return false;
     }
 
     public Vector3 GetFrontPosition()

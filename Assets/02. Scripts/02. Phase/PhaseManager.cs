@@ -2,14 +2,13 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Photon.Pun;
+//using Photon.Pun;
 using VInspector;
-using Mirror;
 
-public class PhaseManager : MonoBehaviour 
+public class PhaseManager : MonoBehaviourSingleton<PhaseManager>    
 {
-    // TODO :NetworkBehaviourSingleton으로 수정
-    public static PhaseManager Instance { get; private set; }
+    public event Action OnDayPassed;
+    public event Action OnPhaseChanged;
 
     private BasePhase _currentPhase;
     public BasePhase CurrentPhase { get => _currentPhase; set => _currentPhase = value; }
@@ -23,34 +22,27 @@ public class PhaseManager : MonoBehaviour
     public int MaxDeathCount { get => _maxDeathCount; set => _maxDeathCount = value; }
     private int _day;
     public int Day { get => _day; set => _day = value; }
-    public event Action OnDayPassed;
-    public event Action OnPhaseChanged;
-    public event Action OnPhaseManagerInit;
 
-    private void Awake()
+    private DailyPotionPicker _dailyPotionPicker;
+    public DailyPotionPicker DailyPotionPicker => _dailyPotionPicker;
+
+    private List<PotionData> _potionDataList = new();
+    public List<PotionData> PotionDataList => _potionDataList;
+
+    //PhotonView _photonView;
+
+    protected override void Awake()
     {
-        Debug.Log("PhaseManager Awake called");
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject); // 씬 전환 시에도 유지
-        }
-        else
-        {
-            Debug.LogWarning("중복된 PhaseManager 인스턴스 발견됨. 기존 인스턴스를 유지합니다.");
-            Destroy(gameObject);
-        }
+        base.Awake();
+        //_photonView = GetComponent<PhotonView>();
         _deathCount = 0;
         InitPhase();
-        Debug.Log("PhaseManager Awake completed");
+        Global.Instance.OnDataLoaded += InitializePotionDataList;
     }
 
     private void Update()
     {
-         //   if (isServer)
-        {
-            _currentPhase?.Update(Time.deltaTime);
-        }
+        _currentPhase?.Update(Time.deltaTime);
     }
 
     public void InitPhase()
@@ -71,24 +63,31 @@ public class PhaseManager : MonoBehaviour
         };
         _currentPhase = _phaseDictionary[EPhaseType.PreparingPhase];
         _currentPhase.EnterPhase();
-        OnPhaseManagerInit?.Invoke();
+    }
+
+    private void InitializePotionDataList()
+    {
+        _dailyPotionPicker = new DailyPotionPicker();
+        // _potionDataList = _dailyPotionPicker.PickDailyPotion(int currentPotionHouseTier);
     }
 
     public void TransitionPhase(EPhaseType nextPhase)
     {
-        //  if (isServer)
-        {
-            RpcTransitionPhase(nextPhase);
-        }
+        //if(PhotonNetwork.IsMasterClient == false)
+        //{
+        //    return;
+        //}
+        //_photonView.RPC(nameof(RPC_TransitionPhase), RpcTarget.All, nextPhase);
     }
-   // [ClientRpc]
-    public void RpcTransitionPhase(EPhaseType nextPhase)
+    //[PunRPC]
+    public void RPC_TransitionPhase(EPhaseType nextPhase)
     {
         _currentPhase?.ExitPhase();
         if (_currentPhase is EndingPhase && _phaseDictionary[nextPhase] is PreparingPhase)
         {
             _day++;
             OnDayPassed?.Invoke();
+            // _potionDataList = _dailyPotionPicker.PickDailyPotion(int currentPotionHouseTier);
         }
         _currentPhase = _phaseDictionary[nextPhase];
         _currentPhase.EnterPhase();

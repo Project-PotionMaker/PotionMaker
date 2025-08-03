@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BaseFactory<TEnum, TFactoryInfo> : MonoBehaviourSingleton<BaseFactory<TEnum, TFactoryInfo>>
+public class BaseFactory<TEnum, TFactoryInfo> : NetworkBehaviourSingleton<BaseFactory<TEnum, TFactoryInfo>>
     where TEnum : Enum
     where TFactoryInfo : BaseFactoryInfo<TEnum>
 {
@@ -65,7 +65,7 @@ public class BaseFactory<TEnum, TFactoryInfo> : MonoBehaviourSingleton<BaseFacto
         }
     }
 
-    //[Server]
+    [Server]
     public GameObject Create(TEnum type, Vector3 position, Quaternion rotation)
     {
         if (!_typeToPrefabKeyDict.ContainsKey(type))
@@ -82,7 +82,7 @@ public class BaseFactory<TEnum, TFactoryInfo> : MonoBehaviourSingleton<BaseFacto
         return networkObject;
     }
 
-    //[Server]
+    [Server]
     private void Return(GameObject obj)
     {
         NetworkServer.UnSpawn(obj);

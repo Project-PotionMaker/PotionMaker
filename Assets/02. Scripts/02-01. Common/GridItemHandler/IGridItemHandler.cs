@@ -1,12 +1,15 @@
+using Mirror;
 using UnityEngine;
 
 public interface IGridItemHandler
 {
-    public bool TryInteract();
+    public void TryInteract(NetworkConnectionToClient conn);
 
-    public GameObject TryPickUp();
+    public void TryPickUp(NetworkConnectionToClient conn);
 
-    public bool TryDrop(Vector3 targetPosition, int tid = 10000, EInputType inputType = EInputType.None, GameObject inputObject = null);
+    public void TryDrop(NetworkConnectionToClient conn, Vector3 targetPosition, NetworkIdentity inputNetId, int tid = 10000, EInputType inputType = EInputType.None);
 
-    public void ResetMachineServer();
+    public void ResetData();
+
+    public int GetStructureTID();
 }

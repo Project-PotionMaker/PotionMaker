@@ -8,7 +8,7 @@ using VInspector;
 /// 플레이어가 상호작용할 수 있는 가구 클래스입니다.
 /// Storage와 마찬가지로 SyncVar를 사용하여 네트워크 동기화를 처리합니다.
 /// </summary>
-public class Furniture : NetworkBehaviour, IGridItemHandler
+public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable
 {
     [SyncVar(hook = nameof(OnDataTIDChanged))]
     private int _dataTID;
@@ -31,6 +31,9 @@ public class Furniture : NetworkBehaviour, IGridItemHandler
     [SerializeField]
     private Transform _inputPosition;
     public Transform InputPosition => _inputPosition;
+
+    public float RefundGauge{ get; set; }
+
 
     // 서버 전용 컴포넌트들
     private IInteractable<Furniture> _interactComponent;
@@ -364,6 +367,24 @@ public class Furniture : NetworkBehaviour, IGridItemHandler
     public int GetStructureTID()
     {
         return _data.StructureTID;
+    }
+
+    public void AddRefundGauge()
+    {
+        RefundGauge += Time.deltaTime*3f;
+    }
+
+    public void ResetRefundGauge()
+    {
+        RefundGauge = 0;
+    }
+
+    public void Refund()
+    {
+        int productTID = DataTable.Instance.GetFurnitureData(DataTID).ProductTID;
+        int refundPrice = DataTable.Instance.GetProductData(productTID).Price / 4;
+        CurrencyManager.Instance.CmdRequestAddCurrency(refundPrice);
+        StructureFactory.Instance.CmdReturn(gameObject);
     }
     #endregion
 }

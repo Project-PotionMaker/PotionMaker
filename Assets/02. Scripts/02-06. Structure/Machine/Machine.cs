@@ -13,7 +13,7 @@ public class ModelOnTID
     public GameObject Model;
 }
 
-public class Machine : NetworkBehaviour, IGridItemHandler
+public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
 {
     [SerializeField]
     private Transform _model;
@@ -62,7 +62,8 @@ public class Machine : NetworkBehaviour, IGridItemHandler
     [SyncVar(hook = nameof(OnInputTypeChanged))]
     private EInputType _inputType;
     public EInputType InputType { get => _inputType; private set => _inputType = value; }
-
+    
+    
     #endregion
 
     private IInteractable<Machine> _interactComponent;
@@ -75,6 +76,8 @@ public class Machine : NetworkBehaviour, IGridItemHandler
     private Dictionary<int, GameObject> _modelObjectDic;
 
     public Action OnDataChanged;
+
+    public float RefundGauge { get; set; }
 
     private void Awake()
     {
@@ -499,5 +502,23 @@ public class Machine : NetworkBehaviour, IGridItemHandler
     public int GetStructureTID()
     {
         return _data.StructureTID;
+    }
+
+    public void AddRefundGauge()
+    {
+        RefundGauge += Time.deltaTime * 3f;
+    }
+
+    public void ResetRefundGauge()
+    {
+        RefundGauge = 0;
+    }
+
+    public void Refund()
+    {
+        int productTID = DataTable.Instance.GetMachineData(DataTID).ProductTID;
+        int refundPrice = DataTable.Instance.GetProductData(productTID).Price / 4;
+        CurrencyManager.Instance.CmdRequestAddCurrency(refundPrice);
+        StructureFactory.Instance.CmdReturn(gameObject);
     }
 }

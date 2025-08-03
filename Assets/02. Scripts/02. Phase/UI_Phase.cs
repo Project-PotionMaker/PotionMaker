@@ -8,7 +8,7 @@ public class UI_Phase : MonoBehaviour
 {
     [Foldout("UIs")]
     [SerializeField]
-    private TextMeshProUGUI _phaseText;
+    private TextMeshProUGUI _currencyText;
     [SerializeField]
     private TextMeshProUGUI _dayText;
     [SerializeField]
@@ -20,6 +20,8 @@ public class UI_Phase : MonoBehaviour
     [SerializeField]
     private GameObject _startDayPanel;
     [SerializeField]
+    private TextMeshProUGUI _startDayText;
+    [SerializeField]
     private GameObject[] _isVoted;
 
     private const float HIDE_OFFSET = 400f;
@@ -28,24 +30,23 @@ public class UI_Phase : MonoBehaviour
     private void Start()
     {
         _serviceTimer.maxValue = 1f;
-        Debug.Log($"1111111111111111111111111111111111111111");
         PhaseManager.Instance.OnDayPassed += UpdateDayText;
-        Debug.Log($"2222222222222222222222222222222222222222");
         PhaseManager.Instance.OnPhaseChanged += UpdatePhaseText;
-        Debug.Log($"333333333333333333333333333333333333333333");
-        PreparingPhase preparingPhase = (PreparingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.PreparingPhase];
-        Debug.Log($"44444444444444444444444444444444444444444");
-        preparingPhase.OnPhaseExited += HideStartDay; // 준비 단계가 끝나면 시작 패널 숨김
-        preparingPhase.OnPhaseEntered += ShowStartDay; // 준비 단계가 시작되면 시작 패널 표시
 
+        PreparingPhase preparingPhase = (PreparingPhase) PhaseManager.Instance.PhaseDictionary[EPhaseType.PreparingPhase];
+        preparingPhase.OnPhaseEntered += ChangeTextStartDay;
+        PracticingPhase practicingPhase = (PracticingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase];
+        practicingPhase.OnPhaseEntered += ChangeTextPracticeEnd;
         ServingPhase servingPhase = (ServingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase];
         servingPhase.OnTimerRunning += UpdateServiceTimer;
         servingPhase.OnPhaseEntered += ShowTimer; // 타이머 시작 시 업데이트
         servingPhase.OnPhaseExited += HideTimer;
+        servingPhase.OnPhaseEntered += HideStartDay; // 준비 단계가 끝나면 시작 패널 숨김
         HideTimer();
         EndingPhase endingPhase = (EndingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.EndingPhase];
         endingPhase.OnPhaseEntered += ShowSummary; // 영업 종료 시 요약 패널 표시
         endingPhase.OnPhaseExited += HideSummary; // 영업 종료 후 요약 패널 숨김
+        endingPhase.OnPhaseExited += ShowStartDay; // 준비 단계가 시작되면 시작 패널 표시
         HideSummary();
     }
 
@@ -59,24 +60,24 @@ public class UI_Phase : MonoBehaviour
 
     private void UpdatePhaseText()
     {
-        if (_phaseText != null)
+        if (_currencyText != null)
         {
             EPhaseType phaseType = PhaseManager.Instance.CurrentPhase.PhaseType;
             if (phaseType == EPhaseType.PreparingPhase)
             {
-                _phaseText.text = "Preparing";
+                _currencyText.text = "Preparing";
             }
             else if (phaseType == EPhaseType.ServingPhase)
             {
-                _phaseText.text = "Service Time";
+                _currencyText.text = "Service Time";
             }
             else if (phaseType == EPhaseType.EndingPhase)
             {
-                _phaseText.text = "Finish";
+                _currencyText.text = "Finish";
             }
             else if (phaseType == EPhaseType.PracticingPhase)
             {
-                _phaseText.text = "Practicing";
+                _currencyText.text = "Practicing";
             }
         }
     }
@@ -112,6 +113,14 @@ public class UI_Phase : MonoBehaviour
     private void ShowStartDay()
     {
         _startDayPanel.transform.DOLocalMoveY(-HIDE_OFFSET, DURATION).SetRelative().SetEase(Ease.OutSine);
+    }
+    private void ChangeTextStartDay()
+    {
+        _startDayText.text = "영업 시작";
+    }
+    private void ChangeTextPracticeEnd()
+    {
+        _startDayText.text = "연습 종료";
     }
 
 }

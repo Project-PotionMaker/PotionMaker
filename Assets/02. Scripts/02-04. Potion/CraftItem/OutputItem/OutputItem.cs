@@ -61,6 +61,7 @@ public class OutputItem : NetworkBehaviour, IItem
     {
         _currentInputType = newInputType;
         _outputTID = TID;
+        _outputData = DataTable.Instance.GetOutputData(TID);
     }
 
     private void ClientUpdateOutputData()

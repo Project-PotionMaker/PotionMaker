@@ -9,8 +9,8 @@ public class IngredientItem : NetworkBehaviour, IItem
     private int _ingredientTID;
     public int IngredientTID => _ingredientTID;
 
-    private IngredientData _data;
-    public IngredientData Data => _data;
+    private IngredientData _ingredientData;
+    public IngredientData IngredientData => _ingredientData;
 
     [SerializeField]
     private List<ModelOnTID> _modelObjectList = new List<ModelOnTID>();
@@ -46,15 +46,16 @@ public class IngredientItem : NetworkBehaviour, IItem
     public void ServerUpdateIngredientData(int TID)
     {
         _ingredientTID = TID;
+        _ingredientData = DataTable.Instance.GetIngredientData(TID);
     }
 
     private void ClientUpdateIngredientData()
     {
         // 클라이언트에서 초기화 시 SyncVar로 받은 TID를 사용해 데이터 로드 및 모델 활성화
-        _data = DataTable.Instance.GetIngredientData(_ingredientTID);
+        _ingredientData = DataTable.Instance.GetIngredientData(_ingredientTID);
 
         // TID에 맞는 모델을 한 번만 활성화
-        if (_modelObjectDic.TryGetValue(_data.TID, out GameObject modelToActivate))
+        if (_modelObjectDic.TryGetValue(_ingredientData.TID, out GameObject modelToActivate))
         {
             modelToActivate.SetActive(true);
         }

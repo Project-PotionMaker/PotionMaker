@@ -56,6 +56,7 @@ public class PotionItem : NetworkBehaviour, IItem
     public void ServerUpdatePotionData(int TID)
     {
         _potionTID = TID;
+        _potionData = DataTable.Instance.GetPotionData(TID);
     }
 
     private void ClientUpdatePotionData()
@@ -84,6 +85,18 @@ public class PotionItem : NetworkBehaviour, IItem
 
     private void UpdateVFX()
     {
+        if (ReferenceEquals(_pointLight, null))
+        {
+            Debug.LogError($"포션 효과를 위한 PointLight가 null입니다.");
+            return;
+        }
+
+        if (ReferenceEquals(_particles, null))
+        {
+            Debug.LogError($"포션 효과를 위한 PointLight가 null입니다.");
+            return;
+        }
+
         _potionBottleRenderer.GetPropertyBlock(_mpb);
         switch (_potionData.Tier)
         {
@@ -91,25 +104,25 @@ public class PotionItem : NetworkBehaviour, IItem
                 _mpb.SetFloat("_Epic", 0);
                 _mpb.SetFloat("_Efect_emission", 0);
                 _pointLight.enabled = false;
-                if (_particles) _particles.gameObject.SetActive(false);
+                _particles.gameObject.SetActive(false);
                 break;
             case 2:
                 _mpb.SetFloat("_Epic", 1);
                 _mpb.SetFloat("_Efect_emission", 1.5f);
-                if (_pointLight) _pointLight.enabled = true;
-                if (_particles) _particles.gameObject.SetActive(false);
+                _pointLight.enabled = true;
+                _particles.gameObject.SetActive(false);
                 break;
             case 3:
-                _particles.gameObject.SetActive(true);
                 _mpb.SetFloat("_Epic", 1);
                 _mpb.SetFloat("_Efect_emission", 1.5f);
-                if (_pointLight) _pointLight.enabled = true;
+                _pointLight.enabled = true;
+                _particles.gameObject.SetActive(true);
                 break;
             default:
                 _mpb.SetFloat("_Epic", 0);
                 _mpb.SetFloat("_Efect_emission", 0);
-                if (_pointLight) _pointLight.enabled = false;
-                if (_particles) _particles.gameObject.SetActive(false);
+                _pointLight.enabled = false;
+                _particles.gameObject.SetActive(false);
                 break;
         }
         _potionBottleRenderer.SetPropertyBlock(_mpb);

@@ -51,7 +51,7 @@ public class OutputItem : NetworkBehaviour, IItem
         base.OnStartClient();
     }
 
-    private void OnOutputItemTIDUpdated()
+    private void OnOutputItemTIDUpdated(int oldValue, int newValue)
     {
         ClientUpdateOutputData();
     }

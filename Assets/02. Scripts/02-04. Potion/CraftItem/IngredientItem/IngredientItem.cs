@@ -6,8 +6,8 @@ using UnityEngine;
 public class IngredientItem : NetworkBehaviour, IItem
 {
     [SyncVar(hook = nameof(OnIngredientItemTIDUpdated))]
-    private int _dataTID;
-    public int DataTID => _dataTID;
+    private int _ingredientTID;
+    public int IngredientTID => _ingredientTID;
 
     private IngredientData _data;
     public IngredientData Data => _data;
@@ -36,7 +36,7 @@ public class IngredientItem : NetworkBehaviour, IItem
         base.OnStartClient();
     }
 
-    private void OnIngredientItemTIDUpdated()
+    private void OnIngredientItemTIDUpdated(int oldValue, int newValue)
     {
         ClientUpdateIngredientData();
     }
@@ -45,13 +45,13 @@ public class IngredientItem : NetworkBehaviour, IItem
     [Server]
     public void ServerUpdateIngredientData(int TID)
     {
-        _dataTID = TID;
+        _ingredientTID = TID;
     }
 
     private void ClientUpdateIngredientData()
     {
         // 클라이언트에서 초기화 시 SyncVar로 받은 TID를 사용해 데이터 로드 및 모델 활성화
-        _data = DataTable.Instance.GetIngredientData(_dataTID);
+        _data = DataTable.Instance.GetIngredientData(_ingredientTID);
 
         // TID에 맞는 모델을 한 번만 활성화
         if (_modelObjectDic.TryGetValue(_data.TID, out GameObject modelToActivate))
@@ -67,6 +67,6 @@ public class IngredientItem : NetworkBehaviour, IItem
 
     public int GetTID()
     {
-        return _dataTID;
+        return _ingredientTID;
     }
 }

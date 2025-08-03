@@ -45,7 +45,7 @@ public class PotionItem : NetworkBehaviour, IItem
         base.OnStartClient();
     }
 
-    private void OnPotionItemTIDUpdated()
+    private void OnPotionItemTIDUpdated(int oldValue, int newValue)
     {
         ClientUpdatePotionData();
     }

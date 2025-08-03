@@ -5,7 +5,7 @@ using System;
 using UnityEditor;
 using VInspector;
 using Mirror;
-public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
+public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
 {
     //접수 받기, 포션 제공하기만 클라이언트에서 마스터에게 요청 가능
     //나머지는 마스터에서만 호출 가능
@@ -67,6 +67,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         _inviteIndex = 0;
     }
 
+    [Command]
     public void InviteCustomer(float deltaTime)
     {
         //if (!PhotonNetwork.IsMasterClient)
@@ -81,7 +82,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         //TODO : Layout에서 최대 줄 길이 가져와서 적용하기
         _inviteTimer = _inviteCoolTime;
         Debug.Log("손님 초대");
-        GameObject customer = CustomerFactory.Instance.Create(ENPCType.Customer,Vector3.zero,Quaternion.identity); // TODO : PoolManager완성 후 수정
+        GameObject customer = CustomerFactory.Instance.CreateObject(ENPCType.Customer,Vector3.zero,Quaternion.identity); // TODO : PoolManager완성 후 수정
         //OnCustomerIn(customer.GetComponent<PhotonView>().ViewID); //TODO : PoolManager완성 후 수정
         //CustomerPool.Instance.GetObjectAsync(0);
         RemainCustomers++;
@@ -254,8 +255,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         //    return;
         //}
         customer.ReturnPotion();
-        CustomerFactory.Instance.CmdReturn(customer.gameObject); // TODO : PoolManager완성 후 수정
-        //CustomerPool.Instance.ReturnObject(customer.gameObject,ENPCType.Customer);
+        CustomerFactory.Instance.ReturnObject(customer.gameObject);
         RemainCustomers--;
     }
     public void ForceReturn() // 인내심 바닥나서 끝나면 전부 강제로 내보냄, 또는 버그로 큐에 남아있는 손님도 내보냄

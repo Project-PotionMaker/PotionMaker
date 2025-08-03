@@ -60,4 +60,47 @@ public enum EAddressableKeys
     Prefab_Furniture = 54,
     Prefab_CustomerNPC = 55,
     Prefab_Storage = 56,
+    Image_LobbyBG = 57,
+    [Obsolete("Removed from Addressables")]
+    Image_Structure_10006 = 58,
+    [Obsolete("Removed from Addressables")]
+    Image_Structure_10004 = 59,
+    [Obsolete("Removed from Addressables")]
+    Image_Structure_10017 = 60,
+    [Obsolete("Removed from Addressables")]
+    Image_Structure_10012 = 61,
+    [Obsolete("Removed from Addressables")]
+    Image_Structure_10005 = 62,
+    [Obsolete("Removed from Addressables")]
+    Image_Structure_10016 = 63,
+    [Obsolete("Removed from Addressables")]
+    Image_Structure_10001 = 64,
+    [Obsolete("Removed from Addressables")]
+    Image_Structure_10000 = 65,
+    [Obsolete("Removed from Addressables")]
+    Image_Structure_10002 = 66,
+    [Obsolete("Removed from Addressables")]
+    Image_Structue_10003 = 67,
+    Image_Potion_10001 = 68,
+    Image_Potion_10006 = 69,
+    Image_Potion_10002 = 70,
+    Image_Potion_10009 = 71,
+    Image_Potion_10011 = 72,
+    Image_Potion_10005 = 73,
+    Image_Potion_10008 = 74,
+    Image_Potion_10010 = 75,
+    Image_Potion_10004 = 76,
+    Image_Potion_10003 = 77,
+    Image_Potion_10007 = 78,
+    Image_Potion_10000 = 79,
+    Image_Product_20001 = 80,
+    Image_Product_20000 = 81,
+    Image_Product_10001 = 82,
+    Image_Product_10000 = 83,
+    Image_Product_20002 = 84,
+    Image_Product_10006 = 85,
+    Image_Product_10005 = 86,
+    Image_Product_10004 = 87,
+    Image_Product_10003 = 88,
+    Image_Product_10002 = 89,
 }

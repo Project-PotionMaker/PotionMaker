@@ -1264,8 +1264,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 061cbfb3fa42aca488f2bccea6292810, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   _dontDestroy: 0
-  _lazyInitialization: 0
   _factoryInfoList:
   - Type: 1
     AddressableKeyEnum: 51
@@ -1479,6 +1481,14 @@ MonoBehaviour:
   evaluationMethod: 0
   evaluationInterval: 3
   timeInterpolationGui: 0
+  showRoomGUI: 1
+  minPlayers: 1
+  roomPlayerPrefab: {fileID: 0}
+  RoomScene: 
+  GameplayScene: 
+  _allPlayersReady: 0
+  clientIndex: 0
+  LoadingScene: 
 --- !u!4 &526694403
 Transform:
   m_ObjectHideFlags: 0
@@ -1913,6 +1923,63 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3228500281684744301, guid: 9715520cd97f1e44dbe7f89e8f04c48e, type: 3}
   m_PrefabInstance: {fileID: 699316771}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &701633564
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 548fb3ca2772d544388914ae9b376a88, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 548fb3ca2772d544388914ae9b376a88, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 548fb3ca2772d544388914ae9b376a88, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 4.364
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 548fb3ca2772d544388914ae9b376a88, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 548fb3ca2772d544388914ae9b376a88, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 548fb3ca2772d544388914ae9b376a88, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 548fb3ca2772d544388914ae9b376a88, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 548fb3ca2772d544388914ae9b376a88, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 548fb3ca2772d544388914ae9b376a88, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 548fb3ca2772d544388914ae9b376a88, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 548fb3ca2772d544388914ae9b376a88, type: 3}
+      propertyPath: m_Name
+      value: WoodenPartition
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 548fb3ca2772d544388914ae9b376a88, type: 3}
 --- !u!1001 &710097431
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2349,8 +2416,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f077e91aea682144bac4a93d2f90f416, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   _dontDestroy: 0
-  _lazyInitialization: 0
   _factoryInfoList:
   - Type: 1
     AddressableKeyEnum: 53
@@ -3592,8 +3661,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9f0c191dcd5de54aae6aa6be873a998, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   _dontDestroy: 0
-  _lazyInitialization: 0
   _grid: {fileID: 1011031358}
   _gridVisualization: {fileID: 599584240}
   _previewSystem: {fileID: 1431969860}
@@ -4310,8 +4381,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cb8fc3b2b5815148a130c670e222f6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   _dontDestroy: 0
-  _lazyInitialization: 0
 --- !u!4 &1786805708
 Transform:
   m_ObjectHideFlags: 0
@@ -4848,3 +4921,4 @@ SceneRoots:
   - {fileID: 1786805708}
   - {fileID: 327793539}
   - {fileID: 526694403}
+  - {fileID: 701633564}

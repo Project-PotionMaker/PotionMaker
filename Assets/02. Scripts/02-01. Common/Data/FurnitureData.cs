@@ -29,6 +29,9 @@ public class FurnitureData
     ///<summary>인내심 감소 배율</summary>
     public readonly float EffectRate;
 
+    ///<summary>구조물TID</summary>
+    public readonly int StructureTID;
+
     public FurnitureData(BinaryReader reader)
     {
         TID = reader.ReadInt32();
@@ -40,5 +43,6 @@ public class FurnitureData
         AreaType = (EAreaType)reader.ReadInt32();
         SpecialStructureType = (ESpecialStructureType)reader.ReadInt32();
         EffectRate = reader.ReadSingle();
+        StructureTID = reader.ReadInt32();
     }
 }

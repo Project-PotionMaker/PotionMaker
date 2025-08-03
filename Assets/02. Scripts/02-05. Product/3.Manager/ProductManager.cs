@@ -51,8 +51,17 @@ public class ProductManager : NetworkBehaviourSingleton<ProductManager>
         }
 
         LoadProductData();
+
+        // 임시 언락
         ProductManager.Instance.CmdRequestUnlock(10000);
         ProductManager.Instance.CmdRequestUnlock(10001);
+        ProductManager.Instance.CmdRequestUnlock(10002);
+        ProductManager.Instance.CmdRequestUnlock(10003);
+
+        ProductManager.Instance.CmdRequestUnlock(20000);
+        ProductManager.Instance.CmdRequestUnlock(20001);
+
+        ProductManager.Instance.CmdRequestUnlock(30000);
 
         CmdRequestUpdateProducts();
     }

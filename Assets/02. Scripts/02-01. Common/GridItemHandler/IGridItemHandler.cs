@@ -7,7 +7,7 @@ public interface IGridItemHandler
 
     public void TryPickUp(NetworkConnectionToClient conn);
 
-    public void TryDrop(NetworkConnectionToClient conn, Vector3 targetPosition, GameObject inputObject, int tid = 10000, EInputType inputType = EInputType.None);
+    public void TryDrop(NetworkConnectionToClient conn, Vector3 targetPosition, NetworkIdentity inputNetId, int tid = 10000, EInputType inputType = EInputType.None);
 
     public void ResetData();
 

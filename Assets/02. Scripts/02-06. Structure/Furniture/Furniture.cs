@@ -214,7 +214,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler
             NetworkServer.spawned[pickedUpItem.GetComponent<NetworkIdentity>().netId].AssignClientAuthority(sender);
         }
 
-        TargetRpcOnPickUp(sender, pickedUpItem);
+        TargetRpcOnPickUp(sender, pickedUpItem.GetComponent<NetworkIdentity>());
     }
 
     [Command(requiresAuthority = false)]
@@ -294,11 +294,11 @@ public class Furniture : NetworkBehaviour, IGridItemHandler
     }
 
     [TargetRpc]
-    private void TargetRpcOnPickUp(NetworkConnectionToClient target, GameObject item)
+    private void TargetRpcOnPickUp(NetworkConnectionToClient target, NetworkIdentity itemNetId)
     {
         if (NetworkClient.connection.identity.TryGetComponent<Player>(out Player player))
         {
-            player.GetAbility<PlayerPickupAbility>().ReceivePickedUpItem(item);
+            player.GetAbility<PlayerPickupAbility>().ReceivePickedUpItem(itemNetId);
         }
     }
 
@@ -336,11 +336,11 @@ public class Furniture : NetworkBehaviour, IGridItemHandler
         CmdTryPickUp(conn);
     }
 
-    public void TryDrop(NetworkConnectionToClient conn, Vector3 targetPosition, GameObject inputObject, int tid = 10000, EInputType inputType = EInputType.None)
+    public void TryDrop(NetworkConnectionToClient conn, Vector3 targetPosition, NetworkIdentity inputNetId, int tid = 10000, EInputType inputType = EInputType.None)
     {
-        if (inputObject != null && inputObject.TryGetComponent<NetworkIdentity>(out NetworkIdentity netIdentity))
+        if (inputNetId != null)
         {
-            CmdTryDrop(targetPosition, netIdentity.netId, tid, inputType, conn);
+            CmdTryDrop(targetPosition, inputNetId.netId, tid, inputType, conn);
         }
     }
 
@@ -356,7 +356,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler
 
         if (!ReferenceEquals(InputObject, null))
         {
-            CraftItemFactory.Instance.CmdReturn(InputObject);
+            CraftItemFactory.Instance.ReturnObject(InputObject);
             InputObject = null;
         }
     }

@@ -5,7 +5,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using VInspector;
-using static UnityEngine.Rendering.DebugUI;
 
 [Serializable]
 public class ModelOnTID
@@ -383,15 +382,15 @@ public class Machine : NetworkBehaviour, IGridItemHandler
             NetworkServer.spawned[pickedUpItem.GetComponent<NetworkIdentity>().netId].AssignClientAuthority(sender);
         }
 
-        TargetRpcOnPickUp(sender, pickedUpItem);
+        TargetRpcOnPickUp(sender, pickedUpItem.GetComponent<NetworkIdentity>());
     }
 
     [TargetRpc]
-    private void TargetRpcOnPickUp(NetworkConnectionToClient target, GameObject item)
+    private void TargetRpcOnPickUp(NetworkConnectionToClient target, NetworkIdentity itemNetId)
     {
         if (NetworkClient.connection.identity.TryGetComponent<Player>(out Player player))
         {
-            player.GetAbility<PlayerPickupAbility>().ReceivePickedUpItem(item);
+            player.GetAbility<PlayerPickupAbility>().ReceivePickedUpItem(itemNetId);
         }
     }
 
@@ -489,11 +488,11 @@ public class Machine : NetworkBehaviour, IGridItemHandler
         CmdTryPickUp(conn);
     }
 
-    public void TryDrop(NetworkConnectionToClient conn, Vector3 targetPosition, GameObject inputObject, int tid = 10000, EInputType inputType = EInputType.None)
+    public void TryDrop(NetworkConnectionToClient conn, Vector3 targetPosition, NetworkIdentity inputNetId, int tid = 10000, EInputType inputType = EInputType.None)
     {
-        if(inputObject != null && inputObject.TryGetComponent<NetworkIdentity>(out NetworkIdentity netIdentity))
+        if(inputNetId != null)
         {
-            CmdTryDrop(targetPosition, tid, inputType, netIdentity.netId, conn);
+            CmdTryDrop(targetPosition, tid, inputType, inputNetId.netId, conn);
         }
     }
 

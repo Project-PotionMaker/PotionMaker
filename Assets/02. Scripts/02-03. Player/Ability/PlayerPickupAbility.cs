@@ -3,8 +3,9 @@ using UnityEngine;
 
 public class PlayerPickupAbility : PlayerAbility
 {
-    // 나중에 IPickable로 변경 가능
-    private GameObject _heldItem = null;
+    [SyncVar(hook = nameof(OnHeldItemChanged))]
+    private NetworkIdentity _heldItemIdentity;
+
     private PlayerAnimationAbility _animationAbility;
 
     private void Start()
@@ -27,7 +28,7 @@ public class PlayerPickupAbility : PlayerAbility
             return;
         }
 
-        if( _heldItem != null)
+        if(_heldItemIdentity != null)
         {
             Vector3 targetPosition = _owner.GetFrontPosition();
             GridManager.Instance.UpdatePlacementPosition(targetPosition);
@@ -36,7 +37,7 @@ public class PlayerPickupAbility : PlayerAbility
 
     private void OnPickupInput()
     {
-        if (_heldItem == null)
+        if (_heldItemIdentity == null)
         {
             TryPickup();
         }
@@ -45,7 +46,7 @@ public class PlayerPickupAbility : PlayerAbility
             TryPutDown();
         }
 
-        bool hasHeldItem = _heldItem != null;
+        bool hasHeldItem = _heldItemIdentity != null;
         _animationAbility.SetBool(EPlayerAnimationParameter.HasHeldItem,hasHeldItem);
     }
 
@@ -70,26 +71,26 @@ public class PlayerPickupAbility : PlayerAbility
         
         if (phaseType == EPhaseType.PreparingPhase)
         {
-            IGridItemHandler itemHandler = _heldItem.GetComponent<IGridItemHandler>();
+            IGridItemHandler itemHandler = _heldItemIdentity.gameObject.GetComponent<IGridItemHandler>();
             if (ReferenceEquals(itemHandler, null) == true)
             {
                 return;
             }
 
-            itemHandler.TryDrop(_owner.connectionToClient, targetPosition, _heldItem);
+            itemHandler.TryDrop(_owner.connectionToClient, targetPosition, _heldItemIdentity);
         }
         else if (phaseType == EPhaseType.ServingPhase || phaseType == EPhaseType.PracticingPhase)
         {
             GameObject gridObject = FindFrontPickupItem();
             if (gridObject != null)
             {
-                IItem item = _heldItem.GetComponent<IItem>();
+                IItem item = _heldItemIdentity.gameObject.GetComponent<IItem>();
                 if(ReferenceEquals(item, null) == false)
                 {
                     gridObject.GetComponent<IGridItemHandler>().TryDrop(
                         _owner.connectionToClient,
                         targetPosition,
-                        _heldItem,
+                        _heldItemIdentity,
                         item.GetTID(),
                         item.GetInputType()
                         );
@@ -112,36 +113,65 @@ public class PlayerPickupAbility : PlayerAbility
 
     private void ResetItem()
     {
-        if(!ReferenceEquals(_heldItem, null))
+        if(!ReferenceEquals(_heldItemIdentity, null))
         {
-            _heldItem.transform.SetParent(null);
-            CraftItemFactory.Instance.CmdReturn(_heldItem);
+            _heldItemIdentity = null;
         }
     }
 
     [Client]
-    public void ReceivePickedUpItem(GameObject item)
+    public void ReceivePickedUpItem(NetworkIdentity itemNetId)
     {
-        if(item == null)
+        if(itemNetId == null)
         {
             return;
         }
 
-        _heldItem = item;
-        _heldItem.transform.SetParent(_owner.HeldPosition);
-        _heldItem.transform.localPosition = -0.5f * Vector3.one;
-        _heldItem.transform.localRotation = Quaternion.Euler(Vector3.zero);
+        CmdPickUpItem(itemNetId);
     }
 
     [Client]
     public void ReceiveDroppedItem(bool success)
     {
-        if(success == false || _heldItem == null)
+        if(success == false || _heldItemIdentity == null)
         {
             return;
         }
 
-        _heldItem.transform.SetParent(null);
-        _heldItem = null;
+        _heldItemIdentity = null;
+    }
+
+    private void OnHeldItemChanged(NetworkIdentity oldIdentity, NetworkIdentity newIdentity)
+    {
+        // 1. 이전에 들고 있던 가구가 있었다면 부모-자식 관계를 해제합니다.
+        if (oldIdentity != null)
+        {
+            oldIdentity.transform.SetParent(null);
+        }
+
+        // 2. 새롭게 들게 된 가구가 있다면 부모-자식 관계를 설정합니다.
+        if (newIdentity != null)
+        {
+            // 부모를 _heldPosition으로 설정
+            newIdentity.transform.SetParent(_owner.HeldPosition, true);
+            newIdentity.transform.localPosition = -0.5f * Vector3.one;
+            newIdentity.transform.localRotation = Quaternion.Euler(Vector3.zero);
+        }
+    }
+
+    [Command]
+    public void CmdPickUpItem(NetworkIdentity itemToHoldIdentity)
+    {
+        if (!_owner.isServer) return;
+
+        _heldItemIdentity = itemToHoldIdentity;
+    }
+
+    [Command]
+    public void CmdDropItem()
+    {
+        if (!_owner.isServer) return;
+
+        _heldItemIdentity = null;
     }
 }

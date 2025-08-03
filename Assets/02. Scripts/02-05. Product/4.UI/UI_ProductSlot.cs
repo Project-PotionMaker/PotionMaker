@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,7 +18,7 @@ public class UI_ProductSlot:MonoBehaviour
     [SerializeField]
     private Button _slotButton;
 
-    public async void Refresh(ProductDTO productDTO)
+    public async Task Refresh(ProductDTO productDTO)
     {
         gameObject.SetActive(false);
         _productImage.sprite = await AssetManager.Instance.LoadAsset<Sprite>($"{ASSET_PREFIX}{productDTO.Data.TID}");

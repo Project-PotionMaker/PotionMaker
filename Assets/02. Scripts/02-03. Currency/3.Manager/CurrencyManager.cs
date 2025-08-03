@@ -11,10 +11,6 @@ public class CurrencyManager : NetworkBehaviourSingleton<CurrencyManager>
     private Currency _coin;
     public CurrencyDTO Coin => _coin.ToDTO();
 
-    public override void OnStartServer()
-    {
-        base.OnStartServer();
-    }
 
     public override void OnStartClient()
     {
@@ -22,9 +18,13 @@ public class CurrencyManager : NetworkBehaviourSingleton<CurrencyManager>
         OnInitialized?.Invoke();
         InitCurrencyManager();
     }
-
+    
     private void InitCurrencyManager()
     {
+        if (!NetworkClient.ready)
+        {
+            return;
+        }
         _coin = new Currency(0);
         CmdRequestUpdateCurrency();
         OnDataChanged?.Invoke();

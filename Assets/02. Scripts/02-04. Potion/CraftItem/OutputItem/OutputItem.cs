@@ -13,13 +13,13 @@ public class ColorOnType
 
 public class OutputItem : NetworkBehaviour, IItem
 {
+    [SyncVar(hook = nameof(OnTIDUpdated))]
+    private int _outputTID;
+    public int OutputTID => _outputTID;
+
     [SyncVar]
     private EInputType _currentInputType;
     public EInputType CurrentInputType => _currentInputType;
-
-    [SyncVar]
-    private int _outputTID;
-    public int OutputTID => _outputTID;
 
     private OutputData _outputData;
     public OutputData OutputData => _outputData;
@@ -35,12 +35,6 @@ public class OutputItem : NetworkBehaviour, IItem
         InitOutput();
     }
 
-    public override void OnStartClient()
-    {
-        base.OnStartClient();
-        ClientUpdateOutputData();
-    }
-
     private void InitOutput()
     {
         _colorOnTypeDict = new Dictionary<EOutputType, ColorOnType>();
@@ -50,6 +44,16 @@ public class OutputItem : NetworkBehaviour, IItem
             _colorOnTypeDict.Add(objectInfo.OuputType, objectInfo);
         }
         _mpb = new MaterialPropertyBlock();
+    }
+
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+    }
+
+    private void OnTIDUpdated()
+    {
+        ClientUpdateOutputData();
     }
 
     [Server]

@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class PotionItem : NetworkBehaviour, IItem
 {
-    [SyncVar]
+    [SyncVar(hook = nameof(OnTIDUpdated))]
     private int _potionTID;
     public int PotionTID => _potionTID;
 
@@ -28,12 +28,6 @@ public class PotionItem : NetworkBehaviour, IItem
         InitPotion();
     }
 
-    public override void OnStartClient()
-    {
-        base.OnStartClient();
-        ClientUpdatePotionData();
-    }
-
     private void InitPotion()
     {
         _potionModelDict = new Dictionary<int, GameObject>();
@@ -45,6 +39,18 @@ public class PotionItem : NetworkBehaviour, IItem
 
         _mpb = new MaterialPropertyBlock();
     }
+
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+    }
+
+    private void OnTIDUpdated()
+    {
+        ClientUpdatePotionData();
+    }
+
+    
 
     [Server]
     public void ServerUpdatePotionData(int TID)

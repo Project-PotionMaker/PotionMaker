@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class IngredientItem : NetworkBehaviour, IItem
 {
-    [SyncVar]
+    [SyncVar(hook = nameof(OnTIDUpdated))]
     private int _dataTID;
     public int DataTID => _dataTID;
 
@@ -21,12 +21,6 @@ public class IngredientItem : NetworkBehaviour, IItem
         InitIngredient();
     }
 
-    public override void OnStartClient()
-    {
-        base.OnStartClient();
-        ClientUpdateIngredientData();
-    }
-
     private void InitIngredient()
     {
         _modelObjectDic = new Dictionary<int, GameObject>();
@@ -36,6 +30,17 @@ public class IngredientItem : NetworkBehaviour, IItem
             _modelObjectDic.Add(modelInfo.TID, modelInfo.Model);
         }
     }
+
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+    }
+
+    private void OnTIDUpdated()
+    {
+        ClientUpdateIngredientData();
+    }
+
 
     [Server]
     public void ServerUpdateIngredientData(int TID)

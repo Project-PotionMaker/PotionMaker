@@ -356,7 +356,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler
 
         if (!ReferenceEquals(InputObject, null))
         {
-            CraftItemFactory.Instance.ReturnObject(InputObject);
+            CraftItemFactory.Instance.CmdReturn(InputObject);
             InputObject = null;
         }
     }

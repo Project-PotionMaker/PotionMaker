@@ -3,7 +3,7 @@ using System;
 //using UnityEngine;
 //using PhotonPlayer = Photon.Realtime.Player;
 
-public class ReputationManager : MonoBehaviourPunCallbacksSingleton<ReputationManager>
+public class ReputationManager : MonoBehaviourSingleton<ReputationManager>
 {
     public event Action OnDataChanged;
 
@@ -114,5 +114,10 @@ public class ReputationManager : MonoBehaviourPunCallbacksSingleton<ReputationMa
     {
         _reputation.SetReputation(value);
         OnDataChanged?.Invoke();
+    }
+
+    public void OnServingPhaseEnd()
+    {
+        _reputation.UpdateValueYesterday();
     }
 }

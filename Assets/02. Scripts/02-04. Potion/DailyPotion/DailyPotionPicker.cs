@@ -1,5 +1,3 @@
-using JetBrains.Annotations;
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -28,11 +26,11 @@ public class DailyPotionPicker
     public DailyPotionPicker()
     {
         InitDailyPotionPicker();
-        InitDailyPotionsInfoByReputation();
     }
 
     private void InitDailyPotionPicker()
     {
+        InitDailyPotionsInfoByReputation();
         InitTierPotionDict();
     }
 

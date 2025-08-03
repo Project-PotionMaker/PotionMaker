@@ -8,7 +8,7 @@ public class RentManager : NetworkBehaviourSingleton<RentManager>
     private Rent _rent;
     public RentDTO Rent => _rent.ToDTO();
 
-    private void Start()
+    public override void OnStartClient()
     {
         Global.Instance.OnDataLoaded += InitRentManager;
         InitRentManager();

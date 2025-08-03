@@ -15,9 +15,9 @@ public class UI_Storage : MonoBehaviour
         _storage.OnDataChanged += InitUIStorage;
     }
 
-    private void InitUIStorage(StorageStat stat)
+    private void InitUIStorage()
     {
-        _nameTextUI.text = DataTable.Instance.GetIngredientData(stat.IngredientTID).Name;
+        //_nameTextUI.text = DataTable.Instance.GetIngredientData(_storage.IngredientTID).Name;
     }
 
     private void Update()

@@ -225,9 +225,11 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         }
         Debug.Log($"Potion served successfully");
         RemoveOnTable(pickupTableViewID); // 판매대에서 포션 제거
-        GameObject potion = FindPickupTableByViewID(pickupTableViewID).GetComponent<IGridItemHandler>().TryPickUp(); // 판매대 위치에서 포션 오브젝트 가져오기
-        potion.transform.SetParent(customer.PotionHandler.transform);
-        potion.transform.localPosition = Vector3.zero;
+        //GameObject potion = FindPickupTableByViewID(pickupTableViewID).GetComponent<IGridItemHandler>().TryPickUp(customer.connectionToClient); // 판매대 위치에서 포션 오브젝트 가져오기
+
+
+        //potion.transform.SetParent(customer.PotionHandler.transform);
+        //potion.transform.localPosition = Vector3.zero;
         _lineHandler.PutOutCustomer(customer); // 손님을 나가게 하기
     }
 
@@ -345,7 +347,7 @@ public class CustomerManager : MonoBehaviourSingleton<CustomerManager>
         customer.CustomerMove.MoveTo(chair.transform.position);
 
         // Mirror 임시
-        chair.GetComponent<Furniture>().TryEffect(customer.gameObject.GetComponent<NetworkIdentity>()); // 의자 효과 적용
+        chair.GetComponent<Furniture>().TryEffect(customer.netId); // 의자 효과 적용
     }
 
     private void LeaveChair(Customer customer)

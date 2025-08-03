@@ -21,7 +21,7 @@ public class MachineOutputContainer : IOutputContainer<Machine>
             machine.ServerDecreaseOutputAmount(1);
             if (machine.LeftOutputAmount <= 0)
             {
-                machine.ResetMachineServer();
+                machine.ResetData();
             }
 
             return _output;

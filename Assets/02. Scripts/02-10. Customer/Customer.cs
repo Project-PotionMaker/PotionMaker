@@ -1,10 +1,11 @@
 //using Photon.Pun;
+using Mirror;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Customer : MonoBehaviour
+public class Customer : NetworkBehaviour
 {
     private ECustomerStateType _currentState; // 현재 상태 컴포넌트
     public ECustomerStateType CurrentState { get => _currentState; set => _currentState = value; } // 현재 상태 컴포넌트

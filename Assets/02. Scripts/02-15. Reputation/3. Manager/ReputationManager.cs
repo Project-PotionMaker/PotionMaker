@@ -115,4 +115,9 @@ public class ReputationManager : MonoBehaviourSingleton<ReputationManager>
         _reputation.SetReputation(value);
         OnDataChanged?.Invoke();
     }
+
+    public void OnServingPhaseEnd()
+    {
+        _reputation.UpdateValueYesterday();
+    }
 }

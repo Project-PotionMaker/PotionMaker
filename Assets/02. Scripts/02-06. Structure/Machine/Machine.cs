@@ -412,9 +412,9 @@ public class Machine : NetworkBehaviour, IGridItemHandler
 
             if (currentPhase == EPhaseType.PreparingPhase)
             {
-                if(GridManager.Instance.GetObjectOnGrid(targetPosition) == null)
+                if (GridManager.Instance.ServerCanPlaceObjectAt(targetPosition, _data.AreaType))
                 {
-                    GridManager.Instance.CmdTryPlaceStructure(targetPosition, dropItemNetId, sender);
+                    GridManager.Instance.CmdPlaceStructure(targetPosition, dropItemNetId, sender);
                     success = true;
                 }
                 else

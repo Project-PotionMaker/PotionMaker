@@ -56,15 +56,11 @@ public class GridData
         return returnValList;
     }
 
-    public bool CanPlaceObjectAt(Vector3Int gridPosition, Vector2Int objectSize, EAreaType StructureType)
+    public bool CanPlaceObjectAt(Vector3Int gridPosition, EAreaType StructureType)
     {
-        List<Vector3Int> positionToOccupyList = CalculatePositionList(gridPosition, objectSize);
-        foreach (Vector3Int pos in positionToOccupyList)
+        if (_placedObjectDict.ContainsKey(gridPosition))
         {
-            if (_placedObjectDict.ContainsKey(pos))
-            {
-                return false;
-            }
+            return false;
         }
 
         // 배치하려는 첫 번째 위치의 AreaType을 확인합니다.

@@ -148,9 +148,20 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
         _buildingState.StartState();
     }
 
+    [Server]
+    public bool ServerCanPlaceObjectAt(Vector3 targetPosition, EAreaType areaType)
+    {
+        Vector3Int gridPosition = GetGridPosition(targetPosition);
+        if (_serverGridData != null)
+        {
+            return _serverGridData.CanPlaceObjectAt(gridPosition, areaType);
+        }
+        return false;
+    }
+
     // --- 서버로 배치를 요청하는 Command ---
     [Command(requiresAuthority = false)]
-    public void CmdTryPlaceStructure(Vector3 targetPosition, uint structureNetId, NetworkConnectionToClient sender = null)
+    public void CmdPlaceStructure(Vector3 targetPosition, uint structureNetId, NetworkConnectionToClient sender = null)
     {
         if (!isServer) return;
 
@@ -162,21 +173,17 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
             GameObject structure = structureIdentity.gameObject;
             StructureData data = DataTable.Instance.GetStructureData(structure.GetComponent<IGridItemHandler>().GetStructureTID());
 
-            bool isValid = _serverGridData.CanPlaceObjectAt(gridPosition, new Vector2Int(data.Width, data.Length), data.AreaType);
+            structure.transform.position = _grid.CellToWorld(gridPosition);
+            structure.transform.rotation = Quaternion.identity;
+            _serverGridData.AddObjectAt(gridPosition, new Vector2Int(data.Width, data.Length), data.TID, data.StructureType, structure);
 
-            if (isValid)
+            PlacementData newPlacementData = new PlacementData(structureNetId, data.TID, structure.transform.rotation);
+            foreach (var pos in _serverGridData.CalculatePositionList(gridPosition, new Vector2Int(data.Width, data.Length)))
             {
-                structure.transform.position = _grid.CellToWorld(gridPosition);
-                _serverGridData.AddObjectAt(gridPosition, new Vector2Int(data.Width, data.Length), data.TID, data.StructureType, structure);
-
-                PlacementData newPlacementData = new PlacementData(structureNetId, data.TID, structure.transform.rotation);
-                foreach (var pos in _serverGridData.CalculatePositionList(gridPosition, new Vector2Int(data.Width, data.Length)))
-                {
-                    _placedObjectSyncDict[pos] = newPlacementData;
-                }
+                _placedObjectSyncDict[pos] = newPlacementData;
             }
 
-            TargetRpcOnPlaceStructure(sender, isValid, structureNetId);
+            TargetRpcOnPlaceStructure(sender, true, structureNetId);
         }
     }
 
@@ -289,9 +296,10 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
         }
 
         Vector3Int gridPosition = GetGridPosition(position);
-        if (_serverGridData.CanPlaceObjectAt(gridPosition, new Vector2Int(data.Width, data.Length), data.AreaType))
+        if (_serverGridData.CanPlaceObjectAt(gridPosition, data.AreaType))
         {
             newObject.transform.position = _grid.CellToWorld(gridPosition);
+            newObject.transform.rotation = Quaternion.identity;
             _serverGridData.AddObjectAt(gridPosition, new Vector2Int(data.Width, data.Length), data.TID, data.StructureType, newObject);
 
             PlacementData newPlacementData = new PlacementData(newObject.GetComponent<NetworkIdentity>().netId, data.TID, newObject.transform.rotation);

@@ -23,7 +23,6 @@ public class Player : NetworkBehaviour
 
     private void Awake()
     {
-        int a = 3;
     }
 
     private void Update()
@@ -38,7 +37,11 @@ public class Player : NetworkBehaviour
     {
         Vector3 targetPosition = GetFrontPosition();
 
-        return GridManager.Instance.GetObjectOnGrid(targetPosition) != null;
+        if (GridManager.Instance != null)
+        {
+            return GridManager.Instance.GetObjectOnGrid(targetPosition) != null;
+        }
+        else return false;
     }
 
     public Vector3 GetFrontPosition()

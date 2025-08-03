@@ -191,16 +191,15 @@ public class Storage : NetworkBehaviour, IGridItemHandler
         {
             GameObject inputObject = dropItemIdentity.gameObject;
 
-            if (GridManager.Instance.GetObjectOnGrid(targetPosition) == null)
+            if (GridManager.Instance.ServerCanPlaceObjectAt(targetPosition, EAreaType.Storage))
             {
-                GridManager.Instance.CmdTryPlaceStructure(targetPosition, dropItemNetId, sender);
+                GridManager.Instance.CmdPlaceStructure(targetPosition, dropItemNetId, sender);
                 success = true;
             }
             else
             {
                 success = false;
             }
-
         }
 
         if (success)

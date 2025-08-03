@@ -28,7 +28,7 @@ public class PlayerPickupAbility : PlayerAbility
             return;
         }
 
-        if(_heldItemIdentity != null)
+        if (_heldItemIdentity != null)
         {
             Vector3 targetPosition = _owner.GetFrontPosition();
             GridManager.Instance.UpdatePlacementPosition(targetPosition);
@@ -47,16 +47,16 @@ public class PlayerPickupAbility : PlayerAbility
         }
 
         bool hasHeldItem = _heldItemIdentity != null;
-        _animationAbility.SetBool(EPlayerAnimationParameter.HasHeldItem,hasHeldItem);
+        _animationAbility.SetBool(EPlayerAnimationParameter.HasHeldItem, hasHeldItem);
     }
 
     private void TryPickup()
     {
         GameObject item = FindFrontPickupItem();
-        if(item != null)
+        if (item != null)
         {
             IGridItemHandler itemHandler = item.GetComponent<IGridItemHandler>();
-            if(ReferenceEquals(itemHandler, null) == false)
+            if (ReferenceEquals(itemHandler, null) == false)
             {
                 itemHandler.TryPickUp(_owner.connectionToClient);
             }
@@ -68,7 +68,7 @@ public class PlayerPickupAbility : PlayerAbility
         Vector3 targetPosition = _owner.GetFrontPosition();
 
         EPhaseType phaseType = PhaseManager.Instance.CurrentPhase.PhaseType;
-        
+
         if (phaseType == EPhaseType.PreparingPhase)
         {
             IGridItemHandler itemHandler = _heldItemIdentity.gameObject.GetComponent<IGridItemHandler>();
@@ -85,7 +85,7 @@ public class PlayerPickupAbility : PlayerAbility
             if (gridObject != null)
             {
                 IItem item = _heldItemIdentity.gameObject.GetComponent<IItem>();
-                if(ReferenceEquals(item, null) == false)
+                if (ReferenceEquals(item, null) == false)
                 {
                     gridObject.GetComponent<IGridItemHandler>().TryDrop(
                         _owner.connectionToClient,
@@ -113,7 +113,7 @@ public class PlayerPickupAbility : PlayerAbility
 
     private void ResetItem()
     {
-        if(!ReferenceEquals(_heldItemIdentity, null))
+        if (!ReferenceEquals(_heldItemIdentity, null))
         {
             _heldItemIdentity = null;
         }
@@ -122,7 +122,7 @@ public class PlayerPickupAbility : PlayerAbility
     [Client]
     public void ReceivePickedUpItem(NetworkIdentity itemNetId)
     {
-        if(itemNetId == null)
+        if (itemNetId == null)
         {
             return;
         }
@@ -133,7 +133,7 @@ public class PlayerPickupAbility : PlayerAbility
     [Client]
     public void ReceiveDroppedItem(bool success)
     {
-        if(success == false || _heldItemIdentity == null)
+        if (success == false || _heldItemIdentity == null)
         {
             return;
         }

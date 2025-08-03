@@ -97,12 +97,17 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
     // 이제 이 메소드는 PotionHouse.OnInitialized 이벤트에 의해 호출됩니다.
     private void InitGridManager()
     {
+        _grid = GameObject.FindGameObjectWithTag(nameof(ETags.Grid))?.GetComponent<Grid>();
+        _previewSystem = GameObject.FindGameObjectWithTag(nameof(ETags.PreviewSystem))?.GetComponent<PreviewSystem>();
+        _gridVisualization = GameObject.FindGameObjectWithTag(nameof(ETags.GridVisualization));
+
+        if(_grid == null)
+        {
+            return;
+        }
+
         _layout = PotionHouse.Instance.Layout;
         _serverGridData = new GridData(_layout.GetAvailableAreaDict());
-
-        _grid = GameObject.FindGameObjectWithTag(nameof(ETags.Grid)).GetComponent<Grid>();
-        _previewSystem = GameObject.FindGameObjectWithTag(nameof(ETags.PreviewSystem)).GetComponent<PreviewSystem>();
-        _gridVisualization = GameObject.FindGameObjectWithTag(nameof(ETags.GridVisualization));
 
         _pickUpTableList = new List<GameObject>();
         _oldChairList = new List<GameObject>();
@@ -114,6 +119,12 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
 
     private void Update()
     {
+        if (GridManager.Instance == null)
+        {
+            Debug.LogError("GridManager.Instance is null!");
+            return;
+        }
+
         if (Input.GetKeyDown(KeyCode.F2))
         {
             CmdTest();
@@ -160,7 +171,7 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
         Vector3Int gridPosition = GetGridPosition(targetPosition);
         Placement placement = _serverGridData.GetPlacement(gridPosition);
 
-        if (ReferenceEquals(placement, null))
+        if (!ReferenceEquals(placement, null))
         {
             return placement.StructureObject;
         }
@@ -190,8 +201,8 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
     }
 
     // --- 서버로 배치를 요청하는 Command ---
-    [Command(requiresAuthority = false)]
-    public void CmdPlaceStructure(Vector3 targetPosition, uint structureNetId, NetworkConnectionToClient sender = null)
+    [Server]
+    public void ServerPlaceStructure(Vector3 targetPosition, uint structureNetId, NetworkConnectionToClient sender = null)
     {
         if (!isServer) return;
 
@@ -221,12 +232,12 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
     [TargetRpc]
     private void TargetRpcOnPlaceStructure(NetworkConnectionToClient target, bool success, uint structureNetId)
     {
-        if (target == null || target.identity == null)
+        if(NetworkClient.connection.identity == null)
         {
             return;
         }
 
-        if (target.identity.isLocalPlayer)
+        if (NetworkClient.connection.identity.isLocalPlayer)
         {
             if (_buildingState != null)
             {
@@ -285,13 +296,16 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
     [TargetRpc]
     public void TargetRpcStartPlacement(NetworkConnectionToClient target, uint structureNetId)
     {
-        if (target == null || target.identity == null) return;
+        if (NetworkClient.connection.identity == null)
+        {
+            return;
+        }
 
-        if (target.identity.isLocalPlayer)
+        if (NetworkClient.connection.identity.isLocalPlayer)
         {
             if (NetworkClient.spawned.TryGetValue(structureNetId, out NetworkIdentity itemIdentity))
             {
-                StructureData data = DataTable.Instance.GetStructureData(itemIdentity.gameObject.GetComponent<IItem>().GetTID());
+                StructureData data = DataTable.Instance.GetStructureData(itemIdentity.gameObject.GetComponent<IGridItemHandler>().GetStructureTID());
                 StartPlacement(itemIdentity.gameObject, data);
             }
         }
@@ -381,6 +395,10 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
     // --- 클라이언트/서버 공용 메서드 ---
     public Vector3Int GetGridPosition(Vector3 targetPosition)
     {
+        if(_grid == null)
+        {
+            return Vector3Int.zero;
+        }
         targetPosition = new Vector3(targetPosition.x, 0, targetPosition.z);
         return _grid.WorldToCell(targetPosition);
     }

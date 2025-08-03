@@ -1,5 +1,6 @@
 using Mirror;
 using UnityEngine;
+
 public class NetworkBehaviourSingleton<T> : NetworkBehaviour where T : NetworkBehaviour
 {
     [SerializeField]
@@ -10,7 +11,7 @@ public class NetworkBehaviourSingleton<T> : NetworkBehaviour where T : NetworkBe
     {
         get
         {
-            if (ReferenceEquals(_instance, null))
+            if (_instance == null)
             {
                 _instance = FindAnyObjectByType<T>();
             }
@@ -20,19 +21,32 @@ public class NetworkBehaviourSingleton<T> : NetworkBehaviour where T : NetworkBe
 
     protected virtual void Awake()
     {
-        if (_instance == null)
+    }
+
+    public override void OnStartServer()
+    {
+        SetupInstance();
+    }
+
+    public override void OnStartClient()
+    {
+        SetupInstance();
+    }
+
+    private void SetupInstance()
+    {
+        if (_instance != null && _instance != this)
         {
-            _instance = this as T;
-            if (_dontDestroy)
-            {
-                DontDestroyOnLoad(gameObject);
-                Debug.Log("CurrencyManager 인스턴스 초기화 완료 (Awake).");
-            }
-        }
-        else
-        {
-            Debug.LogWarning("중복된 CurrencyManager 인스턴스 발견. 파괴합니다.");
+            Debug.LogWarning($"중복된 {typeof(T).Name} 인스턴스 발견. 파괴합니다.");
             Destroy(gameObject);
+            return;
+        }
+
+        _instance = this as T;
+
+        if (_dontDestroy)
+        {
+            DontDestroyOnLoad(gameObject);
         }
     }
 }

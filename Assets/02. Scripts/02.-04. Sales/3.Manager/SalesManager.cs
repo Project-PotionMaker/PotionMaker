@@ -12,11 +12,6 @@ public class SalesManager : NetworkBehaviourSingleton<SalesManager>
     private Sales _sales;
     public SalesDTO Sales => _sales.ToDTO();
 
-    private void Start()
-    {
-        PhaseManager.Instance.OnDayPassed += OnDayChanged;
-        InitSalesManager();
-    }
 
     // 네트워크 매니저에서 처리
     //public override void OnJoinedRoom()
@@ -26,8 +21,19 @@ public class SalesManager : NetworkBehaviourSingleton<SalesManager>
 
     private void InitSalesManager()
     {
+        if (!NetworkClient.ready)
+        {
+            return;
+        }
         _sales = new Sales(0);
         CmdRequestUpdateSales(false);
+    }
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        //PhaseManager.Instance.OnDayPassed += OnDayChanged;
+
+        InitSalesManager();
     }
 
     public void RequestSell(int TID)

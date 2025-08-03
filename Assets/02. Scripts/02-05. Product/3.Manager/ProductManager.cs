@@ -23,8 +23,14 @@ public class ProductManager : NetworkBehaviourSingleton<ProductManager>
         _delivery = new Delivery();
         _movingHouse = new MovingHouse();
         _movingHouse.InitMovingHouse(_delivery);
+        _productListDict = new Dictionary<EProductType, List<Product>>()
+        {
+            { EProductType.Machine, new List<Product>() },
+            { EProductType.Furniture, new List<Product>() },
+            { EProductType.HouseMoving, new List<Product>() },
+        };
     }
-    private void Start()
+    public override void OnStartClient()
     {
         Global.Instance.OnDataLoaded += InitProductManager;
         InitProductManager();
@@ -44,14 +50,19 @@ public class ProductManager : NetworkBehaviourSingleton<ProductManager>
             return;
         }
 
-        _productListDict = new Dictionary<EProductType, List<Product>>()
-        {
-            { EProductType.Machine, new List<Product>() },
-            { EProductType.Furniture, new List<Product>() },
-            { EProductType.HouseMoving, new List<Product>() },
-        };
-
         LoadProductData();
+
+        // 임시 언락
+        ProductManager.Instance.CmdRequestUnlock(10000);
+        ProductManager.Instance.CmdRequestUnlock(10001);
+        ProductManager.Instance.CmdRequestUnlock(10002);
+        ProductManager.Instance.CmdRequestUnlock(10003);
+
+        ProductManager.Instance.CmdRequestUnlock(20000);
+        ProductManager.Instance.CmdRequestUnlock(20001);
+
+        ProductManager.Instance.CmdRequestUnlock(30000);
+
         CmdRequestUpdateProducts();
     }
 

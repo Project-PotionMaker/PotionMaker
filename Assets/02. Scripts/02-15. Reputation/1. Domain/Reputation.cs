@@ -21,15 +21,35 @@ public class Reputation
         {
             _value = Mathf.Clamp(value, _minValue, _maxValue);
             UpdateReputationGrade();
+            UpdateDifference();
         }
     }
 
-    private const float _minValue = 0f;
-    private const float _maxValue = 5f;
+    private float _valueYesterday = 0;
+    public float ValueYesterday
+    {
+        get => _valueYesterday;
+        private set
+        {
+            _valueYesterday = Mathf.Clamp(value, _minValue, _maxValue);
+        }
+    }
+
+    private float _difference = 0;
+    public float Difference
+    {
+        get => _difference;
+        private set
+        {
+            _difference = Mathf.Clamp(value, _minValue, _maxValue);
+        }
+    }
 
     private EReputationGrade _reputationGrade = EReputationGrade.Normal;
     public EReputationGrade ReputationGrade => _reputationGrade;
 
+    private const float _minValue = 0f;
+    private const float _maxValue = 5f;
 
     public Reputation(float value = 0f)
     {
@@ -42,11 +62,14 @@ public class Reputation
                 $"{nameof(value)} must be zero or greater");
         }
         Value = value;
+        ValueYesterday = value;
     }
 
     public Reputation(ReputationDTO reputationDto)
     {
         _value = reputationDto.Value;
+        _valueYesterday = reputationDto.ValueYesterday;
+        _difference = reputationDto.Difference;
         _reputationGrade = reputationDto.ReputationGrade;
     }
 
@@ -94,6 +117,16 @@ public class Reputation
         }
         Value -= valueToSubtract;
         return true;
+    }
+
+    public void UpdateValueYesterday()
+    {
+        ValueYesterday = _value;
+    }
+
+    public void UpdateDifference()
+    {
+        Difference = _value - _valueYesterday;
     }
 
     public void UpdateReputationGrade()

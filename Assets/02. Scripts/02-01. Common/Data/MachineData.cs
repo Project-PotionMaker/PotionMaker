@@ -41,6 +41,9 @@ public class MachineData
     ///<summary>상호작용 타입</summary>
     public readonly EInteractType InteractType;
 
+    ///<summary>구조물TID</summary>
+    public readonly int StructureTID;
+
     public MachineData(BinaryReader reader)
     {
         TID = reader.ReadInt32();
@@ -56,5 +59,6 @@ public class MachineData
         ProgressPerTick = reader.ReadSingle();
         OutputAmount = reader.ReadInt32();
         InteractType = (EInteractType)reader.ReadInt32();
+        StructureTID = reader.ReadInt32();
     }
 }

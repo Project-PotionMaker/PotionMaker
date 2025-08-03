@@ -1,4 +1,5 @@
 using Mirror;
+using Mirror.BouncyCastle.Tls;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -88,26 +89,24 @@ public class Machine : NetworkBehaviour, IGridItemHandler
     public override void OnStartServer()
     {
         base.OnStartServer();
-        // 실제 초기화는 ServerInitMachine(machineTID)을 통해 이루어짐
     }
 
-    // 클라이언트에서 오브젝트 스폰되거나 연결될 때 초기화 (SyncVar 값 반영)
     public override void OnStartClient()
     {
         base.OnStartClient();
 
-        // SyncVar Hook 함수들이 초기값에는 호출되지 않을 수 있으므로,
-        // 여기서 직접 호출하여 초기 UI/로직 반영
-        OnDataTIDChanged(0, _dataTID); // 강제로 첫 동기화 로직 실행
+        OnDataTIDChanged(0, _dataTID);
 
-        // SyncList 콜백 등록 (클라이언트에서만)
         if (!isServer)
         {
             InputTIDList.Callback += OnInputTIDListChanged;
         }
+        else
+        {
+            PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += ResetData; // 서버에서만 호출되도록
+            PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase].OnPhaseExited += ResetData; // 서버에서만 호출되도록
 
-        PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += ResetMachineServer; // 서버에서만 호출되도록
-        PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase].OnPhaseExited += ResetMachineServer; // 서버에서만 호출되도록
+        }
     }
 
     public override void OnStopClient()
@@ -117,8 +116,11 @@ public class Machine : NetworkBehaviour, IGridItemHandler
         {
             InputTIDList.Callback -= OnInputTIDListChanged;
         }
-        PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseExited -= ResetMachineServer;
-        PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase].OnPhaseExited -= ResetMachineServer;
+        else
+        {
+            PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseExited -= ResetData;
+            PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase].OnPhaseExited -= ResetData;
+        }
     }
 
     #region SyncVar Hook Functions (클라이언트에서 SyncVar 변경 시 호출됨)
@@ -292,7 +294,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler
 
     // 머신 상태 리셋 (서버에서만 호출)
     [Server]
-    public void ResetMachineServer()
+    public void ResetData()
     {
         StopAllCoroutines(); // 서버의 코루틴만 중지
         InputTIDList.Clear(); // SyncList 초기화
@@ -300,7 +302,6 @@ public class Machine : NetworkBehaviour, IGridItemHandler
         IsProcessFinished = false; // SyncVar 초기화
         IsProcessStarted = false; // SyncVar 초기화
         CurrentProgress = 0f; // SyncVar 초기화
-        CurrentRotation = 0f; // SyncVar 초기화
         InputType = EInputType.None; // SyncVar 초기화
     }
 
@@ -309,86 +310,139 @@ public class Machine : NetworkBehaviour, IGridItemHandler
     #region Commands (클라이언트에서 서버로 요청)
     // 상호작용 요청 커맨드 (클라이언트에서 호출)
     [Command(requiresAuthority = false)]
-    private void CmdTryInteract()
+    private void CmdTryInteract(NetworkConnectionToClient sender = null)
     {
-        //if (!isServer)
-        //{
-        //    return false;
-        //}
+        if(isServer == false)
+        {
+            return;
+        }
 
-        //if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
-        //{
-        //    ServerRotateModel();
-        //}
-        //else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase
-        //    || PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
-        //{
-        //    return _interactComponent.ServerTryInteract(this);
-        //}
+        bool result = false;
+        EPhaseType currentPhase = PhaseManager.Instance.CurrentPhase.PhaseType;
 
-        //return false;
+        if(currentPhase == EPhaseType.PreparingPhase)
+        {
+            ServerRotateModel();
+            result = true;
+        }
+        else
+        {
+            if (ReferenceEquals(_interactComponent, null) == false)
+            {
+                result = _interactComponent.ServerTryInteract(this);
+            }
+        }
+
+        TargetRpcOnInteract(sender, result);
+    }
+
+    [TargetRpc]
+    private void TargetRpcOnInteract(NetworkConnectionToClient target, bool success)
+    {
+        if (NetworkClient.connection.identity.TryGetComponent<Player>(out Player player))
+        {
+            player.GetAbility<PlayerInteractAbility>().ReceiveInteractResult(success);
+        }
     }
 
     [Command(requiresAuthority = false)]
-    private void CmdTryInput(int tid, EInputType inputType)
+    private void CmdTryPickUp(NetworkConnectionToClient sender = null)
     {
-        //if (!isServer)
-        //{
-        //    return false;
-        //}
-        //return _inputComponent.ServerTryInput(this, tid, inputType);
+        if(isServer == false)
+        {
+            return;
+        }
+
+        GameObject pickedUpItem = null;
+        EPhaseType currentPhase = PhaseManager.Instance.CurrentPhase.PhaseType;
+
+        if (currentPhase == EPhaseType.PreparingPhase)
+        {
+            // GridManager의 서버 전용 메서드를 호출하여 서버에서 그리드 정보만 제거하고 오브젝트를 반환받음
+            pickedUpItem = GridManager.Instance.ServerRemovePlacementDataOnly(transform.position);
+
+            // 반환받은 오브젝트가 있다면, 픽업한 플레이어에게 권한을 할당함
+            if (pickedUpItem != null && sender != null)
+            {
+                NetworkServer.spawned[pickedUpItem.GetComponent<NetworkIdentity>().netId].AssignClientAuthority(sender);
+                // GridManager의 TargetRpc를 호출하여 클라이언트에서 배치 상태를 시작하도록 지시
+                GridManager.Instance.TargetRpcStartPlacement(sender, pickedUpItem.GetComponent<NetworkIdentity>().netId);
+            }
+        }
+        else
+        {
+            if(ReferenceEquals(_outputComponent, null) == false)
+            {
+                pickedUpItem = _outputComponent.ServerTakeItem(this);
+            }
+        }
+
+        if(pickedUpItem != null && sender != null)
+        {
+            NetworkServer.spawned[pickedUpItem.GetComponent<NetworkIdentity>().netId].AssignClientAuthority(sender);
+        }
+
+        TargetRpcOnPickUp(sender, pickedUpItem.GetComponent<NetworkIdentity>());
+    }
+
+    [TargetRpc]
+    private void TargetRpcOnPickUp(NetworkConnectionToClient target, NetworkIdentity itemNetId)
+    {
+        if (NetworkClient.connection.identity.TryGetComponent<Player>(out Player player))
+        {
+            player.GetAbility<PlayerPickupAbility>().ReceivePickedUpItem(itemNetId);
+        }
     }
 
     [Command(requiresAuthority = false)]
-    private void CmdTryPickUp()
+    private void CmdTryDrop(Vector3 targetPosition, int tid, EInputType inputType, uint dropItemNetId, NetworkConnectionToClient sender = null)
     {
-        //if (!isServer)
-        //{
-        //    return null;
-        //}
+        if (isServer == false)
+        {
+            return;
+        }
 
-        //if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
-        //{
-        //    return GridManager.Instance.StartPlacement(transform.position);
-        //}
-        //else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase
-        //    || PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
-        //{
-        //    if (ReferenceEquals(_outputComponent, null) == false)
-        //    {
-        //        if (_outputComponent.ServerCanTake(this))
-        //        {
-        //            return _outputComponent.ServerTakeItem(this);
-        //        }
-        //    }
-        //}
-        //return null;
+        bool success = false;
+        EPhaseType currentPhase = PhaseManager.Instance.CurrentPhase.PhaseType;
+
+        if(NetworkServer.spawned.TryGetValue(dropItemNetId, out NetworkIdentity dropItemIdentity))
+        {
+            GameObject inputObject = dropItemIdentity.gameObject;
+
+            if (currentPhase == EPhaseType.PreparingPhase)
+            {
+                if (GridManager.Instance.ServerCanPlaceObjectAt(targetPosition, _data.AreaType))
+                {
+                    GridManager.Instance.CmdPlaceStructure(targetPosition, dropItemNetId, sender);
+                    success = true;
+                }
+                else
+                {
+                    success = false;
+                }
+            }
+            else
+            {
+                success = _inputComponent.ServerTryInput(this, tid, inputType, inputObject);
+            }
+
+        }
+
+        if (success)
+        {
+            dropItemIdentity.RemoveClientAuthority();
+        }
+
+        TargetRpcOnDrop(sender, success);
     }
 
-    [Command(requiresAuthority = false)]
-    private void CmdTryDrop(Vector3 targetPosition, int tid, EInputType inputType, GameObject inputObject)
+    [TargetRpc]
+    private void TargetRpcOnDrop(NetworkConnectionToClient target, bool success)
     {
-        //if (!isServer)
-        //{
-        //    return false;
-        //}
-
-        //if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
-        //{
-        //    if (GridManager.Instance.TryPlaceStructure(targetPosition))
-        //    {
-        //        return true;
-        //    }
-        //}
-        //else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase
-        //    || PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
-        //{
-        //    if (CmdTryInput(tid, inputType))
-        //    {
-        //        return true;
-        //    }
-        //}
-        //return false;
+        if (NetworkClient.connection.identity.TryGetComponent<Player>(out Player player))
+        {
+            player.GetAbility<PlayerPickupAbility>().ReceiveDroppedItem(success);
+        }
     }
     #endregion
 
@@ -424,21 +478,26 @@ public class Machine : NetworkBehaviour, IGridItemHandler
         return null;
     }
 
-    public bool TryInteract()
+    public void TryInteract(NetworkConnectionToClient conn)
     {
-        //return CmdTryInteract();
-        return false;
+        CmdTryInteract(conn);
     }
 
-    public GameObject TryPickUp()
+    public void TryPickUp(NetworkConnectionToClient conn)
     {
-        //return CmdTryPickUp();
-        return null;
+        CmdTryPickUp(conn);
     }
 
-    public bool TryDrop(Vector3 targetPosition, int tid = 10000, EInputType inputType = EInputType.None, GameObject inputObject = null)
+    public void TryDrop(NetworkConnectionToClient conn, Vector3 targetPosition, NetworkIdentity inputNetId, int tid = 10000, EInputType inputType = EInputType.None)
     {
-        //return CmdTryDrop(targetPosition, tid, inputType, inputObject);
-        return false;
+        if(inputNetId != null)
+        {
+            CmdTryDrop(targetPosition, tid, inputType, inputNetId.netId, conn);
+        }
+    }
+
+    public int GetStructureTID()
+    {
+        return _data.StructureTID;
     }
 }

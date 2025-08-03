@@ -23,6 +23,9 @@ public class StorageData
     ///<summary>재료 타입</summary>
     public readonly EIngredientType IngredientType;
 
+    ///<summary>구조물TID</summary>
+    public readonly int StructureTID;
+
     public StorageData(BinaryReader reader)
     {
         TID = reader.ReadInt32();
@@ -32,5 +35,6 @@ public class StorageData
         Description_LocalizationTID = reader.ReadInt32();
         Hint_LocalizationTID = reader.ReadInt32();
         IngredientType = (EIngredientType)reader.ReadInt32();
+        StructureTID = reader.ReadInt32();
     }
 }

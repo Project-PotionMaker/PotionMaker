@@ -62,6 +62,7 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
         _remainCustomers = 0;
         _inviteIndex = 0;
     }
+    
     [Server]
     public void InviteCustomer(float deltaTime)
     {
@@ -73,7 +74,7 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
         //TODO : Layout에서 최대 줄 길이 가져와서 적용하기
         _inviteTimer = _inviteCoolTime;
         Debug.Log("손님 초대");
-        GameObject customer = CustomerFactory.Instance.Create(ENPCType.Customer,Vector3.zero,Quaternion.identity); // TODO : PoolManager완성 후 수정
+        GameObject customer = CustomerFactory.Instance.CreateObject(ENPCType.Customer,Vector3.zero,Quaternion.identity); // TODO : PoolManager완성 후 수정
         //OnCustomerIn(customer.GetComponent<PhotonView>().ViewID); //TODO : PoolManager완성 후 수정
         //CustomerPool.Instance.GetObjectAsync(0);
         customer.transform.position = _enterDoor.position; // 손님을 상점 입구에 생성

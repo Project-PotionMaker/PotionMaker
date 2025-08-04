@@ -76,7 +76,7 @@ public class Customer : NetworkBehaviour
         if(ReferenceEquals(potion, null) == false)
         {
             potion.transform.SetParent(null); 
-            CraftItemFactory.Instance.CmdReturn(potion); 
+            CraftItemFactory.Instance.ReturnObject(potion); 
         }
     }
 

@@ -360,7 +360,7 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
 
     // --- 클라이언트 전용: 현재 배치 상태 종료 ---
     [Client]
-    private void StopPlacement()
+    public void StopPlacement()
     {
         if (ReferenceEquals(_buildingState, null))
         {

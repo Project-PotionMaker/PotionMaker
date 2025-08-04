@@ -25,7 +25,11 @@ public class CraftItemFactory : NetworkFactoryBase<EInputType, CraftItemFactoryI
     [Command(requiresAuthority = false)]
     protected override void CmdReturnObject(GameObject obj)
     {
+        if (obj == null)
+        {
+            return;
+        }
+
         NetworkServer.UnSpawn(obj);
-        _factoryLogic.ReturnObject(obj);
     }
 }

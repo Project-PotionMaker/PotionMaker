@@ -381,7 +381,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable
         int productTID = DataTable.Instance.GetFurnitureData(DataTID).ProductTID;
         int refundPrice = DataTable.Instance.GetProductData(productTID).Price / 4;
         CurrencyManager.Instance.CmdRequestAddCurrency(refundPrice);
-        StructureFactory.Instance.CmdReturn(gameObject);
+        StructureFactory.Instance.ReturnObject(gameObject);
     }
 
     public void CancelRefund()

@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2293566999889274717}
   - component: {fileID: 7655783862749028649}
-  - component: {fileID: 5485947333665249630}
+  - component: {fileID: 4115269650131852047}
   m_Layer: 0
   m_Name: CustomerManager
   m_TagString: Untagged
@@ -45,16 +45,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9dba675323f62ad43888b9c44ac2a974, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   _dontDestroy: 1
-  _lazyInitialization: 1
-  _maxCustomerLost: 5
   _inviteCoolTime: 3
-  _shopEntry: {fileID: 0}
-  _hallEntry: {fileID: 0}
-  _servingCounter: {fileID: 0}
-  _counterLocation: {fileID: 0}
+  _enterDoor: {fileID: 0}
   _exitDoor: {fileID: 0}
---- !u!114 &5485947333665249630
+--- !u!114 &4115269650131852047
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -63,16 +61,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 984014340197020790}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents: []
-  sceneViewId: 0
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
+  sceneId: 0
+  _assetId: 3209137746
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0

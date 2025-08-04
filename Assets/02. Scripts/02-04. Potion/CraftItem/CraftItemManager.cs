@@ -50,8 +50,8 @@ public class CraftItemManager : NetworkBehaviourSingleton<CraftItemManager>
     [Server]
     public GameObject TryCreateIngredientItem(int TID, Vector3 machinePosition)
     {
-        GameObject ingredient = CraftItemFactory.Instance.Create(EInputType.Ingredient, machinePosition, Quaternion.identity);
-        ingredient.GetComponent<IngredientItem>().ServerUpdateIngredientData(TID);
+        GameObject ingredient = CraftItemFactory.Instance.CreateObject(EInputType.Ingredient, machinePosition, Quaternion.identity);
+        ingredient.GetComponent<IngredientItem>().InitIngredientData(TID);
         return ingredient;
     }
 
@@ -65,16 +65,16 @@ public class CraftItemManager : NetworkBehaviourSingleton<CraftItemManager>
             recipeCode = _recipeCodeHandler.MakeNewRecipeCode(TIDList, machineTID);
             if (_recipeCodeVerifier.IsValidProcess(recipeCode))
             {
-                output = CraftItemFactory.Instance.Create(EInputType.Output, machinePosition, Quaternion.identity);
-                output.GetComponent<OutputItem>().ServerUpdateOutputData(EInputType.Output, _outputDataTIDDict[recipeCode]);
+                output = CraftItemFactory.Instance.CreateObject(EInputType.Output, machinePosition, Quaternion.identity);
+                output.GetComponent<OutputItem>().InitOutputData(EInputType.Output, _outputDataTIDDict[recipeCode]);
                 return output;
             }
         }
         else
         {
             recipeCode = DataTable.Instance.GetIngredientData(TIDList[0]).RecipeCode;
-            output = CraftItemFactory.Instance.Create(EInputType.Output, machinePosition, Quaternion.identity);
-            output.GetComponent<OutputItem>().ServerUpdateOutputData(EInputType.Output, _outputDataTIDDict[recipeCode]);
+            output = CraftItemFactory.Instance.CreateObject(EInputType.Output, machinePosition, Quaternion.identity);
+            output.GetComponent<OutputItem>().InitOutputData(EInputType.Output, _outputDataTIDDict[recipeCode]);
             return output;
         }
 
@@ -88,8 +88,8 @@ public class CraftItemManager : NetworkBehaviourSingleton<CraftItemManager>
         string recipeCode = _recipeCodeHandler.MakeNewRecipeCode(TIDList, bottlerTID);
         if (_recipeCodeVerifier.IsValidPotion(recipeCode))
         {
-            GameObject potion = CraftItemFactory.Instance.Create(EInputType.Potion, machinePosition, Quaternion.identity);
-            potion.GetComponent<PotionItem>().ServerUpdatePotionData(_potionDataTIDDict[recipeCode]);
+            GameObject potion = CraftItemFactory.Instance.CreateObject(EInputType.Potion, machinePosition, Quaternion.identity);
+            potion.GetComponent<PotionItem>().UpdatePotionData(_potionDataTIDDict[recipeCode]);
             return potion;
         }
         return CreateFailureItem(machinePosition);
@@ -98,8 +98,8 @@ public class CraftItemManager : NetworkBehaviourSingleton<CraftItemManager>
     [Server]
     private GameObject CreateFailureItem(Vector3 machinePosition)
     {
-        GameObject output =CraftItemFactory.Instance.Create(EInputType.Output, machinePosition, Quaternion.identity);
-        output.GetComponent<OutputItem>().ServerUpdateOutputData(EInputType.FailureOutput, FailureOutputTID);
+        GameObject output =CraftItemFactory.Instance.CreateObject(EInputType.Output, machinePosition, Quaternion.identity);
+        output.GetComponent<OutputItem>().InitOutputData(EInputType.FailureOutput, 10000);
 
         return output;
     }

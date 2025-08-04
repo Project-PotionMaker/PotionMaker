@@ -16,4 +16,6 @@ Target,
 GridVisualization,
 Grid,
 PreviewSystem,
+EnterDoor,
+ExitDoor,
 }

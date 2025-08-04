@@ -43,7 +43,7 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
         _lineHandler = new CustomerLineHandler();
         _orderHandler.Init();
     }
-    private void Start()
+    public override void OnStartClient()
     {
         Dictionary<EPhaseType, BasePhase> phaseDictionary = PhaseManager.Instance.PhaseDictionary;
         phaseDictionary[EPhaseType.ServingPhase].OnPhaseEntered += PreService;
@@ -53,7 +53,10 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
         //CustomerPool.Instance.ObjectSpawnedActions.TryAdd(ENPCType.Customer, null);
         //CustomerPool.Instance.ObjectSpawnedActions[ENPCType.Customer] += OnCustomerIn;
 
+        _enterDoor = GameObject.FindGameObjectWithTag(nameof(ETags.EnterDoor)).transform;
+        _exitDoor = GameObject.FindGameObjectWithTag(nameof(ETags.ExitDoor)).transform;
     }
+
     public void PreService()
     {
         _orderHandler.SetLists();

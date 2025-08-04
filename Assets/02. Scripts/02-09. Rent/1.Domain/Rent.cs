@@ -15,6 +15,7 @@ public class Rent
     private int _rentIncrement;
     public int RentIncrement => _rentIncrement;
 
+    public bool IsRentDay => _rentDayCounter == RENT_PERIOD;
     public Rent(int rentDayCounter, int currentRentCost, int rentIncrement)
     {
         if (rentDayCounter < 1 || rentDayCounter > RENT_PERIOD)
@@ -84,7 +85,7 @@ public class Rent
     }
     public void OnRentPaid()
     {
-        _rentDayCounter = (_rentDayCounter + 1) % RENT_PERIOD + 1;
+        _rentDayCounter = 1;
         _currentRentCost += _rentIncrement;
     }
 

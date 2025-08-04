@@ -24,6 +24,8 @@ public class UI_DaySummary : MonoBehaviour
 
     [Header("방세")]
     [SerializeField]
+    private GameObject _rentPanel;
+    [SerializeField]
     private TextMeshProUGUI _rentTextUI;
 
     [Header("평판")]
@@ -86,6 +88,7 @@ public class UI_DaySummary : MonoBehaviour
         _dailySalesTextUI.text = SalesManager.Instance.Sales.DailySales.ToString("N0");
 
         // 방세
+        _rentPanel.SetActive(RentManager.Instance.Rent.IsRentDay);
         _rentTextUI.text = $"-{RentManager.Instance.Rent.CurrentRentCost.ToString("N0")}";
 
         // 평판
@@ -100,7 +103,12 @@ public class UI_DaySummary : MonoBehaviour
 
         // 자산
         // 미리 방세 빼는 로직이 들어가있어야함? 아니면 표시만?
-        _currentCurrencyTextUI.text = CurrencyManager.Instance.Coin.Value.ToString("N0");
+        int currentCurrency = CurrencyManager.Instance.Coin.Value;
+        if (RentManager.Instance.Rent.IsRentDay)
+        {
+            currentCurrency -= RentManager.Instance.Rent.CurrentRentCost;
+        }
+        _currentCurrencyTextUI.text = currentCurrency.ToString("N0");
         gameObject.SetActive(true);
     }
 }

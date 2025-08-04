@@ -1,21 +1,51 @@
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UI_Machine : MonoBehaviour
 {
     [SerializeField]
     private Machine _machine;
+
     [SerializeField]
-    private TextMeshProUGUI _progressTextUI;
+    private Slider ProgressSlider;
+    [SerializeField]
+    private TextMeshProUGUI _nameTextUI;
+    [SerializeField]
+    private GameObject _interactPanel;
+    [SerializeField]
+    private GameObject _sliderPanel;
 
-    private void Update()
+    private void Start()
     {
-        transform.forward = Camera.main.transform.forward;
+        _machine.OnDataChanged += Refresh;
+        PhaseManager.Instance.OnPhaseChanged += ChangeState;
+    }
 
-        if (_machine != null)
+    public void ChangeState()
+    {
+        if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
         {
-            _progressTextUI.text = $"{_machine.CurrentProgress:F0}";
+            _interactPanel.SetActive(true);
+            _sliderPanel.SetActive(false);
         }
+        else
+        {
+            _interactPanel.SetActive(false);
+            _sliderPanel.SetActive(true);
+        }
+    }
+
+    public void Refresh()
+    {
+        _nameTextUI.text = _machine.Data.Name;
+
+        ProgressSlider.value = _machine.CurrentProgress / _machine.Data.MaxProgress;
+    }
+
+    private void OnDisable()
+    {
+        PhaseManager.Instance.OnPhaseChanged -= ChangeState;
     }
 }

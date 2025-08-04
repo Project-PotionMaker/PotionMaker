@@ -2,6 +2,13 @@ using UnityEngine;
 
 public class CasherInteract : IInteractable<Furniture>
 {
+    private GameObject UI_Market;
+
+    public CasherInteract()
+    {
+        UI_Market = GameObject.FindAnyObjectByType<UI_Market>().gameObject;
+    }
+
     public bool ServerCanInteract(Furniture instance)
     {
         return true;

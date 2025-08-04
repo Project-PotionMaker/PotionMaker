@@ -8,6 +8,9 @@ public class PlayerPickupAbility : PlayerAbility
 
     private PlayerAnimationAbility _animationAbility;
 
+    // 영상 임시
+    private CanvasGroup _lastHighlightedStructureCanvas;
+
     private void Start()
     {
         if (!_owner.isLocalPlayer)
@@ -28,7 +31,7 @@ public class PlayerPickupAbility : PlayerAbility
             return;
         }
 
-        if(_heldItemIdentity != null)
+        if (_heldItemIdentity != null)
         {
             Vector3 targetPosition = _owner.GetFrontPosition();
             GridManager.Instance.UpdatePlacementPosition(targetPosition);
@@ -101,7 +104,7 @@ public class PlayerPickupAbility : PlayerAbility
 
     private GameObject FindFrontPickupItem()
     {
-        if (!_owner.CheckObjectInFront())
+        if (_owner.GetObjectInFront() == null)
         {
             return null;
         }

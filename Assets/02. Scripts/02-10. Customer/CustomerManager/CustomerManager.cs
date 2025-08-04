@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using VInspector;
 using Mirror;
+using UnityEngine.SceneManagement;
 public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
 {
     //접수 받기, 포션 제공하기만 클라이언트에서 마스터에게 요청 가능
@@ -53,8 +54,16 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
         //CustomerPool.Instance.ObjectSpawnedActions.TryAdd(ENPCType.Customer, null);
         //CustomerPool.Instance.ObjectSpawnedActions[ENPCType.Customer] += OnCustomerIn;
 
-        _enterDoor = GameObject.FindGameObjectWithTag(nameof(ETags.EnterDoor)).transform;
-        _exitDoor = GameObject.FindGameObjectWithTag(nameof(ETags.ExitDoor)).transform;
+        _enterDoor = GameObject.FindGameObjectWithTag(nameof(ETags.EnterDoor))?.transform;
+        _exitDoor = GameObject.FindGameObjectWithTag(nameof(ETags.ExitDoor))?.transform;
+
+        SceneManager.sceneLoaded += OnSceneLoad;
+    }
+
+    public void OnSceneLoad(Scene scene, LoadSceneMode mode)
+    {
+        _enterDoor = GameObject.FindGameObjectWithTag(nameof(ETags.EnterDoor))?.transform;
+        _exitDoor = GameObject.FindGameObjectWithTag(nameof(ETags.ExitDoor))?.transform;
     }
 
     public void PreService()

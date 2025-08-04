@@ -96,9 +96,10 @@ public class UI_DaySummary : MonoBehaviour
         float currentReputation = ReputationManager.Instance.Reputation.Value;
         _reputationRateView.fillAmount = currentReputation / 5;
         _currentReputationTextUI.text = currentReputation.ToString();
-        float deltaReputationRate = ReputationManager.Instance.Reputation.Difference;
-        string color = deltaReputationRate >= 0 ? POSITIVE_COLOR : NEGATIVE_COLOR;
-        _deltaReputationTextUI.text = $"<color={color}>{deltaReputationRate}</color>";
+
+        float reputationDifference = ReputationManager.Instance.Reputation.Difference;
+        string color = reputationDifference >= 0 ? POSITIVE_COLOR : NEGATIVE_COLOR;
+        _deltaReputationTextUI.text = $"<color={color}>{reputationDifference.ToString("+0.0;-0.0;+0")}</color>";
 
 
         // 자산

@@ -43,9 +43,15 @@ public class Customer : NetworkBehaviour
     private void OnEnable()
     {
         _currentState = ECustomerStateType.Lining; // 초기 상태 설정
-
-        int index = UnityEngine.Random.Range(0, PhaseManager.Instance.PotionDataList.Count);
-        _requestedPotionTID = PhaseManager.Instance.PotionDataList[index].TID;
+        if(PhaseManager.Instance.PotionDataList.Count > 0 )
+        {
+            int index = UnityEngine.Random.Range(0, PhaseManager.Instance.PotionDataList.Count);
+            _requestedPotionTID = PhaseManager.Instance.PotionDataList[index].TID;
+        }
+        else
+        {
+            Debug.LogWarning("PotionDataList is empty. Cannot assign a requested potion to the customer.");
+        }
     }
 
     [Server]
@@ -77,8 +83,15 @@ public class Customer : NetworkBehaviour
     [ClientRpc]
     public void HandlePotion()
     {
-        GameObject potion = NetworkClient.spawned[ServedPotionNetId].gameObject;
-        potion.transform.SetParent(_potionHandler.transform);
-        potion.transform.localPosition = Vector3.zero;
+        if (NetworkClient.spawned.TryGetValue(ServedPotionNetId, out NetworkIdentity identity))
+        {
+            GameObject potion = identity.gameObject;
+            potion.transform.SetParent(_potionHandler.transform);
+            potion.transform.localPosition = Vector3.zero;
+        }
+        else
+        {
+            Debug.LogWarning($"Potion with netId {ServedPotionNetId} not found on client.");
+        }
     }
 }

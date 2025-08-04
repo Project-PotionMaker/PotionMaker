@@ -34,6 +34,10 @@ public class CustomerMove : NetworkBehaviour
     }
     private void Update()
     {
+        if (!isServer) 
+        {
+            return;
+        }
         if (_agent.isActiveAndEnabled == true)
         {
             ArriveCheck();

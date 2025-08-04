@@ -29,6 +29,10 @@ public class CustomerEndurance : NetworkBehaviour
 
     private void Update()
     {
+        if (!isServer)
+        {
+            return;
+        }
         if (_owner.CurrentState == ECustomerStateType.Leaving || _owner.CurrentState == ECustomerStateType.PickingUp)
         {
             return;

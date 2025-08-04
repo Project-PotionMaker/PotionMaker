@@ -1,7 +1,7 @@
-using Mirror;
 using System.Collections.Generic;
 using UnityEngine;
 using VInspector;
+using Mirror;
 public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
 {
     //접수 받기, 포션 제공하기만 클라이언트에서 마스터에게 요청 가능
@@ -105,7 +105,7 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
         int potionTID = customer.GetComponent<Customer>().RequestedPotionTID;
         _orderHandler.AddOrder(potionTID, customer);
         customer.TransitionState(ECustomerStateType.Sitting);
-        CmdSitOnChair(chairNetId, customer);
+        SitOnChair(chairNetId, customer);
         customer.CustomerEndurance.ResetEndurance();
         _lineHandler.ReLining(); // 줄 다시 세우기
         ServePotionOnTakeOrder();
@@ -117,7 +117,7 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
         {
             _lineHandler.ReLining(); // 줄 다시 세우기
         }
-        CmdLeaveChair(customer);
+        LeaveChair(customer);
         _lineHandler.PutOutCustomer(customer); // 손님을 나가게 하기
         if(PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase)
         {
@@ -154,7 +154,7 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
         customer.CustomerMove.MoveTo(position); // 손님을 판매대 위치로 이동
         _orderHandler.PickupTableDict[pickupTableNetId].UsingCustomer = customer; // 손님과 판매대 매핑 저장
         _orderHandler.PotionOrderMap[potionTID].Remove(customer);
-        CmdLeaveChair(customer);
+        LeaveChair(customer);
     }
 
     [Server]
@@ -227,8 +227,8 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
         _orderHandler.PickupTableDict[pickupTableNetId].HeldItemTID = 0;
         _orderHandler.PickupTableDict[pickupTableNetId].UsingCustomer = null; 
     }
-    [Command(requiresAuthority = false)]
-    private void CmdSitOnChair(uint chairNetId,Customer customer)
+    [Server]
+    private void SitOnChair(uint chairNetId,Customer customer)
     {
         if(_orderHandler.LuxuryChairDict.ContainsKey(chairNetId))
         {
@@ -246,8 +246,8 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
         // Mirror 임시
         chair.GetComponent<Furniture>().TryEffect(customer.netId); // 의자 효과 적용
     }
-    [Command(requiresAuthority = false)]
-    private void CmdLeaveChair(Customer customer)
+    [Server]
+    private void LeaveChair(Customer customer)
     {
         FurnitureUsingStat usedChair = _orderHandler.FindUsingChair(customer);
         if (usedChair != null)

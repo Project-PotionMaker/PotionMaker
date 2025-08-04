@@ -99,8 +99,6 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
     {
         base.OnStartClient();
 
-        OnDataTIDChanged(0, _dataTID);
-
         if (!isServer)
         {
             InputTIDList.Callback += OnInputTIDListChanged;
@@ -417,7 +415,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
             {
                 if (GridManager.Instance.ServerCanPlaceObjectAt(targetPosition, _data.AreaType))
                 {
-                    GridManager.Instance.CmdPlaceStructure(targetPosition, dropItemNetId, sender);
+                    GridManager.Instance.ServerPlaceStructure(targetPosition, dropItemNetId, sender);
                     success = true;
                 }
                 else

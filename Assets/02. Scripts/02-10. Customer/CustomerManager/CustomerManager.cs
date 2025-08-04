@@ -185,7 +185,7 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
     public void ReturnCustomer(Customer customer) // 손님이 출구에 도착하면 호출
     {
         customer.ReturnPotion();
-        CustomerFactory.Instance.CmdReturn(customer.gameObject); 
+        CustomerFactory.Instance.ReturnObject(customer.gameObject); 
         RemainCustomers--;
     }
     [Server]

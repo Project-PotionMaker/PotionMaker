@@ -50,10 +50,6 @@ public class Storage : NetworkBehaviour, IGridItemHandler
     public override void OnStartClient()
     {
         base.OnStartClient();
-
-        OnIngredientTIDChanged(0, _ingredientTID);
-        OnCurrentRotationChanged(0, _currentRotation);
-        OnDataTIDChanged(0, _dataTID);
     }
 
     #region SyncVar Hook Functions
@@ -193,7 +189,7 @@ public class Storage : NetworkBehaviour, IGridItemHandler
 
             if (GridManager.Instance.ServerCanPlaceObjectAt(targetPosition, EAreaType.Storage))
             {
-                GridManager.Instance.CmdPlaceStructure(targetPosition, dropItemNetId, sender);
+                GridManager.Instance.ServerPlaceStructure(targetPosition, dropItemNetId, sender);
                 success = true;
             }
             else

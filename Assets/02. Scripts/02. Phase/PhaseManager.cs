@@ -5,7 +5,7 @@ using UnityEngine.UI;
 //using Photon.Pun;
 using VInspector;
 
-public class PhaseManager : MonoBehaviourSingleton<PhaseManager>    
+public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>    
 {
     public event Action OnDayPassed;
     public event Action OnPhaseChanged;

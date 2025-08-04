@@ -1,5 +1,6 @@
 using Mirror;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using VInspector;
@@ -33,6 +34,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable
     public Transform InputPosition => _inputPosition;
 
     public float RefundGauge{ get; set; }
+    public Coroutine RefundRoutine { get; set; }
 
 
     // 서버 전용 컴포넌트들
@@ -369,14 +371,10 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable
         return _data.StructureTID;
     }
 
-    public void AddRefundGauge()
+    public void StartRefund()
     {
-        RefundGauge += Time.deltaTime*3f;
-    }
-
-    public void ResetRefundGauge()
-    {
-        RefundGauge = 0;
+        StopCoroutine(nameof(ProcessRefund));
+        RefundRoutine = StartCoroutine(nameof(ProcessRefund));
     }
 
     public void Refund()
@@ -385,6 +383,22 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable
         int refundPrice = DataTable.Instance.GetProductData(productTID).Price / 4;
         CurrencyManager.Instance.CmdRequestAddCurrency(refundPrice);
         StructureFactory.Instance.CmdReturn(gameObject);
+    }
+
+    public void CancelRefund()
+    {
+        StopCoroutine(RefundRoutine);
+        RefundGauge = 0;
+    }
+
+    public IEnumerator ProcessRefund()
+    {
+        while (RefundGauge < 1)
+        {
+            RefundGauge += Time.deltaTime / 3f;
+            yield return null;
+        }
+        Refund();
     }
     #endregion
 }

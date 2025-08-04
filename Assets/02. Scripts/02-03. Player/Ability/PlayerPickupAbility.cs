@@ -5,7 +5,7 @@ public class PlayerPickupAbility : PlayerAbility
 {
     [SyncVar(hook = nameof(OnHeldItemChanged))]
     private NetworkIdentity _heldItemIdentity;
-
+    public NetworkIdentity HeldItemIdentity => _heldItemIdentity;
     private PlayerAnimationAbility _animationAbility;
 
     private void Start()

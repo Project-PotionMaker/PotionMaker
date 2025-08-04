@@ -78,6 +78,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
     public Action OnDataChanged;
 
     public float RefundGauge { get; set; }
+    public Coroutine RefundRoutine { get; set; }
 
     private void Awake()
     {
@@ -504,21 +505,33 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
         return _data.StructureTID;
     }
 
-    public void AddRefundGauge()
+    public void StartRefund()
     {
-        RefundGauge += Time.deltaTime * 3f;
-    }
-
-    public void ResetRefundGauge()
-    {
-        RefundGauge = 0;
+        StopCoroutine(nameof(ProcessRefund));
+        RefundRoutine = StartCoroutine(nameof(ProcessRefund));
     }
 
     public void Refund()
     {
-        int productTID = DataTable.Instance.GetMachineData(DataTID).ProductTID;
+        int productTID = DataTable.Instance.GetFurnitureData(DataTID).ProductTID;
         int refundPrice = DataTable.Instance.GetProductData(productTID).Price / 4;
         CurrencyManager.Instance.CmdRequestAddCurrency(refundPrice);
         StructureFactory.Instance.CmdReturn(gameObject);
+    }
+
+    public void CancelRefund()
+    {
+        StopCoroutine(RefundRoutine);
+        RefundGauge = 0;
+    }
+
+    public IEnumerator ProcessRefund()
+    {
+        while (RefundGauge < 1)
+        {
+            RefundGauge += Time.deltaTime / 3f;
+            yield return null;
+        }
+        Refund();
     }
 }

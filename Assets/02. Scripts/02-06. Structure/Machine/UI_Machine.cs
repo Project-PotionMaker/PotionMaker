@@ -21,6 +21,7 @@ public class UI_Machine : MonoBehaviour
     {
         _machine.OnDataChanged += Refresh;
         PhaseManager.Instance.OnPhaseChanged += ChangeState;
+        ChangeState();
     }
 
     public void ChangeState()
@@ -35,6 +36,9 @@ public class UI_Machine : MonoBehaviour
             _interactPanel.SetActive(false);
             _sliderPanel.SetActive(true);
         }
+
+        // 테스트
+        _interactPanel.SetActive(false);
     }
 
     public void Refresh()

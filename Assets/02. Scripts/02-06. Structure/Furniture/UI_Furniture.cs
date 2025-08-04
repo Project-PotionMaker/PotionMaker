@@ -20,6 +20,7 @@ public class UI_Furniture : MonoBehaviour
     {
         _furniture.OnDataChanged += Refresh;
         PhaseManager.Instance.OnPhaseChanged += ChangeState;
+        ChangeState();
     }
 
     public void ChangeState()
@@ -35,9 +36,13 @@ public class UI_Furniture : MonoBehaviour
             _sliderPanel.SetActive(true);
         }
 
-        if(_furniture.Data.SpecialStructureType == ESpecialStructureType.PickUpTable)
+        if(_furniture.Data.SpecialStructureType == ESpecialStructureType.Casher)
         {
             _nameTextUI.text = "상점";
+        }
+        else
+        {
+            _interactPanel.SetActive(false);
         }
     }
 

@@ -25,6 +25,7 @@ public class UI_Storage : MonoBehaviour
     {
         _storage.OnDataChanged += Refresh;
         PhaseManager.Instance.OnPhaseChanged += ChangeState;
+        ChangeState();
     }
 
     public void ChangeState()
@@ -41,6 +42,10 @@ public class UI_Storage : MonoBehaviour
         }
 
         IngredientData ingredientData = DataTable.Instance.GetIngredientData(_storage.IngredientTID);
+        if(ingredientData == null)
+        {
+            return;
+        }
         _nameTextUI.text = ingredientData.Name;
         _PriceTextUI.text = ingredientData.Price.ToString();
     }

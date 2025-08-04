@@ -425,6 +425,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler
             else
             {
                 success = _inputComponent.ServerTryInput(this, tid, inputType, inputObject);
+                CraftItemFactory.Instance.ReturnObject(inputObject);
             }
 
         }

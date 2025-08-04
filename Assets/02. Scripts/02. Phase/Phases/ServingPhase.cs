@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using Mirror;
 
 public class ServingPhase : BasePhase
 {
@@ -7,9 +8,11 @@ public class ServingPhase : BasePhase
     private float _currentTime;
     public float CurrentTime { get => _currentTime; set => _currentTime = value; }
 
+    [SyncVar(hook = nameof(SyncTimer))]
     private float _currentTimeRate;
+    public float CurrentTimeRate { get => _currentTimeRate; set => _currentTimeRate = value; }
     private bool _timesUp = false;
-    public event Action<float> OnTimerRunning;
+    public event Action OnTimerRunning;
     public ServingPhase()
     {
         _phaseType = EPhaseType.ServingPhase;
@@ -20,14 +23,17 @@ public class ServingPhase : BasePhase
         _currentTime = INIT_TIMER;
         _timesUp = false;
         PhaseManager.Instance.DeathCount = 0;
-        CustomerManager.Instance.PreService();
     }
 
     public override void Update(float deltaTime)
     {
         base.Update(deltaTime);
-        _currentTime = Mathf.Max(0,_currentTime-deltaTime);
-        //TODO : HUD 상단의 타이머와 연동
+        if(!NetworkServer.active)
+        {
+            return;
+        }
+
+        _currentTime = Mathf.Max(0, _currentTime - deltaTime);
         if (_currentTime <= 0)
         {
             if(_timesUp == false)
@@ -45,7 +51,6 @@ public class ServingPhase : BasePhase
         else
         {
             _currentTimeRate = _currentTime / INIT_TIMER; // 타이머 비율 계산
-            OnTimerRunning?.Invoke(_currentTimeRate); // 타이머가 작동 중일 때 호출
             CustomerManager.Instance.InviteCustomer(deltaTime); // 손님 초대
         }
 
@@ -54,5 +59,10 @@ public class ServingPhase : BasePhase
     public override void ExitPhase()
     {
         base.ExitPhase();
+    }
+
+    private void SyncTimer(float oldValue, float newValue)
+    {
+        OnTimerRunning?.Invoke();
     }
 }

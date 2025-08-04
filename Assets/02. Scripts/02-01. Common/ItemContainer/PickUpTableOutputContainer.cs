@@ -1,4 +1,3 @@
-//using Photon.Pun;
 using UnityEngine;
 
 public class PickUpTableOutputContainer : IOutputContainer<Furniture>
@@ -9,7 +8,7 @@ public class PickUpTableOutputContainer : IOutputContainer<Furniture>
     {
         //GameObject output = stat.InputObject;
         //stat.InputObject = null;
-        //CustomerManager.Instance.RemoveOnTable(furniture.PhotonView.ViewID);
+        //CustomerManager.Instance.CommandRemoveOnTable(furniture.netId);
         //return output;
         return null;
     }
@@ -18,11 +17,6 @@ public class PickUpTableOutputContainer : IOutputContainer<Furniture>
     {
         //if(stat.InputObject == null)
         //{
-        //    return false;
-        //}
-        //if (CustomerManager.Instance.OrderHandler.PickupTableDict[furniture.PhotonView.ViewID].UsingCustomer != null)
-        //{
-        //    Debug.Log("이미 가져가는 중");
         //    return false;
         //}
         return true;

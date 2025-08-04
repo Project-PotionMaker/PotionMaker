@@ -1,9 +1,8 @@
 using DG.Tweening;
-//using Photon.Pun;
 using UnityEngine;
 using UnityEngine.AI;
-
-public class CustomerMove : MonoBehaviour
+using Mirror;
+public class CustomerMove : NetworkBehaviour
 {
     private NavMeshAgent _agent;
     public NavMeshAgent Agent { get => _agent; set => _agent = value; } // NavMeshAgent 컴포넌트
@@ -18,39 +17,45 @@ public class CustomerMove : MonoBehaviour
     private bool _hasArrived = true;
     private const float GRID_OFFSET = 0.5f;
 
-    private void Awake()
+    private void OnEnable()
     {
+
         _agent = GetComponent<NavMeshAgent>();
+        _collider = GetComponent<Collider>();
+        if (!isServer)
+        {
+            _agent.enabled = false; // 클라이언트에서는 NavMeshAgent 비활성화
+            _collider.enabled = false; // 클라이언트에서는 충돌체 비활성화
+        }
         _rigidbody = GetComponent<Rigidbody>();
+        _rigidbody.isKinematic = false;
         _owner = GetComponent<Customer>();
         _animator = GetComponentInChildren<Animator>();
-        _collider = GetComponent<Collider>();
-        _agent.enabled = true; 
-        _rigidbody.isKinematic = false; 
     }
     private void Update()
     {
+        if (!isServer) 
+        {
+            return;
+        }
         if (_agent.isActiveAndEnabled == true)
         {
             ArriveCheck();
         }
-        else
-        {
-        }
     }
-
+    [Server]
     private void ArriveCheck()
     {
-        //if(!PhotonNetwork.IsMasterClient)
-        //{
-        //    return; // 마스터 클라이언트만 도착 여부 확인
-        //}
+        if (!isServer)
+        {
+            return;
+        }
         if (IsStayOn())
         {
             if (_hasArrived == false)
             {
+                _hasArrived = true;
                 OnArrived(); // 도착 시 호출
-                _hasArrived=true;
             }
         }
         else
@@ -59,13 +64,13 @@ public class CustomerMove : MonoBehaviour
             StartMoving();
         }
     }
-
+    [Server]
     public void MoveTo(Vector3 target) // 목적지만 바꾸는 함수
     {
-        //if (PhotonNetwork.IsMasterClient == false)
-        //{
-        //    return; // 마스터 클라이언트만 이동 가능
-        //}
+        if (!isServer)
+        {
+            return;
+        }
         _agent.enabled = true; 
         if(_owner.CurrentState == ECustomerStateType.PickingUp)
         {
@@ -79,18 +84,10 @@ public class CustomerMove : MonoBehaviour
 
     private void StartMoving()
     {
-        //if (!PhotonNetwork.IsMasterClient)
-        //{
-        //    return; // 마스터 클라이언트만 이동 시작
-        //}
         _animator.SetBool("Move", true);
     }
     private void OnArrived()
     {
-        //if(!PhotonNetwork.IsMasterClient)
-        //{
-        //    return; 
-        //}
         _animator.SetBool("Move", false);
         if (_owner.CurrentState == ECustomerStateType.Lining)
         {
@@ -106,7 +103,7 @@ public class CustomerMove : MonoBehaviour
         }
         else if (_owner.CurrentState == ECustomerStateType.PickingUp)
         {
-            CustomerManager.Instance.OnServedSuccess(_owner, _owner.RequestedPotionTID);
+            CustomerManager.Instance.OnServedSuccess(_owner, _owner.PickupTableId);
         }
         else if (_owner.CurrentState == ECustomerStateType.Leaving)
         {
@@ -116,7 +113,7 @@ public class CustomerMove : MonoBehaviour
     public bool IsStayOn()
     {
         float distance = Vector3.Distance(transform.position, _lastTarget);
-        if (distance < _agent.stoppingDistance)
+        if (distance < 2 * _agent.stoppingDistance)
         {
             return true;    
         }

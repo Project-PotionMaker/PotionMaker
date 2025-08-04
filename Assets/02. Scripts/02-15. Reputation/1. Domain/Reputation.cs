@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
 
 public enum EReputationGrade
 {
@@ -41,7 +40,7 @@ public class Reputation
         get => _difference;
         private set
         {
-            _difference = Mathf.Clamp(value, _minValue, _maxValue);
+            _difference = Mathf.Clamp(value, -_maxValue, _maxValue);
         }
     }
 

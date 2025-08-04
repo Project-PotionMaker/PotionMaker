@@ -1,19 +1,17 @@
-//using Photon.Pun;
+using Mirror;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using VInspector;
 
-public class IngredientItem : MonoBehaviour, IItem
+public class IngredientItem : NetworkBehaviour, IItem
 {
-    private IngredientData _data;
-    public IngredientData Data => _data;
+    [SyncVar(hook = nameof(OnIngredientItemTIDUpdated))]
+    private int _ingredientTID;
+    public int IngredientTID => _ingredientTID;
 
-    private MeshFilter _ingredientMeshFilter;
-    private Renderer _ingredientRenderer;
-    //private PhotonView _photonView;
+    private IngredientData _ingredientData;
+    public IngredientData IngredientData => _ingredientData;
 
-    [Foldout("Project")]
     [SerializeField]
     private List<ModelOnTID> _modelObjectList = new List<ModelOnTID>();
     private Dictionary<int, GameObject> _modelObjectDic;
@@ -31,45 +29,36 @@ public class IngredientItem : MonoBehaviour, IItem
             modelInfo.Model.SetActive(false);
             _modelObjectDic.Add(modelInfo.TID, modelInfo.Model);
         }
-
-        _ingredientMeshFilter = GetComponent<MeshFilter>();
-        _ingredientRenderer = GetComponent<Renderer>();
-        //_photonView = GetComponent<PhotonView>();
     }
 
-    public void InitIngredientData(int TID)
+    public override void OnStartClient()
     {
-        _data = DataTable.Instance.GetIngredientData(TID);
-        foreach (var modelInfo in _modelObjectList)
+        base.OnStartClient();
+    }
+
+    private void OnIngredientItemTIDUpdated(int oldValue, int newValue)
+    {
+        ClientUpdateIngredientData();
+    }
+
+
+    [Server]
+    public void ServerUpdateIngredientData(int TID)
+    {
+        _ingredientTID = TID;
+        _ingredientData = DataTable.Instance.GetIngredientData(TID);
+    }
+
+    private void ClientUpdateIngredientData()
+    {
+        // 클라이언트에서 초기화 시 SyncVar로 받은 TID를 사용해 데이터 로드 및 모델 활성화
+        _ingredientData = DataTable.Instance.GetIngredientData(_ingredientTID);
+
+        // TID에 맞는 모델을 한 번만 활성화
+        if (_modelObjectDic.TryGetValue(_ingredientData.TID, out GameObject modelToActivate))
         {
-            modelInfo.Model.SetActive(false);
-            if (modelInfo.TID == _data.TID)
-            {
-                modelInfo.Model.SetActive(true);
-            }
+            modelToActivate.SetActive(true);
         }
-
-        //_photonView.RPC(nameof(RPC_InitIngredientData), RpcTarget.Others, TID);
-    }
-
-    //[PunRPC]
-    public void RPC_InitIngredientData(int TID)
-    {
-        _data = DataTable.Instance.GetIngredientData(TID);
-
-        foreach (var modelInfo in _modelObjectList)
-        {
-            modelInfo.Model.SetActive(false);
-            if (modelInfo.TID == _data.TID)
-            {
-                modelInfo.Model.SetActive(true);
-            }
-        }
-    }
-
-    private void InitIngredientMaterial()
-    {
-        
     }
 
     public EInputType GetInputType()
@@ -79,6 +68,6 @@ public class IngredientItem : MonoBehaviour, IItem
 
     public int GetTID()
     {
-        return _data.TID;
+        return _ingredientTID;
     }
 }

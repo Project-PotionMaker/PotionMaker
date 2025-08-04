@@ -1,4 +1,3 @@
-//using Photon.Pun;
 using Mirror;
 using System;
 using System.Collections.Generic;
@@ -6,6 +5,9 @@ using UnityEngine;
 
 public class CraftItemManager : NetworkBehaviourSingleton<CraftItemManager>
 {
+    public Action<GameObject> OnOutputCreated;
+    public Action<GameObject> OnPotionCreated;
+
     // 어드레서블에서 로드해올 예정
     [SerializeField]
     private GameObject _failureOutput;
@@ -16,10 +18,7 @@ public class CraftItemManager : NetworkBehaviourSingleton<CraftItemManager>
     private RecipeCodeHandler _recipeCodeHandler;
     private RecipeCodeVerifier _recipeCodeVerifier;
 
-    //private PhotonView _photonView;
-
-    public Action<GameObject> OnOutputCreated;
-    public Action<GameObject> OnPotionCreated;
+    private const int FailureOutputTID = 10000;
 
     protected override void Awake()
     {
@@ -27,6 +26,7 @@ public class CraftItemManager : NetworkBehaviourSingleton<CraftItemManager>
         Global.Instance.OnDataLoaded += InitCraftItemManager;
     }
 
+    [Server]
     private void InitCraftItemManager()
     {
         _outputDataTIDDict = new Dictionary<string, int>();
@@ -45,14 +45,13 @@ public class CraftItemManager : NetworkBehaviourSingleton<CraftItemManager>
 
         _recipeCodeHandler = new RecipeCodeHandler();
         _recipeCodeVerifier = new RecipeCodeVerifier(potionDataList);
-        //_photonView = GetComponent<PhotonView>();
     }
 
     [Server]
     public GameObject TryCreateIngredientItem(int TID, Vector3 machinePosition)
     {
         GameObject ingredient = CraftItemFactory.Instance.CreateObject(EInputType.Ingredient, machinePosition, Quaternion.identity);
-        ingredient.GetComponent<IngredientItem>().InitIngredientData(TID);
+        ingredient.GetComponent<IngredientItem>().ServerUpdateIngredientData(TID);
         return ingredient;
     }
 
@@ -67,7 +66,7 @@ public class CraftItemManager : NetworkBehaviourSingleton<CraftItemManager>
             if (_recipeCodeVerifier.IsValidProcess(recipeCode))
             {
                 output = CraftItemFactory.Instance.CreateObject(EInputType.Output, machinePosition, Quaternion.identity);
-                output.GetComponent<OutputItem>().InitOutputData(EInputType.Output, _outputDataTIDDict[recipeCode]);
+                output.GetComponent<OutputItem>().ServerUpdateOutputData(EInputType.Output, _outputDataTIDDict[recipeCode]);
                 return output;
             }
         }
@@ -75,7 +74,7 @@ public class CraftItemManager : NetworkBehaviourSingleton<CraftItemManager>
         {
             recipeCode = DataTable.Instance.GetIngredientData(TIDList[0]).RecipeCode;
             output = CraftItemFactory.Instance.CreateObject(EInputType.Output, machinePosition, Quaternion.identity);
-            output.GetComponent<OutputItem>().InitOutputData(EInputType.Output, _outputDataTIDDict[recipeCode]);
+            output.GetComponent<OutputItem>().ServerUpdateOutputData(EInputType.Output, _outputDataTIDDict[recipeCode]);
             return output;
         }
 
@@ -90,7 +89,7 @@ public class CraftItemManager : NetworkBehaviourSingleton<CraftItemManager>
         if (_recipeCodeVerifier.IsValidPotion(recipeCode))
         {
             GameObject potion = CraftItemFactory.Instance.CreateObject(EInputType.Potion, machinePosition, Quaternion.identity);
-            potion.GetComponent<PotionItem>().UpdatePotionData(_potionDataTIDDict[recipeCode]);
+            potion.GetComponent<PotionItem>().ServerUpdatePotionData(_potionDataTIDDict[recipeCode]);
             return potion;
         }
         return CreateFailureItem(machinePosition);
@@ -100,7 +99,7 @@ public class CraftItemManager : NetworkBehaviourSingleton<CraftItemManager>
     private GameObject CreateFailureItem(Vector3 machinePosition)
     {
         GameObject output =CraftItemFactory.Instance.CreateObject(EInputType.Output, machinePosition, Quaternion.identity);
-        output.GetComponent<OutputItem>().InitOutputData(EInputType.FailureOutput, 10000);
+        output.GetComponent<OutputItem>().ServerUpdateOutputData(EInputType.FailureOutput, 10000);
 
         return output;
     }

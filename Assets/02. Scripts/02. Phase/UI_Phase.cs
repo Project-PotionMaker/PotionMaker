@@ -39,13 +39,14 @@ public class UI_Phase : MonoBehaviour
         _serviceTimer.maxValue = 1f;
         PhaseManager.Instance.OnDayPassed += UpdateDayText;
         PhaseManager.Instance.OnPhaseChanged += UpdatePhaseText;
+        PhaseManager.Instance.OnTimerRunning += UpdateServiceTimer;
 
         PreparingPhase preparingPhase = (PreparingPhase) PhaseManager.Instance.PhaseDictionary[EPhaseType.PreparingPhase];
         preparingPhase.OnPhaseEntered += ChangeTextStartDay;
         PracticingPhase practicingPhase = (PracticingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase];
         practicingPhase.OnPhaseEntered += ChangeTextPracticeEnd;
         ServingPhase servingPhase = (ServingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase];
-        servingPhase.OnTimerRunning += UpdateServiceTimer;
+        
         servingPhase.OnPhaseEntered += ShowTimer; // 타이머 시작 시 업데이트
         servingPhase.OnPhaseExited += HideTimer;
         servingPhase.OnPhaseEntered += HideReady; // 준비 단계가 끝나면 시작 패널 숨김
@@ -95,7 +96,7 @@ public class UI_Phase : MonoBehaviour
     }
     private void UpdateServiceTimer()
     {
-        _serviceTimer.value = ((ServingPhase) PhaseManager.Instance.CurrentPhase).CurrentTimeRate;
+        _serviceTimer.value = PhaseManager.Instance.CurrentTimeRate;
     }
 
     private void ShowTimer()

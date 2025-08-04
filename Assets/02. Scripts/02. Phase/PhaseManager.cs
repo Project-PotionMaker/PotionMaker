@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using VInspector;
 using Mirror;
 using System.Linq;
+using static UnityEngine.Tilemaps.Tilemap;
 
 public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>    
 {
@@ -24,6 +25,10 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>
     [SyncVar] 
     private int _day;
     public int Day { get => _day; set => _day = value; }
+    [SyncVar(hook = nameof(SyncTimer))]
+    private float _currentTimeRate;
+    public float CurrentTimeRate { get => _currentTimeRate; set => _currentTimeRate = value; }
+    public event Action OnTimerRunning;
 
     private DailyPotionPicker _dailyPotionPicker;
     public DailyPotionPicker DailyPotionPicker => _dailyPotionPicker;
@@ -125,5 +130,8 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>
             }
         }
     }
-
+    private void SyncTimer(float oldValue, float newValue)
+    {
+        OnTimerRunning?.Invoke();
+    }
 }

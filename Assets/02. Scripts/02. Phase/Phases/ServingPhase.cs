@@ -8,11 +8,7 @@ public class ServingPhase : BasePhase
     private float _currentTime;
     public float CurrentTime { get => _currentTime; set => _currentTime = value; }
 
-    [SyncVar(hook = nameof(SyncTimer))]
-    private float _currentTimeRate;
-    public float CurrentTimeRate { get => _currentTimeRate; set => _currentTimeRate = value; }
     private bool _timesUp = false;
-    public event Action OnTimerRunning;
     public ServingPhase()
     {
         _phaseType = EPhaseType.ServingPhase;
@@ -50,7 +46,7 @@ public class ServingPhase : BasePhase
         }
         else
         {
-            _currentTimeRate = _currentTime / INIT_TIMER; // 타이머 비율 계산
+            PhaseManager.Instance.CurrentTimeRate = _currentTime / INIT_TIMER; // 타이머 비율 계산
             CustomerManager.Instance.InviteCustomer(deltaTime); // 손님 초대
         }
 
@@ -59,10 +55,5 @@ public class ServingPhase : BasePhase
     public override void ExitPhase()
     {
         base.ExitPhase();
-    }
-
-    private void SyncTimer(float oldValue, float newValue)
-    {
-        OnTimerRunning?.Invoke();
     }
 }

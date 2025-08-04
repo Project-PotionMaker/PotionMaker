@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 public class UI_DaySummary : MonoBehaviour
 {
-    private const string POSITIVE_COLOR = "65BC04";
-    private const string NEGATIVE_COLOR = "CB0000";
+    private const string POSITIVE_COLOR = "#65BC04";
+    private const string NEGATIVE_COLOR = "#CB0000";
 
     [SerializeField]
     private Transform _slotContainer;
@@ -99,7 +99,7 @@ public class UI_DaySummary : MonoBehaviour
 
         float reputationDifference = ReputationManager.Instance.Reputation.Difference;
         string color = reputationDifference >= 0 ? POSITIVE_COLOR : NEGATIVE_COLOR;
-        _deltaReputationTextUI.text = $"<color={color}>{reputationDifference.ToString("+0.0;-0.0;+0")}</color>";
+        _deltaReputationTextUI.text = $"<color={color}>{reputationDifference.ToString("+0.0;-0.0;+0.0")}</color>";
 
 
         // 자산

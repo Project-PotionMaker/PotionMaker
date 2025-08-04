@@ -380,7 +380,10 @@ public class Machine : NetworkBehaviour, IGridItemHandler
             NetworkServer.spawned[pickedUpItem.GetComponent<NetworkIdentity>().netId].AssignClientAuthority(sender);
         }
 
-        TargetRpcOnPickUp(sender, pickedUpItem.GetComponent<NetworkIdentity>());
+        if (pickedUpItem != null)
+        {
+            TargetRpcOnPickUp(sender, pickedUpItem.GetComponent<NetworkIdentity>());
+        }
     }
 
     [TargetRpc]

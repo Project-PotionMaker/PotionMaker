@@ -48,7 +48,7 @@ public class CurrencyTest : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.P))
         {
-            RentManager.Instance.CmdRequestPayRent();
+            //RentManager.Instance.CmdRequestPayRent();
         }
     }
 

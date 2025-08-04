@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 160057555147955401}
   - component: {fileID: 8870322644539311107}
-  - component: {fileID: 3427265528794699499}
+  - component: {fileID: 5232704137430409103}
   m_Layer: 0
   m_Name: PhaseManager
   m_TagString: Untagged
@@ -45,10 +45,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acd977cccb94fa94c9dfc78aeae4378d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _dontDestroy: 1
-  _lazyInitialization: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  _dontDestroy: 0
   _maxDeathCount: 5
---- !u!114 &3427265528794699499
+--- !u!114 &5232704137430409103
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

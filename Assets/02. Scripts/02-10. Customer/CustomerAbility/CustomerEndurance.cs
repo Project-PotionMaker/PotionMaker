@@ -1,14 +1,14 @@
-//using Photon.Pun;
 using System;
 using UnityEngine;
-
-public class CustomerEndurance : MonoBehaviour
+using Mirror;
+public class CustomerEndurance : NetworkBehaviour
 {
     Customer _owner; // Customer 컴포넌트
     private const float LINE_ENDURANCE = 10f;
     private const float HALL_ENDURANCE = 10f;
     private float _currentEndurance; // 현재 인내심
     public float CurrentEndurance    {get => _currentEndurance; set => _currentEndurance = value; } // 현재 인내심
+    [SyncVar (hook = nameof(SyncEndurance))]
     private float _enduranceRate;
     public float EnduranceRate { get => _enduranceRate; set => _enduranceRate = value; }
 
@@ -29,10 +29,10 @@ public class CustomerEndurance : MonoBehaviour
 
     private void Update()
     {
-        //if (!PhotonNetwork.IsMasterClient)
-        //{
-        //    return;
-        //}
+        if (!isServer)
+        {
+            return;
+        }
         if (_owner.CurrentState == ECustomerStateType.Leaving || _owner.CurrentState == ECustomerStateType.PickingUp)
         {
             return;
@@ -45,10 +45,14 @@ public class CustomerEndurance : MonoBehaviour
         
     }
     public void ResetEndurance()
-    { 
+    {
+        if (!isServer)
+        {
+            return;
+        }
         _currentEndurance = HALL_ENDURANCE;   
     }
-
+    [Server]
     private void LosingEndurance()
     {
         if (_owner.CurrentState != ECustomerStateType.Leaving && _owner.CurrentState != ECustomerStateType.PickingUp)
@@ -63,15 +67,10 @@ public class CustomerEndurance : MonoBehaviour
         {
             _enduranceRate = _currentEndurance / HALL_ENDURANCE; // 인내심 비율 계산
         }
-
-        //_owner.PhotonView.RPC(nameof(RPC_SyncEnduranceRate), RpcTarget.All, _enduranceRate);
     }
 
-
-    //[PunRPC]
-    private void RPC_SyncEnduranceRate(float rate)
+    private void SyncEndurance(float OldValue, float NewValue)
     {
-        _enduranceRate = rate;
         OnEnduranceChanged?.Invoke(); // 인내심 변경 이벤트 호출
     }
 }

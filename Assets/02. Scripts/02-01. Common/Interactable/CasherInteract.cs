@@ -12,7 +12,7 @@ public class CasherInteract : IInteractable<Furniture>
         if (ServerCanInteract(instance))
         {
             // NPC매니저에서 기다리는 NPC들 상호작용
-            CustomerManager.Instance.RegisterOrder();
+            CustomerManager.Instance.CmdRegisterOrder();
         }
         return true;
     }

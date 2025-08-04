@@ -227,13 +227,13 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
         }
     }
 
-    [Command(requiresAuthority = false)]
-    private void CmdPlaceOnTable(int potionTID, uint pickupTableNetId)
+    [Server]
+    public void CmdPlaceOnTable(int potionTID, uint pickupTableNetId)
     {
         _orderHandler.PickupTableDict[pickupTableNetId].IsUsing = true;
         _orderHandler.PickupTableDict[pickupTableNetId].HeldItemTID = potionTID;
     }
-    [Command(requiresAuthority = false)]
+    [Server]
     public void CmdRemoveOnTable(uint pickupTableNetId)
     {
         _orderHandler.PickupTableDict[pickupTableNetId].IsUsing = false;
@@ -254,7 +254,8 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
             _orderHandler.OldChairDict[chairNetId].UsingCustomer = customer; // 손님과 의자 매핑 저장
         }
         GameObject chair = NetworkServer.spawned[chairNetId].gameObject;
-        customer.CustomerMove.MoveTo(chair.transform.position);
+        //customer.CustomerMove.MoveTo(chair.transform.position);
+        customer.CustomerMove.MoveTo(chair.GetComponent<Furniture>().InputPosition.position);
 
         // Mirror 임시
         chair.GetComponent<Furniture>().TryEffect(customer.netId); // 의자 효과 적용

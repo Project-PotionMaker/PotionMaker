@@ -40,7 +40,7 @@ public class Reputation
         get => _difference;
         private set
         {
-            _difference = Mathf.Clamp(value, _minValue, _maxValue);
+            _difference = Mathf.Clamp(value, -_maxValue, _maxValue);
         }
     }
 

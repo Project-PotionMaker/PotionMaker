@@ -6,6 +6,7 @@ public class RentDTO
     public readonly int RentDayCounter;
     public readonly int CurrentRentCost;
     public readonly int RentIncrement;
+    public bool IsRentDay => RentDayCounter == RentPeriod;
 
     public RentDTO(Rent rent)
     {

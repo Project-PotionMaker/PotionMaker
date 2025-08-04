@@ -25,7 +25,14 @@ public class PotionHouse : MonoBehaviourSingleton<PotionHouse>
 
     private void Start()
     {
-        Global.Instance.OnDataLoaded += InitPotionHouse;
+        if(DataTable.Instance.GetUnlockDataList() == null)
+        {
+            Global.Instance.OnDataLoaded += InitPotionHouse;
+        }
+        else
+        {
+            InitPotionHouse();
+        }
     }
 
     private void InitPotionHouse()

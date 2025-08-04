@@ -8,7 +8,7 @@ public class CustomerEndurance : NetworkBehaviour
     private const float HALL_ENDURANCE = 10f;
     private float _currentEndurance; // 현재 인내심
     public float CurrentEndurance    {get => _currentEndurance; set => _currentEndurance = value; } // 현재 인내심
-    [SyncVar (hook = nameof(SyncEndurence))]
+    [SyncVar (hook = nameof(SyncEndurance))]
     private float _enduranceRate;
     public float EnduranceRate { get => _enduranceRate; set => _enduranceRate = value; }
 
@@ -69,7 +69,7 @@ public class CustomerEndurance : NetworkBehaviour
         }
     }
 
-    private void SyncEndurence(float OldValue, float NewValue)
+    private void SyncEndurance(float OldValue, float NewValue)
     {
         OnEnduranceChanged?.Invoke(); // 인내심 변경 이벤트 호출
     }

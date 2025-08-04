@@ -102,7 +102,7 @@ public class CustomerOrderHandler
 
         if (availableLuxury.Count > 0)
         {
-            int index = (int)Random.Range(0, availableLuxury.Count);
+            int index = Random.Range(0, availableLuxury.Count);
             return availableLuxury[index];
         }
 

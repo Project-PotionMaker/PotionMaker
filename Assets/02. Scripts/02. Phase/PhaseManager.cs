@@ -4,8 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using VInspector;
 using Mirror;
-using System.Linq;
-using static UnityEngine.Tilemaps.Tilemap;
 
 public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>    
 {
@@ -27,7 +25,7 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>
     public int Day { get => _day; set => _day = value; }
     [SyncVar(hook = nameof(SyncTimer))]
     private float _currentTimeRate;
-    public float CurrentTimeRate { get => _currentTimeRate; set => _currentTimeRate = value; }
+    public float CurrentTimeRate { get => _currentTimeRate;}
     public event Action OnTimerRunning;
 
     private DailyPotionPicker _dailyPotionPicker;
@@ -129,6 +127,11 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>
                 Debug.LogWarning($"ID {potionIDs[i]}에 해당하는 포션 데이터를 찾을 수 없습니다.");
             }
         }
+    }
+    [Server]
+    public void SetCurrnetTime(float value)
+    {
+        _currentTimeRate = value;
     }
     private void SyncTimer(float oldValue, float newValue)
     {

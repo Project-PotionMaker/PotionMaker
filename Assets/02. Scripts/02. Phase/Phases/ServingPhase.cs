@@ -46,7 +46,7 @@ public class ServingPhase : BasePhase
         }
         else
         {
-            PhaseManager.Instance.CurrentTimeRate = _currentTime / INIT_TIMER; // 타이머 비율 계산
+            PhaseManager.Instance.SetCurrnetTime(_currentTime / INIT_TIMER); // 타이머 비율 계산
             CustomerManager.Instance.InviteCustomer(deltaTime); // 손님 초대
         }
 

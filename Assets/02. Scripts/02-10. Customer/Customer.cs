@@ -1,4 +1,4 @@
-//using Photon.Pun;
+using JetBrains.Annotations;
 using Mirror;
 using System;
 using System.Collections.Generic;
@@ -17,13 +17,13 @@ public class Customer : NetworkBehaviour
 
     [SerializeField]
     private int _requestedPotionTID = 10000;
+    public int RequestedPotionTID { get => _requestedPotionTID; set => _requestedPotionTID = value; } // 요청한 포션 ID
+    private uint _servedPotionNetId;
+    public uint ServedPotionNetId { get => _servedPotionNetId; set => _servedPotionNetId = value; }
+
     [SerializeField]
     private GameObject _potionHandler;
     public GameObject PotionHandler { get => _potionHandler; set => _potionHandler = value; } // 포션 핸들러 오브젝트
-    public int RequestedPotionTID { get => _requestedPotionTID; set=> _requestedPotionTID = value; } // 요청한 포션 ID
-
-    //private PhotonView _photonView;
-    //public PhotonView PhotonView { get => _photonView; set => _photonView = value; } // PhotonView 컴포넌트
 
     public event Action OnStateChanged;
 
@@ -31,10 +31,11 @@ public class Customer : NetworkBehaviour
     public  Transform ChairPosition { get => _chairPosition; set => _chairPosition = value; } // 의자 위치
     private  float _chairRotate;
     public float ChairRotate { get => _chairRotate; set => _chairRotate = value; } // 의자 회전
+    private uint _pickupTableId;
+    public uint PickupTableId { get => _pickupTableId; set => _pickupTableId = value; }
 
     private void Awake()
     {
-        //_photonView = GetComponent<PhotonView>();
         _customerMove = GetComponent<CustomerMove>();
         _customerEndurance = GetComponent<CustomerEndurance>();
 
@@ -42,30 +43,31 @@ public class Customer : NetworkBehaviour
     private void OnEnable()
     {
         _currentState = ECustomerStateType.Lining; // 초기 상태 설정
-        //_requestedPotionTID = RandomPotion();
+        if(PhaseManager.Instance.PotionDataList.Count > 0 )
+        {
+            int index = UnityEngine.Random.Range(0, PhaseManager.Instance.PotionDataList.Count);
+            _requestedPotionTID = PhaseManager.Instance.PotionDataList[index].TID;
+        }
+        else
+        {
+            Debug.LogWarning("PotionDataList is empty. Cannot assign a requested potion to the customer.");
+        }
     }
 
+    [Server]
     public void TransitionState(ECustomerStateType nextState)
     {
-        //if (!PhotonNetwork.IsMasterClient)
-        //{
-        //    return; // 마스터 클라이언트만 상태를 설정할 수 있음
-        //}
-        //_photonView.RPC(nameof(RPC_TransitionState), RpcTarget.All, nextState); 
+        RpcTransitionState(nextState);
     }
-    //[PunRPC]
-    public void RPC_TransitionState(ECustomerStateType nextState)
+    [ClientRpc]
+    public void RpcTransitionState(ECustomerStateType nextState)
     {
         _currentState = nextState;
         OnStateChanged?.Invoke();
     }
-
+    [Server]
     public void ReturnPotion()
     {
-        //if (!PhotonNetwork.IsMasterClient)
-        //{
-        //    return; // 마스터 클라이언트만 포션을 반환할 수 있음
-        //}
         if (_potionHandler.transform.childCount == 0)
         {
             return; 
@@ -76,6 +78,20 @@ public class Customer : NetworkBehaviour
             potion.transform.SetParent(null); 
             CraftItemFactory.Instance.ReturnObject(potion); 
         }
+    }
 
+    [ClientRpc]
+    public void HandlePotion()
+    {
+        if (NetworkClient.spawned.TryGetValue(ServedPotionNetId, out NetworkIdentity identity))
+        {
+            GameObject potion = identity.gameObject;
+            potion.transform.SetParent(_potionHandler.transform);
+            potion.transform.localPosition = Vector3.zero;
+        }
+        else
+        {
+            Debug.LogWarning($"Potion with netId {ServedPotionNetId} not found on client.");
+        }
     }
 }

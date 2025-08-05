@@ -1,3 +1,4 @@
+using Mirror;
 using UnityEngine;
 
 public class PracticingPhase : BasePhase
@@ -9,12 +10,14 @@ public class PracticingPhase : BasePhase
     public override void EnterPhase()
     {
         base.EnterPhase();
-        CustomerManager.Instance.PreService();
     }
     public override void Update(float deltaTime)
     {
         base.Update(deltaTime);
-        CustomerManager.Instance.InviteCustomer(deltaTime); // 손님 초대
+        if (NetworkServer.active == true)
+        {
+            CustomerManager.Instance.InviteCustomer(deltaTime); // 손님 초대
+        }
     }
 
     public override void ExitPhase()

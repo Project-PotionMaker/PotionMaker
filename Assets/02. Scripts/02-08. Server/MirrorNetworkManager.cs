@@ -8,6 +8,8 @@ public class MirrorNetworkManager : NetworkRoomManager
 {
     public static MirrorNetworkManager Instance => (MirrorNetworkManager)singleton;
 
+    //private List<>
+
     [Scene]
     public string LoadingScene;
 

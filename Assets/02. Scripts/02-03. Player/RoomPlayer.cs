@@ -16,41 +16,39 @@ public class RoomPlayer : NetworkRoomPlayer
         Debug.Log($"OnStartClient {gameObject}");
     }
 
-    //public override void ReadyStateChanged(bool oldReadyState, bool newReadyState)
-    //{
+    public override void OnStopClient()
+    {
+        base.OnStopClient();
+    }
 
-    //}
+    public override void OnStartLocalPlayer()
+    {
+        base.OnStartLocalPlayer();
+        CmdSetPlayerName($"플레이어 {index}");
+    }
+
+    private void Update()
+    {
+        if(isLocalPlayer && Input.GetKeyDown(KeyCode.Space))
+        {
+            CmdChangeReadyState(!readyToBegin);
+        }
+    }
+
+    [Command]
+    public void CmdSetPlayerName(string newName)
+    {
+        _playerName = newName;
+    }
 
     private void OnPlayerNameChangedHook(string oldName, string newName)
     {
         OnPlayerNameChanged?.Invoke();
     }
 
-
-
-
-    public override void OnClientEnterRoom()
-    {
-        //Debug.Log($"OnClientEnterRoom {SceneManager.GetActiveScene().path}");
-    }
-
-    public override void OnClientExitRoom()
-    {
-        //Debug.Log($"OnClientExitRoom {SceneManager.GetActiveScene().path}");
-    }
-
-    public override void IndexChanged(int oldIndex, int newIndex)
-    {
-        //Debug.Log($"IndexChanged {newIndex}");
-    }
-
     public override void ReadyStateChanged(bool oldReadyState, bool newReadyState)
     {
-        //Debug.Log($"ReadyStateChanged {newReadyState}");
-    }
-
-    public override void OnGUI()
-    {
-        base.OnGUI();
+        base.ReadyStateChanged(oldReadyState, newReadyState);
+        OnClientReadyStateChanged?.Invoke();
     }
 }

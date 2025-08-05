@@ -1,4 +1,5 @@
 using Mirror;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -18,6 +19,8 @@ public class MirrorNetworkManager : NetworkRoomManager
 
     [Tooltip("서버 시작 시 GamePlayScene에서 생성할 팩토리 프리팹들")]
     public List<GameObject> FactoryPrefabList = new List<GameObject>();
+
+    public Action OnWaitingScenePlayerAdded;
 
     // 모든 플레이어가 준비되면 LoadingScene으로 전환
     public override void OnRoomServerPlayersReady()
@@ -75,6 +78,15 @@ public class MirrorNetworkManager : NetworkRoomManager
     {
         Debug.Log($"서버: 플레이어 {conn.connectionId}의 씬 로드 완료. RoomPlayer를 GamePlayer로 교체합니다.");
 
+        if(roomPlayer.TryGetComponent<RoomPlayer>(out RoomPlayer roomPlayerScript))
+        {
+            if(gameObject.TryGetComponent<Player>(out Player playerScript))
+            {
+                playerScript.playerName = roomPlayerScript.PlayerName;
+                playerScript.playerOrderIndex = roomPlayerScript.index;
+            }
+        }
+
         // NetworkServer.ReplacePlayerForConnection()은 roomPlayer를 파괴
         NetworkServer.ReplacePlayerForConnection(conn, gamePlayer, ReplacePlayerOptions.Destroy);
 
@@ -93,5 +105,19 @@ public class MirrorNetworkManager : NetworkRoomManager
     {
         base.OnClientSceneChanged();
         Debug.Log("클라이언트: 씬 변경됨 - " + SceneManager.GetActiveScene().name);
+    }
+
+    public override void OnRoomServerAddPlayer(NetworkConnectionToClient conn)
+    {
+        base.OnRoomServerAddPlayer(conn);
+
+        StartCoroutine(WaitAndRefreshRoomPlayerUI());
+    }
+
+    private IEnumerator WaitAndRefreshRoomPlayerUI()
+    {
+        yield return new WaitForSeconds(0.1f); // 1프레임 쉬고
+
+        OnWaitingScenePlayerAdded?.Invoke();
     }
 }

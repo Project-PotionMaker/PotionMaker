@@ -10,7 +10,7 @@ public class StartScene : MonoBehaviour
         {
             MirrorNetworkManager.Instance.StartHost();
         }
-        if (Input.GetKeyDown(KeyCode.O))
+        if (Input.GetKeyDown(KeyCode.P))
         {
             MirrorNetworkManager.Instance.StartClient();
         }

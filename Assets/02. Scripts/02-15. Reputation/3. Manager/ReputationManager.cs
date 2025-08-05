@@ -46,7 +46,7 @@ public class ReputationManager : NetworkBehaviourSingleton<ReputationManager>
     }
 
     [Server]
-    private void AddReputation(float addedValue)
+    private void AddReputation(float addedValue = _increaseAmountOnSuccessOrder)
     {
         if (!isServer)
         {
@@ -60,7 +60,7 @@ public class ReputationManager : NetworkBehaviourSingleton<ReputationManager>
     }
 
     [Server]
-    private void SubtractReputation(float subtractedValue)
+    private void SubtractReputation(float subtractedValue = _decreaseAmountOnFailOrder)
     {
         if (!isServer)
         {

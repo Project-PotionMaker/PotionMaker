@@ -14,12 +14,10 @@ public class Customer : NetworkBehaviour
     private CustomerEndurance _customerEndurance; // 인내심
     public CustomerEndurance CustomerEndurance { get => _customerEndurance; set => _customerEndurance = value; } // 인내심 컴포넌트
 
-
+    [SyncVar]
     [SerializeField]
     private int _requestedPotionTID = 10000;
     public int RequestedPotionTID { get => _requestedPotionTID; set => _requestedPotionTID = value; } // 요청한 포션 ID
-    private uint _servedPotionNetId;
-    public uint ServedPotionNetId { get => _servedPotionNetId; set => _servedPotionNetId = value; }
 
     [SerializeField]
     private GameObject _potionHandler;
@@ -31,6 +29,7 @@ public class Customer : NetworkBehaviour
     public  Transform ChairPosition { get => _chairPosition; set => _chairPosition = value; } // 의자 위치
     private  float _chairRotate;
     public float ChairRotate { get => _chairRotate; set => _chairRotate = value; } // 의자 회전
+    [SyncVar]
     private uint _pickupTableId;
     public uint PickupTableId { get => _pickupTableId; set => _pickupTableId = value; }
 
@@ -98,15 +97,24 @@ public class Customer : NetworkBehaviour
     [ClientRpc]
     public void HandlePotion()
     {
-        if (NetworkClient.spawned.TryGetValue(ServedPotionNetId, out NetworkIdentity identity))
+        if (NetworkClient.spawned.TryGetValue(_pickupTableId, out NetworkIdentity identity))
         {
-            GameObject potion = identity.gameObject;
+            Debug.Log("Potion found on client: " + identity.name);
+            GameObject potion = identity.GetComponent<Furniture>().InputObject;
+            Debug.Log("Potion object: " + potion.name);
             potion.transform.SetParent(_potionHandler.transform);
+            Debug.Log("Potion parent set to: " + _potionHandler.name);
             potion.transform.localPosition = Vector3.zero;
         }
         else
         {
-            Debug.LogWarning($"Potion with netId {ServedPotionNetId} not found on client.");
+            Debug.LogWarning($"Potion not found on client.");
         }
+    }
+    [ClientRpc]
+    public void ChairSetting(Transform position, float rotate)
+    {
+        _chairPosition = position;
+        _chairRotate = rotate;
     }
 }

@@ -82,7 +82,7 @@ public class UI_DaySummary : MonoBehaviour
         }
 
         // 데스카운트
-        _deathCountView.fillAmount = 1 - (PhaseManager.Instance.DeathCount) / PhaseManager.Instance.MaxDeathCount;
+        _deathCountView.fillAmount = (PhaseManager.Instance.DeathCount) / PhaseManager.Instance.MaxDeathCount;
 
         // 일 매출
         _dailySalesTextUI.text = SalesManager.Instance.Sales.DailySales.ToString("N0");

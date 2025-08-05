@@ -7,7 +7,6 @@ public class ChairEffect : ICustomerEffectable<Furniture>
     {
         Customer customer = customerIdentity.gameObject.GetComponent<Customer>();
         customer.CustomerEndurance.LoseEnduranceSpeed *= furniture.Data.EffectRate;
-        customer.ChairPosition = furniture.InputPosition;
-        customer.ChairRotate = furniture.CurrentRotation;
+        customer.ChairSetting(furniture.transform, furniture.CurrentRotation);
     }
 }

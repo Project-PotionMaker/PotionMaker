@@ -18,7 +18,7 @@ public class ServingPhase : BasePhase
         base.EnterPhase();
         _currentTime = INIT_TIMER;
         _timesUp = false;
-        PhaseManager.Instance.DeathCount = 0;
+        PhaseManager.Instance.DeathCount = PhaseManager.Instance.MaxDeathCount;
     }
 
     public override void Update(float deltaTime)

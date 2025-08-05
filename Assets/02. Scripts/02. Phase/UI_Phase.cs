@@ -8,8 +8,6 @@ public class UI_Phase : MonoBehaviour
 {
     [Foldout("UIs")]
     [SerializeField]
-    private TextMeshProUGUI _currencyText;
-    [SerializeField]
     private TextMeshProUGUI _dayText;
     [SerializeField]
     private Slider _serviceTimer;
@@ -29,6 +27,8 @@ public class UI_Phase : MonoBehaviour
     private GameObject[] _playerPanel;
     [SerializeField]
     private GameObject[] _playerMask;
+    [SerializeField]
+    private GameObject[] _deathCountHeart;
 
     private const float READY_HIDE_OFFSET = 400f;
     private const float PLAYER_HIDE_OFFSET = 200f;
@@ -38,8 +38,8 @@ public class UI_Phase : MonoBehaviour
     {
         _serviceTimer.maxValue = 1f;
         PhaseManager.Instance.OnDayPassed += UpdateDayText;
-        PhaseManager.Instance.OnPhaseChanged += UpdatePhaseText;
         PhaseManager.Instance.OnTimerRunning += UpdateServiceTimer;
+        PhaseManager.Instance.OnDeathCountChanged += RefreshDeathCount;
 
         PreparingPhase preparingPhase = (PreparingPhase) PhaseManager.Instance.PhaseDictionary[EPhaseType.PreparingPhase];
         preparingPhase.OnPhaseEntered += ChangeTextStartDay;
@@ -70,30 +70,6 @@ public class UI_Phase : MonoBehaviour
             _dayText.text = "Day: " + PhaseManager.Instance.Day;
         }
     }
-
-    private void UpdatePhaseText()
-    {
-        if (_currencyText != null)
-        {
-            EPhaseType phaseType = PhaseManager.Instance.CurrentPhase.PhaseType;
-            if (phaseType == EPhaseType.PreparingPhase)
-            {
-                _currencyText.text = "Preparing";
-            }
-            else if (phaseType == EPhaseType.ServingPhase)
-            {
-                _currencyText.text = "Service Time";
-            }
-            else if (phaseType == EPhaseType.EndingPhase)
-            {
-                _currencyText.text = "Finish";
-            }
-            else if (phaseType == EPhaseType.PracticingPhase)
-            {
-                _currencyText.text = "Practicing";
-            }
-        }
-    }
     private void UpdateServiceTimer()
     {
         _serviceTimer.value = PhaseManager.Instance.CurrentTimeRate;
@@ -111,7 +87,7 @@ public class UI_Phase : MonoBehaviour
     private void ShowSummary()
     {
         _todaySummaryPanel.SetActive(true);
-        _todaySummaryText.text = $"Gold : {SalesManager.Instance.Sales.DailySales}";
+        //_todaySummaryText.text = $"Gold : {SalesManager.Instance.Sales.DailySales}";
     }
     private void HideSummary()
     {
@@ -148,5 +124,27 @@ public class UI_Phase : MonoBehaviour
     {
         _startDayText.text = "연습 종료";
     }
+    private void RefreshDeathCount()
+    {
+        for (int i = 0; i < _deathCountHeart.Length; i++)
+        {
+            _deathCountHeart[i].SetActive(false);
+        }
+        for (int i = 0; i < PhaseManager.Instance.DeathCount; i++)
+        {
+            _deathCountHeart[i].SetActive(true);
+        }
+    }
 
+    public void OptionPanelShow()
+    {
+        //OptionPanel.SerActive();
+    }
+
+    public void aaa()//도감 팝업
+    {
+    }//TODO : 도감 팝업 띄우기
+
+
+    //TODO : 준비 키 키세팅 따라가기
 }

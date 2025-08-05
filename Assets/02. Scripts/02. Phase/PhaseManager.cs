@@ -5,28 +5,29 @@ using UnityEngine.UI;
 using VInspector;
 using Mirror;
 
-public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>    
+public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>
 {
     public event Action OnDayPassed;
     public event Action OnPhaseChanged;
+    public event Action OnTimerRunning;
+    public event Action OnDeathCountChanged;
 
     private BasePhase _currentPhase;
     public BasePhase CurrentPhase { get => _currentPhase; set => _currentPhase = value; }
     private Dictionary<EPhaseType, BasePhase> _phaseDictionary;
     public Dictionary<EPhaseType, BasePhase> PhaseDictionary { get => _phaseDictionary; set => _phaseDictionary = value; }
-    [SyncVar]
+    [SyncVar(hook = nameof(SyncDeathCount))]
     private int _deathCount;
     public int DeathCount { get => _deathCount; set => _deathCount = value; }
     [SerializeField]
     private int _maxDeathCount = 5;
     public int MaxDeathCount { get => _maxDeathCount; set => _maxDeathCount = value; }
-    [SyncVar] 
+    [SyncVar]
     private int _day;
     public int Day { get => _day; set => _day = value; }
     [SyncVar(hook = nameof(SyncTimer))]
     private float _currentTimeRate;
-    public float CurrentTimeRate { get => _currentTimeRate;}
-    public event Action OnTimerRunning;
+    public float CurrentTimeRate { get => _currentTimeRate; }
 
     private DailyPotionPicker _dailyPotionPicker;
     public DailyPotionPicker DailyPotionPicker => _dailyPotionPicker;
@@ -137,4 +138,9 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>
     {
         OnTimerRunning?.Invoke();
     }
+    private void SyncDeathCount(int oldValue, int newValue)
+    {
+        OnDeathCountChanged?.Invoke();
+    }
+
 }

@@ -30,11 +30,16 @@ public class Player : NetworkBehaviour
 
     private void Update()
     {
+        if(isLocalPlayer == false)
+        {
+            return;
+        }
+
         GameObject frontObject = GetObjectInFront();
         if (frontObject != null)
         {
             CanvasAlphaChanger currentStructure = frontObject.GetComponent<CanvasAlphaChanger>();
-            if (_lastHighlightedStructure != null)
+            if (_lastHighlightedStructure != null && _lastHighlightedStructure != currentStructure)
             {
                 _lastHighlightedStructure.HideCanvas();
             }

@@ -42,16 +42,31 @@ public class Customer : NetworkBehaviour
     }
     private void OnEnable()
     {
+        //_currentState = ECustomerStateType.Lining; // 초기 상태 설정
+        //if(PhaseManager.Instance.PotionDataList.Count > 0 )
+        //{
+        //    int index = UnityEngine.Random.Range(0, PhaseManager.Instance.PotionDataList.Count);
+        //    _requestedPotionTID = PhaseManager.Instance.PotionDataList[index].TID;
+        //}
+        //else
+        //{
+        //    Debug.LogWarning("PotionDataList is empty. Cannot assign a requested potion to the customer.");
+        //}
+    }
+
+    public override void OnStartClient()
+    {
         _currentState = ECustomerStateType.Lining; // 초기 상태 설정
-        if(PhaseManager.Instance.PotionDataList.Count > 0 )
-        {
-            int index = UnityEngine.Random.Range(0, PhaseManager.Instance.PotionDataList.Count);
-            _requestedPotionTID = PhaseManager.Instance.PotionDataList[index].TID;
-        }
-        else
-        {
-            Debug.LogWarning("PotionDataList is empty. Cannot assign a requested potion to the customer.");
-        }
+        //if (PhaseManager.Instance.PotionDataList.Count > 0)
+        //{
+        //    int index = UnityEngine.Random.Range(0, PhaseManager.Instance.PotionDataList.Count);
+        //    _requestedPotionTID = PhaseManager.Instance.PotionDataList[index].TID;
+        //}
+        //else
+        //{
+        //    Debug.LogWarning("PotionDataList is empty. Cannot assign a requested potion to the customer.");
+        //}
+        _requestedPotionTID = 10000;
     }
 
     [Server]

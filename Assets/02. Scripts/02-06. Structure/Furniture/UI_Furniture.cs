@@ -33,7 +33,6 @@ public class UI_Furniture : MonoBehaviour
         else
         {
             _interactPanel.SetActive(false);
-            _sliderPanel.SetActive(true);
         }
 
         if(_furniture.Data.SpecialStructureType == ESpecialStructureType.Casher)

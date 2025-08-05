@@ -10,8 +10,8 @@ public class ReputationManager : NetworkBehaviourSingleton<ReputationManager>
 
     private ReputationRepository _reputationRepository;
 
-    private const float _increaseAmountOnSuccessOrder = 0.01f;
-    private const float _decreaseAmountOnFailOrder = 0.2f;
+    private const float _increaseAmountOnSuccessOrder = 0.2f;
+    private const float _decreaseAmountOnFailOrder = 0.1f;
 
     public override void OnStartClient()
     {
@@ -46,7 +46,7 @@ public class ReputationManager : NetworkBehaviourSingleton<ReputationManager>
     }
 
     [Server]
-    private void AddReputation(float addedValue)
+    public void AddReputation(float addedValue = _increaseAmountOnSuccessOrder)
     {
         if (!isServer)
         {
@@ -60,7 +60,7 @@ public class ReputationManager : NetworkBehaviourSingleton<ReputationManager>
     }
 
     [Server]
-    private void SubtractReputation(float subtractedValue)
+    public void SubtractReputation(float subtractedValue = _decreaseAmountOnFailOrder)
     {
         if (!isServer)
         {

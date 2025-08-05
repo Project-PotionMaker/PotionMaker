@@ -4,7 +4,7 @@ using Mirror;
 
 public class ServingPhase : BasePhase
 {
-    private const float INIT_TIMER = 100f;
+    private const float INIT_TIMER = 60f;
     private float _currentTime;
     public float CurrentTime { get => _currentTime; set => _currentTime = value; }
 
@@ -18,7 +18,7 @@ public class ServingPhase : BasePhase
         base.EnterPhase();
         _currentTime = INIT_TIMER;
         _timesUp = false;
-        PhaseManager.Instance.DeathCount = 0;
+        PhaseManager.Instance.DeathCount = PhaseManager.Instance.MaxDeathCount;
     }
 
     public override void Update(float deltaTime)
@@ -55,5 +55,6 @@ public class ServingPhase : BasePhase
     public override void ExitPhase()
     {
         base.ExitPhase();
+        ReputationManager.Instance.AddReputation();
     }
 }

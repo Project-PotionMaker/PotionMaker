@@ -22,7 +22,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable
 
     [SyncVar(hook = nameof(OnInputObjectChanged))]
     private GameObject _inputObject;
-    public GameObject InputObject { get => _inputObject; private set => _inputObject = value; }
+    public GameObject InputObject { get => _inputObject; set => _inputObject = value; }
 
     private FurnitureData _data;
     public FurnitureData Data => _data;
@@ -251,6 +251,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable
                 if (GridManager.Instance.ServerCanPlaceObjectAt(targetPosition, _data.AreaType))
                 {
                     GridManager.Instance.ServerPlaceStructure(targetPosition, dropItemNetId, sender);
+                    dropItemIdentity.RemoveClientAuthority();
                     success = true;
                 }
                 else
@@ -266,14 +267,10 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable
                     if (success)
                     {
                         InputObject = inputObject;
+                        InputObject.transform.position = InputPosition.position;
                     }
                 }
             }
-        }
-
-        if (success)
-        {
-            dropItemIdentity.RemoveClientAuthority();
         }
 
         TargetRpcOnDrop(sender, success);

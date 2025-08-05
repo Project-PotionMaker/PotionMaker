@@ -66,6 +66,7 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
         _exitDoor = GameObject.FindGameObjectWithTag(nameof(ETags.ExitDoor))?.transform;
     }
 
+    [Server]
     public void PreService()
     {
         _orderHandler.SetLists();
@@ -161,7 +162,7 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
             return;
         }
 
-        CmdPlaceOnTable(potionTID, pickupTableNetId);
+        //CmdPlaceOnTable(potionTID, pickupTableNetId);
         Vector3 position = NetworkServer.spawned[pickupTableNetId].transform.position; // 판매대 위치 찾기
         customer.TransitionState(ECustomerStateType.PickingUp);
         customer.CustomerMove.MoveTo(position); // 손님을 판매대 위치로 이동
@@ -227,13 +228,13 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
         }
     }
 
-    [Command(requiresAuthority = false)]
-    private void CmdPlaceOnTable(int potionTID, uint pickupTableNetId)
+    [Server]
+    public void CmdPlaceOnTable(int potionTID, uint pickupTableNetId)
     {
         _orderHandler.PickupTableDict[pickupTableNetId].IsUsing = true;
         _orderHandler.PickupTableDict[pickupTableNetId].HeldItemTID = potionTID;
     }
-    [Command(requiresAuthority = false)]
+    [Server]
     public void CmdRemoveOnTable(uint pickupTableNetId)
     {
         _orderHandler.PickupTableDict[pickupTableNetId].IsUsing = false;
@@ -254,7 +255,8 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
             _orderHandler.OldChairDict[chairNetId].UsingCustomer = customer; // 손님과 의자 매핑 저장
         }
         GameObject chair = NetworkServer.spawned[chairNetId].gameObject;
-        customer.CustomerMove.MoveTo(chair.transform.position);
+        //customer.CustomerMove.MoveTo(chair.transform.position);
+        customer.CustomerMove.MoveTo(chair.GetComponent<Furniture>().InputPosition.position);
 
         // Mirror 임시
         chair.GetComponent<Furniture>().TryEffect(customer.netId); // 의자 효과 적용

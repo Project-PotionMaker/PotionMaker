@@ -1,12 +1,16 @@
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.UI;
+using Mirror;
 
 public class CanvasAlphaChanger : MonoBehaviour
 {
     [SerializeField]
     private CanvasGroup _thisCanvasGroup;
+    [SerializeField]
+    private Slider progressBar;
 
-    private void Awake()
+    public void Awake()
     {
         _thisCanvasGroup.alpha = 0f;
     }

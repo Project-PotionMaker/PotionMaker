@@ -429,6 +429,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
                 if (GridManager.Instance.ServerCanPlaceObjectAt(targetPosition, _data.AreaType))
                 {
                     GridManager.Instance.ServerPlaceStructure(targetPosition, dropItemNetId, sender);
+                    dropItemIdentity.RemoveClientAuthority();
                     success = true;
                 }
                 else
@@ -439,13 +440,13 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
             else
             {
                 success = _inputComponent.ServerTryInput(this, tid, inputType, inputObject);
+                CraftItemFactory.Instance.ReturnObject(inputObject);
             }
 
         }
 
         if (success)
         {
-            dropItemIdentity.RemoveClientAuthority();
         }
 
         TargetRpcOnDrop(sender, success);

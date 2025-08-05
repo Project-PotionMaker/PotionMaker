@@ -38,7 +38,6 @@ public class UI_Storage : MonoBehaviour
         else
         {
             _interactPanel.SetActive(false);
-            _sliderPanel.SetActive(true);
         }
 
         IngredientData ingredientData = DataTable.Instance.GetIngredientData(_storage.IngredientTID);

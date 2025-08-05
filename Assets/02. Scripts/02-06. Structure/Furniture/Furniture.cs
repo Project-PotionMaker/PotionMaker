@@ -20,7 +20,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler
 
     [SyncVar(hook = nameof(OnInputObjectChanged))]
     private GameObject _inputObject;
-    public GameObject InputObject { get => _inputObject; private set => _inputObject = value; }
+    public GameObject InputObject { get => _inputObject; set => _inputObject = value; }
 
     private FurnitureData _data;
     public FurnitureData Data => _data;
@@ -209,8 +209,11 @@ public class Furniture : NetworkBehaviour, IGridItemHandler
         {
             NetworkServer.spawned[pickedUpItem.GetComponent<NetworkIdentity>().netId].AssignClientAuthority(sender);
         }
-
-        TargetRpcOnPickUp(sender, pickedUpItem.GetComponent<NetworkIdentity>());
+        
+        if(pickedUpItem != null)
+        {
+            TargetRpcOnPickUp(sender, pickedUpItem.GetComponent<NetworkIdentity>());
+        }
     }
 
     [Command(requiresAuthority = false)]
@@ -233,6 +236,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler
                 if (GridManager.Instance.ServerCanPlaceObjectAt(targetPosition, _data.AreaType))
                 {
                     GridManager.Instance.ServerPlaceStructure(targetPosition, dropItemNetId, sender);
+                    dropItemIdentity.RemoveClientAuthority();
                     success = true;
                 }
                 else
@@ -248,14 +252,10 @@ public class Furniture : NetworkBehaviour, IGridItemHandler
                     if (success)
                     {
                         InputObject = inputObject;
+                        InputObject.transform.position = InputPosition.position;
                     }
                 }
             }
-        }
-
-        if (success)
-        {
-            dropItemIdentity.RemoveClientAuthority();
         }
 
         TargetRpcOnDrop(sender, success);

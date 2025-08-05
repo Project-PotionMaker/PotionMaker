@@ -380,7 +380,10 @@ public class Machine : NetworkBehaviour, IGridItemHandler
             NetworkServer.spawned[pickedUpItem.GetComponent<NetworkIdentity>().netId].AssignClientAuthority(sender);
         }
 
-        TargetRpcOnPickUp(sender, pickedUpItem.GetComponent<NetworkIdentity>());
+        if (pickedUpItem != null)
+        {
+            TargetRpcOnPickUp(sender, pickedUpItem.GetComponent<NetworkIdentity>());
+        }
     }
 
     [TargetRpc]
@@ -412,6 +415,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler
                 if (GridManager.Instance.ServerCanPlaceObjectAt(targetPosition, _data.AreaType))
                 {
                     GridManager.Instance.ServerPlaceStructure(targetPosition, dropItemNetId, sender);
+                    dropItemIdentity.RemoveClientAuthority();
                     success = true;
                 }
                 else
@@ -422,13 +426,13 @@ public class Machine : NetworkBehaviour, IGridItemHandler
             else
             {
                 success = _inputComponent.ServerTryInput(this, tid, inputType, inputObject);
+                CraftItemFactory.Instance.ReturnObject(inputObject);
             }
 
         }
 
         if (success)
         {
-            dropItemIdentity.RemoveClientAuthority();
         }
 
         TargetRpcOnDrop(sender, success);

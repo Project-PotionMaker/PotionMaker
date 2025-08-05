@@ -26,6 +26,5 @@ public class CustomerFactory : NetworkFactoryBase<ENPCType, CustomerFactoryInfo,
     protected override void CmdReturnObject(GameObject obj)
     {
         NetworkServer.UnSpawn(obj);
-        _factoryLogic.ReturnObject(obj);
     }
 }

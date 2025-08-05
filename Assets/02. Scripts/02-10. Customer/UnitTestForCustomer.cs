@@ -2,6 +2,13 @@ using UnityEngine;
 
 public class UnitTestForCustomer : MonoBehaviour
 {
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            ServiceStart();
+        }
+    }
     public void ServiceStart()
     {
         PhaseManager.Instance.TransitionPhase(EPhaseType.ServingPhase);

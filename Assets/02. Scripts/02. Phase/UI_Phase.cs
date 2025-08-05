@@ -30,8 +30,8 @@ public class UI_Phase : MonoBehaviour
     [SerializeField]
     private GameObject[] _deathCountHeart;
 
-    private const float READY_HIDE_OFFSET = 400f;
-    private const float PLAYER_HIDE_OFFSET = 200f;
+    private const float READY_HIDE_OFFSET = 200f;
+    private const float PLAYER_HIDE_OFFSET = 60f;
     private const float DURATION = 1f;
 
     private void Start()

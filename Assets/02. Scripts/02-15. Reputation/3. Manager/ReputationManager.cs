@@ -10,8 +10,8 @@ public class ReputationManager : NetworkBehaviourSingleton<ReputationManager>
 
     private ReputationRepository _reputationRepository;
 
-    private const float _increaseAmountOnSuccessOrder = 0.01f;
-    private const float _decreaseAmountOnFailOrder = 0.2f;
+    private const float _increaseAmountOnSuccessOrder = 0.2f;
+    private const float _decreaseAmountOnFailOrder = 0.1f;
 
     public override void OnStartClient()
     {

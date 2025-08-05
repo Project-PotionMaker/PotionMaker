@@ -42,6 +42,18 @@ public class UI_Customer : MonoBehaviour
         {
             _enduranceSlider.gameObject.SetActive(true); // 다른 상태에서는 슬라이더 표시
             _enduranceSlider.value = _owner.CustomerEndurance.EnduranceRate;
+            float rate = _owner.CustomerEndurance.EnduranceRate;
+            Color targetColor = Color.white;
+            if (rate>0.5f)
+            {
+                targetColor = Color.Lerp(Color.yellow, Color.green, 2*(rate-0.5f));
+            }else if(rate < 0.5f)
+            {
+                targetColor = Color.Lerp(Color.red, Color.yellow, 2 * rate);
+            }
+
+            // 슬라이더 Fill 이미지의 색 변경
+            _enduranceSlider.fillRect.GetComponent<Image>().color = targetColor;
         }
     }
     private void SetStateImage()

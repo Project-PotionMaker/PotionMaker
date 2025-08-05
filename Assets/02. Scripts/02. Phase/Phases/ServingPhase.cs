@@ -55,5 +55,6 @@ public class ServingPhase : BasePhase
     public override void ExitPhase()
     {
         base.ExitPhase();
+        ReputationManager.Instance.AddReputation();
     }
 }

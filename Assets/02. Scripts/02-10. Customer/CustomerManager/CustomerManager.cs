@@ -181,9 +181,8 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
             SalesManager.Instance.RequestSell(customer.RequestedPotionTID);
         }
         Debug.Log($"Potion served successfully");
-        customer.HandlePotion();
+        customer.ServerHandlePotion();
         ReputationManager.Instance.AddReputation();
-        NetworkServer.spawned[pickupTableViewID].GetComponent<Furniture>().TryCustomerPickup();
         _lineHandler.PutOutCustomer(customer); // 손님을 나가게 하기
     }
 

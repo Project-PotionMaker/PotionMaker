@@ -43,7 +43,7 @@ public class UI_DaySummary : MonoBehaviour
     private void Start()
     {
         _salesVolumeSlotList = new List<UI_SalesVolumeSlot>();
-        // 엔딩페이즈 구독 += OnEndingPhaseStarted
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.EndingPhase].OnPhaseEntered += OnEndingPhaseStarted;
         SalesManager.Instance.OnSummaryReady += ShowSummary;
         gameObject.SetActive(false);
     }

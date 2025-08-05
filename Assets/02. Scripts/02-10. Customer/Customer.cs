@@ -94,22 +94,25 @@ public class Customer : NetworkBehaviour
         }
     }
 
-    [ClientRpc]
-    public void HandlePotion()
+    [Server]
+    public void ServerHandlePotion()
     {
         if (NetworkClient.spawned.TryGetValue(_pickupTableId, out NetworkIdentity identity))
         {
-            Debug.Log("Potion found on client: " + identity.name);
-            GameObject potion = identity.GetComponent<Furniture>().InputObject;
-            Debug.Log("Potion object: " + potion.name);
-            potion.transform.SetParent(_potionHandler.transform);
-            Debug.Log("Potion parent set to: " + _potionHandler.name);
-            potion.transform.localPosition = Vector3.zero;
+            Furniture pickupTable = identity.GetComponent<Furniture>();
+            uint potionNetId = pickupTable.InputObject.GetComponent<NetworkIdentity>().netId;
+            ClientHandlePotion(potionNetId);
+            pickupTable.TryCustomerPickup();
         }
-        else
-        {
-            Debug.LogWarning($"Potion not found on client.");
-        }
+    }
+
+    [ClientRpc]
+    public void ClientHandlePotion(uint potionNetId)
+    {
+        GameObject potion = NetworkClient.spawned[potionNetId].gameObject;
+        potion.transform.SetParent(_potionHandler.transform);
+        Debug.Log("Potion parent set to: " + _potionHandler.name);
+        potion.transform.localPosition = Vector3.zero;
     }
     [ClientRpc]
     public void ChairSetting(Vector3 position, float rotate)

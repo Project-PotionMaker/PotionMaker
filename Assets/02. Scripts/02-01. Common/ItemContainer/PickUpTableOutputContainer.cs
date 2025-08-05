@@ -6,19 +6,14 @@ public class PickUpTableOutputContainer : IOutputContainer<Furniture>
 
     public GameObject ServerTakeItem(Furniture furniture)
     {
-        //GameObject output = stat.InputObject;
-        //stat.InputObject = null;
-        //CustomerManager.Instance.CommandRemoveOnTable(furniture.netId);
-        //return output;
-        return null;
+        GameObject output = furniture.InputObject;
+        furniture.InputObject = null;
+        CustomerManager.Instance.CmdRemoveOnTable(furniture.netId);
+        return output;
     }
 
     public bool ServerCanTake(Furniture furniture)
     {
-        //if(stat.InputObject == null)
-        //{
-        //    return false;
-        //}
         return true;
     }
 }

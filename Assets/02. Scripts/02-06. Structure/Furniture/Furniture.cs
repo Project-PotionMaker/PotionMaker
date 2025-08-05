@@ -236,6 +236,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler
                 if (GridManager.Instance.ServerCanPlaceObjectAt(targetPosition, _data.AreaType))
                 {
                     GridManager.Instance.ServerPlaceStructure(targetPosition, dropItemNetId, sender);
+                    dropItemIdentity.RemoveClientAuthority();
                     success = true;
                 }
                 else
@@ -255,11 +256,6 @@ public class Furniture : NetworkBehaviour, IGridItemHandler
                     }
                 }
             }
-        }
-
-        if (success)
-        {
-            dropItemIdentity.RemoveClientAuthority();
         }
 
         TargetRpcOnDrop(sender, success);

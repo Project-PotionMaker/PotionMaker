@@ -1,6 +1,7 @@
 using UnityEngine;
 using DG.Tweening;
 using UnityEngine.UI;
+using Mirror;
 
 public class CanvasAlphaChanger : MonoBehaviour
 {
@@ -9,7 +10,7 @@ public class CanvasAlphaChanger : MonoBehaviour
     [SerializeField]
     private Slider progressBar;
 
-    private void Awake()
+    public void Awake()
     {
         _thisCanvasGroup.alpha = 0f;
     }
@@ -22,10 +23,7 @@ public class CanvasAlphaChanger : MonoBehaviour
 
     public void HideCanvas()
     {
-        if(progressBar.value < 0.1f)
-        {
-            _thisCanvasGroup.DOKill();
-            _thisCanvasGroup.DOFade(0f, 0.25f);
-        }
+        _thisCanvasGroup.DOKill();
+        _thisCanvasGroup.DOFade(0f, 0.25f);
     }
 }

@@ -32,6 +32,5 @@ public class StructureFactory : NetworkFactoryBase<EStructureType, StructureFact
         }
         
         NetworkServer.UnSpawn(obj);
-        _factoryLogic.ReturnObject(obj);
     }
 }

@@ -66,6 +66,7 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
         _exitDoor = GameObject.FindGameObjectWithTag(nameof(ETags.ExitDoor))?.transform;
     }
 
+    [Server]
     public void PreService()
     {
         _orderHandler.SetLists();
@@ -161,7 +162,7 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
             return;
         }
 
-        CmdPlaceOnTable(potionTID, pickupTableNetId);
+        //CmdPlaceOnTable(potionTID, pickupTableNetId);
         Vector3 position = NetworkServer.spawned[pickupTableNetId].transform.position; // 판매대 위치 찾기
         customer.TransitionState(ECustomerStateType.PickingUp);
         customer.CustomerMove.MoveTo(position); // 손님을 판매대 위치로 이동

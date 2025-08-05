@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using VInspector;
 
 [Serializable]
@@ -77,8 +78,17 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
 
     public Action OnDataChanged;
 
-    public float RefundGauge { get; set; }
-    public Coroutine RefundRoutine { get; set; }
+    private float _refundGauge = 0;
+    public float RefundGauge
+    {
+        get
+        {
+            return _refundGauge;
+        }
+    }
+    private float _refundTime = 2;
+    private int _refundRatio = 4;
+    private Coroutine _refundRoutine;
 
     private void Awake()
     {
@@ -506,33 +516,40 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
         return _data.StructureTID;
     }
 
+
+    #region Public Interface (IRefundable)
     public void StartRefund()
     {
         StopCoroutine(nameof(ProcessRefund));
-        RefundRoutine = StartCoroutine(nameof(ProcessRefund));
+        _refundRoutine = StartCoroutine(nameof(ProcessRefund));
     }
 
     public void Refund()
     {
         int productTID = DataTable.Instance.GetFurnitureData(DataTID).ProductTID;
-        int refundPrice = DataTable.Instance.GetProductData(productTID).Price / 4;
+        int refundPrice = DataTable.Instance.GetProductData(productTID).Price / _refundRatio;
         CurrencyManager.Instance.CmdRequestAddCurrency(refundPrice);
         StructureFactory.Instance.ReturnObject(gameObject);
     }
 
     public void CancelRefund()
     {
-        StopCoroutine(RefundRoutine);
-        RefundGauge = 0;
+        StopCoroutine(_refundRoutine);
+        _refundGauge = 0;
+        OnDataChanged?.Invoke();
     }
 
     public IEnumerator ProcessRefund()
     {
-        while (RefundGauge < 1)
+        while (_refundGauge < 1)
         {
-            RefundGauge += Time.deltaTime / 3f;
+            _refundGauge += Time.deltaTime / _refundTime;
+            OnDataChanged?.Invoke();
             yield return null;
         }
         Refund();
     }
+
+    #endregion
+
 }

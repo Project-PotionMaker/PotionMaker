@@ -11,6 +11,8 @@ public class UI_Machine : MonoBehaviour
     [SerializeField]
     private Slider ProgressSlider;
     [SerializeField]
+    private Slider _refundSlider;
+    [SerializeField]
     private TextMeshProUGUI _nameTextUI;
     [SerializeField]
     private GameObject _interactPanel;
@@ -46,6 +48,8 @@ public class UI_Machine : MonoBehaviour
         _nameTextUI.text = _machine.Data.Name;
 
         ProgressSlider.value = _machine.CurrentProgress / _machine.Data.MaxProgress;
+        _refundSlider.gameObject.SetActive(_machine.RefundGauge > 0);
+        _refundSlider.value = _machine.RefundGauge;
     }
 
     private void OnDisable()

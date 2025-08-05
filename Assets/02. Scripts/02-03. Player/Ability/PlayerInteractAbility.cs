@@ -31,15 +31,15 @@ public class PlayerInteractAbility : PlayerAbility
     private void ChangeInteractState(bool isInteract)
     {
         _isInteract = isInteract;
-        _animationAbility.SetBool(EPlayerAnimationParameter.IsInteract, isInteract);
         if (isInteract)
         {
             StartInteract();
-
             if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase && HeldItemIdentity != null)
             {
                 StartRefund();
+                return;
             }
+            _animationAbility.SetBool(EPlayerAnimationParameter.IsInteract, isInteract);
         }
         else
         {
@@ -47,7 +47,9 @@ public class PlayerInteractAbility : PlayerAbility
             if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase && HeldItemIdentity != null)
             {
                 EndRefund();
+                return;
             }
+            _animationAbility.SetBool(EPlayerAnimationParameter.IsInteract, isInteract);
         }
     }
 

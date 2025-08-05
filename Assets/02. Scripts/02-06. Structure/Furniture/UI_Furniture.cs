@@ -10,6 +10,8 @@ public class UI_Furniture : MonoBehaviour
     [SerializeField]
     private Slider ProgressSlider;
     [SerializeField]
+    private Slider _refundSlider;
+    [SerializeField]
     private TextMeshProUGUI _nameTextUI;
     [SerializeField]
     private GameObject _interactPanel;
@@ -47,6 +49,8 @@ public class UI_Furniture : MonoBehaviour
 
     public void Refresh()
     {
+        _refundSlider.gameObject.SetActive(_furniture.RefundGauge > 0);
+        _refundSlider.value = _furniture.RefundGauge;
     }
 
     private void OnDisable()

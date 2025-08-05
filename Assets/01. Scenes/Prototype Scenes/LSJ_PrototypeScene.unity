@@ -2142,63 +2142,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1163454695}
   m_SourcePrefab: {fileID: 100100000, guid: 9a961b6c5c1adee4da8a646ae71cc04c, type: 3}
---- !u!1001 &659665358
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: -8679921383154817045, guid: 548fb3ca2772d544388914ae9b376a88, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 3.4252887
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 548fb3ca2772d544388914ae9b376a88, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.015001297
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 548fb3ca2772d544388914ae9b376a88, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -0.9903059
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 548fb3ca2772d544388914ae9b376a88, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 548fb3ca2772d544388914ae9b376a88, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0.000000021855694
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 548fb3ca2772d544388914ae9b376a88, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 548fb3ca2772d544388914ae9b376a88, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 548fb3ca2772d544388914ae9b376a88, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 548fb3ca2772d544388914ae9b376a88, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 548fb3ca2772d544388914ae9b376a88, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 919132149155446097, guid: 548fb3ca2772d544388914ae9b376a88, type: 3}
-      propertyPath: m_Name
-      value: WoodenPartition
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 548fb3ca2772d544388914ae9b376a88, type: 3}
 --- !u!1 &671921656
 GameObject:
   m_ObjectHideFlags: 0
@@ -4257,8 +4200,7 @@ Transform:
   m_LocalPosition: {x: -0.1, y: 8.06, z: -3.65}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1947961432}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 70.837, y: 0, z: 0}
 --- !u!114 &1449249183
@@ -4277,7 +4219,8 @@ MonoBehaviour:
   m_RequiresDepthTextureOption: 2
   m_RequiresOpaqueTextureOption: 2
   m_CameraType: 0
-  m_Cameras: []
+  m_Cameras:
+  - {fileID: 1947961435}
   m_RendererIndex: -1
   m_VolumeLayerMask:
     serializedVersion: 2
@@ -5739,12 +5682,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1947961431}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 0.57954097, y: -0, z: -0, w: 0.8149432}
+  m_LocalPosition: {x: -0.1, y: 8.06, z: -3.65}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1449249182}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1947961433
 MonoBehaviour:
@@ -5761,7 +5704,7 @@ MonoBehaviour:
   m_RenderShadows: 0
   m_RequiresDepthTextureOption: 2
   m_RequiresOpaqueTextureOption: 2
-  m_CameraType: 0
+  m_CameraType: 1
   m_Cameras: []
   m_RendererIndex: -1
   m_VolumeLayerMask:
@@ -5838,7 +5781,7 @@ Camera:
   m_AllowMSAA: 1
   m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
-  m_OcclusionCulling: 1
+  m_OcclusionCulling: 0
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
 --- !u!4 &1965358593 stripped
@@ -7236,6 +7179,7 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1449249182}
+  - {fileID: 1947961432}
   - {fileID: 806927017}
   - {fileID: 185393248}
   - {fileID: 1342698656}
@@ -7249,4 +7193,3 @@ SceneRoots:
   - {fileID: 922556826}
   - {fileID: 945411104}
   - {fileID: 559735219}
-  - {fileID: 659665358}

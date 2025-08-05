@@ -91,8 +91,5 @@ public class MirrorNetworkManager : NetworkRoomManager
     {
         base.OnClientSceneChanged();
         Debug.Log("클라이언트: 씬 변경됨 - " + SceneManager.GetActiveScene().name);
-
-        // 클라이언트 측에서는 씬 전환과 관련된 추가적인 로직을 수행하지 않아도 됨
-        // ServerChangeScene() 호출 시 Mirror가 자동으로 이전 씬을 언로드하고 새 씬으로 전환
     }
 }

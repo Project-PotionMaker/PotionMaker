@@ -107,14 +107,14 @@ public class MirrorNetworkManager : NetworkRoomManager
         Debug.Log("클라이언트: 씬 변경됨 - " + SceneManager.GetActiveScene().name);
     }
 
-    public override void OnRoomServerAddPlayer(NetworkConnectionToClient conn)
+    public override void OnRoomClientConnect()
     {
-        base.OnRoomServerAddPlayer(conn);
+        base.OnRoomClientConnect();
 
-        StartCoroutine(WaitAndRefreshRoomPlayerUI());
+        StartCoroutine(WaitAndRefreshRoomPlayers());
     }
 
-    private IEnumerator WaitAndRefreshRoomPlayerUI()
+    private IEnumerator WaitAndRefreshRoomPlayers()
     {
         yield return new WaitForSeconds(0.1f); // 1프레임 쉬고
 

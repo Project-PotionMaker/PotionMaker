@@ -40,7 +40,6 @@ public class CustomerEndurance : NetworkBehaviour
         LosingEndurance(); // 인내심 감소
         if (_currentEndurance <= 0f && _owner.CurrentState != ECustomerStateType.Leaving)
         {
-            ReputationManager.Instance.SubtractReputation();
             CustomerManager.Instance.LostCustomer(_owner);
         }
         

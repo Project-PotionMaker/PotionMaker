@@ -131,6 +131,7 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
         {
             _lineHandler.ReLining(); // 줄 다시 세우기
         }
+        ReputationManager.Instance.SubtractReputation();
         LeaveChair(customer);
         _lineHandler.PutOutCustomer(customer); // 손님을 나가게 하기
         if(PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase)
@@ -182,7 +183,7 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
         Debug.Log($"Potion served successfully");
         customer.HandlePotion();
         ReputationManager.Instance.AddReputation();
-        //NetworkServer.spawned[pickupTableViewID].GetComponent<Furniture>().ServerCustomerPickUp();
+        NetworkServer.spawned[pickupTableViewID].GetComponent<Furniture>().TryCustomerPickup();
         _lineHandler.PutOutCustomer(customer); // 손님을 나가게 하기
     }
 
@@ -261,7 +262,7 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
         customer.CustomerMove.MoveTo(chair.GetComponent<Furniture>().InputPosition.position);
 
         // Mirror 임시
-        chair.GetComponent<Furniture>().TryEffect(customer.netId); // 의자 효과 적용
+        chair.GetComponent<Furniture>().TryCustomerEffect(customer.netId); // 의자 효과 적용
     }
     [Server]
     private void LeaveChair(Customer customer)

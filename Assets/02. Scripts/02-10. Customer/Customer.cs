@@ -25,8 +25,8 @@ public class Customer : NetworkBehaviour
 
     public event Action OnStateChanged;
 
-    private Transform _chairPosition;
-    public  Transform ChairPosition { get => _chairPosition; set => _chairPosition = value; } // 의자 위치
+    private Vector3 _chairPosition;
+    public  Vector3 ChairPosition { get => _chairPosition; set => _chairPosition = value; } // 의자 위치
     private  float _chairRotate;
     public float ChairRotate { get => _chairRotate; set => _chairRotate = value; } // 의자 회전
     [SyncVar]
@@ -112,7 +112,7 @@ public class Customer : NetworkBehaviour
         }
     }
     [ClientRpc]
-    public void ChairSetting(Transform position, float rotate)
+    public void ChairSetting(Vector3 position, float rotate)
     {
         _chairPosition = position;
         _chairRotate = rotate;

@@ -1,6 +1,3 @@
-﻿using UnityEngine;
-using System;
-
 public class EndingPhase : BasePhase
 {
     public EndingPhase()

@@ -135,8 +135,8 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
         _lineHandler.PutOutCustomer(customer); // 손님을 나가게 하기
         if(PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase)
         {
-            PhaseManager.Instance.DeathCount++;
-            if (PhaseManager.Instance.DeathCount >= PhaseManager.Instance.MaxDeathCount)
+            PhaseManager.Instance.DeathCount--;
+            if (PhaseManager.Instance.DeathCount <= 0 )
             {
                 //TODO : 게임종료 씬
             }
@@ -166,6 +166,7 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
         Vector3 position = NetworkServer.spawned[pickupTableNetId].transform.position; // 판매대 위치 찾기
         customer.TransitionState(ECustomerStateType.PickingUp);
         customer.CustomerMove.MoveTo(position); // 손님을 판매대 위치로 이동
+        customer.PickupTableId = pickupTableNetId;
         _orderHandler.PickupTableDict[pickupTableNetId].UsingCustomer = customer; // 손님과 판매대 매핑 저장
         _orderHandler.PotionOrderMap[potionTID].Remove(customer);
         LeaveChair(customer);
@@ -179,8 +180,9 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
             SalesManager.Instance.RequestSell(customer.RequestedPotionTID);
         }
         Debug.Log($"Potion served successfully");
-        CmdRemoveOnTable(pickupTableViewID); // 판매대에서 포션 제거
         customer.HandlePotion();
+        ReputationManager.Instance.AddReputation();
+        //NetworkServer.spawned[pickupTableViewID].GetComponent<Furniture>().ServerCustomerPickUp();
         _lineHandler.PutOutCustomer(customer); // 손님을 나가게 하기
     }
 

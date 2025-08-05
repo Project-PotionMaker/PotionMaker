@@ -109,10 +109,17 @@ public class Customer : NetworkBehaviour
     [ClientRpc]
     public void ClientHandlePotion(uint potionNetId)
     {
-        GameObject potion = NetworkClient.spawned[potionNetId].gameObject;
-        potion.transform.SetParent(_potionHandler.transform);
-        Debug.Log("Potion parent set to: " + _potionHandler.name);
-        potion.transform.localPosition = Vector3.zero;
+        if (NetworkClient.spawned.TryGetValue(potionNetId, out var identity))
+        {
+            GameObject potion = identity.gameObject;
+            potion.transform.SetParent(_potionHandler.transform);
+            Debug.Log("Potion parent set to: " + _potionHandler.name);
+            potion.transform.localPosition = Vector3.zero;
+        }
+        else
+        {
+            Debug.LogWarning($"Potion with netId {potionNetId} not found on client.");
+        }
     }
     [ClientRpc]
     public void ChairSetting(Vector3 position, float rotate)

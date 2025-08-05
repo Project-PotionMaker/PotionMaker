@@ -47,7 +47,7 @@ public class UI_Customer : MonoBehaviour
             if (rate>0.5f)
             {
                 targetColor = Color.Lerp(Color.yellow, Color.green, 2*(rate-0.5f));
-            }else if(rate < 0.5f)
+            }else if(rate <= 0.5f)
             {
                 targetColor = Color.Lerp(Color.red, Color.yellow, 2 * rate);
             }

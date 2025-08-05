@@ -19,13 +19,13 @@ public class PlayersInfo : MonoBehaviour
 
         foreach (RoomPlayer roomPlayer in roomslots)
         {
-            if (PlayerInfoSlotList[roomPlayer.index - 1].CurrentRoomPlayer == roomPlayer)
+            if (PlayerInfoSlotList[roomPlayer.index].CurrentRoomPlayer == roomPlayer)
             {
-                PlayerInfoSlotList[roomPlayer.index - 1].Refresh();
+                PlayerInfoSlotList[roomPlayer.index].Refresh();
             }
             else
             {
-                PlayerInfoSlotList[roomPlayer.index - 1].InitPlayerInfoSlot(roomPlayer);
+                PlayerInfoSlotList[roomPlayer.index].InitPlayerInfoSlot(roomPlayer);
             }
         }
     }

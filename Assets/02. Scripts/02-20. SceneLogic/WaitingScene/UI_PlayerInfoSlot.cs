@@ -121,6 +121,8 @@ public class UI_PlayerInfoSlot : MonoBehaviour
             _offlinePanel.SetActive(false);
         }
 
+        _slotRectTransform.DOKill();
+
         float currentHeight = _slotRectTransform.rect.height;
         float distance = Mathf.Abs(_stateHeightDict[state] - currentHeight);
         float duration = distance / _resizeSpeed;

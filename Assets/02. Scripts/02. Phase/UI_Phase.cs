@@ -12,10 +12,6 @@ public class UI_Phase : MonoBehaviour
     [SerializeField]
     private Slider _serviceTimer;
     [SerializeField]
-    private GameObject _todaySummaryPanel;
-    [SerializeField]
-    private TextMeshProUGUI _todaySummaryText;
-    [SerializeField]
     private GameObject _readyPanel;
     [SerializeField]
     private TextMeshProUGUI _startDayText;
@@ -52,10 +48,8 @@ public class UI_Phase : MonoBehaviour
         servingPhase.OnPhaseEntered += HideReady; // 준비 단계가 끝나면 시작 패널 숨김
         HideTimer();
         EndingPhase endingPhase = (EndingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.EndingPhase];
-        endingPhase.OnPhaseEntered += ShowSummary; // 영업 종료 시 요약 패널 표시
-        endingPhase.OnPhaseExited += HideSummary; // 영업 종료 후 요약 패널 숨김
         endingPhase.OnPhaseExited += ShowReady; // 준비 단계가 시작되면 시작 패널 표시
-        HideSummary();
+
 
         HidePlayerPanel(0);
         HidePlayerPanel(1);
@@ -72,7 +66,7 @@ public class UI_Phase : MonoBehaviour
     }
     private void UpdateServiceTimer()
     {
-        _serviceTimer.value = PhaseManager.Instance.CurrentTimeRate;
+        _serviceTimer.value = 1-PhaseManager.Instance.CurrentTimeRate;
     }
 
     private void ShowTimer()
@@ -82,16 +76,6 @@ public class UI_Phase : MonoBehaviour
     private void HideTimer()
     {
         _serviceTimer.gameObject.SetActive(false);
-    }
-
-    private void ShowSummary()
-    {
-        _todaySummaryPanel.SetActive(true);
-        //_todaySummaryText.text = $"Gold : {SalesManager.Instance.Sales.DailySales}";
-    }
-    private void HideSummary()
-    {
-        _todaySummaryPanel.SetActive(false);
     }
 
     private void HideReady()

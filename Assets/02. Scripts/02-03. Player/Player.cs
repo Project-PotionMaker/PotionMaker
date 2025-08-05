@@ -21,27 +21,49 @@ public class Player : NetworkBehaviour
 
     private Dictionary<Type, PlayerAbility> _abilityMap = new Dictionary<Type, PlayerAbility>();
 
+    // 영상에 넣을 임시 테스트
+    private CanvasAlphaChanger _lastHighlightedStructure;
+
     private void Awake()
     {
     }
 
     private void Update()
     {
-        if (CheckObjectInFront())
+        GameObject frontObject = GetObjectInFront();
+        if (frontObject != null)
         {
-            // TODO : GridManager를 통해 오브젝트 있으면 빛나게 활성화 작업 추가
+            CanvasAlphaChanger currentStructure = frontObject.GetComponent<CanvasAlphaChanger>();
+            if (_lastHighlightedStructure != null)
+            {
+                _lastHighlightedStructure.HideCanvas();
+            }
+
+            if (currentStructure != null)
+            {
+                currentStructure.ShowCanvas();
+            }
+            _lastHighlightedStructure = currentStructure;
+        }
+        else
+        {
+            if (_lastHighlightedStructure != null)
+            {
+                _lastHighlightedStructure.HideCanvas();
+                _lastHighlightedStructure = null;
+            }
         }
     }
 
-    public bool CheckObjectInFront()
+    public GameObject GetObjectInFront()
     {
         Vector3 targetPosition = GetFrontPosition();
 
         if (GridManager.Instance != null)
         {
-            return GridManager.Instance.GetObjectOnGrid(targetPosition) != null;
+            return GridManager.Instance.GetObjectOnGrid(targetPosition);
         }
-        else return false;
+        return null;
     }
 
     public Vector3 GetFrontPosition()

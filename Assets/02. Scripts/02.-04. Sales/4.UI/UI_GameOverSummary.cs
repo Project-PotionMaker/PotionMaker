@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -47,23 +48,7 @@ public class UI_GameOverSummary : MonoBehaviour
             _salesVolumeSlotList[slotIndex].Refresh(potionTID, false);
             ++slotIndex;
         }
-
-        for (int deleteIndex = _salesVolumeSlotList.Count - 1; deleteIndex >= slotIndex; --deleteIndex)
-        {
-            UI_GameOverVolumeSlot deleteSlot = _salesVolumeSlotList[deleteIndex];
-
-            _salesVolumeSlotList.RemoveAt(deleteIndex);
-            Destroy(deleteSlot.gameObject);
-        }
-
-
-        // 자산
-        // 미리 방세 빼는 로직이 들어가있어야함? 아니면 표시만?
         int currentCurrency = CurrencyManager.Instance.Coin.Value;
-        if (RentManager.Instance.Rent.IsRentDay)
-        {
-            currentCurrency -= RentManager.Instance.Rent.CurrentRentCost;
-        }
         _currentCurrencyTextUI.text = currentCurrency.ToString("N0");
 
         int totalSales = SalesManager.Instance.Sales.TotalSales;

@@ -109,7 +109,7 @@ public class UI_DaySummary : MonoBehaviour
         // max value도 받아오도록 수정
         float currentReputation = ReputationManager.Instance.Reputation.Value;
         _reputationRateView.fillAmount = currentReputation / 5;
-        _currentReputationTextUI.text = currentReputation.ToString();
+        _currentReputationTextUI.text = currentReputation.ToString("F1");
 
         float reputationDifference = ReputationManager.Instance.Reputation.Difference;
         string color = reputationDifference >= 0 ? POSITIVE_COLOR : NEGATIVE_COLOR;
@@ -119,11 +119,14 @@ public class UI_DaySummary : MonoBehaviour
         // 자산
         // 미리 방세 빼는 로직이 들어가있어야함? 아니면 표시만?
         int currentCurrency = CurrencyManager.Instance.Coin.Value;
-        if (RentManager.Instance.Rent.IsRentDay)
-        {
-            currentCurrency -= RentManager.Instance.Rent.CurrentRentCost;
-        }
+
         _currentCurrencyTextUI.text = currentCurrency.ToString("N0");
+
+        if(currentCurrency < 0)
+        {
+            ColorUtility.TryParseHtmlString("#CB0000", out var red);
+            _currentCurrencyTextUI.color = red;
+        }
         gameObject.SetActive(true);
     }
 }

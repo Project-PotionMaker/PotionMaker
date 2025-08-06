@@ -6,7 +6,8 @@ using UnityEngine;
 public class PotionHouse : MonoBehaviourSingleton<PotionHouse>
 {
     [SerializeField]
-    private int PotionHouseTier;
+    private int _potionHouseTier;
+    public int PotionHouseTier => _potionHouseTier;
 
     // 레이아웃 정보
     [SerializeField]
@@ -37,7 +38,7 @@ public class PotionHouse : MonoBehaviourSingleton<PotionHouse>
 
     private void InitPotionHouse()
     {
-        List<UnlockData> unlockDataList = DataTable.Instance.GetUnlockDataList().Where(data => data.Tier == PotionHouseTier).ToList();
+        List<UnlockData> unlockDataList = DataTable.Instance.GetUnlockDataList().Where(data => data.Tier == _potionHouseTier).ToList();
         Dictionary<EUnlockType, ReadOnlyList<int>> tempDict = new();
         
         // 전체 데이터 삽입

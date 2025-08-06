@@ -25,13 +25,13 @@ public class UI_SuccessSummary : MonoBehaviour
     private void Start()
     {
         gameObject.SetActive(false);
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.EndingPhase].OnPhaseExited += HidePanel;
     }
     private void Update()
     {
         //TODO : 투표시스템
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            gameObject.SetActive(false);
             PhaseManager.Instance.TransitionPhase(EPhaseType.PreparingPhase);
         }
     }
@@ -54,5 +54,9 @@ public class UI_SuccessSummary : MonoBehaviour
 
 
         gameObject.SetActive(true);
+    }
+    private void HidePanel()
+    {
+        gameObject.SetActive(false);
     }
 }

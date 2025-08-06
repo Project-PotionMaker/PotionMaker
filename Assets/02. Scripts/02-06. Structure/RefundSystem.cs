@@ -11,8 +11,8 @@ public class RefundSystem
     private bool _isRefundable;
     private float _refundDuration;
     private int _refundRatio;
-    private int _productdPrice;
-    private int _refundPrice => _productdPrice / _refundRatio;
+    private int _productPrice;
+    private int _refundPrice => _productPrice / _refundRatio;
     private int _structureTID;
     private Coroutine _refundRoutine;
 
@@ -28,7 +28,7 @@ public class RefundSystem
         _refundable = refundable;
         _refundDuration = 2;
         _refundRatio = 4;
-        _productdPrice = DataTable.Instance.GetProductData(productTID).Price;
+        _productPrice = DataTable.Instance.GetProductData(productTID).Price;
         _structureTID = structureTID;
     }
 

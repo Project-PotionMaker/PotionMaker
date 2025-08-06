@@ -22,7 +22,7 @@ public class PlayerPickupAbility : PlayerAbility
         _animationAbility = _owner.GetAbility<PlayerAnimationAbility>();
         PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += ResetItem;
         PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase].OnPhaseExited += ResetItem;
-        StructureFactory.Instance.OnReturn += TryResetItem;
+        StructureFactory.Instance.OnReturn += CmdTryResetItem;
     }
 
     private void Update()
@@ -115,13 +115,16 @@ public class PlayerPickupAbility : PlayerAbility
         return item;
     }
 
-    private void TryResetItem(GameObject obj)
+    [Command(requiresAuthority =false)]
+    private void CmdTryResetItem(GameObject obj)
     {
-        if(_heldItemIdentity.gameObject == obj)
+        if(_heldItemIdentity != null && _heldItemIdentity.gameObject == obj)
         {
             ResetItem();
         }
     }
+
+    [Server]
     private void ResetItem()
     {
         if (!ReferenceEquals(_heldItemIdentity, null))

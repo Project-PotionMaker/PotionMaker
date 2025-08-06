@@ -39,7 +39,6 @@ public class PlayerInteractAbility : PlayerAbility
                 StartRefund();
                 return;
             }
-            _animationAbility.SetBool(EPlayerAnimationParameter.IsInteract, isInteract);
         }
         else
         {
@@ -49,8 +48,9 @@ public class PlayerInteractAbility : PlayerAbility
                 EndRefund();
                 return;
             }
-            _animationAbility.SetBool(EPlayerAnimationParameter.IsInteract, isInteract);
         }
+        _animationAbility.SetBool(EPlayerAnimationParameter.IsInteract, isInteract);
+
     }
 
     private void StartInteract()
@@ -93,13 +93,18 @@ public class PlayerInteractAbility : PlayerAbility
 
     private void StartRefund()
     {
-        IRefundable refundTarget = HeldItemIdentity.GetComponent<IRefundable>();
-        refundTarget.StartRefund();
+        if (HeldItemIdentity.TryGetComponent(out IRefundable refundTarget))
+        {
+            refundTarget.StartRefund();
+        }
     }
 
     private void EndRefund()
     {
-        IRefundable refundTarget = HeldItemIdentity.GetComponent<IRefundable>();
-        refundTarget.CancelRefund();
+        if (HeldItemIdentity.TryGetComponent(out IRefundable refundTarget))
+        {
+            refundTarget.CancelRefund();
+        }
+        
     }
 }

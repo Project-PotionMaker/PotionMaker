@@ -1,6 +1,9 @@
 using Mirror;
+using NUnit.Framework;
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class RoomPlayer : NetworkRoomPlayer
@@ -14,12 +17,26 @@ public class RoomPlayer : NetworkRoomPlayer
 
     public override void OnStartClient()
     {
-        Debug.Log($"OnStartClient {gameObject}");
+        base.OnStartClient();
+        CmdRequestAddToPlayerList();
     }
 
     public override void OnStopClient()
     {
         base.OnStopClient();
+        CmdRequestRemoveToPlayerList();
+    }
+
+    [Command]
+    void CmdRequestAddToPlayerList()
+    {
+        NetworkMessenger.Instance.RoomPlayerIdList.Add(netId);
+    }
+
+    [Command]
+    void CmdRequestRemoveToPlayerList()
+    {
+        NetworkMessenger.Instance.RoomPlayerIdList.Remove(netId);
     }
 
     public override void OnStartLocalPlayer()
@@ -46,18 +63,7 @@ public class RoomPlayer : NetworkRoomPlayer
 
     public bool CheckPlayersReadyForHost()
     {
-        int CurrentMaxPlayer = MirrorNetworkManager.Instance.roomSlots.Count;
-        int readyPlayerNumber = 0;
-        foreach(var roomPlayer in MirrorNetworkManager.Instance.roomSlots)
-        {
-            readyPlayerNumber += roomPlayer.readyToBegin ? 1 : 0;
-        }
-
-        if(CurrentMaxPlayer - 1 == readyPlayerNumber)
-        {
-            return true;
-        }
-        return false;
+        return MirrorNetworkManager.Instance.roomSlots.All(p => p.index == 0 || p.readyToBegin);
     }
 
     [Command]

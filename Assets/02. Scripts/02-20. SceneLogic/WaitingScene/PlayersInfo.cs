@@ -1,7 +1,9 @@
 using Mirror;
 using NUnit.Framework;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class PlayersInfo : MonoBehaviour
@@ -14,13 +16,13 @@ public class PlayersInfo : MonoBehaviour
         StartCoroutine(Refresh_Coroutine());
     }
 
-    public IEnumerator Refresh_Coroutine()
+    private IEnumerator Refresh_Coroutine()
     {
-        yield return new WaitForSeconds(0.2f);
-        HashSet<NetworkRoomPlayer> roomslots = MirrorNetworkManager.Instance.roomSlots;
+        yield return WaitUntilAllRoomPlayersSpawned(NetworkMessenger.Instance.RoomPlayerIdList.ToList());
 
-        foreach (RoomPlayer roomPlayer in roomslots)
+        foreach (uint roomPlayerNetId in NetworkMessenger.Instance.RoomPlayerIdList)
         {
+            RoomPlayer roomPlayer = NetworkServer.spawned[roomPlayerNetId].GetComponent<RoomPlayer>();
             if (PlayerInfoSlotList[roomPlayer.index].CurrentRoomPlayer == roomPlayer)
             {
                 PlayerInfoSlotList[roomPlayer.index].Refresh();
@@ -37,6 +39,36 @@ public class PlayersInfo : MonoBehaviour
             {
                 playerInfoSlot.Refresh();
             }
+        }
+    }
+
+    private IEnumerator WaitUntilAllRoomPlayersSpawned(List<uint> netIds)
+    {
+        List<RoomPlayer> players = new List<RoomPlayer>();
+
+        while (true)
+        {
+            players.Clear();
+            bool allFound = true;
+
+            foreach (uint id in netIds)
+            {
+                if (NetworkClient.spawned.TryGetValue(id, out NetworkIdentity identity))
+                {
+                    players.Add(identity.GetComponent<RoomPlayer>());
+                }
+                else
+                {
+                    allFound = false;
+                    yield return new WaitForSeconds(0.1f);
+                    break;
+                }
+            }
+
+            if (allFound)
+                break;
+
+            yield return null; // 다음 프레임까지 대기
         }
     }
 }

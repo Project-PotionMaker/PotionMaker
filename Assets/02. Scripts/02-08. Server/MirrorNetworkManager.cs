@@ -87,7 +87,7 @@ public class MirrorNetworkManager : NetworkRoomManager
 
         if(roomPlayer.TryGetComponent<RoomPlayer>(out RoomPlayer roomPlayerScript))
         {
-            if(gameObject.TryGetComponent<Player>(out Player playerScript))
+            if(gamePlayer.TryGetComponent<Player>(out Player playerScript))
             {
                 playerScript.playerName = roomPlayerScript.PlayerName;
                 playerScript.playerOrderIndex = roomPlayerScript.index;
@@ -114,36 +114,13 @@ public class MirrorNetworkManager : NetworkRoomManager
         Debug.Log("클라이언트: 씬 변경됨 - " + SceneManager.GetActiveScene().name);
     }
 
-    // MirrorNetworkManager.cs
-    public override void OnServerAddPlayer(NetworkConnectionToClient conn)
+    public override void OnRoomServerConnect(NetworkConnectionToClient conn)
     {
-        base.OnServerAddPlayer(conn);
-
-        PlayersInfo _playersInfo = FindAnyObjectByType<PlayersInfo>();
-        if (_playersInfo != null)
-        {
-            _playersInfo.Refresh();
-        }
-
-        if (NetworkMessenger.Instance != null)
-        {
-            NetworkMessenger.Instance.RpcNotifyPlayerListChanged(); // 모든 클라이언트에게 알림
-        }
+        base.OnRoomServerConnect(conn);
     }
 
     public override void OnRoomServerDisconnect(NetworkConnectionToClient conn)
     {
         base.OnRoomServerDisconnect(conn);
-       
-        if (NetworkMessenger.Instance != null)
-        {
-            NetworkMessenger.Instance.RpcNotifyPlayerListChanged(); // 모든 클라이언트에게 알림
-        }
-    }
-
-    public override void ReadyStatusChanged()
-    {
-        base.ReadyStatusChanged();
-        NetworkMessenger.Instance.RpcNotifyPlayerListChanged();
     }
 }

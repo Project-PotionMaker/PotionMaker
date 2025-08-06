@@ -91,6 +91,8 @@ public class UI_PlayerInfoSlot : MonoBehaviour
         {
             SetStatePanel(ERoomPlayerState.Online);
         }
+
+        player.OnClientReadyStateChanged += RefreshReady;
     }
 
     public void Refresh()
@@ -99,15 +101,6 @@ public class UI_PlayerInfoSlot : MonoBehaviour
         {
             SetStatePanel(ERoomPlayerState.Offline);
             return;
-        }
-
-        if (_currentRoomPlayer.readyToBegin)
-        {
-            SetStatePanel(ERoomPlayerState.Ready);
-        }
-        else
-        {
-            SetStatePanel(ERoomPlayerState.Online);
         }
 
         if (_currentRoomPlayer.isLocalPlayer && NetworkServer.active)
@@ -120,6 +113,18 @@ public class UI_PlayerInfoSlot : MonoBehaviour
             {
                 _onlineDescriptionTextUI.text = _hostWaitingForPlayerDescription;
             }
+        }
+    }
+
+    public void RefreshReady()
+    {
+        if (_currentRoomPlayer.readyToBegin)
+        {
+            SetStatePanel(ERoomPlayerState.Ready);
+        }
+        else
+        {
+            SetStatePanel(ERoomPlayerState.Online);
         }
     }
 

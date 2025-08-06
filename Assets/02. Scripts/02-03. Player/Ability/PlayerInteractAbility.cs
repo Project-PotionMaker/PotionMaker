@@ -7,6 +7,7 @@ public class PlayerInteractAbility : PlayerAbility
     private PlayerAnimationAbility _animationAbility;
     private IGridItemHandler _currentInteractable = null;
 
+    public NetworkIdentity HeldItemIdentity => _owner.GetAbility<PlayerPickupAbility>().HeldItemIdentity;
 
     private void Start()
     {
@@ -30,15 +31,26 @@ public class PlayerInteractAbility : PlayerAbility
     private void ChangeInteractState(bool isInteract)
     {
         _isInteract = isInteract;
-        _animationAbility.SetBool(EPlayerAnimationParameter.IsInteract, isInteract);
         if (isInteract)
         {
             StartInteract();
+            if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase && HeldItemIdentity != null)
+            {
+                StartRefund();
+                return;
+            }
         }
         else
         {
             EndInteract();
+            if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase && HeldItemIdentity != null)
+            {
+                EndRefund();
+                return;
+            }
         }
+        _animationAbility.SetBool(EPlayerAnimationParameter.IsInteract, isInteract);
+
     }
 
     private void StartInteract()
@@ -77,5 +89,22 @@ public class PlayerInteractAbility : PlayerAbility
         {
             Debug.Log("Interact 실패");
         }
+    }
+
+    private void StartRefund()
+    {
+        if (HeldItemIdentity.TryGetComponent(out IRefundable refundTarget))
+        {
+            refundTarget.StartRefund();
+        }
+    }
+
+    private void EndRefund()
+    {
+        if (HeldItemIdentity.TryGetComponent(out IRefundable refundTarget))
+        {
+            refundTarget.CancelRefund();
+        }
+        
     }
 }

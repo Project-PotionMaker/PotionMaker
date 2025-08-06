@@ -6,9 +6,12 @@ public class UI_Furniture : MonoBehaviour
 {
     [SerializeField]
     private Furniture _furniture;
-
+    [SerializeField]
+    private RefundSystem _refundSystem;
     [SerializeField]
     private Slider ProgressSlider;
+    [SerializeField]
+    private Slider _refundSlider;
     [SerializeField]
     private TextMeshProUGUI _nameTextUI;
     [SerializeField]
@@ -47,6 +50,9 @@ public class UI_Furniture : MonoBehaviour
 
     public void Refresh()
     {
+        //Debug.Log($"refundslider: {_refundSlider.gameObject.activeInHierarchy}");
+        _refundSlider.gameObject.SetActive(_furniture.RefundProgress > 0);
+        _refundSlider.value = _furniture.RefundProgress;
     }
 
     private void OnDisable()

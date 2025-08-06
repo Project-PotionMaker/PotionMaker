@@ -38,7 +38,7 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>
     protected override void Awake()
     {
         base.Awake();
-        _deathCount = 0;
+        _deathCount = _maxDeathCount;
         InitPhase();
         Global.Instance.OnDataLoaded += InitializePotionDataList;
     }

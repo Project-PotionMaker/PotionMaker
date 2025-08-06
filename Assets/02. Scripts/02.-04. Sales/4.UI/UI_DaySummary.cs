@@ -40,6 +40,12 @@ public class UI_DaySummary : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI _currentCurrencyTextUI;
 
+    [Header("결과창")]
+    //[SerializeField]
+    //private GameObject _successPanel;
+    [SerializeField]
+    private UI_GameOverSummary _gameOverPanel;
+
     private void Start()
     {
         _salesVolumeSlotList = new List<UI_SalesVolumeSlot>();
@@ -52,6 +58,14 @@ public class UI_DaySummary : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             gameObject.SetActive(false);
+            if(PhaseManager.Instance.DeathCount <= 0)
+            {
+                _gameOverPanel.ShowSummary();
+            }
+            else
+            {
+                //_successPanel.;
+            }
         }
     }
     public void OnEndingPhaseStarted()

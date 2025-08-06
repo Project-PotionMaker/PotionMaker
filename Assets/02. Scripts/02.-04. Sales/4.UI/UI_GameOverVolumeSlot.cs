@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UI_SalesVolumeSlot : MonoBehaviour
+public class UI_GameOverVolumeSlot : MonoBehaviour
 {
     private const string ASSET_PREFIX = "Image_Potion_";
 
@@ -12,8 +12,6 @@ public class UI_SalesVolumeSlot : MonoBehaviour
     private TextMeshProUGUI _potionNameTextUI;
     [SerializeField]
     private TextMeshProUGUI _salesVolumeTextUI;
-    [SerializeField]
-    private TextMeshProUGUI _salesAmountTextUI;
 
     public async void Refresh(int potionTID, bool isTotal)
     {
@@ -32,7 +30,6 @@ public class UI_SalesVolumeSlot : MonoBehaviour
             _potionNameTextUI.text = DataTable.Instance.GetPotionData(potionTID).Name;
             int salesVolume = SalesManager.Instance.Sales.DailySalesVolumeDict[potionTID];
             _salesVolumeTextUI.text = salesVolume.ToString("N0");
-            _salesAmountTextUI.text = (salesVolume * DataTable.Instance.GetPotionData(potionTID).Price).ToString("N0");
         }
         gameObject.SetActive(true);
     }

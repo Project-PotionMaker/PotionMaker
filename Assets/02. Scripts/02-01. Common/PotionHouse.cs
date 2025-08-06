@@ -7,6 +7,7 @@ public class PotionHouse : MonoBehaviourSingleton<PotionHouse>
 {
     [SerializeField]
     private int _potionHouseTier;
+    public int PotionHouseTier => _potionHouseTier;
 
     // 레이아웃 정보
     [SerializeField]

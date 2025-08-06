@@ -137,9 +137,9 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
         if(PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase)
         {
             PhaseManager.Instance.DeathCount--;
-            if (PhaseManager.Instance.DeathCount <= 0 )
+            if (PhaseManager.Instance.IsGameOver)
             {
-                //TODO : 게임종료 씬
+                PhaseManager.Instance.TransitionPhase(EPhaseType.EndingPhase); // 영업 종료로 전환
             }
         }
     }

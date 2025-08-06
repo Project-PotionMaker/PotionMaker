@@ -14,9 +14,16 @@ public class UI_GameOverSummary : MonoBehaviour
     [SerializeField]
     private UI_GameOverVolumeSlot _salesVolumeSlotPrefab;
 
-    [Header("자산")]
+    [Header("영업기록")]
     [SerializeField]
     private TextMeshProUGUI _currentCurrencyTextUI;
+    [SerializeField]
+    private TextMeshProUGUI _totalSalesTextUI;
+    [SerializeField]
+    private TextMeshProUGUI _totalDay;
+
+    [SerializeField]
+    private TextMeshProUGUI _totalPotions;
 
     private void Start()
     {
@@ -30,7 +37,7 @@ public class UI_GameOverSummary : MonoBehaviour
     {
         // 포션 별 판매 기록
         int slotIndex = 0;
-        foreach (int potionTID in SalesManager.Instance.Sales.DailySalesVolumeDict.Keys)
+        foreach (int potionTID in SalesManager.Instance.Sales.TotalSalesVolumeDict.Keys)
         {
             if (slotIndex >= _salesVolumeSlotList.Count)
             {
@@ -58,6 +65,14 @@ public class UI_GameOverSummary : MonoBehaviour
             currentCurrency -= RentManager.Instance.Rent.CurrentRentCost;
         }
         _currentCurrencyTextUI.text = currentCurrency.ToString("N0");
+
+        int totalSales = SalesManager.Instance.Sales.TotalSales;
+        _totalSalesTextUI.text = totalSales.ToString("N0");
+        _totalDay.text = $"{PhaseManager.Instance.Day} 일";
+
+        _totalPotions.text = SalesManager.Instance.Sales.GetTotalSalesVolume().ToString("N0");
+
+
         gameObject.SetActive(true);
     }
 }

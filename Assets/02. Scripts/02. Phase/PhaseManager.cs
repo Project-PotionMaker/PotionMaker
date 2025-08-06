@@ -35,6 +35,10 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>
     private List<PotionData> _potionDataList = new();
     public List<PotionData> PotionDataList => _potionDataList;
 
+    [SyncVar]
+    private bool _isGameOver = false;
+    public bool IsGameOver { get => _isGameOver; set => _isGameOver = value; }
+
     protected override void Awake()
     {
         base.Awake();
@@ -140,6 +144,10 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>
     }
     private void SyncDeathCount(int oldValue, int newValue)
     {
+        if(newValue <= 0)
+        {
+            _isGameOver = true;
+        }
         OnDeathCountChanged?.Invoke();
     }
 

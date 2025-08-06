@@ -37,6 +37,9 @@ public class UI_Phase : MonoBehaviour
         PhaseManager.Instance.OnTimerRunning += UpdateServiceTimer;
         PhaseManager.Instance.OnDeathCountChanged += RefreshDeathCount;
 
+        UpdateDayText();
+        RefreshDeathCount();
+
         PreparingPhase preparingPhase = (PreparingPhase) PhaseManager.Instance.PhaseDictionary[EPhaseType.PreparingPhase];
         preparingPhase.OnPhaseEntered += ChangeTextStartDay;
         PracticingPhase practicingPhase = (PracticingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase];
@@ -61,7 +64,7 @@ public class UI_Phase : MonoBehaviour
     {
         if (_dayText != null)
         {
-            _dayText.text = "Day: " + PhaseManager.Instance.Day;
+            _dayText.text = $"{PhaseManager.Instance.Day}일";
         }
     }
     private void UpdateServiceTimer()

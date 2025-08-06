@@ -8,6 +8,9 @@ using UnityEngine;
 
 public class RoomPlayer : NetworkRoomPlayer
 {
+    [SyncVar]
+    public int slotNumber = -1; // UI 슬롯 번호 (0~3)
+
     [SyncVar(hook = nameof(OnPlayerNameChangedHook))]
     private string _playerName = "New Player";
     public string PlayerName => _playerName;
@@ -15,35 +18,101 @@ public class RoomPlayer : NetworkRoomPlayer
     public Action OnClientReadyStateChanged;
     public Action OnPlayerNameChanged;
 
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+        
+        // netId를 기준으로 UI 슬롯에 매핑
+        if (MirrorNetworkManager.Instance != null)
+        {
+            int assignedSlot = MirrorNetworkManager.Instance.GetSlotForNetId(netId);
+            if (assignedSlot >= 0)
+            {
+                slotNumber = assignedSlot;
+                Debug.Log($"RoomPlayer: Server assigned NetId {netId} to UI slot {slotNumber}");
+            }
+            else
+            {
+                Debug.LogError($"RoomPlayer: Failed to assign slot for NetId {netId}");
+            }
+        }
+        else
+        {
+            Debug.LogError("RoomPlayer: MirrorNetworkManager.Instance is null");
+        }
+    }
+
+    public override void OnStopServer()
+    {
+        base.OnStopServer();
+        // 서버에서만 index 반환
+        if (index >= 0)
+        {
+            MirrorNetworkManager.Instance.ReleaseSlotForNetId(netId);
+        }
+    }
+
     public override void OnStartClient()
     {
         base.OnStartClient();
-        CmdRequestAddToPlayerList();
+        Debug.Log($"RoomPlayer: OnStartClient - Mirror Index: {index}, UI Slot: {slotNumber}, NetId: {netId}");
+        
+        // 서버에 플레이어 추가 요청
+        if (isServer)
+        {
+            if (NetworkMessenger.Instance != null)
+            {
+                NetworkMessenger.Instance.AddPlayerToList(netId);
+            }
+        }
+        else
+        {
+            CmdRequestAddToPlayerList();
+        }
     }
 
     public override void OnStopClient()
     {
         base.OnStopClient();
-        CmdRequestRemoveToPlayerList();
+        Debug.Log($"RoomPlayer: OnStopClient - Mirror Index: {index}, UI Slot: {slotNumber}, NetId: {netId}");
+        
+        // 서버에 플레이어 제거 요청
+        if (isServer)
+        {
+            if (NetworkMessenger.Instance != null)
+            {
+                NetworkMessenger.Instance.RemovePlayerFromList(netId);
+            }
+        }
+        else if (isLocalPlayer && NetworkClient.active)
+        {
+            CmdRequestRemoveToPlayerList();
+        }
     }
 
     [Command]
     void CmdRequestAddToPlayerList()
     {
-        NetworkMessenger.Instance.RoomPlayerIdList.Add(netId);
+        if (NetworkMessenger.Instance != null)
+        {
+            NetworkMessenger.Instance.AddPlayerToList(netId);
+        }
     }
 
     [Command]
     void CmdRequestRemoveToPlayerList()
     {
-        NetworkMessenger.Instance.RoomPlayerIdList.Remove(netId);
+        if (NetworkMessenger.Instance != null)
+        {
+            NetworkMessenger.Instance.RemovePlayerFromList(netId);
+        }
     }
 
     public override void OnStartLocalPlayer()
     {
         base.OnStartLocalPlayer();
-        CmdSetPlayerName($"플레이어 {index}");
-        Debug.Log($"플레이어 {index}");
+        CmdSetPlayerName($"플레이어 {slotNumber}");
+        Debug.Log($"RoomPlayer: OnStartLocalPlayer - 플레이어 {slotNumber}");
     }
 
     private void Update()
@@ -63,7 +132,7 @@ public class RoomPlayer : NetworkRoomPlayer
 
     public bool CheckPlayersReadyForHost()
     {
-        return MirrorNetworkManager.Instance.roomSlots.All(p => p.index == 0 || p.readyToBegin);
+        return MirrorNetworkManager.Instance.roomSlots.All(p => p.GetComponent<RoomPlayer>().slotNumber == 0 || p.readyToBegin);
     }
 
     [Command]
@@ -74,12 +143,15 @@ public class RoomPlayer : NetworkRoomPlayer
 
     private void OnPlayerNameChangedHook(string oldName, string newName)
     {
+        Debug.Log($"RoomPlayer: Name changed from {oldName} to {newName}");
         OnPlayerNameChanged?.Invoke();
     }
 
     public override void ReadyStateChanged(bool oldReadyState, bool newReadyState)
     {
         base.ReadyStateChanged(oldReadyState, newReadyState);
-        OnClientReadyStateChanged?.Invoke();
+        Debug.Log($"RoomPlayer: Ready state changed from {oldReadyState} to {newReadyState}");
+        //OnClientReadyStateChanged?.Invoke();
+        NetworkMessenger.Instance.OnPlayerListUpdated?.Invoke();
     }
 }

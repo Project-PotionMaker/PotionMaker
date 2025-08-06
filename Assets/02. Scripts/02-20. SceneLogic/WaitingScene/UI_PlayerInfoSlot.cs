@@ -60,14 +60,34 @@ public class UI_PlayerInfoSlot : MonoBehaviour
         SetStatePanel(ERoomPlayerState.Offline);
     }
 
+    public void ClearSlot()
+    {
+        // 기존 이벤트 구독 해제
+        if (_currentRoomPlayer != null)
+        {
+            _currentRoomPlayer.OnClientReadyStateChanged -= RefreshReady;
+        }
+        
+        _currentRoomPlayer = null;
+        SetStatePanel(ERoomPlayerState.Offline);
+    }
+
     public void InitPlayerInfoSlot(RoomPlayer player)
     {
+        Debug.Log($"UI_PlayerInfoSlot: Initializing slot for player {player.PlayerName} (Mirror Index: {player.index}, UI Slot: {player.slotNumber})");
+        
+        // 기존 이벤트 구독 해제
+        if (_currentRoomPlayer != null)
+        {
+            _currentRoomPlayer.OnClientReadyStateChanged -= RefreshReady;
+        }
+        
         _currentRoomPlayer = player;
         _playerNameTextList.ForEach(textUI => textUI.text = player.PlayerName);
 
         _onlineDescriptionTextUI.text = _PlayerWaitingForReadyDescription;
 
-        if (_currentRoomPlayer.index == 0)
+        if (_currentRoomPlayer.slotNumber == 0) // UI 슬롯 0번이 호스트
         {
             if (player.isLocalPlayer && NetworkServer.active)
             {
@@ -92,6 +112,7 @@ public class UI_PlayerInfoSlot : MonoBehaviour
             SetStatePanel(ERoomPlayerState.Online);
         }
 
+        // 이벤트 구독
         player.OnClientReadyStateChanged += RefreshReady;
     }
 
@@ -103,21 +124,41 @@ public class UI_PlayerInfoSlot : MonoBehaviour
             return;
         }
 
-        if (_currentRoomPlayer.isLocalPlayer && NetworkServer.active)
+        Debug.Log($"UI_PlayerInfoSlot: Refreshing slot for player {_currentRoomPlayer.PlayerName}");
+
+        // 이름 업데이트
+        _playerNameTextList.ForEach(textUI => textUI.text = _currentRoomPlayer.PlayerName);
+
+        if (_currentRoomPlayer.slotNumber == 0) // UI 슬롯 0번이 호스트
         {
-            if (_currentRoomPlayer.CheckPlayersReadyForHost())
+            if (_currentRoomPlayer.isLocalPlayer && NetworkServer.active)
             {
-                _onlineDescriptionTextUI.text = _hostReadyToPlayDescription;
+                if (_currentRoomPlayer.CheckPlayersReadyForHost())
+                {
+                    _onlineDescriptionTextUI.text = _hostReadyToPlayDescription;
+                }
+                else
+                {
+                    _onlineDescriptionTextUI.text = _hostWaitingForPlayerDescription;
+                }
             }
             else
             {
-                _onlineDescriptionTextUI.text = _hostWaitingForPlayerDescription;
+                _onlineDescriptionTextUI.text = _ClientSHowHostDescription;
             }
+        }
+        else
+        {
+            _onlineDescriptionTextUI.text = _PlayerWaitingForReadyDescription;
         }
     }
 
     public void RefreshReady()
     {
+        if (_currentRoomPlayer == null) return;
+        
+        Debug.Log($"UI_PlayerInfoSlot: Refreshing ready state for player {_currentRoomPlayer.PlayerName} - Ready: {_currentRoomPlayer.readyToBegin}");
+        
         if (_currentRoomPlayer.readyToBegin)
         {
             SetStatePanel(ERoomPlayerState.Ready);
@@ -126,10 +167,29 @@ public class UI_PlayerInfoSlot : MonoBehaviour
         {
             SetStatePanel(ERoomPlayerState.Online);
         }
+
+        if (_currentRoomPlayer.slotNumber == 0 && _currentRoomPlayer.isLocalPlayer && NetworkServer.active)
+        {
+            RefreshHostDescription();
+        }
+    }
+
+    public void RefreshHostDescription()
+    {
+        if (_currentRoomPlayer.CheckPlayersReadyForHost())
+        {
+            _onlineDescriptionTextUI.text = _hostReadyToPlayDescription;
+        }
+        else
+        {
+            _onlineDescriptionTextUI.text = _hostWaitingForPlayerDescription;
+        }
     }
 
     public void SetStatePanel(ERoomPlayerState state)
     {
+        Debug.Log($"UI_PlayerInfoSlot: Setting state to {state}");
+        
         if(state == ERoomPlayerState.Offline)
         {
             _onlinePanel.SetActive(false);
@@ -161,6 +221,16 @@ public class UI_PlayerInfoSlot : MonoBehaviour
 
     public void OnClientDisconnect()
     {
+        Debug.Log("UI_PlayerInfoSlot: Client disconnected");
         SetStatePanel(ERoomPlayerState.Offline);
+    }
+
+    private void OnDestroy()
+    {
+        // 이벤트 구독 해제
+        if (_currentRoomPlayer != null)
+        {
+            _currentRoomPlayer.OnClientReadyStateChanged -= RefreshReady;
+        }
     }
 }

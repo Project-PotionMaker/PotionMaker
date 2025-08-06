@@ -10,7 +10,78 @@ public class MirrorNetworkManager : NetworkRoomManager
 {
     public static MirrorNetworkManager Instance => (MirrorNetworkManager)singleton;
 
-    //private List<>
+    // netId -> UI 슬롯 번호 매핑 (0~3번만 사용)
+    private Dictionary<uint, int> netIdToSlotMapping = new Dictionary<uint, int>();
+    private bool[] slotUsed = new bool[4]; // UI 슬롯 사용 여부 (0~3번)
+
+    public int GetSlotForNetId(uint netId)
+    {
+        if (netIdToSlotMapping.ContainsKey(netId))
+        {
+            Debug.Log($"MirrorNetworkManager: NetId {netId} already mapped to UI slot {netIdToSlotMapping[netId]}");
+            return netIdToSlotMapping[netId];
+        }
+            
+        // 새로운 매핑 생성 (순차적으로 할당)
+        int availableSlot = GetNextAvailableSlot();
+        if (availableSlot >= 0)
+        {
+            netIdToSlotMapping[netId] = availableSlot;
+            slotUsed[availableSlot] = true;
+            Debug.Log($"MirrorNetworkManager: Mapped NetId {netId} to UI slot {availableSlot}");
+            
+            // 현재 슬롯 상태 출력
+            PrintSlotStatus();
+        }
+        else
+        {
+            Debug.LogWarning($"MirrorNetworkManager: No available UI slot for NetId {netId}");
+        }
+        return availableSlot;
+    }
+
+    private int GetNextAvailableSlot()
+    {
+        // 순차적으로 할당 (0, 1, 2, 3 순서)
+        for (int i = 0; i < slotUsed.Length; i++)
+        {
+            if (!slotUsed[i])
+            {
+                Debug.Log($"MirrorNetworkManager: Found available slot {i}");
+                return i;
+            }
+        }
+        Debug.LogWarning("MirrorNetworkManager: No available slots found");
+        return -1; // 꽉 찼을 때
+    }
+
+    public void ReleaseSlotForNetId(uint netId)
+    {
+        if (netIdToSlotMapping.ContainsKey(netId))
+        {
+            int slot = netIdToSlotMapping[netId];
+            slotUsed[slot] = false;
+            netIdToSlotMapping.Remove(netId);
+            Debug.Log($"MirrorNetworkManager: Released UI slot {slot} for NetId {netId}");
+            
+            // 현재 슬롯 상태 출력
+            PrintSlotStatus();
+        }
+        else
+        {
+            Debug.LogWarning($"MirrorNetworkManager: NetId {netId} not found in mapping");
+        }
+    }
+
+    private void PrintSlotStatus()
+    {
+        string status = "Slot Status: ";
+        for (int i = 0; i < slotUsed.Length; i++)
+        {
+            status += $"Slot {i}: {(slotUsed[i] ? "Used" : "Free")}, ";
+        }
+        Debug.Log(status);
+    }
 
     [Scene]
     public string LoadingScene;
@@ -20,7 +91,6 @@ public class MirrorNetworkManager : NetworkRoomManager
 
     [Tooltip("서버 시작 시 GamePlayScene에서 생성할 팩토리 프리팹들")]
     public List<GameObject> FactoryPrefabList = new List<GameObject>();
-
 
     // 모든 플레이어가 준비되면 LoadingScene으로 전환
     public override void OnRoomServerPlayersReady()
@@ -117,10 +187,38 @@ public class MirrorNetworkManager : NetworkRoomManager
     public override void OnRoomServerConnect(NetworkConnectionToClient conn)
     {
         base.OnRoomServerConnect(conn);
+        Debug.Log($"서버: 플레이어 {conn.connectionId}가 연결되었습니다.");
     }
 
     public override void OnRoomServerDisconnect(NetworkConnectionToClient conn)
     {
+        Debug.Log($"서버: 플레이어 {conn.connectionId}가 연결 해제되었습니다.");
+        
+        // 연결 해제된 플레이어의 RoomPlayer를 찾아서 슬롯 반환 및 NetworkMessenger에서 제거
+        if (NetworkMessenger.Instance != null)
+        {
+            // 해당 연결의 RoomPlayer 찾기
+            foreach (RoomPlayer roomPlayer in roomSlots)
+            {
+                if (roomPlayer != null && roomPlayer.connectionToClient == conn)
+                {
+                    // 슬롯 반환 (netId 사용)
+                    ReleaseSlotForNetId(roomPlayer.netId);
+                    
+                    NetworkMessenger.Instance.RemovePlayerFromList(roomPlayer.netId);
+                    Debug.Log($"서버: RoomPlayer {roomPlayer.netId}를 NetworkMessenger에서 제거했습니다.");
+                    break;
+                }
+            }
+        }
+        
         base.OnRoomServerDisconnect(conn);
+    }
+
+    // RoomPlayer가 추가될 때 호출
+    public override void OnRoomServerAddPlayer(NetworkConnectionToClient conn)
+    {
+        base.OnRoomServerAddPlayer(conn);
+        Debug.Log($"서버: RoomPlayer가 추가되었습니다. ConnectionId: {conn.connectionId}");
     }
 }

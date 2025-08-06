@@ -11,6 +11,11 @@ public class PlayersInfo : MonoBehaviour
     [SerializeField]
     private List<UI_PlayerInfoSlot> PlayerInfoSlotList;
 
+    private void Start()
+    {
+        Refresh();
+    }
+
     public void Refresh()
     {
         StartCoroutine(Refresh_Coroutine());
@@ -18,57 +23,47 @@ public class PlayersInfo : MonoBehaviour
 
     private IEnumerator Refresh_Coroutine()
     {
-        yield return WaitUntilAllRoomPlayersSpawned(NetworkMessenger.Instance.RoomPlayerIdList.ToList());
-
-        foreach (uint roomPlayerNetId in NetworkMessenger.Instance.RoomPlayerIdList)
+        // NetworkMessenger가 준비될 때까지 대기
+        while (NetworkMessenger.Instance == null)
         {
-            RoomPlayer roomPlayer = NetworkServer.spawned[roomPlayerNetId].GetComponent<RoomPlayer>();
-            if (PlayerInfoSlotList[roomPlayer.index].CurrentRoomPlayer == roomPlayer)
+            yield return new WaitForSeconds(0.1f);
+        }
+
+        for (int i = 0; i < PlayerInfoSlotList.Count; i++)
+        {
+            PlayerInfoSlotList[i].ClearSlot();
+        }
+
+        var currentPlayerIds = NetworkMessenger.Instance.RoomPlayerIdList.ToList();
+        
+        foreach (uint roomPlayerNetId in currentPlayerIds)
+        {
+            if (NetworkClient.spawned.TryGetValue(roomPlayerNetId, out NetworkIdentity identity))
             {
-                PlayerInfoSlotList[roomPlayer.index].Refresh();
+                RoomPlayer roomPlayer = identity.GetComponent<RoomPlayer>();
+                if (roomPlayer != null)
+                {
+                    int slotNumber = roomPlayer.slotNumber;
+                    if (slotNumber >= 0 && slotNumber < PlayerInfoSlotList.Count)
+                    {
+                        Debug.Log($"PlayersInfo: Setting up slot {slotNumber} for player {roomPlayer.PlayerName} (Mirror index: {roomPlayer.index}, UI slot: {slotNumber})");
+                        PlayerInfoSlotList[slotNumber].InitPlayerInfoSlot(roomPlayer);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"PlayersInfo: Invalid slot number {slotNumber} for player {roomPlayer.PlayerName} (Mirror index: {roomPlayer.index})");
+                    }
+                }
             }
             else
             {
-                PlayerInfoSlotList[roomPlayer.index].InitPlayerInfoSlot(roomPlayer);
+                Debug.LogWarning($"PlayersInfo: Could not find RoomPlayer with NetId {roomPlayerNetId}");
             }
         }
 
-        foreach (UI_PlayerInfoSlot playerInfoSlot in PlayerInfoSlotList)
+        for (int i = 0; i < PlayerInfoSlotList.Count; i++)
         {
-            if (playerInfoSlot.CurrentRoomPlayer == null)
-            {
-                playerInfoSlot.Refresh();
-            }
-        }
-    }
-
-    private IEnumerator WaitUntilAllRoomPlayersSpawned(List<uint> netIds)
-    {
-        List<RoomPlayer> players = new List<RoomPlayer>();
-
-        while (true)
-        {
-            players.Clear();
-            bool allFound = true;
-
-            foreach (uint id in netIds)
-            {
-                if (NetworkClient.spawned.TryGetValue(id, out NetworkIdentity identity))
-                {
-                    players.Add(identity.GetComponent<RoomPlayer>());
-                }
-                else
-                {
-                    allFound = false;
-                    yield return new WaitForSeconds(0.1f);
-                    break;
-                }
-            }
-
-            if (allFound)
-                break;
-
-            yield return null; // 다음 프레임까지 대기
+            PlayerInfoSlotList[i].Refresh();
         }
     }
 }

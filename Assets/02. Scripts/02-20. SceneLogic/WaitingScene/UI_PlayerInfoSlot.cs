@@ -19,11 +19,11 @@ public class UI_PlayerInfoSlot : MonoBehaviour
     [SerializeField]
     private List<TextMeshProUGUI> _playerNameTextList;
     [SerializeField]
-    private TextMeshProUGUI _readyText;
+    private TextMeshProUGUI _readyTextUI;
     [SerializeField]
-    private TextMeshProUGUI _onlineDescriptionText;
+    private TextMeshProUGUI _onlineDescriptionTextUI;
     [SerializeField]
-    private TextMeshProUGUI _offlineText;
+    private TextMeshProUGUI _offlineTextUI;
 
     [SerializeField]
     private GameObject _onlinePanel;
@@ -36,6 +36,8 @@ public class UI_PlayerInfoSlot : MonoBehaviour
     private string _hostWaitingForPlayerDescription;
     [SerializeField]
     private string _hostReadyToPlayDescription;
+    [SerializeField]
+    private string _ClientSHowHostDescription;
     [SerializeField]
     private string _PlayerWaitingForReadyDescription;
 
@@ -63,13 +65,23 @@ public class UI_PlayerInfoSlot : MonoBehaviour
         _currentRoomPlayer = player;
         _playerNameTextList.ForEach(textUI => textUI.text = player.PlayerName);
 
-        _onlineDescriptionText.text = _PlayerWaitingForReadyDescription;
-        // 호스트면
-        if (player.isLocalPlayer && NetworkServer.active)
-        {
-            _onlineDescriptionText.text = _hostReadyToPlayDescription;
-        }
+        _onlineDescriptionTextUI.text = _PlayerWaitingForReadyDescription;
 
+        if (_currentRoomPlayer.index == 0)
+        {
+            if (player.isLocalPlayer && NetworkServer.active)
+            {
+                _onlineDescriptionTextUI.text = _hostWaitingForPlayerDescription;
+                if (_currentRoomPlayer.CheckPlayersReadyForHost())
+                {
+                    _onlineDescriptionTextUI.text = _hostReadyToPlayDescription;
+                }
+            }
+            else
+            {
+                _onlineDescriptionTextUI.text = _ClientSHowHostDescription;
+            }
+        }
 
         if (player.readyToBegin)
         {
@@ -79,8 +91,6 @@ public class UI_PlayerInfoSlot : MonoBehaviour
         {
             SetStatePanel(ERoomPlayerState.Online);
         }
-
-        player.OnClientReadyStateChanged += Refresh;
     }
 
     public void Refresh()
@@ -88,6 +98,7 @@ public class UI_PlayerInfoSlot : MonoBehaviour
         if(_currentRoomPlayer == null)
         {
             SetStatePanel(ERoomPlayerState.Offline);
+            return;
         }
 
         if (_currentRoomPlayer.readyToBegin)
@@ -97,6 +108,18 @@ public class UI_PlayerInfoSlot : MonoBehaviour
         else
         {
             SetStatePanel(ERoomPlayerState.Online);
+        }
+
+        if (_currentRoomPlayer.isLocalPlayer && NetworkServer.active)
+        {
+            if (_currentRoomPlayer.CheckPlayersReadyForHost())
+            {
+                _onlineDescriptionTextUI.text = _hostReadyToPlayDescription;
+            }
+            else
+            {
+                _onlineDescriptionTextUI.text = _hostWaitingForPlayerDescription;
+            }
         }
     }
 
@@ -129,5 +152,10 @@ public class UI_PlayerInfoSlot : MonoBehaviour
 
         Vector2 targetSize = new Vector2(_slotRectTransform.sizeDelta.x, _stateHeightDict[state]);
         _slotRectTransform.DOSizeDelta(targetSize, duration).SetEase(Ease.OutCubic);
+    }
+
+    public void OnClientDisconnect()
+    {
+        SetStatePanel(ERoomPlayerState.Offline);
     }
 }

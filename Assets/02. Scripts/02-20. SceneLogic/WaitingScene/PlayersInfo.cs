@@ -8,10 +8,8 @@ public class PlayersInfo : MonoBehaviour
     [SerializeField]
     private List<UI_PlayerInfoSlot> PlayerInfoSlotList;
 
-    private void Awake()
-    {
-        MirrorNetworkManager.Instance.OnWaitingScenePlayerAdded += Refresh;
-    }
+    private Dictionary<uint, UI_PlayerInfoSlot> _activePlayerUIMap = new Dictionary<uint, UI_PlayerInfoSlot>();
+
 
     public void Refresh()
     {
@@ -28,10 +26,13 @@ public class PlayersInfo : MonoBehaviour
                 PlayerInfoSlotList[roomPlayer.index].InitPlayerInfoSlot(roomPlayer);
             }
         }
-    }
 
-    private void OnDisable()
-    {
-        MirrorNetworkManager.Instance.OnWaitingScenePlayerAdded -= Refresh;
+        foreach(UI_PlayerInfoSlot playerInfoSlot in PlayerInfoSlotList)
+        {
+            if(playerInfoSlot.CurrentRoomPlayer == null)
+            {
+                playerInfoSlot.Refresh();
+            }
+        }
     }
 }

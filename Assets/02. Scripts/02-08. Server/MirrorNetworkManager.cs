@@ -20,13 +20,12 @@ public class MirrorNetworkManager : NetworkRoomManager
     [Tooltip("서버 시작 시 GamePlayScene에서 생성할 팩토리 프리팹들")]
     public List<GameObject> FactoryPrefabList = new List<GameObject>();
 
-    public Action OnWaitingScenePlayerAdded;
 
     // 모든 플레이어가 준비되면 LoadingScene으로 전환
     public override void OnRoomServerPlayersReady()
     {
         Debug.Log("서버: 모든 플레이어가 준비되었습니다. LoadingScene으로 전환합니다.");
-        ServerChangeScene(LoadingScene);
+        StartCoroutine(LoadLoadingSceneWithDelay());
     }
 
     // 서버에서 씬이 변경될 때 호출
@@ -63,8 +62,15 @@ public class MirrorNetworkManager : NetworkRoomManager
         }
     }
 
+    private IEnumerator LoadLoadingSceneWithDelay()
+    {
+        yield return new WaitForSeconds(1.0f);
+
+        ServerChangeScene(LoadingScene);
+    }
+
     // 매니저 스폰이 완료될 시간을 기다린 후, GameplayScene으로 전환 명령을 보냄
-    IEnumerator LoadGameplaySceneWithDelay()
+    private IEnumerator LoadGameplaySceneWithDelay()
     {
         // 프리팹 스폰 후 최소 1초 대기 (네트워크 동기화 시간 확보)
         yield return new WaitForSeconds(1.0f);
@@ -107,17 +113,24 @@ public class MirrorNetworkManager : NetworkRoomManager
         Debug.Log("클라이언트: 씬 변경됨 - " + SceneManager.GetActiveScene().name);
     }
 
-    public override void OnRoomClientConnect()
+    // MirrorNetworkManager.cs
+    public override void OnServerAddPlayer(NetworkConnectionToClient conn)
     {
-        base.OnRoomClientConnect();
-
-        StartCoroutine(WaitAndRefreshRoomPlayers());
+        base.OnServerAddPlayer(conn);
+        
+        if (NetworkMessenger.Instance != null)
+        {
+            NetworkMessenger.Instance.RpcNotifyPlayerListChanged(); // 모든 클라이언트에게 알림
+        }
     }
 
-    private IEnumerator WaitAndRefreshRoomPlayers()
+    public override void OnRoomServerDisconnect(NetworkConnectionToClient conn)
     {
-        yield return new WaitForSeconds(0.1f); // 1프레임 쉬고
-
-        OnWaitingScenePlayerAdded?.Invoke();
+        base.OnRoomServerDisconnect(conn);
+       
+        if (NetworkMessenger.Instance != null)
+        {
+            NetworkMessenger.Instance.RpcNotifyPlayerListChanged(); // 모든 클라이언트에게 알림
+        }
     }
 }

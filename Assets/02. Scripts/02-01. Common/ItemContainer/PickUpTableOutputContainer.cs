@@ -14,6 +14,11 @@ public class PickUpTableOutputContainer : IOutputContainer<Furniture>
 
     public bool ServerCanTake(Furniture furniture)
     {
+        if (CustomerManager.Instance.OrderHandler.PickupTableDict.TryGetValue(furniture.netId, out var pickupTableInfo) && pickupTableInfo.UsingCustomer != null)
+        {
+            Debug.LogWarning("Cannot take item from pickup table, customer is using it.");
+            return false;
+        }
         return true;
     }
 }

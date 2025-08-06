@@ -1,14 +1,17 @@
 using Mirror;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using VInspector;
 
 /// <summary>
 /// 플레이어가 상호작용할 수 있는 가구 클래스입니다.
 /// Storage와 마찬가지로 SyncVar를 사용하여 네트워크 동기화를 처리합니다.
 /// </summary>
-public class Furniture : NetworkBehaviour, IGridItemHandler
+
+public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICustomerInteractable
 {
     [SyncVar(hook = nameof(OnDataTIDChanged))]
     private int _dataTID;
@@ -21,6 +24,22 @@ public class Furniture : NetworkBehaviour, IGridItemHandler
     [SyncVar(hook = nameof(OnInputObjectChanged))]
     private GameObject _inputObject;
     public GameObject InputObject { get => _inputObject; set => _inputObject = value; }
+
+    [SyncVar(hook = nameof(OnRefundProgressChanged))]
+    private float _refundProgress;
+    public float RefundProgress
+    {
+        get
+        {
+            return _refundProgress;
+        }
+        set
+        {
+            _refundProgress = value;
+        }
+    }
+
+    public GameObject RefundObject { get => gameObject; }
 
     private FurnitureData _data;
     public FurnitureData Data => _data;
@@ -38,6 +57,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler
     private IOutputContainer<Furniture> _outputComponent;
     private ICustomerEffectable<Furniture> _effectComponent;
 
+    private RefundSystem _refundSystem;
     public Action OnDataChanged;
 
     [Foldout("Project")]
@@ -53,6 +73,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler
             modelInfo.Model.SetActive(false);
             _modelObjectDic.Add(modelInfo.TID, modelInfo.Model);
         }
+        _refundSystem = new RefundSystem();
     }
 
     public override void OnStartClient()
@@ -82,6 +103,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler
     {
         _data = DataTable.Instance.GetFurnitureData(newTID);
         ActivateModelForTID(newTID);
+        _refundSystem.InitRefundSyStem(DataTable.Instance.GetFurnitureData(newTID).StructureTID, this);
         OnDataChanged?.Invoke();
         Debug.Log($"Client: Furniture Data (TID: {newTID}) loaded.");
     }
@@ -98,6 +120,12 @@ public class Furniture : NetworkBehaviour, IGridItemHandler
         {
             newObj.transform.position = _inputPosition.position;
         }
+        OnDataChanged?.Invoke();
+    }
+
+
+    public void OnRefundProgressChanged(float oldValue, float newValue)
+    {
         OnDataChanged?.Invoke();
     }
     #endregion
@@ -209,8 +237,8 @@ public class Furniture : NetworkBehaviour, IGridItemHandler
         {
             NetworkServer.spawned[pickedUpItem.GetComponent<NetworkIdentity>().netId].AssignClientAuthority(sender);
         }
-        
-        if(pickedUpItem != null)
+
+        if (pickedUpItem != null)
         {
             TargetRpcOnPickUp(sender, pickedUpItem.GetComponent<NetworkIdentity>());
         }
@@ -262,7 +290,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler
     }
 
     [Command(requiresAuthority = false)]
-    private void CmdTryEffect(uint customerNetId)
+    private void CmdCustomerEffect(uint customerNetId)
     {
         if (isServer == false)
         {
@@ -276,6 +304,32 @@ public class Furniture : NetworkBehaviour, IGridItemHandler
                 _effectComponent.ServerEffect(this, customerIdentity);
             }
         }
+    }
+
+    [Command(requiresAuthority = false)]
+    private void CmdStartRefund()
+    {
+        _refundSystem.StartRefund();
+    }
+
+    [Command(requiresAuthority = false)]
+    private void CmdCancelRefund()
+    {
+        _refundSystem.CancelRefund();
+    }
+
+    private void CmdCustomerPickup()
+    {
+        if(isServer == false)
+        {
+            return;
+        }
+
+        if (ReferenceEquals(_outputComponent, null) == false)
+        {
+            _outputComponent.ServerTakeItem(this) ;
+        }
+        
     }
     #endregion
 
@@ -340,9 +394,14 @@ public class Furniture : NetworkBehaviour, IGridItemHandler
         }
     }
 
-    public void TryEffect(uint customerNetId)
+    public void TryCustomerEffect(uint customerNetId)
     {
-        CmdTryEffect(customerNetId);
+        CmdCustomerEffect(customerNetId);
+    }
+
+    public void TryCustomerPickup()
+    {
+        CmdCustomerPickup();
     }
 
     [Server]
@@ -360,6 +419,16 @@ public class Furniture : NetworkBehaviour, IGridItemHandler
     public int GetStructureTID()
     {
         return _data.StructureTID;
+    }
+
+    public void StartRefund()
+    {
+        CmdStartRefund();
+    }
+
+    public void CancelRefund()
+    {
+        CmdCancelRefund();
     }
     #endregion
 }

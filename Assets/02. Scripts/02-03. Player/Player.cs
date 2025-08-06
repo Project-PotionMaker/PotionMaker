@@ -23,31 +23,41 @@ public class Player : NetworkBehaviour
 
     // 영상에 넣을 임시 테스트
     private CanvasAlphaChanger _lastHighlightedStructure;
-
     private void Awake()
     {
     }
 
     private void Update()
     {
-        if(isLocalPlayer == false)
+        if (isLocalPlayer == false)
         {
             return;
         }
 
+        //if(GetAbility<PlayerPickupAbility>().HeldItemIdentity != null &&
+        //    GetAbility<PlayerPickupAbility>().HeldItemIdentity.gameObject.GetInstanceID() == _frontObjectInstanceID)
+        //{
+        //    _frontObjectInstanceID = 0;
+        //    return;
+        //}
+
         GameObject frontObject = GetObjectInFront();
         if (frontObject != null)
         {
-            CanvasAlphaChanger currentStructure = frontObject.GetComponent<CanvasAlphaChanger>();
-            if (_lastHighlightedStructure != null && _lastHighlightedStructure != currentStructure)
+            if (_lastHighlightedStructure != null)
             {
+                if (_lastHighlightedStructure.GetInstanceID() == frontObject.GetInstanceID())
+                {
+                    return;
+                }
                 _lastHighlightedStructure.HideCanvas();
             }
-
+            CanvasAlphaChanger currentStructure = frontObject.GetComponent<CanvasAlphaChanger>();
             if (currentStructure != null)
             {
                 currentStructure.ShowCanvas();
             }
+
             _lastHighlightedStructure = currentStructure;
         }
         else

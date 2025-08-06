@@ -1,5 +1,6 @@
 using Mirror;
 using NUnit.Framework;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,11 +9,14 @@ public class PlayersInfo : MonoBehaviour
     [SerializeField]
     private List<UI_PlayerInfoSlot> PlayerInfoSlotList;
 
-    private Dictionary<uint, UI_PlayerInfoSlot> _activePlayerUIMap = new Dictionary<uint, UI_PlayerInfoSlot>();
-
-
     public void Refresh()
     {
+        StartCoroutine(Refresh_Coroutine());
+    }
+
+    public IEnumerator Refresh_Coroutine()
+    {
+        yield return new WaitForSeconds(0.2f);
         HashSet<NetworkRoomPlayer> roomslots = MirrorNetworkManager.Instance.roomSlots;
 
         foreach (RoomPlayer roomPlayer in roomslots)
@@ -27,9 +31,9 @@ public class PlayersInfo : MonoBehaviour
             }
         }
 
-        foreach(UI_PlayerInfoSlot playerInfoSlot in PlayerInfoSlotList)
+        foreach (UI_PlayerInfoSlot playerInfoSlot in PlayerInfoSlotList)
         {
-            if(playerInfoSlot.CurrentRoomPlayer == null)
+            if (playerInfoSlot.CurrentRoomPlayer == null)
             {
                 playerInfoSlot.Refresh();
             }

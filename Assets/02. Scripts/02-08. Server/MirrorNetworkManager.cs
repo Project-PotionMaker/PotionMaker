@@ -1,4 +1,5 @@
 using Mirror;
+using Mirror.Examples.MultipleMatch;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -117,7 +118,13 @@ public class MirrorNetworkManager : NetworkRoomManager
     public override void OnServerAddPlayer(NetworkConnectionToClient conn)
     {
         base.OnServerAddPlayer(conn);
-        
+
+        PlayersInfo _playersInfo = FindAnyObjectByType<PlayersInfo>();
+        if (_playersInfo != null)
+        {
+            _playersInfo.Refresh();
+        }
+
         if (NetworkMessenger.Instance != null)
         {
             NetworkMessenger.Instance.RpcNotifyPlayerListChanged(); // 모든 클라이언트에게 알림
@@ -132,5 +139,11 @@ public class MirrorNetworkManager : NetworkRoomManager
         {
             NetworkMessenger.Instance.RpcNotifyPlayerListChanged(); // 모든 클라이언트에게 알림
         }
+    }
+
+    public override void ReadyStatusChanged()
+    {
+        base.ReadyStatusChanged();
+        NetworkMessenger.Instance.RpcNotifyPlayerListChanged();
     }
 }

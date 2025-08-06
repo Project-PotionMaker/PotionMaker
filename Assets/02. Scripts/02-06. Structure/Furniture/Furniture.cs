@@ -10,7 +10,8 @@ using VInspector;
 /// 플레이어가 상호작용할 수 있는 가구 클래스입니다.
 /// Storage와 마찬가지로 SyncVar를 사용하여 네트워크 동기화를 처리합니다.
 /// </summary>
-public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable
+
+public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICustomerInteractable
 {
     [SyncVar(hook = nameof(OnDataTIDChanged))]
     private int _dataTID;
@@ -236,8 +237,8 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable
         {
             NetworkServer.spawned[pickedUpItem.GetComponent<NetworkIdentity>().netId].AssignClientAuthority(sender);
         }
-        
-        if(pickedUpItem != null)
+
+        if (pickedUpItem != null)
         {
             TargetRpcOnPickUp(sender, pickedUpItem.GetComponent<NetworkIdentity>());
         }
@@ -289,7 +290,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable
     }
 
     [Command(requiresAuthority = false)]
-    private void CmdTryEffect(uint customerNetId)
+    private void CmdCustomerEffect(uint customerNetId)
     {
         if (isServer == false)
         {
@@ -315,6 +316,20 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable
     private void CmdCancelRefund()
     {
         _refundSystem.CancelRefund();
+    }
+
+    private void CmdCustomerPickup()
+    {
+        if(isServer == false)
+        {
+            return;
+        }
+
+        if (ReferenceEquals(_outputComponent, null) == false)
+        {
+            _outputComponent.ServerTakeItem(this) ;
+        }
+        
     }
     #endregion
 
@@ -379,9 +394,14 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable
         }
     }
 
-    public void TryEffect(uint customerNetId)
+    public void TryCustomerEffect(uint customerNetId)
     {
-        CmdTryEffect(customerNetId);
+        CmdCustomerEffect(customerNetId);
+    }
+
+    public void TryCustomerPickup()
+    {
+        CmdCustomerPickup();
     }
 
     [Server]

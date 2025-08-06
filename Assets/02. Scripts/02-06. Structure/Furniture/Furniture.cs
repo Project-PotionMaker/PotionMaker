@@ -24,6 +24,22 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable
     private GameObject _inputObject;
     public GameObject InputObject { get => _inputObject; set => _inputObject = value; }
 
+    [SyncVar(hook = nameof(OnRefundProgressChanged))]
+    private float _refundProgress;
+    public float RefundProgress
+    {
+        get
+        {
+            return _refundProgress;
+        }
+        set
+        {
+            _refundProgress = value;
+        }
+    }
+
+    public GameObject RefundObject { get => gameObject; }
+
     private FurnitureData _data;
     public FurnitureData Data => _data;
 
@@ -34,25 +50,13 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable
     private Transform _inputPosition;
     public Transform InputPosition => _inputPosition;
 
-    private float _refundGauge = 0;
-    public float RefundGauge
-    {
-        get
-        {
-            return _refundGauge;
-        }
-    }
-    private float _refundTime = 2;
-    private int _refundRatio = 4;
-    private Coroutine _refundRoutine;
-
-
     // 서버 전용 컴포넌트들
     private IInteractable<Furniture> _interactComponent;
     private IInputContainer<Furniture> _inputComponent;
     private IOutputContainer<Furniture> _outputComponent;
     private ICustomerEffectable<Furniture> _effectComponent;
 
+    private RefundSystem _refundSystem;
     public Action OnDataChanged;
 
     [Foldout("Project")]
@@ -68,6 +72,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable
             modelInfo.Model.SetActive(false);
             _modelObjectDic.Add(modelInfo.TID, modelInfo.Model);
         }
+        _refundSystem = new RefundSystem();
     }
 
     public override void OnStartClient()
@@ -97,6 +102,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable
     {
         _data = DataTable.Instance.GetFurnitureData(newTID);
         ActivateModelForTID(newTID);
+        _refundSystem.InitRefundSyStem(DataTable.Instance.GetFurnitureData(newTID).StructureTID, this);
         OnDataChanged?.Invoke();
         Debug.Log($"Client: Furniture Data (TID: {newTID}) loaded.");
     }
@@ -113,6 +119,12 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable
         {
             newObj.transform.position = _inputPosition.position;
         }
+        OnDataChanged?.Invoke();
+    }
+
+
+    public void OnRefundProgressChanged(float oldValue, float newValue)
+    {
         OnDataChanged?.Invoke();
     }
     #endregion
@@ -292,6 +304,18 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable
             }
         }
     }
+
+    [Command(requiresAuthority = false)]
+    private void CmdStartRefund()
+    {
+        _refundSystem.StartRefund();
+    }
+
+    [Command(requiresAuthority = false)]
+    private void CmdCancelRefund()
+    {
+        _refundSystem.CancelRefund();
+    }
     #endregion
 
     #region TargetRpc
@@ -376,39 +400,15 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable
     {
         return _data.StructureTID;
     }
-    #endregion
 
-    #region Public Interface (IRefundable)
     public void StartRefund()
     {
-        StopCoroutine(nameof(ProcessRefund));
-        _refundRoutine = StartCoroutine(nameof(ProcessRefund));
-    }
-
-    public void Refund()
-    {
-        int productTID = DataTable.Instance.GetFurnitureData(DataTID).ProductTID;
-        int refundPrice = DataTable.Instance.GetProductData(productTID).Price / _refundRatio;
-        CurrencyManager.Instance.CmdRequestAddCurrency(refundPrice);
-        StructureFactory.Instance.ReturnObject(gameObject);
+        CmdStartRefund();
     }
 
     public void CancelRefund()
     {
-        StopCoroutine(_refundRoutine);
-        _refundGauge = 0;
-        OnDataChanged?.Invoke();
-    }
-
-    public IEnumerator ProcessRefund()
-    {
-        while (_refundGauge < 1)
-        {
-            _refundGauge += Time.deltaTime / _refundTime;
-            OnDataChanged?.Invoke();
-            yield return null;
-        }
-        Refund();
+        CmdCancelRefund();
     }
     #endregion
 }

@@ -6,7 +6,8 @@ public class UI_Furniture : MonoBehaviour
 {
     [SerializeField]
     private Furniture _furniture;
-
+    [SerializeField]
+    private RefundSystem _refundSystem;
     [SerializeField]
     private Slider ProgressSlider;
     [SerializeField]
@@ -49,8 +50,9 @@ public class UI_Furniture : MonoBehaviour
 
     public void Refresh()
     {
-        _refundSlider.gameObject.SetActive(_furniture.RefundGauge > 0);
-        _refundSlider.value = _furniture.RefundGauge;
+        //Debug.Log($"refundslider: {_refundSlider.gameObject.activeInHierarchy}");
+        _refundSlider.gameObject.SetActive(_furniture.RefundProgress > 0);
+        _refundSlider.value = _furniture.RefundProgress;
     }
 
     private void OnDisable()

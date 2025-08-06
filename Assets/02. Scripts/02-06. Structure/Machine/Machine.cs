@@ -56,6 +56,22 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
     private float _currentRotation;
     public float CurrentRotation { get => _currentRotation; private set => _currentRotation = value; }
 
+    [SyncVar(hook = nameof(OnRefundProgressChanged))]
+    private float _refundProgress;
+    public float RefundProgress
+    {
+        get
+        {
+            return _refundProgress;
+        }
+        set
+        {
+            _refundProgress = value;
+        }
+    }
+
+    public GameObject RefundObject { get => gameObject; }
+
     // 투입된 아이템 TID 리스트 (SyncList 사용 권장)
     public readonly SyncList<int> InputTIDList = new SyncList<int>();
 
@@ -63,8 +79,8 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
     [SyncVar(hook = nameof(OnInputTypeChanged))]
     private EInputType _inputType;
     public EInputType InputType { get => _inputType; private set => _inputType = value; }
-    
-    
+
+
     #endregion
 
     private IInteractable<Machine> _interactComponent;
@@ -76,19 +92,8 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
     private List<ModelOnTID> _modelObjectList = new List<ModelOnTID>();
     private Dictionary<int, GameObject> _modelObjectDic;
 
+    private RefundSystem _refundSystem;
     public Action OnDataChanged;
-
-    private float _refundGauge = 0;
-    public float RefundGauge
-    {
-        get
-        {
-            return _refundGauge;
-        }
-    }
-    private float _refundTime = 2;
-    private int _refundRatio = 4;
-    private Coroutine _refundRoutine;
 
     private void Awake()
     {
@@ -98,6 +103,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
             modelInfo.Model.SetActive(false);
             _modelObjectDic.Add(modelInfo.TID, modelInfo.Model);
         }
+        _refundSystem = new RefundSystem();
     }
 
     public override void OnStartServer()
@@ -141,6 +147,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
         // 클라이언트에서 _data 초기화.
         _data = DataTable.Instance.GetMachineData(newTID);
         ActivateModelForTID(newTID); // 모델 활성화
+        _refundSystem.InitRefundSyStem(DataTable.Instance.GetMachineData(newTID).StructureTID, this);
 
         // 인터페이스 컴포넌트 초기화 (클라이언트에서도 Data를 기반으로)
         _interactComponent = GetInteractableComponent(_data.InteractType);
@@ -191,6 +198,11 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
     {
         OnDataChanged?.Invoke();
         Debug.Log($"Client: InputType updated to {newVal}");
+    }
+
+    public void OnRefundProgressChanged(float oldValue, float newValue)
+    {
+        OnDataChanged?.Invoke();
     }
     #endregion
 
@@ -460,6 +472,18 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
             player.GetAbility<PlayerPickupAbility>().ReceiveDroppedItem(success);
         }
     }
+
+    [Command(requiresAuthority = false)]
+    private void CmdStartRefund()
+    {
+        _refundSystem.StartRefund();
+    }
+
+    [Command(requiresAuthority = false)]
+    private void CmdCancelRefund()
+    {
+        _refundSystem.CancelRefund();
+    }
     #endregion
 
     // 모델 활성화/비활성화
@@ -517,40 +541,13 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
         return _data.StructureTID;
     }
 
-
-    #region Public Interface (IRefundable)
     public void StartRefund()
     {
-        StopCoroutine(nameof(ProcessRefund));
-        _refundRoutine = StartCoroutine(nameof(ProcessRefund));
-    }
-
-    public void Refund()
-    {
-        int productTID = DataTable.Instance.GetFurnitureData(DataTID).ProductTID;
-        int refundPrice = DataTable.Instance.GetProductData(productTID).Price / _refundRatio;
-        CurrencyManager.Instance.CmdRequestAddCurrency(refundPrice);
-        StructureFactory.Instance.ReturnObject(gameObject);
+        CmdStartRefund();
     }
 
     public void CancelRefund()
     {
-        StopCoroutine(_refundRoutine);
-        _refundGauge = 0;
-        OnDataChanged?.Invoke();
+        CmdCancelRefund();
     }
-
-    public IEnumerator ProcessRefund()
-    {
-        while (_refundGauge < 1)
-        {
-            _refundGauge += Time.deltaTime / _refundTime;
-            OnDataChanged?.Invoke();
-            yield return null;
-        }
-        Refund();
-    }
-
-    #endregion
-
 }

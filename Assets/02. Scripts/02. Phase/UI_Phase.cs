@@ -3,6 +3,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using VInspector;
 using DG.Tweening;
+using NUnit.Framework;
+using System;
+using Mirror;
+using Mirror.Examples.MultipleMatch;
 
 public class UI_Phase : MonoBehaviour
 {
@@ -12,7 +16,7 @@ public class UI_Phase : MonoBehaviour
     [SerializeField]
     private Slider _serviceTimer;
     [SerializeField]
-    private GameObject _readyPanel;
+    private RectTransform _readyPanel;
     [SerializeField]
     private TextMeshProUGUI _startDayText;
     [SerializeField]
@@ -20,19 +24,21 @@ public class UI_Phase : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI[] _playerName;
     [SerializeField]
-    private GameObject[] _playerPanel;
+    private RectTransform[] _playerPanel;
     [SerializeField]
     private GameObject[] _playerMask;
     [SerializeField]
     private GameObject[] _deathCountHeart;
     [SerializeField]
-    private GameObject _alertPanel;
+    private RectTransform _alertPanel;
     [SerializeField]
     private TextMeshProUGUI _alertText;
 
     private const float READY_HIDE_OFFSET = 200f;
     private const float PLAYER_HIDE_OFFSET = 60f;
     private const float ALERT_HIDE_OFFESET = 100f;
+    private const float WINDOW_WIDTH = 1920f;
+    private const float WINDOW_HEIGHT = 1080f;
     private const float DURATION = 1f;
 
     private void Start()
@@ -58,11 +64,14 @@ public class UI_Phase : MonoBehaviour
         EndingPhase endingPhase = (EndingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.EndingPhase];
         endingPhase.OnPhaseExited += ShowReady; // 준비 단계가 시작되면 시작 패널 표시
 
-
-        HidePlayerPanel(0);
-        HidePlayerPanel(1);
-        HidePlayerPanel(2);
-        HidePlayerPanel(3);
+        ResetPlayerPanel();
+    }
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Alpha0))
+        {
+            ResetPlayerPanel();
+        }
     }
 
     private void UpdateDayText()
@@ -89,23 +98,29 @@ public class UI_Phase : MonoBehaviour
     private void HideReady()
     {
         Debug.Log("Hide Start Day Panel");
-        _readyPanel.transform.DOLocalMoveY(READY_HIDE_OFFSET, DURATION).SetRelative().SetEase(Ease.OutSine);
+        _readyPanel.DOAnchorPosY(READY_HIDE_OFFSET, DURATION).SetRelative().SetEase(Ease.OutSine);
     }
     private void ShowReady()
     {
-        _readyPanel.transform.DOLocalMoveY(-READY_HIDE_OFFSET, DURATION).SetRelative().SetEase(Ease.OutSine);
+        _readyPanel.DOAnchorPosY(-READY_HIDE_OFFSET, DURATION).SetRelative().SetEase(Ease.OutSine);
     }
 
-    private void HidePlayerPanel(int index)
+    private void ResetPlayerPanel()
     {
-        _playerMask[index].SetActive(true);
-        _playerPanel[index].transform.DOLocalMoveY(-PLAYER_HIDE_OFFSET,DURATION).SetRelative().SetEase(Ease.OutSine);
-    }
-    private void ShowPlayerPanel(int index)
-    {
-        //TODO : Player이름 받아와서 적어두기
-        _playerMask[index].SetActive(false);
-        _playerPanel[index].transform.DOLocalMoveY(PLAYER_HIDE_OFFSET, DURATION).SetRelative().SetEase(Ease.OutSine);
+        for(int index = 0; index < 4; index++)
+        {
+            _playerMask[index].SetActive(true);
+            _playerPanel[index].DOAnchorPosY(-PLAYER_HIDE_OFFSET, DURATION).SetEase(Ease.OutSine);
+        }
+
+        foreach(var player in MirrorNetworkManager.Instance.NetIdToSlotMapping)
+        {
+            int index = player.Value; // UI 슬롯 번호를 가져옴
+            _playerName[index].text = NetworkServer.spawned[player.Key].GetComponent<Player>().playerName;
+            _playerMask[index].SetActive(false);
+            _playerPanel[index].transform.DOKill();
+            _playerPanel[index].DOAnchorPosY(0, DURATION).SetEase(Ease.OutSine);
+        }
     }
 
     private void ChangeTextStartDay()
@@ -136,7 +151,7 @@ public class UI_Phase : MonoBehaviour
         // 텍스트 세팅
         _alertText.text = text;
 
-        _alertPanel.transform.DOLocalMoveY(showOffsetY, DURATION)
+        _alertPanel.DOAnchorPosY(showOffsetY, DURATION)
             .SetRelative()
             .SetEase(Ease.OutSine)
             .OnComplete(() =>
@@ -144,7 +159,7 @@ public class UI_Phase : MonoBehaviour
                 // 2초 후 사라지기
                 DOVirtual.DelayedCall(stayDuration, () =>
                 {
-                    _alertPanel.transform.DOLocalMoveY(hideOffsetY, DURATION)
+                    _alertPanel.DOAnchorPosY(hideOffsetY, DURATION)
                         .SetRelative()
                         .SetEase(Ease.OutSine);
                 });

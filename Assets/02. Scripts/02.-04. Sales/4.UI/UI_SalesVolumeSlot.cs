@@ -29,10 +29,11 @@ public class UI_SalesVolumeSlot : MonoBehaviour
         else
         {
             _potionImage.sprite = await AssetManager.Instance.LoadAsset<Sprite>($"{ASSET_PREFIX}{potionTID}");
-            _potionNameTextUI.text = DataTable.Instance.GetPotionData(potionTID).Name;
+            PotionData potionData = DataTable.Instance.GetPotionData(potionTID);
+            _potionNameTextUI.text = potionData.Name;
             int salesVolume = SalesManager.Instance.Sales.DailySalesVolumeDict[potionTID];
             _salesVolumeTextUI.text = salesVolume.ToString("N0");
-            _salesAmountTextUI.text = (salesVolume * DataTable.Instance.GetPotionData(potionTID).Price).ToString("N0");
+            _salesAmountTextUI.text = (salesVolume * potionData.Price).ToString("N0");
         }
         gameObject.SetActive(true);
     }

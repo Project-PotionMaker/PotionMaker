@@ -37,9 +37,9 @@ public class UI_PlayerInfoSlot : MonoBehaviour
     [SerializeField]
     private string _hostReadyToPlayDescription;
     [SerializeField]
-    private string _ClientSHowHostDescription;
+    private string _clientSHowHostDescription;
     [SerializeField]
-    private string _PlayerWaitingForReadyDescription;
+    private string _playerWaitingForReadyDescription;
 
     private Dictionary<ERoomPlayerState, float> _stateHeightDict;
 
@@ -85,7 +85,7 @@ public class UI_PlayerInfoSlot : MonoBehaviour
         _currentRoomPlayer = player;
         _playerNameTextList.ForEach(textUI => textUI.text = player.PlayerName);
 
-        _onlineDescriptionTextUI.text = _PlayerWaitingForReadyDescription;
+        _onlineDescriptionTextUI.text = _playerWaitingForReadyDescription;
 
         if (_currentRoomPlayer.slotNumber == 0) // UI 슬롯 0번이 호스트
         {
@@ -99,7 +99,7 @@ public class UI_PlayerInfoSlot : MonoBehaviour
             }
             else
             {
-                _onlineDescriptionTextUI.text = _ClientSHowHostDescription;
+                _onlineDescriptionTextUI.text = _clientSHowHostDescription;
             }
         }
 
@@ -144,12 +144,12 @@ public class UI_PlayerInfoSlot : MonoBehaviour
             }
             else
             {
-                _onlineDescriptionTextUI.text = _ClientSHowHostDescription;
+                _onlineDescriptionTextUI.text = _clientSHowHostDescription;
             }
         }
         else
         {
-            _onlineDescriptionTextUI.text = _PlayerWaitingForReadyDescription;
+            _onlineDescriptionTextUI.text = _playerWaitingForReadyDescription;
         }
     }
 

@@ -9,7 +9,7 @@ using UnityEngine;
 public class PlayersInfo : MonoBehaviour
 {
     [SerializeField]
-    private List<UI_PlayerInfoSlot> PlayerInfoSlotList;
+    private List<UI_PlayerInfoSlot> _playerInfoSlotList;
 
     private void Start()
     {
@@ -29,9 +29,9 @@ public class PlayersInfo : MonoBehaviour
             yield return new WaitForSeconds(0.1f);
         }
 
-        for (int i = 0; i < PlayerInfoSlotList.Count; i++)
+        for (int i = 0; i < _playerInfoSlotList.Count; i++)
         {
-            PlayerInfoSlotList[i].ClearSlot();
+            _playerInfoSlotList[i].ClearSlot();
         }
 
         var currentPlayerIds = NetworkMessenger.Instance.RoomPlayerIdList.ToList();
@@ -44,10 +44,10 @@ public class PlayersInfo : MonoBehaviour
                 if (roomPlayer != null)
                 {
                     int slotNumber = roomPlayer.slotNumber;
-                    if (slotNumber >= 0 && slotNumber < PlayerInfoSlotList.Count)
+                    if (slotNumber >= 0 && slotNumber < _playerInfoSlotList.Count)
                     {
                         Debug.Log($"PlayersInfo: Setting up slot {slotNumber} for player {roomPlayer.PlayerName} (Mirror index: {roomPlayer.index}, UI slot: {slotNumber})");
-                        PlayerInfoSlotList[slotNumber].InitPlayerInfoSlot(roomPlayer);
+                        _playerInfoSlotList[slotNumber].InitPlayerInfoSlot(roomPlayer);
                     }
                     else
                     {
@@ -61,9 +61,9 @@ public class PlayersInfo : MonoBehaviour
             }
         }
 
-        for (int i = 0; i < PlayerInfoSlotList.Count; i++)
+        for (int i = 0; i < _playerInfoSlotList.Count; i++)
         {
-            PlayerInfoSlotList[i].Refresh();
+            _playerInfoSlotList[i].Refresh();
         }
     }
 }

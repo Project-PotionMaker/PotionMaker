@@ -40,14 +40,14 @@ public class ImageManager : MonoBehaviourSingleton<ImageManager>
         var type = typeof(T);
         if (!_prefixDict.TryGetValue(type, out string prefix))
         {
-            Debug.LogError($"{type.Name} 타입은 이미지 매니저에서 캐싱을 통해 관리하는 대상이 아닙니다.");
+            Debug.LogWarning($"{type.Name} 타입은 이미지 매니저에서 캐싱을 통해 관리하는 대상이 아닙니다.");
             return;
         }
 
         var tidField = type.GetField("TID");
         if (tidField == null || tidField.FieldType != typeof(int))
         {
-            Debug.LogError($"{type.Name} 타입은 TID를 가지고 있지 않습니다.");
+            Debug.LogWarning($"{type.Name} 타입은 TID를 가지고 있지 않습니다.");
             return;
         }
 

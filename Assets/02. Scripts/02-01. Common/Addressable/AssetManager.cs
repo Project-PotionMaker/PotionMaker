@@ -37,7 +37,7 @@ public class AssetManager : MonoBehaviourSingleton<AssetManager>
         }
         else
         {
-            Debug.LogError($"에셋 로드 실패 : {key}");
+            Debug.LogWarning($"에셋 로드 실패 : {key}");
             return null;
         }
     }
@@ -51,7 +51,7 @@ public class AssetManager : MonoBehaviourSingleton<AssetManager>
 
         if (keyListHandle.Status != AsyncOperationStatus.Succeeded)
         {
-            Debug.LogError($"[{label}] 라벨의 주소 리스트 로드 실패");
+            Debug.LogWarning($"[{label}] 라벨의 주소 리스트 로드 실패");
             return null;
         }
 
@@ -71,7 +71,7 @@ public class AssetManager : MonoBehaviourSingleton<AssetManager>
             }
             else
             {
-                Debug.LogError($"에셋 로드 실패 : {key}");
+                Debug.LogWarning($"에셋 로드 실패 : {key}");
             }
         }
         return result;

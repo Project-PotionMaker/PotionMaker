@@ -34,4 +34,24 @@ public class SalesDTO
 
         //SalesVolumeKeyValueList = salesVolumeDict.Select(kv => new SalesVolumeKeyValue { Key = kv.Key, Value = kv.Value }).ToList();
     }
+
+    public int GetTotalSalesVolume()
+    {
+        int sum = 0;
+        foreach (int n in TotalSalesVolumeDict.Values)
+        {
+            sum += n;
+        }
+        return sum;
+    }
+
+    public int GetDailySalesVolume()
+    {
+        int sum = 0;
+        foreach (int n in DailySalesVolumeDict.Values)
+        {
+            sum += n;
+        }
+        return sum;
+    }
 }

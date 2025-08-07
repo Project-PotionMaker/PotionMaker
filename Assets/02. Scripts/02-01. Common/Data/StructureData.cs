@@ -29,6 +29,9 @@ public class StructureData
     ///<summary>특수 구조물 타입</summary>
     public readonly ESpecialStructureType SpecialStructureType;
 
+    ///<summary>상품TID</summary>
+    public readonly int ProductTID;
+
     public StructureData(BinaryReader reader)
     {
         TID = reader.ReadInt32();
@@ -40,5 +43,6 @@ public class StructureData
         TypeTID = reader.ReadInt32();
         AreaType = (EAreaType)reader.ReadInt32();
         SpecialStructureType = (ESpecialStructureType)reader.ReadInt32();
+        ProductTID = reader.ReadInt32();
     }
 }

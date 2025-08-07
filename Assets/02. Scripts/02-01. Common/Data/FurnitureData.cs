@@ -32,6 +32,9 @@ public class FurnitureData
     ///<summary>구조물TID</summary>
     public readonly int StructureTID;
 
+    ///<summary>상품TID</summary>
+    public readonly int ProductTID;
+
     public FurnitureData(BinaryReader reader)
     {
         TID = reader.ReadInt32();
@@ -44,5 +47,6 @@ public class FurnitureData
         SpecialStructureType = (ESpecialStructureType)reader.ReadInt32();
         EffectRate = reader.ReadSingle();
         StructureTID = reader.ReadInt32();
+        ProductTID = reader.ReadInt32();
     }
 }

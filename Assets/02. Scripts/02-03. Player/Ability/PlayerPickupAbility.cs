@@ -5,7 +5,7 @@ public class PlayerPickupAbility : PlayerAbility
 {
     [SyncVar(hook = nameof(OnHeldItemChanged))]
     private NetworkIdentity _heldItemIdentity;
-
+    public NetworkIdentity HeldItemIdentity => _heldItemIdentity;
     private PlayerAnimationAbility _animationAbility;
 
     // 영상 임시
@@ -22,6 +22,7 @@ public class PlayerPickupAbility : PlayerAbility
         _animationAbility = _owner.GetAbility<PlayerAnimationAbility>();
         PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += ResetItem;
         PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase].OnPhaseExited += ResetItem;
+        StructureFactory.Instance.OnReturn += CmdTryResetItem;
     }
 
     private void Update()
@@ -114,11 +115,22 @@ public class PlayerPickupAbility : PlayerAbility
         return item;
     }
 
+    [Command(requiresAuthority =false)]
+    private void CmdTryResetItem(GameObject obj)
+    {
+        if(_heldItemIdentity != null && _heldItemIdentity.gameObject == obj)
+        {
+            ResetItem();
+        }
+    }
+
+    [Server]
     private void ResetItem()
     {
         if (!ReferenceEquals(_heldItemIdentity, null))
         {
             _heldItemIdentity = null;
+            GridManager.Instance.StopPlacement();
         }
     }
 

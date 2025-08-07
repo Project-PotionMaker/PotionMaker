@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using VInspector;
 
 [Serializable]
@@ -13,7 +14,7 @@ public class ModelOnTID
     public GameObject Model;
 }
 
-public class Machine : NetworkBehaviour, IGridItemHandler
+public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
 {
     [SerializeField]
     private Transform _model;
@@ -55,6 +56,22 @@ public class Machine : NetworkBehaviour, IGridItemHandler
     private float _currentRotation;
     public float CurrentRotation { get => _currentRotation; private set => _currentRotation = value; }
 
+    [SyncVar(hook = nameof(OnRefundProgressChanged))]
+    private float _refundProgress;
+    public float RefundProgress
+    {
+        get
+        {
+            return _refundProgress;
+        }
+        set
+        {
+            _refundProgress = value;
+        }
+    }
+
+    public GameObject RefundObject { get => gameObject; }
+
     // 투입된 아이템 TID 리스트 (SyncList 사용 권장)
     public readonly SyncList<int> InputTIDList = new SyncList<int>();
 
@@ -62,6 +79,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler
     [SyncVar(hook = nameof(OnInputTypeChanged))]
     private EInputType _inputType;
     public EInputType InputType { get => _inputType; private set => _inputType = value; }
+
 
     #endregion
 
@@ -74,6 +92,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler
     private List<ModelOnTID> _modelObjectList = new List<ModelOnTID>();
     private Dictionary<int, GameObject> _modelObjectDic;
 
+    private RefundSystem _refundSystem;
     public Action OnDataChanged;
 
     private void Awake()
@@ -84,6 +103,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler
             modelInfo.Model.SetActive(false);
             _modelObjectDic.Add(modelInfo.TID, modelInfo.Model);
         }
+        _refundSystem = new RefundSystem();
     }
 
     public override void OnStartServer()
@@ -127,6 +147,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler
         // 클라이언트에서 _data 초기화.
         _data = DataTable.Instance.GetMachineData(newTID);
         ActivateModelForTID(newTID); // 모델 활성화
+        _refundSystem.InitRefundSyStem(DataTable.Instance.GetMachineData(newTID).StructureTID, this);
 
         // 인터페이스 컴포넌트 초기화 (클라이언트에서도 Data를 기반으로)
         _interactComponent = GetInteractableComponent(_data.InteractType);
@@ -177,6 +198,11 @@ public class Machine : NetworkBehaviour, IGridItemHandler
     {
         OnDataChanged?.Invoke();
         Debug.Log($"Client: InputType updated to {newVal}");
+    }
+
+    public void OnRefundProgressChanged(float oldValue, float newValue)
+    {
+        OnDataChanged?.Invoke();
     }
     #endregion
 
@@ -446,6 +472,18 @@ public class Machine : NetworkBehaviour, IGridItemHandler
             player.GetAbility<PlayerPickupAbility>().ReceiveDroppedItem(success);
         }
     }
+
+    [Command(requiresAuthority = false)]
+    private void CmdStartRefund()
+    {
+        _refundSystem.StartRefund();
+    }
+
+    [Command(requiresAuthority = false)]
+    private void CmdCancelRefund()
+    {
+        _refundSystem.CancelRefund();
+    }
     #endregion
 
     // 모델 활성화/비활성화
@@ -501,5 +539,15 @@ public class Machine : NetworkBehaviour, IGridItemHandler
     public int GetStructureTID()
     {
         return _data.StructureTID;
+    }
+
+    public void StartRefund()
+    {
+        CmdStartRefund();
+    }
+
+    public void CancelRefund()
+    {
+        CmdCancelRefund();
     }
 }

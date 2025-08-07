@@ -21,8 +21,16 @@ public class Player : NetworkBehaviour
 
     private Dictionary<Type, PlayerAbility> _abilityMap = new Dictionary<Type, PlayerAbility>();
 
+    [SyncVar(hook = nameof(OnPlayerOrderIndexChanged))]
+    public int playerOrderIndex = -1;
+
+    [SyncVar(hook = nameof(OnPlayerNameChanged))]
+    public string playerName = "플레이어";
+
     // 영상에 넣을 임시 테스트
     private CanvasAlphaChanger _lastHighlightedStructure;
+
+    public Action OnDataChanged;
 
     private void Awake()
     {
@@ -30,24 +38,35 @@ public class Player : NetworkBehaviour
 
     private void Update()
     {
-        if(isLocalPlayer == false)
+        if (isLocalPlayer == false)
         {
             return;
         }
 
+        //if(GetAbility<PlayerPickupAbility>().HeldItemIdentity != null &&
+        //    GetAbility<PlayerPickupAbility>().HeldItemIdentity.gameObject.GetInstanceID() == _frontObjectInstanceID)
+        //{
+        //    _frontObjectInstanceID = 0;
+        //    return;
+        //}
+
         GameObject frontObject = GetObjectInFront();
         if (frontObject != null)
         {
-            CanvasAlphaChanger currentStructure = frontObject.GetComponent<CanvasAlphaChanger>();
-            if (_lastHighlightedStructure != null && _lastHighlightedStructure != currentStructure)
+            if (_lastHighlightedStructure != null)
             {
+                if (_lastHighlightedStructure.GetInstanceID() == frontObject.GetInstanceID())
+                {
+                    return;
+                }
                 _lastHighlightedStructure.HideCanvas();
             }
-
+            CanvasAlphaChanger currentStructure = frontObject.GetComponent<CanvasAlphaChanger>();
             if (currentStructure != null)
             {
                 currentStructure.ShowCanvas();
             }
+
             _lastHighlightedStructure = currentStructure;
         }
         else
@@ -97,5 +116,15 @@ public class Player : NetworkBehaviour
         }
 
         throw new Exception($"어빌리티 {type.Name}을 {gameObject.name}에서 찾을 수 없습니다.");
+    }
+
+    private void OnPlayerOrderIndexChanged(int oldIndex, int newIndex)
+    {
+        OnDataChanged?.Invoke();
+    }
+
+    private void OnPlayerNameChanged(string oldName, string newName)
+    {
+        OnDataChanged?.Invoke();
     }
 }

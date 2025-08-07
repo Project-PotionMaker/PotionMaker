@@ -1647,6 +1647,50 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1032490330}
   m_CullTransparentMesh: 1
+--- !u!1 &1077983171
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1077983173}
+  - component: {fileID: 1077983172}
+  m_Layer: 0
+  m_Name: StartScene
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1077983172
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1077983171}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35dec8bdaa6e09a489a545b7110b5063, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1077983173
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1077983171}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 243.69826, y: 137.60693, z: -2.8456008}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1126545249
 GameObject:
   m_ObjectHideFlags: 0
@@ -1682,7 +1726,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 0, y: -240}
-  m_SizeDelta: {x: 603.2, y: 50}
+  m_SizeDelta: {x: 603.2, y: 100}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1126545251
 MonoBehaviour:
@@ -1704,7 +1748,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uD14C\uC2A4\uD2B8"
+  m_text: "SPACE\uB97C \uB20C\uB7EC \uC2DC\uC791\n"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b1f6e8d66973a0145b97dcd33f80f838, type: 2}
   m_sharedMaterial: {fileID: 2877714319601948688, guid: b1f6e8d66973a0145b97dcd33f80f838, type: 2}
@@ -1731,10 +1775,10 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 100
+  m_fontSize: 72
   m_fontSizeBase: 100
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
@@ -2500,7 +2544,7 @@ MonoBehaviour:
   editorAutoStart: 0
   sendRate: 60
   offlineScene: Assets/01. Scenes/Prototype Scenes/RoomStartScene.unity
-  onlineScene: Assets/01. Scenes/Prototype Scenes/RoomLobbyScene.unity
+  onlineScene: Assets/01. Scenes/LSJ_WaitingScene.unity
   offlineSceneLoadDelay: 0
   transport: {fileID: 1526851903}
   networkAddress: localhost
@@ -2524,6 +2568,7 @@ MonoBehaviour:
   - {fileID: 5219997704760352306, guid: 2e4eb39b38056e34cacb153749010326, type: 3}
   - {fileID: 7535748361274180503, guid: 1c9d3c4c1882e0d47bec6e4fc75ce37c, type: 3}
   - {fileID: 3519741903602042330, guid: 31b16a6d0f3879c4d97fd6a11f43a2b9, type: 3}
+  - {fileID: 155638102050398600, guid: 5587cdeda2c2b5d4ea2425f3525a44a4, type: 3}
   exceptionsDisconnect: 1
   snapshotSettings:
     bufferTimeMultiplier: 2
@@ -2541,8 +2586,8 @@ MonoBehaviour:
   timeInterpolationGui: 0
   showRoomGUI: 1
   minPlayers: 1
-  roomPlayerPrefab: {fileID: 114033720796874720, guid: deae2134a1d77704b9c595efe69767dd, type: 3}
-  RoomScene: Assets/01. Scenes/Prototype Scenes/RoomLobbyScene.unity
+  roomPlayerPrefab: {fileID: -3085639848043029061, guid: deae2134a1d77704b9c595efe69767dd, type: 3}
+  RoomScene: Assets/01. Scenes/LSJ_WaitingScene.unity
   GameplayScene: Assets/01. Scenes/Prototype Scenes/LSJ_PrototypeScene.unity
   _allPlayersReady: 0
   clientIndex: 0
@@ -2557,6 +2602,7 @@ MonoBehaviour:
   - {fileID: 4583058061554572844, guid: 41f348cfa6f9b9a4ca5a243925db8863, type: 3}
   - {fileID: 984014340197020790, guid: 12ee379862bb09343a49d5e74b924843, type: 3}
   - {fileID: 3519741903602042330, guid: 31b16a6d0f3879c4d97fd6a11f43a2b9, type: 3}
+  - {fileID: 155638102050398600, guid: 5587cdeda2c2b5d4ea2425f3525a44a4, type: 3}
   FactoryPrefabList:
   - {fileID: 9044910463192476383, guid: 306dda74c052abe43afff0b56ba82fb8, type: 3}
   - {fileID: 5219997704760352306, guid: 2e4eb39b38056e34cacb153749010326, type: 3}
@@ -3758,3 +3804,4 @@ SceneRoots:
   - {fileID: 1410469319}
   - {fileID: 1379166749}
   - {fileID: 1526851905}
+  - {fileID: 1077983173}

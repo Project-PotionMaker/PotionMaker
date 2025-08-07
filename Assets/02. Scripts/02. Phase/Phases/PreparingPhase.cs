@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 
 public class PreparingPhase : BasePhase
@@ -10,6 +10,7 @@ public class PreparingPhase : BasePhase
     public override void EnterPhase()
     {
         base.EnterPhase();
+        PhaseManager.Instance.DeathCount = PhaseManager.Instance.MaxDeathCount;
     }
 
     public override void ExitPhase()

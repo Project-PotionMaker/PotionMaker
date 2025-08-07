@@ -25,9 +25,14 @@ public class UI_Phase : MonoBehaviour
     private GameObject[] _playerMask;
     [SerializeField]
     private GameObject[] _deathCountHeart;
+    [SerializeField]
+    private GameObject _alertPanel;
+    [SerializeField]
+    private TextMeshProUGUI _alertText;
 
     private const float READY_HIDE_OFFSET = 200f;
     private const float PLAYER_HIDE_OFFSET = 60f;
+    private const float ALERT_HIDE_OFFESET = 100f;
     private const float DURATION = 1f;
 
     private void Start()
@@ -36,6 +41,9 @@ public class UI_Phase : MonoBehaviour
         PhaseManager.Instance.OnDayPassed += UpdateDayText;
         PhaseManager.Instance.OnTimerRunning += UpdateServiceTimer;
         PhaseManager.Instance.OnDeathCountChanged += RefreshDeathCount;
+
+        UpdateDayText();
+        RefreshDeathCount();
 
         PreparingPhase preparingPhase = (PreparingPhase) PhaseManager.Instance.PhaseDictionary[EPhaseType.PreparingPhase];
         preparingPhase.OnPhaseEntered += ChangeTextStartDay;
@@ -61,7 +69,7 @@ public class UI_Phase : MonoBehaviour
     {
         if (_dayText != null)
         {
-            _dayText.text = "Day: " + PhaseManager.Instance.Day;
+            _dayText.text = $"{PhaseManager.Instance.Day}일";
         }
     }
     private void UpdateServiceTimer()
@@ -119,6 +127,31 @@ public class UI_Phase : MonoBehaviour
             _deathCountHeart[i].SetActive(true);
         }
     }
+    public void ShowAlert(string text)
+    {
+        const float showOffsetY = -ALERT_HIDE_OFFESET;
+        const float hideOffsetY = ALERT_HIDE_OFFESET;
+        const float stayDuration = 2f;
+
+        // 텍스트 세팅
+        _alertText.text = text;
+
+        _alertPanel.transform.DOLocalMoveY(showOffsetY, DURATION)
+            .SetRelative()
+            .SetEase(Ease.OutSine)
+            .OnComplete(() =>
+            {
+                // 2초 후 사라지기
+                DOVirtual.DelayedCall(stayDuration, () =>
+                {
+                    _alertPanel.transform.DOLocalMoveY(hideOffsetY, DURATION)
+                        .SetRelative()
+                        .SetEase(Ease.OutSine);
+                });
+            });
+    }
+
+
 
     public void OptionPanelShow()
     {

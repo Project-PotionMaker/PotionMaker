@@ -89,6 +89,18 @@ public class Rent
         _currentRentCost += _rentIncrement;
     }
 
+    public void IncreaseRentDayCounter()
+    {
+        if (_rentDayCounter < RENT_PERIOD)
+        {
+            _rentDayCounter++;
+        }
+        else
+        {
+            throw new InvalidOperationException("Cannot increase RentDayCounter beyond RENT_PERIOD.");
+        }
+    }
+
     public RentDTO ToDTO()
     {
         return new RentDTO(this);

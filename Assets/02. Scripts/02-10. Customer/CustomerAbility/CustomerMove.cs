@@ -25,7 +25,7 @@ public class CustomerMove : NetworkBehaviour
         if (!isServer)
         {
             _agent.enabled = false; // 클라이언트에서는 NavMeshAgent 비활성화
-            _collider.enabled = false; // 클라이언트에서는 충돌체 비활성화
+            //_collider.enabled = false; // 클라이언트에서는 충돌체 비활성화
         }
         _rigidbody = GetComponent<Rigidbody>();
         _rigidbody.isKinematic = false;

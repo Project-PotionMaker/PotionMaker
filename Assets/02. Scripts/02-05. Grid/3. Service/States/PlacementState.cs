@@ -37,9 +37,7 @@ public class PlacementState : IBuildingState
     /// </summary>
     public void StartState()
     {
-        _previewSystem.StartShowingPlacementPreview(
-            _data.TID,
-            _size);
+        _previewSystem.StartShowingPlacementPreview(_data.TID);
     }
 
     public void EndState()
@@ -71,7 +69,7 @@ public class PlacementState : IBuildingState
     /// <summary>
     /// 서버로부터 받은 배치 결과를 처리합니다.
     /// </summary>
-    public void ReceivePlaceResult(bool success, uint structureNetId)
+    public void ReceivePlaceResult(bool success)
     {
         if (success)
         {

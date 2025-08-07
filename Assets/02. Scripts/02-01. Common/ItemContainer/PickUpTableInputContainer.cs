@@ -11,6 +11,10 @@ public class PickUpTableInputContainer : IInputContainer<Furniture>
                 CustomerManager.Instance.CmdPlaceOnTable(tid, furniture.netId);
                 CustomerManager.Instance.CmdServePotion(tid, furniture.netId);
             }
+
+            furniture.InputObject = inputObject;
+            furniture.InputObject.transform.position = furniture.InputPosition.position;
+            furniture.InputObject.transform.rotation = Quaternion.identity;
             return true;
         }
         return false;

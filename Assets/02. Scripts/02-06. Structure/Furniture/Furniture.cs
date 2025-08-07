@@ -138,20 +138,23 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
         _data = DataTable.Instance.GetFurnitureData(furnitureTID);
         CurrentRotation = 0f;
 
-        // 서버에서만 인터페이스 컴포넌트들을 할당
-        // 테스트용
-        if (_data.SpecialStructureType == ESpecialStructureType.Casher)
+        switch (_data.SpecialStructureType)
         {
-            _interactComponent = new CasherInteract();
-        }
-        if (_data.SpecialStructureType == ESpecialStructureType.PickUpTable)
-        {
-            _inputComponent = new PickUpTableInputContainer();
-            _outputComponent = new PickUpTableOutputContainer();
-        }
-        if (_data.SpecialStructureType == ESpecialStructureType.OldChair || _data.SpecialStructureType == ESpecialStructureType.LuxuryChair)
-        {
-            _effectComponent = new ChairEffect();
+            case ESpecialStructureType.Casher:
+                _interactComponent = new CasherInteract();
+                break;
+            case ESpecialStructureType.PickUpTable:
+                _inputComponent = new PickUpTableInputContainer();
+                _outputComponent = new PickUpTableOutputContainer();
+                break;
+            case ESpecialStructureType.OldChair:
+            case ESpecialStructureType.LuxuryChair:
+                _effectComponent = new ChairEffect();
+                break;
+            case ESpecialStructureType.TrashCan:
+                _inputComponent = new TrashCanInputContainer();
+                break;
+
         }
 
         _refundSystem.InitRefundSyStem(DataTable.Instance.GetFurnitureData(furnitureTID).StructureTID, this);
@@ -278,11 +281,6 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
                 if (ReferenceEquals(_inputComponent, null) == false)
                 {
                     success = _inputComponent.ServerTryInput(this, tid, inputType, inputObject);
-                    if (success)
-                    {
-                        InputObject = inputObject;
-                        InputObject.transform.position = InputPosition.position;
-                    }
                 }
             }
         }

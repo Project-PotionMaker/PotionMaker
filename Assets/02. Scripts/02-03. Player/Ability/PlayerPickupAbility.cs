@@ -164,8 +164,8 @@ public class PlayerPickupAbility : PlayerAbility
         {
             // 부모를 _heldPosition으로 설정
             newIdentity.transform.SetParent(_owner.HeldPosition, true);
-            newIdentity.transform.localPosition = -0.5f * Vector3.one;
-            newIdentity.transform.localRotation = Quaternion.Euler(Vector3.zero);
+            newIdentity.transform.localPosition = new Vector3(-1f, 0f, -1f);
+            newIdentity.transform.localRotation = Quaternion.identity;
         }
     }
 
@@ -181,7 +181,6 @@ public class PlayerPickupAbility : PlayerAbility
     public void CmdDropItem()
     {
         if (!_owner.isServer) return;
-
         _heldItemIdentity = null;
     }
 }

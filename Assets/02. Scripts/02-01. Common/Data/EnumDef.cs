@@ -51,6 +51,8 @@ public enum EAreaType
     Storage = 3,
     ///<summary>앞마당</summary>
     FrontYard = 4,
+    ///<summary>줄서는 구역</summary>
+    Line = 5,
 }
 
 public enum EIngredientType

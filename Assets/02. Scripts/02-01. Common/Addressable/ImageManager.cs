@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -60,11 +61,16 @@ public class ImageManager : MonoBehaviourSingleton<ImageManager>
         }
 
         Dictionary<int, Sprite> dict = new();
-        foreach (var item in dataList)
+
+
+        var loadTasks = dataList.Select(item => LoadImageForItem(item, prefix, tidField));
+        var results = await Task.WhenAll(loadTasks);
+        foreach (var result in results)
         {
-            var result = await LoadImageForItem(item, prefix, tidField);
             if (result.HasValue)
+            {
                 dict[result.Value.tid] = result.Value.sprite;
+            }
         }
         _imageDict[type] = dict;
     }

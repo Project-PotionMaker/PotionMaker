@@ -20,6 +20,14 @@ public class ImageManager : MonoBehaviourSingleton<ImageManager>
         Global.Instance.OnDataLoaded += InitImageManager;
     }
 
+    private void OnDestroy()
+    {
+        if (Global.Instance != null)
+        {
+            Global.Instance.OnDataLoaded -= InitImageManager;
+        }
+    }
+
     private async void InitImageManager()
     {
         InitPrefixDict();

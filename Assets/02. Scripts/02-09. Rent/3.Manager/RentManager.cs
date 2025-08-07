@@ -25,6 +25,8 @@ public class RentManager : NetworkBehaviourSingleton<RentManager>
         LayoutData data = DataTable.Instance.GetLayoutData(10000);
         _rent = new Rent(1, data.InitialRentCost, data.RentIncrement);
         CmdRequestUpdateRent();
+        PhaseManager.Instance.OnDayPassed += IncreaseRentCount;
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += PayRent;
     }
 
     // 네트워크 매니저에서 처리
@@ -61,11 +63,16 @@ public class RentManager : NetworkBehaviourSingleton<RentManager>
         {
             throw new InvalidOperationException($"{nameof(PayRent)}() is server-only. Use {nameof(CmdRequestPayRent)}() from client.");
         }
+        if(!_rent.IsRentDay)
+        {
+            Debug.Log("아직 임대료를 지불할 때가 아닙니다.");
+            return;
+        }
 
         bool result = CurrencyManager.Instance.TrySubtractCurrency(_rent.CurrentRentCost);
         if (!result)
         {
-            Debug.Log("게임오버");
+            PhaseManager.Instance.IsGameOver = true;
             return;
         }
         _rent.OnRentPaid();
@@ -73,4 +80,11 @@ public class RentManager : NetworkBehaviourSingleton<RentManager>
         string rentJson = JsonUtility.ToJson(rentRPCData);
         UpdateRent(rentJson);
     }
+
+    [Server]
+    private void IncreaseRentCount()
+    {
+        _rent.IncreaseRentDayCounter();
+    }
+
 }

@@ -6,7 +6,8 @@ public class UnitTestForCustomer : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            ServiceStart();
+            if(PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
+                ServiceStart();
         }
     }
     public void ServiceStart()

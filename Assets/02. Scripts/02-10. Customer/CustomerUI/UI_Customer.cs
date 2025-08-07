@@ -5,6 +5,7 @@ using VInspector;
 
 public class UI_Customer : MonoBehaviour
 {
+    private const string ASSET_PREFIX = "Image_Potion_";
     [Foldout("UI컴포넌트")]
     [SerializeField]
     private Slider _enduranceSlider;
@@ -56,7 +57,7 @@ public class UI_Customer : MonoBehaviour
             _enduranceSlider.fillRect.GetComponent<Image>().color = targetColor;
         }
     }
-    private void SetStateImage()
+    async private void SetStateImage()
     {
         if (_owner.CurrentState == ECustomerStateType.Lining)
         {
@@ -73,8 +74,8 @@ public class UI_Customer : MonoBehaviour
         }
         else if (_owner.CurrentState == ECustomerStateType.Sitting)
         {
-            _stateImage.gameObject.SetActive(true); //TODO : 어떤 포션인지 아이콘으로 표현
-            _stateImage.sprite = _waitingIcon;
+            _stateImage.gameObject.SetActive(true);
+            _stateImage.sprite = await AssetManager.Instance.LoadAsset<Sprite>($"{ASSET_PREFIX}{_owner.RequestedPotionTID}");
         }
     }
 

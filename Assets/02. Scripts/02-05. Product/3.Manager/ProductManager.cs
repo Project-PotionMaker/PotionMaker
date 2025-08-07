@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ProductManager : NetworkBehaviourSingleton<ProductManager>
 {
@@ -32,23 +33,31 @@ public class ProductManager : NetworkBehaviourSingleton<ProductManager>
             { EProductType.HouseMoving, new List<Product>() },
         };
     }
-    public override void OnStartLocalPlayer()
+    public override void OnStartClient()
     {
-        base.OnStartLocalPlayer();
-        Global.Instance.OnDataLoaded += InitProductManager;
+        Global.Instance.OnDataLoaded += LoadProductData;
+        LoadProductData();
+
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+    public override void OnStopClient()
+    {
+        base.OnStopClient();
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // 씬이 로드되면 PotionHouse를 찾아 초기화를 시도합니다.
         InitProductManager();
     }
 
     private void InitProductManager()
     {
-        if (!Global.Instance.IsDataLoaded)
+        if (!NetworkClient.ready)
         {
-            return;
+            NetworkClient.Ready();
         }
-
-        LoadProductData();
-        CmdRequestUpdateProducts();
-
         if (!isServer)
         {
             return;
@@ -59,6 +68,7 @@ public class ProductManager : NetworkBehaviourSingleton<ProductManager>
         }
         else
         {
+            UnlockManager.Instance.OnListUpdated -= UnlockProducts;
             UnlockManager.Instance.OnListUpdated += UnlockProducts;
         }
     }
@@ -69,12 +79,17 @@ public class ProductManager : NetworkBehaviourSingleton<ProductManager>
         {
             foreach(int unlockedStructureTID in unlockedStructureTIDList)
             {
+                Debug.Log(NetworkClient.ready);
                 CmdRequestUnlock(DataTable.Instance.GetStructureData(unlockedStructureTID).ProductTID);
             }
         }
     }
     private void LoadProductData()
     {
+        if (!Global.Instance.IsDataLoaded)
+        {
+            return;
+        }
         ReadOnlyList<ProductData> productDataList = DataTable.Instance.GetProductDataList();
         foreach (ProductData productData in productDataList)
         {

@@ -17,6 +17,7 @@ public class ReputationManager : NetworkBehaviourSingleton<ReputationManager>
     {
         base.OnStartClient();
         InitReputationManager();
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += AddDailyReputation;
     }
 
     private void InitReputationManager()
@@ -43,6 +44,12 @@ public class ReputationManager : NetworkBehaviourSingleton<ReputationManager>
     public void CmdRequestSubtractReputation(float subtractedValue)
     {
         SubtractReputation(subtractedValue);
+    }
+
+    [Server]
+    public void AddDailyReputation()
+    {
+        AddReputation();
     }
 
     [Server]

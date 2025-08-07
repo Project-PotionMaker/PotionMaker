@@ -7,6 +7,7 @@ public class UI_DaySummary : MonoBehaviour
 {
     private const string POSITIVE_COLOR = "#65BC04";
     private const string NEGATIVE_COLOR = "#CB0000";
+    private const string DEFAULT_COLOR = "#000000";
 
     [SerializeField]
     private Transform _slotContainer;
@@ -40,6 +41,12 @@ public class UI_DaySummary : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI _currentCurrencyTextUI;
 
+    [Header("결과창")]
+    [SerializeField]
+    private UI_SuccessSummary _successPanel;
+    [SerializeField]
+    private UI_GameOverSummary _gameOverPanel;
+
     private void Start()
     {
         _salesVolumeSlotList = new List<UI_SalesVolumeSlot>();
@@ -52,6 +59,14 @@ public class UI_DaySummary : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             gameObject.SetActive(false);
+            if(PhaseManager.Instance.IsGameOver)
+            {
+                _gameOverPanel.ShowSummary();
+            }
+            else
+            {
+                _successPanel.ShowSummary();
+            }
         }
     }
     public void OnEndingPhaseStarted()
@@ -95,21 +110,26 @@ public class UI_DaySummary : MonoBehaviour
         // max value도 받아오도록 수정
         float currentReputation = ReputationManager.Instance.Reputation.Value;
         _reputationRateView.fillAmount = currentReputation / 5;
-        _currentReputationTextUI.text = currentReputation.ToString();
+        _currentReputationTextUI.text = currentReputation.ToString("F1");
 
         float reputationDifference = ReputationManager.Instance.Reputation.Difference;
         string color = reputationDifference >= 0 ? POSITIVE_COLOR : NEGATIVE_COLOR;
         _deltaReputationTextUI.text = $"<color={color}>{reputationDifference.ToString("+0.0;-0.0;+0.0")}</color>";
 
-
-        // 자산
-        // 미리 방세 빼는 로직이 들어가있어야함? 아니면 표시만?
         int currentCurrency = CurrencyManager.Instance.Coin.Value;
-        if (RentManager.Instance.Rent.IsRentDay)
+        if(PhaseManager.Instance.IsGameOver == true && PhaseManager.Instance.DeathCount > 0)
         {
             currentCurrency -= RentManager.Instance.Rent.CurrentRentCost;
+            ColorUtility.TryParseHtmlString(NEGATIVE_COLOR, out Color negativeColor);
+            _currentCurrencyTextUI.color = negativeColor;
         }
-        _currentCurrencyTextUI.text = currentCurrency.ToString("N0");
+        else
+        {
+            ColorUtility.TryParseHtmlString(DEFAULT_COLOR, out Color defaultColor);
+            _currentCurrencyTextUI.color = defaultColor;
+        }
+            _currentCurrencyTextUI.text = currentCurrency.ToString("N0");
+
         gameObject.SetActive(true);
     }
 }

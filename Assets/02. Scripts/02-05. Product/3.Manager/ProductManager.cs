@@ -1,4 +1,6 @@
 using Mirror;
+using Mirror.BouncyCastle.Math.Field;
+
 //using Photon.Pun;
 using System;
 using System.Collections.Generic;
@@ -30,42 +32,47 @@ public class ProductManager : NetworkBehaviourSingleton<ProductManager>
             { EProductType.HouseMoving, new List<Product>() },
         };
     }
-    public override void OnStartClient()
+    public override void OnStartLocalPlayer()
     {
+        base.OnStartLocalPlayer();
         Global.Instance.OnDataLoaded += InitProductManager;
         InitProductManager();
     }
 
-    // 네트워크 매니저에서 처리
-    //public override void OnJoinedRoom()
-    //{
-    //    InitProductManager();
-    //}
-
     private void InitProductManager()
     {
-        // 룸 관련 검사는 게임이 만들어지면 없애도 됨
         if (!Global.Instance.IsDataLoaded)
         {
             return;
         }
 
         LoadProductData();
-
-        // 임시 언락
-        ProductManager.Instance.CmdRequestUnlock(10000);
-        ProductManager.Instance.CmdRequestUnlock(10001);
-        ProductManager.Instance.CmdRequestUnlock(10002);
-        ProductManager.Instance.CmdRequestUnlock(10003);
-
-        ProductManager.Instance.CmdRequestUnlock(20000);
-        ProductManager.Instance.CmdRequestUnlock(20001);
-
-        ProductManager.Instance.CmdRequestUnlock(30000);
-
         CmdRequestUpdateProducts();
+
+        if (!isServer)
+        {
+            return;
+        }
+        if (UnlockManager.Instance.NewUnlockedTIDDict != null)
+        {
+            UnlockProducts();
+        }
+        else
+        {
+            UnlockManager.Instance.OnListUpdated += UnlockProducts;
+        }
     }
 
+    private void UnlockProducts()
+    {
+        if (UnlockManager.Instance.NewUnlockedTIDDict.TryGetValue(EUnlockType.Structure, out ReadOnlyList<int> unlockedStructureTIDList))
+        {
+            foreach(int unlockedStructureTID in unlockedStructureTIDList)
+            {
+                CmdRequestUnlock(DataTable.Instance.GetStructureData(unlockedStructureTID).ProductTID);
+            }
+        }
+    }
     private void LoadProductData()
     {
         ReadOnlyList<ProductData> productDataList = DataTable.Instance.GetProductDataList();
@@ -75,7 +82,7 @@ public class ProductManager : NetworkBehaviourSingleton<ProductManager>
         }
     }
 
-    [Command(requiresAuthority =false)]
+    [Command(requiresAuthority = false)]
     public void CmdRequestBuy(EProductType productType, int productID, NetworkConnectionToClient sender = null)
     {
         Product product = _productListDict[productType].Find(product => product.Data.TID == productID);

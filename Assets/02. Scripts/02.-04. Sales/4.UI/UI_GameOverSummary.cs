@@ -49,6 +49,12 @@ public class UI_GameOverSummary : MonoBehaviour
             ++slotIndex;
         }
         int currentCurrency = CurrencyManager.Instance.Coin.Value;
+        if(PhaseManager.Instance.DeathCount > 0)
+        {
+            currentCurrency -= RentManager.Instance.Rent.CurrentRentCost;
+            ColorUtility.TryParseHtmlString(NEGATIVE_COLOR, out Color negativeColor);
+            _currentCurrencyTextUI.color = negativeColor;
+        }
         _currentCurrencyTextUI.text = currentCurrency.ToString("N0");
 
         int totalSales = SalesManager.Instance.Sales.TotalSales;

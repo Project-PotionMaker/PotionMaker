@@ -7,6 +7,7 @@ public class UI_DaySummary : MonoBehaviour
 {
     private const string POSITIVE_COLOR = "#65BC04";
     private const string NEGATIVE_COLOR = "#CB0000";
+    private const string DEFAULT_COLOR = "#000000";
 
     [SerializeField]
     private Transform _slotContainer;
@@ -115,18 +116,20 @@ public class UI_DaySummary : MonoBehaviour
         string color = reputationDifference >= 0 ? POSITIVE_COLOR : NEGATIVE_COLOR;
         _deltaReputationTextUI.text = $"<color={color}>{reputationDifference.ToString("+0.0;-0.0;+0.0")}</color>";
 
-
-        // 자산
-        // 미리 방세 빼는 로직이 들어가있어야함? 아니면 표시만?
         int currentCurrency = CurrencyManager.Instance.Coin.Value;
-
-        _currentCurrencyTextUI.text = currentCurrency.ToString("N0");
-
-        if(currentCurrency < 0)
+        if(PhaseManager.Instance.IsGameOver == true && PhaseManager.Instance.DeathCount > 0)
         {
-            ColorUtility.TryParseHtmlString("#CB0000", out var red);
-            _currentCurrencyTextUI.color = red;
+            currentCurrency -= RentManager.Instance.Rent.CurrentRentCost;
+            ColorUtility.TryParseHtmlString(NEGATIVE_COLOR, out Color negativeColor);
+            _currentCurrencyTextUI.color = negativeColor;
         }
+        else
+        {
+            ColorUtility.TryParseHtmlString(DEFAULT_COLOR, out Color defaultColor);
+            _currentCurrencyTextUI.color = defaultColor;
+        }
+            _currentCurrencyTextUI.text = currentCurrency.ToString("N0");
+
         gameObject.SetActive(true);
     }
 }

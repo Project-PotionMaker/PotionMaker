@@ -44,6 +44,9 @@ public class MachineData
     ///<summary>구조물TID</summary>
     public readonly int StructureTID;
 
+    ///<summary>상품TID</summary>
+    public readonly int ProductTID;
+
     public MachineData(BinaryReader reader)
     {
         TID = reader.ReadInt32();
@@ -60,5 +63,6 @@ public class MachineData
         OutputAmount = reader.ReadInt32();
         InteractType = (EInteractType)reader.ReadInt32();
         StructureTID = reader.ReadInt32();
+        ProductTID = reader.ReadInt32();
     }
 }

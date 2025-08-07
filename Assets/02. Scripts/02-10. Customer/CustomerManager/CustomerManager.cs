@@ -70,7 +70,7 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
     public void PreService()
     {
         _orderHandler.SetLists();
-        _casherLocation = GridManager.Instance.Casher.transform;
+        _casherLocation = GridManager.Instance.GetCustomerFurnitureList(ESpecialStructureType.Casher)[0].transform;
         _inviteTimer = _inviteCoolTime;
         _remainCustomers = 0;
         _inviteIndex = 0;

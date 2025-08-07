@@ -13,6 +13,11 @@ public class GridData
     public ReadOnlyList<int> PlacedObjectList => new ReadOnlyList<int>(_placedObjectDict.Values.Select(placement => placement.TID).ToList());
     private Dictionary<Vector3Int, EAreaType> _availableAreaDict;
 
+    private List<Vector3Int> LRUDPositionList = new List<Vector3Int> { new Vector3Int(0,0,1)
+                                                                       , new Vector3Int(1,0,0)
+                                                                       , new Vector3Int(-1,0,0)
+                                                                       , new Vector3Int(0,0,-1) };
+
     public GridData(Dictionary<Vector3Int, EAreaType> availableAreaDict)
     {
         if (ReferenceEquals(availableAreaDict, null) ||
@@ -89,5 +94,20 @@ public class GridData
                 _placedObjectDict.Remove(pos);
             }
         }
+    }
+
+    public bool CheckLRUDHasArea(Vector3Int gridPosition, EAreaType areaType)
+    {
+        for(int i = 0; i < LRUDPositionList.Count; i++)
+        {
+            if(_availableAreaDict.TryGetValue(gridPosition + LRUDPositionList[i], out EAreaType type))
+            {
+                if(type == areaType)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

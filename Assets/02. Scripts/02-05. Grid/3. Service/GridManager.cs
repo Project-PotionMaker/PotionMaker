@@ -1,5 +1,6 @@
 // 수정된 GridManager 클래스
 using Mirror;
+using Steamworks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,27 +35,20 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
     private Vector3Int _lastDetectedPosition = Vector3Int.zero;
 
     // 모든 클라이언트에 동기화되는 배치 정보
-    private readonly SyncDictionary<Vector3Int, PlacementData> _placedObjectSyncDict = new SyncDictionary<Vector3Int, PlacementData>();
+    private readonly SyncDictionary<Vector3Int, PlacementData> _placedObjectInGridSyncDict = new();
 
-    // 고객 관련 오브젝트는 서버에서만 관리합니다.
-    private GameObject _casher;
-    public GameObject Casher => _casher;
-    private GameObject _enterDoor;
-    public GameObject EnterDoor => _enterDoor;
-    private GameObject _exitDoor;
-    public GameObject ExitDoor => _exitDoor;
-    private List<GameObject> _pickUpTableList;
-    public List<GameObject> PickUpTableList => _pickUpTableList;
-    private List<GameObject> _oldChairList;
-    public List<GameObject> OldChairList => _oldChairList;
-    private List<GameObject> _luxuryChairList;
-    public List<GameObject> LuxuryChairList => _luxuryChairList;
+    // 서버 전용
+    private Dictionary<int, List<NetworkIdentity>> _managedStructureDict = new();
+    public Dictionary<int, List<NetworkIdentity>> ManagedStructureDict => _managedStructureDict;
+
+    private List<NetworkIdentity> _pickupTableForCustomerList = new();
+    public List<NetworkIdentity> PickupTableForCustomerList => _pickupTableForCustomerList;
 
     public Action OnInitialized;
 
-    // --- 새로 추가된 코드: 씬 로드 이벤트를 수신합니다. ---
     public override void OnStartClient()
     {
+
         base.OnStartClient();
         // 클라이언트가 시작될 때 씬 로드 이벤트를 구독합니다.
         SceneManager.sceneLoaded += OnSceneLoaded;
@@ -100,18 +94,16 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
         _grid = GameObject.FindGameObjectWithTag(nameof(ETags.Grid))?.GetComponent<Grid>();
         _previewSystem = GameObject.FindGameObjectWithTag(nameof(ETags.PreviewSystem))?.GetComponent<PreviewSystem>();
         _gridVisualization = GameObject.FindGameObjectWithTag(nameof(ETags.GridVisualization));
-
-        if(_grid == null)
+        _gridVisualization.SetActive(false);
+        if (_grid == null)
         {
             return;
         }
 
         _layout = PotionHouse.Instance.Layout;
         _serverGridData = new GridData(_layout.GetAvailableAreaDict());
-
-        _pickUpTableList = new List<GameObject>();
-        _oldChairList = new List<GameObject>();
-        _luxuryChairList = new List<GameObject>();
+        _managedStructureDict = new();
+        _pickupTableForCustomerList = new();
 
         StopPlacement();
         OnInitialized?.Invoke();
@@ -119,15 +111,23 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
 
     private void Update()
     {
-        if (GridManager.Instance == null)
-        {
-            Debug.LogError("GridManager.Instance is null!");
-            return;
-        }
-
         if (Input.GetKeyDown(KeyCode.F2))
         {
             CmdTest();
+        }
+    }
+
+    public List<NetworkIdentity> GetCustomerFurnitureList(ESpecialStructureType type)
+    {
+        int tid = StructureManager.Instance.SpecialStructureTIDDict[type];
+        if(type == ESpecialStructureType.PickUpTable)
+        {
+            // customer과 상호작용 가능한 픽업테이블만 전달
+            return _pickupTableForCustomerList;
+        }
+        else
+        {
+            return _managedStructureDict[tid];
         }
     }
 
@@ -154,7 +154,7 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
     {
         Vector3Int gridPosition = GetGridPosition(targetPosition);
 
-        if (_placedObjectSyncDict.TryGetValue(gridPosition, out PlacementData placementData))
+        if (_placedObjectInGridSyncDict.TryGetValue(gridPosition, out PlacementData placementData))
         {
             if (NetworkClient.spawned.TryGetValue(placementData.netId, out NetworkIdentity identity))
             {
@@ -214,14 +214,32 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
             GameObject structure = structureIdentity.gameObject;
             StructureData data = DataTable.Instance.GetStructureData(structure.GetComponent<IGridItemHandler>().GetStructureTID());
 
-            structure.transform.position = _grid.CellToWorld(gridPosition);
+            structure.transform.position = gridPosition;
             structure.transform.rotation = Quaternion.identity;
             _serverGridData.AddObjectAt(gridPosition, new Vector2Int(data.Width, data.Length), data.TID, data.StructureType, structure);
 
             PlacementData newPlacementData = new PlacementData(structureNetId, data.TID, structure.transform.rotation);
             foreach (var pos in _serverGridData.CalculatePositionList(gridPosition, new Vector2Int(data.Width, data.Length)))
             {
-                _placedObjectSyncDict[pos] = newPlacementData;
+                _placedObjectInGridSyncDict[pos] = newPlacementData;
+            }
+
+            if(data.SpecialStructureType == ESpecialStructureType.PickUpTable)
+            {
+                if(_serverGridData.CheckLRUDHasArea(gridPosition, EAreaType.Hall))
+                {
+                    if(_pickupTableForCustomerList.Contains(structureIdentity) == false)
+                    {
+                        _pickupTableForCustomerList.Add(structureIdentity);
+                    }
+                }
+                else
+                {
+                    if (_pickupTableForCustomerList.Contains(structureIdentity))
+                    {
+                        _pickupTableForCustomerList.Remove(structureIdentity);
+                    }
+                }
             }
 
             TargetRpcOnPlaceStructure(sender, true, structureNetId);
@@ -232,7 +250,7 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
     [TargetRpc]
     private void TargetRpcOnPlaceStructure(NetworkConnectionToClient target, bool success, uint structureNetId)
     {
-        if(NetworkClient.connection.identity == null)
+        if (NetworkClient.connection.identity == null)
         {
             return;
         }
@@ -250,8 +268,6 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
         }
     }
 
-    // === (새로운 함수) 그리드에서 오브젝트를 제거하지만 파괴하지는 않음 ===
-    // gridPosition 대신 targetPosition을 받도록 수정
     [Server]
     public GameObject ServerRemovePlacementDataOnly(Vector3 targetPosition)
     {
@@ -270,26 +286,11 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
         _serverGridData.RemoveObjectAt(gridPosition);
         foreach (var pos in placement.OccupiedPositionList)
         {
-            _placedObjectSyncDict.Remove(pos);
+            _placedObjectInGridSyncDict.Remove(pos);
         }
 
         // GameObject는 파괴하지 않고 반환
         return structureObject;
-    }
-
-    // === (기존 함수) 그리드에서 오브젝트를 제거하고 파괴함 (환불 시스템용) ===
-    // gridPosition 대신 targetPosition을 받도록 수정
-    [Server]
-    public void ServerRemovePlacementAndDestroy(Vector3 targetPosition)
-    {
-        // targetPosition을 gridPosition으로 변환
-        Vector3Int gridPosition = GetGridPosition(targetPosition);
-
-        GameObject objectToRemove = ServerRemovePlacementDataOnly(gridPosition);
-        if (objectToRemove != null)
-        {
-            NetworkServer.Destroy(objectToRemove);
-        }
     }
 
     // === (새로운 함수) 픽업한 플레이어의 클라이언트에서 PlacementState를 시작하도록 지시 ===
@@ -318,27 +319,6 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
         StructureData data = DataTable.Instance.GetStructureData(tid);
         GameObject newObject = StructureManager.Instance.ServerCreateStructure(tid, ingredientTID);
 
-        // _pickUpTableList 등은 서버에서만 접근합니다.
-        switch (data.SpecialStructureType)
-        {
-            case ESpecialStructureType.PickUpTable:
-                _pickUpTableList.Add(newObject);
-                break;
-            case ESpecialStructureType.TrashCan:
-                break;
-            case ESpecialStructureType.Casher:
-                _casher = newObject;
-                break;
-            case ESpecialStructureType.OldChair:
-                _oldChairList.Add(newObject);
-                break;
-            case ESpecialStructureType.LuxuryChair:
-                _luxuryChairList.Add(newObject);
-                break;
-            case ESpecialStructureType.None:
-                break;
-        }
-
         Vector3Int gridPosition = GetGridPosition(position);
         if (_serverGridData.CanPlaceObjectAt(gridPosition, data.AreaType))
         {
@@ -349,14 +329,47 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
             PlacementData newPlacementData = new PlacementData(newObject.GetComponent<NetworkIdentity>().netId, data.TID, newObject.transform.rotation);
             foreach (var pos in _serverGridData.CalculatePositionList(gridPosition, new Vector2Int(data.Width, data.Length)))
             {
-                _placedObjectSyncDict[pos] = newPlacementData;
+                _placedObjectInGridSyncDict[pos] = newPlacementData;
             }
+            if (newObject.TryGetComponent<NetworkIdentity>(out NetworkIdentity netId))
+            {
+                if (_managedStructureDict.TryGetValue(tid, out List<NetworkIdentity> structureNetIdList))
+                {
+                    structureNetIdList.Add(netId);
+                }
+                else
+                {
+                    _managedStructureDict.Add(tid, new List<NetworkIdentity>{ netId });
+                }
+
+                if (data.SpecialStructureType == ESpecialStructureType.PickUpTable)
+                {
+                    if (_serverGridData.CheckLRUDHasArea(gridPosition, EAreaType.Hall))
+                    {
+                        if (_pickupTableForCustomerList.Contains(netId) == false)
+                        {
+                            _pickupTableForCustomerList.Add(netId);
+                        }
+                    }
+                }
+            }
+
+
             return true;
         }
 
         NetworkServer.Destroy(newObject);
         return false;
     }
+
+    [Server]
+    public void ServerRefundStructure(int structureTID, GameObject refundObject)
+    {
+        _managedStructureDict[structureTID].Remove(refundObject.GetComponent<NetworkIdentity>());
+        StopPlacement();
+        StructureFactory.Instance.ReturnObject(refundObject);
+    }
+
 
     // --- 클라이언트 전용: 현재 배치 상태 종료 ---
     [Client]
@@ -382,6 +395,8 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
         ServerCreateStructure(10000, new Vector3(-5, 0, 4)); //절구
         ServerCreateStructure(10003, new Vector3(-3, 0, 4)); //가열 냄비
         ServerCreateStructure(10013, new Vector3(-1, 0, 0)); // 픽업테이블
+        ServerCreateStructure(10013, new Vector3(-1, 0, 1)); // 픽업테이블
+        ServerCreateStructure(10013, new Vector3(-1, 0, 2)); // 픽업테이블
         ServerCreateStructure(10013, new Vector3(0, 0, 0)); // 픽업테이블
         ServerCreateStructure(10014, new Vector3(0, 0, 4)); // 쓰레기통
         ServerCreateStructure(10015, new Vector3(-5, 0, 0)); // 계산기
@@ -420,7 +435,7 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
     {
         if (isClient)
         {
-            return new ReadOnlyList<int>(_placedObjectSyncDict.Values.Select(p => p.TID).ToList());
+            return new ReadOnlyList<int>(_placedObjectInGridSyncDict.Values.Select(p => p.TID).ToList());
         }
 
         return _serverGridData.PlacedObjectList;
@@ -430,7 +445,7 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
 
 
 [System.Serializable]
-public struct PlacementData : IEqualityComparer<PlacementData>
+public struct PlacementData
 {
     public uint netId;
     public int TID;
@@ -441,15 +456,5 @@ public struct PlacementData : IEqualityComparer<PlacementData>
         this.netId = netId;
         this.TID = tid;
         this.rotation = rotation;
-    }
-
-    public bool Equals(PlacementData x, PlacementData y)
-    {
-        return x.netId == y.netId && x.TID == y.TID;
-    }
-
-    public int GetHashCode(PlacementData obj)
-    {
-        return obj.netId.GetHashCode() ^ obj.TID.GetHashCode();
     }
 }

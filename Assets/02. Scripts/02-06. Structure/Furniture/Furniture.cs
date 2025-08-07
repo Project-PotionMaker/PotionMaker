@@ -154,6 +154,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
             _effectComponent = new ChairEffect();
         }
 
+        _refundSystem.InitRefundSyStem(DataTable.Instance.GetFurnitureData(furnitureTID).StructureTID, this);
         OnDataChanged?.Invoke();
         Debug.Log($"Server: Furniture (TID: {furnitureTID}) initialized.");
     }
@@ -309,13 +310,13 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
     [Command(requiresAuthority = false)]
     private void CmdStartRefund()
     {
-        _refundSystem.StartRefund();
+        _refundSystem.ServerStartRefund(connectionToClient);
     }
 
     [Command(requiresAuthority = false)]
     private void CmdCancelRefund()
     {
-        _refundSystem.CancelRefund();
+        _refundSystem.ServerCancelRefund();
     }
 
     private void CmdCustomerPickup()

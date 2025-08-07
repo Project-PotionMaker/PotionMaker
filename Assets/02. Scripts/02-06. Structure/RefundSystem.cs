@@ -26,13 +26,14 @@ public class RefundSystem
         }
         _isRefundable = true;
         _refundable = refundable;
+        _refundable.RefundProgress = 0;
         _refundDuration = 2;
         _refundRatio = 4;
         _productPrice = DataTable.Instance.GetProductData(productTID).Price;
         _structureTID = structureTID;
     }
 
-    public void CancelRefund()
+    public void ServerCancelRefund()
     {
         if(!ReferenceEquals(_refundRoutine, null))
         {
@@ -41,9 +42,9 @@ public class RefundSystem
         _refundable.RefundProgress = 0;
     }
 
-    public void StartRefund()
+    public void ServerStartRefund(NetworkConnectionToClient conn)
     {
-        if (!CanRefund() || !_isRefundable)
+        if (!ServerCanRefund() || !_isRefundable)
         {
             return;
         }
@@ -51,41 +52,50 @@ public class RefundSystem
         {
             RunHelper.Instance.StopCoroutine(_refundRoutine);
         }
-        _refundRoutine = RunHelper.Instance.StartCoroutine(ProcessRefund());
+        _refundRoutine = RunHelper.Instance.StartCoroutine(ProcessRefund(conn));
     }
 
-    public void Refund()
+    public void ServerRefund(NetworkConnectionToClient conn)
     {
-        if (!CanRefund())
+        _refundable.RefundProgress = 0;
+        if (!ServerCanRefund())
         {
-            _refundable.RefundProgress = 0;
             OnDataChanged?.Invoke();
             return;
         }
         CurrencyManager.Instance.CmdRequestAddCurrency(_refundPrice);
-        StructureFactory.Instance.ReturnObject(_refundable.RefundObject);
+        GridManager.Instance.ServerRefundStructure(_structureTID, _refundable.RefundObject);
+        RefundComplete(conn);
     }
 
-    public IEnumerator ProcessRefund()
+    public IEnumerator ProcessRefund(NetworkConnectionToClient conn)
     {
         while (_refundable.RefundProgress < 1)
         {
             _refundable.RefundProgress += Time.deltaTime / _refundDuration;
             yield return null;
         }
-        Refund();
+        ServerRefund(conn);
     }
 
-    public bool CanRefund()
+    public bool ServerCanRefund()
     {
-        ReadOnlyList<int> structureList = GridManager.Instance.GetPlacedStructureTIDList();
-        foreach(int structureTID in structureList)
+        if (GridManager.Instance.ManagedStructureDict.ContainsKey(_structureTID))
         {
-            if(structureTID == _structureTID)
+            if (GridManager.Instance.ManagedStructureDict[_structureTID].Count > 1)
             {
                 return true;
             }
         }
+
         return false;
+    }
+
+    public void RefundComplete(NetworkConnectionToClient target)
+    {
+        if (target.identity.TryGetComponent<Player>(out Player player))
+        {
+            player.GetAbility<PlayerPickupAbility>().ReceiveRefundCompleted();
+        }
     }
 }

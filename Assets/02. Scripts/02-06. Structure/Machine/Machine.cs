@@ -228,6 +228,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
         _interactComponent = GetInteractableComponent(_data.InteractType);
         _inputComponent = new MachineInputContainer();
         _outputComponent = new MachineOutputContainer();
+        _refundSystem.InitRefundSyStem(DataTable.Instance.GetMachineData(machineTID).StructureTID, this);
 
         ActivateModelForTID(_data.TID); // 모델 활성화
         OnDataChanged?.Invoke(); // 초기화 후 UI 업데이트를 위한 액션 호출
@@ -476,13 +477,13 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
     [Command(requiresAuthority = false)]
     private void CmdStartRefund()
     {
-        _refundSystem.StartRefund();
+        _refundSystem.ServerStartRefund(connectionToClient);
     }
 
     [Command(requiresAuthority = false)]
     private void CmdCancelRefund()
     {
-        _refundSystem.CancelRefund();
+        _refundSystem.ServerCancelRefund();
     }
     #endregion
 

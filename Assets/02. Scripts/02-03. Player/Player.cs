@@ -79,6 +79,18 @@ public class Player : NetworkBehaviour
         }
     }
 
+    public override void OnStartClient()
+    {
+        base.OnStartServer();
+        PlayerListManager.Instance.AddList(netId);
+    }
+
+    public override void OnStopClient()
+    {
+        base.OnStopServer();
+        PlayerListManager.Instance.RemoveList(netId);
+    }
+
     public GameObject GetObjectInFront()
     {
         Vector3 targetPosition = GetFrontPosition();

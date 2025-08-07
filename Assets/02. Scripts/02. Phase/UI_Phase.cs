@@ -64,8 +64,11 @@ public class UI_Phase : MonoBehaviour
         EndingPhase endingPhase = (EndingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.EndingPhase];
         endingPhase.OnPhaseExited += ShowReady; // 준비 단계가 시작되면 시작 패널 표시
 
+        PlayerListManager.Instance.OnPlayerListUpdated += ResetPlayerPanel;
         ResetPlayerPanel();
     }
+
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Alpha0))
@@ -113,10 +116,11 @@ public class UI_Phase : MonoBehaviour
             _playerPanel[index].DOAnchorPosY(-PLAYER_HIDE_OFFSET, DURATION).SetEase(Ease.OutSine);
         }
 
-        foreach(var player in MirrorNetworkManager.Instance.NetIdToSlotMapping)
+        foreach(uint netId in PlayerListManager.Instance.PlayerNetIdList)
         {
-            int index = player.Value; // UI 슬롯 번호를 가져옴
-            _playerName[index].text = NetworkServer.spawned[player.Key].GetComponent<Player>().playerName;
+            Player player = NetworkClient.spawned[netId].GetComponent<Player>();
+            int index = player.playerOrderIndex;
+            _playerName[index].text =player.playerName;
             _playerMask[index].SetActive(false);
             _playerPanel[index].transform.DOKill();
             _playerPanel[index].DOAnchorPosY(0, DURATION).SetEase(Ease.OutSine);

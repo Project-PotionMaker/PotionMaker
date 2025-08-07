@@ -45,11 +45,6 @@ public class RoomPlayer : NetworkRoomPlayer
     public override void OnStopServer()
     {
         base.OnStopServer();
-        if (!Utils.IsSceneActive(MirrorNetworkManager.Instance.RoomScene))
-        {
-            Debug.Log("게임씬이라 나가지 않음");
-            return;
-        }
         // 서버에서만 index 반환
         if (index >= 0)
         {

@@ -23,7 +23,7 @@ public class ImageManager : MonoBehaviourSingleton<ImageManager>
     private async void InitImageManager()
     {
         InitPrefixDict();
-        await InitImageDict<IngredientData>(DataTable.Instance.GetIngredientDataList());
+        // await InitImageDict<IngredientData>(DataTable.Instance.GetIngredientDataList());
         await InitImageDict<PotionData>(DataTable.Instance.GetPotionDataList());
         await InitImageDict<ProductData>(DataTable.Instance.GetProductDataList());
     }

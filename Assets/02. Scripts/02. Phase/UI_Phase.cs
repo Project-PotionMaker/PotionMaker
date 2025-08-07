@@ -6,7 +6,7 @@ using DG.Tweening;
 using NUnit.Framework;
 using System;
 using Mirror;
-using Mirror.Examples.MultipleMatch;
+using System.Collections;
 
 public class UI_Phase : MonoBehaviour
 {
@@ -19,8 +19,6 @@ public class UI_Phase : MonoBehaviour
     private RectTransform _readyPanel;
     [SerializeField]
     private TextMeshProUGUI _startDayText;
-    [SerializeField]
-    private GameObject[] _isVoted;
     [SerializeField]
     private TextMeshProUGUI[] _playerName;
     [SerializeField]
@@ -41,8 +39,13 @@ public class UI_Phase : MonoBehaviour
     private const float WINDOW_HEIGHT = 1080f;
     private const float DURATION = 1f;
 
+    private UI_VoteSystem _voteSystem;
+
     private void Start()
     {
+        _voteSystem = GetComponent<UI_VoteSystem>();
+        _voteSystem.enabled = false;
+
         _serviceTimer.maxValue = 1f;
         PhaseManager.Instance.OnDayPassed += UpdateDayText;
         PhaseManager.Instance.OnTimerRunning += UpdateServiceTimer;
@@ -53,6 +56,9 @@ public class UI_Phase : MonoBehaviour
 
         PreparingPhase preparingPhase = (PreparingPhase) PhaseManager.Instance.PhaseDictionary[EPhaseType.PreparingPhase];
         preparingPhase.OnPhaseEntered += ChangeTextStartDay;
+        preparingPhase.OnPhaseEntered += StartVote;
+        StartVote();
+
         PracticingPhase practicingPhase = (PracticingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase];
         practicingPhase.OnPhaseEntered += ChangeTextPracticeEnd;
         ServingPhase servingPhase = (ServingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase];
@@ -76,7 +82,6 @@ public class UI_Phase : MonoBehaviour
             ResetPlayerPanel();
         }
     }
-
     private void UpdateDayText()
     {
         if (_dayText != null)
@@ -106,6 +111,42 @@ public class UI_Phase : MonoBehaviour
     private void ShowReady()
     {
         _readyPanel.DOAnchorPosY(-READY_HIDE_OFFSET, DURATION).SetRelative().SetEase(Ease.OutSine);
+        
+    }
+    private void StartVote()
+    {
+        if (VoteManager.Instance == null)
+        {
+            Debug.LogWarning("VoteManager not ready yet. Delaying StartVote.");
+            StartCoroutine(WaitAndStartVote());
+            return;
+        }
+        _voteSystem.enabled = true;
+        VoteManager.Instance.OnVoteDone += NextPhase;
+        VoteManager.Instance.OnVoteDone += StopVote;
+    }
+    private IEnumerator WaitAndStartVote()
+    {
+        while (VoteManager.Instance == null)
+            yield return null;
+
+        StartVote(); // 재시도
+    }
+    private void StopVote()
+    {
+        _voteSystem.Disable();
+        _voteSystem.enabled = false;
+        VoteManager.Instance.OnVoteDone -= NextPhase;
+        VoteManager.Instance.OnVoteDone -= StopVote;
+    }
+
+    private void NextPhase()
+    {
+        if(NetworkServer.active == false)
+        {
+            return;
+        }
+        PhaseManager.Instance.TransitionPhase(EPhaseType.ServingPhase);
     }
 
     private void ResetPlayerPanel()
@@ -119,7 +160,7 @@ public class UI_Phase : MonoBehaviour
         foreach(uint netId in PlayerListManager.Instance.PlayerNetIdList)
         {
             Player player = NetworkClient.spawned[netId].GetComponent<Player>();
-            int index = player.playerOrderIndex;
+            int index = player.PlayerOrderIndex;
             _playerName[index].text =player.playerName;
             _playerMask[index].SetActive(false);
             _playerPanel[index].transform.DOKill();

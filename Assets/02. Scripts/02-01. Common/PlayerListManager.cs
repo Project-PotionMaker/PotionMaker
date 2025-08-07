@@ -18,4 +18,5 @@ public class PlayerListManager : NetworkBehaviourSingleton<PlayerListManager>
         PlayerNetIdList.Remove(netId);
         OnPlayerListUpdated?.Invoke();
     }
+
 }

@@ -1,3 +1,4 @@
+using Mirror;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -21,19 +22,14 @@ public class UI_SuccessSummary : MonoBehaviour
     private TextMeshProUGUI _nextRentDay;
     [SerializeField]
     private TextMeshProUGUI _nextRentCost;
+    private UI_VoteSystem _voteSystem;
 
     private void Start()
     {
         gameObject.SetActive(false);
         PhaseManager.Instance.PhaseDictionary[EPhaseType.EndingPhase].OnPhaseExited += HidePanel;
-    }
-    private void Update()
-    {
-        //TODO : 투표시스템
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            PhaseManager.Instance.TransitionPhase(EPhaseType.PreparingPhase);
-        }
+        _voteSystem = GetComponent<UI_VoteSystem>();
+        _voteSystem.enabled = false; 
     }
     public void ShowSummary()
     {
@@ -52,9 +48,29 @@ public class UI_SuccessSummary : MonoBehaviour
         _nextRentDay.text = $"{RentManager.Instance.Rent.RentPeriod-RentManager.Instance.Rent.RentDayCounter} 일";
         _nextRentCost.text = RentManager.Instance.Rent.CurrentRentCost.ToString("N0");
 
-
         gameObject.SetActive(true);
+
+        VoteManager.Instance.OnVoteDone += NextPhase;
+        VoteManager.Instance.OnVoteDone += StopVoting;
+        _voteSystem.enabled = true;
     }
+
+    private void NextPhase()
+    {
+        if(NetworkServer.active == false)
+        {
+            return;
+        }
+        PhaseManager.Instance.TransitionPhase(EPhaseType.PreparingPhase);
+    }
+    private void StopVoting()
+    {
+        VoteManager.Instance.OnVoteDone -= NextPhase;
+        VoteManager.Instance.OnVoteDone -= StopVoting;
+        _voteSystem.Disable();
+        _voteSystem.enabled = false;
+    }
+
     private void HidePanel()
     {
         gameObject.SetActive(false);

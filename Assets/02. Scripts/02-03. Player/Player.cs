@@ -22,7 +22,7 @@ public class Player : NetworkBehaviour
     private Dictionary<Type, PlayerAbility> _abilityMap = new Dictionary<Type, PlayerAbility>();
 
     [SyncVar(hook = nameof(OnPlayerOrderIndexChanged))]
-    public int playerOrderIndex = -1;
+    public int PlayerOrderIndex = -1;
 
     [SyncVar(hook = nameof(OnPlayerNameChanged))]
     public string playerName = "플레이어";

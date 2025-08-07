@@ -161,7 +161,7 @@ public class MirrorNetworkManager : NetworkRoomManager
             if(gamePlayer.TryGetComponent<Player>(out Player playerScript))
             {
                 playerScript.playerName = roomPlayerScript.PlayerName;
-                playerScript.playerOrderIndex = roomPlayerScript.index;
+                playerScript.PlayerOrderIndex = roomPlayerScript.index;
             }
         }
 

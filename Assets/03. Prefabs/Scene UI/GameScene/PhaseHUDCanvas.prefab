@@ -4659,6 +4659,7 @@ GameObject:
   - component: {fileID: -6159310541392372308}
   - component: {fileID: 4187611378407825029}
   - component: {fileID: 1468703975391359455}
+  - component: {fileID: 7810641447535215412}
   m_Layer: 5
   m_Name: PhaseHUDCanvas
   m_TagString: Untagged
@@ -4776,11 +4777,6 @@ MonoBehaviour:
   _serviceTimer: {fileID: 4876412865370723128}
   _readyPanel: {fileID: 2466890624827434202}
   _startDayText: {fileID: 5798753869459557335}
-  _isVoted:
-  - {fileID: 6592781459171460639}
-  - {fileID: 2009650850500554576}
-  - {fileID: 1960343033736270955}
-  - {fileID: 3992786335265193855}
   _playerName:
   - {fileID: 3110608951869186823}
   - {fileID: 8771217706851603619}
@@ -4835,6 +4831,28 @@ MonoBehaviour:
   - {fileID: 966952918190597900}
   - {fileID: 9169601002932852726}
   - {fileID: 5386464794391851485}
+--- !u!114 &7810641447535215412
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6281626922534978810}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b26d35fe1125a0459a56d87b8e04d26, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _voteBackground:
+  - {fileID: 4085453790903456428}
+  - {fileID: 7297520961327286409}
+  - {fileID: 4740260485103752445}
+  - {fileID: 6648139268944355422}
+  _checkIcon:
+  - {fileID: 835037918626282121}
+  - {fileID: 3866766967970732753}
+  - {fileID: 4687795777762153403}
+  - {fileID: 1501767646285629782}
 --- !u!1 &6548396418364770519
 GameObject:
   m_ObjectHideFlags: 0

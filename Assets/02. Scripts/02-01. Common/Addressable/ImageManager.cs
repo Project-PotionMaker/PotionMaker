@@ -106,4 +106,19 @@ public class ImageManager : MonoBehaviourSingleton<ImageManager>
         var type = typeof(T);
         return GetImage(type, id);
     }
+
+    public Dictionary<int, Sprite> GetImageDict(Type type)
+    {
+        if (_imageDict.TryGetValue(type, out var dict))
+        {
+            return dict;
+        }
+        return null;
+    }
+
+    public Dictionary<int, Sprite> GetImageDict<T>()
+    {
+        var type = typeof(T);
+        return GetImageDict(type);
+    }
 }

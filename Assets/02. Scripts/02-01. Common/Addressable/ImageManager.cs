@@ -31,17 +31,20 @@ public class ImageManager : MonoBehaviourSingleton<ImageManager>
 
     private async void InitImageManager()
     {
-        InitPrefixDict();
-        // await InitImageDict<IngredientData>(DataTable.Instance.GetIngredientDataList());
-        await InitImageDict<PotionData>(DataTable.Instance.GetPotionDataList());
-        await InitImageDict<ProductData>(DataTable.Instance.GetProductDataList());
-    }
+        var imageLoadTasks = new List<Task>();
+        void QueueImageLoading<T>(ReadOnlyList<T> dataList)
+        {
+            _prefixDict[typeof(T)] = $"Image_{typeof(T).Name.Replace("Data", "")}_";
+            imageLoadTasks.Add(InitImageDict<T>(dataList));
+        }
 
-    private void InitPrefixDict()
-    {
-        _prefixDict[typeof(IngredientData)] = "Image_Ingredient_";
-        _prefixDict[typeof(PotionData)] = "Image_Potion_";
-        _prefixDict[typeof(ProductData)] = "Image_Product_";
+        QueueImageLoading<IngredientData>(DataTable.Instance.GetIngredientDataList());
+        QueueImageLoading<PotionData>(DataTable.Instance.GetPotionDataList());
+        // QueueImageLoading<MachineData>(DataTable.Instance.GetMachineDataList());
+        // QueueImageLoading<StorageData>(DataTable.Instance.GetStorageDataList());
+        // QueueImageLoading<FurnitureData>(DataTable.Instance.GetFurnitureDataList());
+        // QueueImageLoading<LayoutData>(DataTable.Instance.GetLayoutDataList());
+        await Task.WhenAll(imageLoadTasks);
     }
 
     private async Task InitImageDict<T>(ReadOnlyList<T> dataList)

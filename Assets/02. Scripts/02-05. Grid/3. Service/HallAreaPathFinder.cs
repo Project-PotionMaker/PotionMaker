@@ -67,66 +67,52 @@ public class HallAreaPathFinder
 
     public bool HasPath()
     {
-        // 입구 -> 캐셔
+        // 입구 -> 계산대
         if (!BFS(_entrancePosition, _cashierPosition))
         {
             return false;
         }
 
-        // 캐셔 -> 출구
+        // 계산대 -> 출구
         if (!BFS(_cashierPosition, _exitPosition))
         {
             return false;
         }
 
-        // 캐셔 -> 모든 의자
-        foreach (var chairPos in _chairPositionHashSet)
+        // 계산대 -> 모든 의자
+        if (!BFSToSeveralDestinations(_cashierPosition, _chairPositionHashSet))
         {
-            if (!BFS(_cashierPosition, chairPos))
-            {
-                return false;
-            }
+            return false;
         }
 
-        // 모든 의자 -> 출구
-        foreach (var chairPos in _chairPositionHashSet)
+        // 출구 -> 모든 의자
+        if (!BFSToSeveralDestinations(_exitPosition, _chairPositionHashSet))
         {
-            if (!BFS(chairPos, _exitPosition))
-            {
-                return false;
-            }
+            return false;
+        }
+
+        // 출구 -> 모든 픽업 테이블
+        if (!BFSToSeveralDestinations(_exitPosition, _pickupTablePositionHashSet))
+        {
+            return false;
         }
 
         // 모든 의자 -> 모든 픽업 테이블
-        foreach (var chairPos in _chairPositionHashSet)
+        foreach (var chairPosition in _chairPositionHashSet)
         {
-            foreach (var pickupTablePos in _pickupTablePositionHashSet)
-            {
-                if (!BFS(chairPos, pickupTablePos))
-                {
-                    return false;
-                }
-            }
-        }
-
-        // 모든 픽업 테이블 -> 출구
-        foreach (var pickupTablePos in _pickupTablePositionHashSet)
-        {
-            if (!BFS(pickupTablePos, _exitPosition))
+            if (!BFSToSeveralDestinations(chairPosition, _pickupTablePositionHashSet))
             {
                 return false;
             }
         }
-        Debug.LogWarning("경로 존재");
+
+        Debug.Log("경로 존재");
         return true;
     }
 
     private bool BFS(Vector3Int start, Vector3Int destination)
     {
-        _queue.Clear();
-        _queue.Enqueue(start);
-        _visited.Clear();
-        _visited.Add(start);
+        InitQueueAndVisited(start);
 
         while (_queue.TryDequeue(out Vector3Int currentPosition))
         {
@@ -146,6 +132,44 @@ public class HallAreaPathFinder
             }
         }
         return false;
+    }
+
+    private bool BFSToSeveralDestinations(Vector3Int start, HashSet<Vector3Int> destinationHashSet)
+    {
+        InitQueueAndVisited(start);
+        HashSet<Vector3Int> reachableDestinationHashSet = new();
+        while (_queue.TryDequeue(out Vector3Int currentPosition))
+        {
+            Vector3Int nextPosition;
+            for (int i = 0; i < 4; i++)
+            {
+                nextPosition = currentPosition + _directions[i];
+                if (destinationHashSet.Contains(nextPosition) 
+                    && !reachableDestinationHashSet.Contains(nextPosition))
+                {
+                    reachableDestinationHashSet.Add(nextPosition);
+                }
+                if (IsPositionValid(nextPosition))
+                {
+                    _visited.Add(nextPosition);
+                    _queue.Enqueue(nextPosition);
+                }
+            }
+        }
+
+        if (destinationHashSet.Count == reachableDestinationHashSet.Count)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    private void InitQueueAndVisited(Vector3Int start)
+    {
+        _queue.Clear();
+        _queue.Enqueue(start);
+        _visited.Clear();
+        _visited.Add(start);
     }
 
     private bool IsPositionValid(Vector3Int nextPosition)

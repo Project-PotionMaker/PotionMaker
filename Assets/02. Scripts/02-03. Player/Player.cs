@@ -27,7 +27,6 @@ public class Player : NetworkBehaviour
     [SyncVar(hook = nameof(OnPlayerNameChanged))]
     public string playerName = "플레이어";
 
-    // 영상에 넣을 임시 테스트
     private CanvasAlphaChanger _lastHighlightedStructure;
 
     public Action OnDataChanged;
@@ -42,13 +41,6 @@ public class Player : NetworkBehaviour
         {
             return;
         }
-
-        //if(GetAbility<PlayerPickupAbility>().HeldItemIdentity != null &&
-        //    GetAbility<PlayerPickupAbility>().HeldItemIdentity.gameObject.GetInstanceID() == _frontObjectInstanceID)
-        //{
-        //    _frontObjectInstanceID = 0;
-        //    return;
-        //}
 
         GameObject frontObject = GetObjectInFront();
         if (frontObject != null)

@@ -31,7 +31,7 @@ public class CameraZoneSwitcher : MonoBehaviour
 
     private bool IsLocalPlayer(Collider other)
     {
-        return other.CompareTag("Player")
+        return other.CompareTag(nameof(ETags.Player))
             && other.TryGetComponent<Player>(out Player player)
             && player.isLocalPlayer;
     }

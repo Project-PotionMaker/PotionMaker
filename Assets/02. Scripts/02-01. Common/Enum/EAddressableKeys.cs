@@ -93,15 +93,62 @@ public enum EAddressableKeys
     Image_Potion_10003 = 77,
     Image_Potion_10007 = 78,
     Image_Potion_10000 = 79,
+    [Obsolete("Removed from Addressables")]
     Image_Product_20001 = 80,
+    [Obsolete("Removed from Addressables")]
     Image_Product_20000 = 81,
+    [Obsolete("Removed from Addressables")]
     Image_Product_10001 = 82,
+    [Obsolete("Removed from Addressables")]
     Image_Product_10000 = 83,
+    [Obsolete("Removed from Addressables")]
     Image_Product_20002 = 84,
+    [Obsolete("Removed from Addressables")]
     Image_Product_10006 = 85,
+    [Obsolete("Removed from Addressables")]
     Image_Product_10005 = 86,
+    [Obsolete("Removed from Addressables")]
     Image_Product_10004 = 87,
+    [Obsolete("Removed from Addressables")]
     Image_Product_10003 = 88,
+    [Obsolete("Removed from Addressables")]
     Image_Product_10002 = 89,
+    [Obsolete("Removed from Addressables")]
     Image_Product_30000 = 90,
+    Image_Layout_20000 = 91,
+    Image_Layout_20001 = 92,
+    Image_Layout_10000 = 93,
+    Image_Layout_30000 = 94,
+    VFX_Ping = 95,
+    Image_Ingredient_30002 = 96,
+    Image_Ingredient_30000 = 97,
+    Image_Ingredient_20002 = 98,
+    Image_Ingredient_20000 = 99,
+    Image_Ingredient_30001 = 100,
+    Image_Ingredient_10001 = 101,
+    Image_Ingredient_20001 = 102,
+    Image_Ingredient_10007 = 103,
+    Image_Ingredient_10006 = 104,
+    Image_Ingredient_10005 = 105,
+    Image_Ingredient_10000 = 106,
+    Image_Ingredient_10002 = 107,
+    Image_Ingredient_10003 = 108,
+    Image_Ingredient_10004 = 109,
+    Image_Furniture_10001 = 110,
+    Image_Furniture_20002 = 111,
+    Image_Furniture_10000 = 112,
+    Image_Furniture_20000 = 113,
+    Image_Furniture_20001 = 114,
+    Image_Machine_20004 = 115,
+    Image_Machine_20002 = 116,
+    Image_Machine_10004 = 117,
+    Image_Machine_10002 = 118,
+    Image_Machine_10006 = 119,
+    Image_Machine_20003 = 120,
+    Image_Machine_10003 = 121,
+    Image_Machine_10000 = 122,
+    Image_Machine_10005 = 123,
+    Image_Machine_20000 = 124,
+    Image_Machine_10001 = 125,
+    Image_Machine_20001 = 126,
 }

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace Mirror.Examples.SyncDir // ".SyncDirection" would overshadow the enum
 {

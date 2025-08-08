@@ -2,23 +2,30 @@ using UnityEngine;
 
 public class PickUpTableOutputContainer : IOutputContainer<Furniture>
 {
-    private GameObject _output;
-
     public GameObject ServerTakeItem(Furniture furniture)
     {
         GameObject output = furniture.InputObject;
         furniture.InputObject = null;
-        CustomerManager.Instance.CmdRemoveOnTable(furniture.netId);
+        if (GridManager.Instance.PickupTableForCustomerList.Contains(furniture.netIdentity))
+        {
+            CustomerManager.Instance.CmdRemoveOnTable(furniture.netId);
+        }
         return output;
     }
 
     public bool ServerCanTake(Furniture furniture)
     {
-        if (CustomerManager.Instance.OrderHandler.PickupTableDict.TryGetValue(furniture.netId, out var pickupTableInfo) && pickupTableInfo.UsingCustomer != null)
+        if(furniture.InputObject != null)
         {
-            Debug.LogWarning("Cannot take item from pickup table, customer is using it.");
-            return false;
+            if (GridManager.Instance.PickupTableForCustomerList.Contains(furniture.netIdentity))
+            {
+                if (CustomerManager.Instance.OrderHandler.PickupTableDict.TryGetValue(furniture.netId, out var pickupTableInfo) && pickupTableInfo.UsingCustomer != null)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
-        return true;
+        return false;
     }
 }

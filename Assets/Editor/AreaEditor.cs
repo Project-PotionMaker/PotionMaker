@@ -174,6 +174,7 @@ public class AreaEditor : Editor
             case EAreaType.Hall: return ObjectColors.AreaGreenColor;    // 초록
             case EAreaType.Kitchen: return ObjectColors.AreaOrangeColor; // 주황
             case EAreaType.Storage: return ObjectColors.AreaGrayColor; // 회색
+            case EAreaType.FrontYard: return ObjectColors.AreaBlueColor;
             default: return ObjectColors.AreaDefaultColor; // 기본
         }
     }

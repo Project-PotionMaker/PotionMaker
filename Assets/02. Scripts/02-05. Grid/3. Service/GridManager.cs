@@ -30,6 +30,10 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
     // 서버 전용: 배치 데이터를 관리합니다.
     private GridData _serverGridData;
 
+    // 길찾기 전용: 그리드 사이즈를 가져오는 용도
+    private GridInfo _gridInfo;
+    private HallAreaPathFinder _hallAreaPathFinder = new();
+
     // 클라이언트 전용: 현재 배치 중인 상태를 관리합니다.
     private IBuildingState _buildingState;
     private Vector3Int _lastDetectedPosition = Vector3Int.zero;
@@ -105,6 +109,8 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
         _managedStructureDict = new();
         _pickupTableForCustomerList = new();
 
+        _gridInfo = GameObject.FindGameObjectWithTag(nameof(ETags.Layout))?.GetComponent<GridInfo>();
+
         StopPlacement();
         OnInitialized?.Invoke();
     }
@@ -114,6 +120,11 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
         if (Input.GetKeyDown(KeyCode.F2))
         {
             CmdTest();
+            _hallAreaPathFinder.InitGridPathFinder
+            (GetPositionByAreaType(EAreaType.Hall).ToHashSet(),
+            _serverGridData.PlacedPositionHashSet,
+            GetGridPosition(new Vector3Int(-5, 0, 0)),
+            ToPickupTablePositionHashSet(_pickupTableForCustomerList));
         }
     }
 
@@ -224,27 +235,48 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
                 _placedObjectInGridSyncDict[pos] = newPlacementData;
             }
 
-            if(data.SpecialStructureType == ESpecialStructureType.PickUpTable)
+            if (data.SpecialStructureType == ESpecialStructureType.PickUpTable)
             {
-                if(_serverGridData.CheckLRUDHasArea(gridPosition, EAreaType.Hall))
+                HandlePickupTablePlacement(structureIdentity, gridPosition, data);
+                _hallAreaPathFinder.UpdateGridPathFinder(_serverGridData.PlacedPositionHashSet,
+                    ToPickupTablePositionHashSet(_pickupTableForCustomerList));
+                if (!_hallAreaPathFinder.HasPath())
                 {
-                    if(_pickupTableForCustomerList.Contains(structureIdentity) == false)
-                    {
-                        _pickupTableForCustomerList.Add(structureIdentity);
-                    }
+                    Debug.LogWarning("경로 없음!!!");
+                    // 경로가 없을 때 로직
                 }
-                else
+            }
+            else if (data.SpecialStructureType == ESpecialStructureType.OldChair
+                || data.SpecialStructureType == ESpecialStructureType.LuxuryChair)
+            {
+                _hallAreaPathFinder.UpdateGridPathFinder(_serverGridData.PlacedPositionHashSet,
+                    ToPickupTablePositionHashSet(_pickupTableForCustomerList));
+                if (!_hallAreaPathFinder.HasPath())
                 {
-                    if (_pickupTableForCustomerList.Contains(structureIdentity))
-                    {
-                        _pickupTableForCustomerList.Remove(structureIdentity);
-                    }
+                    Debug.LogWarning("경로 없음!!!");
+                    // 경로가 없을 때 로직
                 }
             }
 
             TargetRpcOnPlaceStructure(sender, true, structureNetId);
         }
     }
+
+    private void HandlePickupTablePlacement(NetworkIdentity structureIdentity, Vector3Int gridPosition, StructureData data)
+    {
+        if (data.SpecialStructureType == ESpecialStructureType.PickUpTable)
+        {
+            if (_serverGridData.CheckLRUDHasArea(gridPosition, EAreaType.Hall))
+            {
+                _pickupTableForCustomerList.Add(structureIdentity);
+            }
+            else
+            {
+                _pickupTableForCustomerList.Remove(structureIdentity);
+            }
+        }
+    }
+
 
     // --- 클라이언트에게 배치 결과를 전달하는 TargetRpc ---
     [TargetRpc]
@@ -439,6 +471,20 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
         }
 
         return _serverGridData.PlacedObjectList;
+    }
+
+    private HashSet<Vector3Int> ToPickupTablePositionHashSet(List<NetworkIdentity> pickupTableList)
+    {
+        HashSet<Vector3Int> pickupTablePositionHashSet = new();
+        foreach (NetworkIdentity networkIdentity in pickupTableList)
+        {
+            Vector3Int pickupTableGridPosition = GetGridPosition(networkIdentity.transform.position);
+            if (!pickupTablePositionHashSet.Contains(pickupTableGridPosition))
+            {
+                pickupTablePositionHashSet.Add(pickupTableGridPosition);
+            }
+        }
+        return pickupTablePositionHashSet;
     }
 }
 

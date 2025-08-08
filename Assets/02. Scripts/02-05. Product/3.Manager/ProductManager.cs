@@ -1,11 +1,7 @@
 using Mirror;
-using Mirror.BouncyCastle.Math.Field;
-
-//using Photon.Pun;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -83,7 +79,7 @@ public class ProductManager : NetworkBehaviourSingleton<ProductManager>
                 CmdRequestUnlock(DataTable.Instance.GetStructureData(unlockedStructureTID).ProductTID);
             }
         }
-        List<LayoutData> nextTierLayoutDataList = DataTable.Instance.GetLayoutDataList().Where(data => data.Tier == PotionHouse.Instance.PotionHouseTier + 1).ToList();
+        var nextTierLayoutDataList = DataTable.Instance.GetLayoutDataList().Where(data => data.Tier == PotionHouse.Instance.PotionHouseTier + 1);
         foreach(LayoutData layoutData in nextTierLayoutDataList)
         {
             CmdRequestUnlock(layoutData.ProductTID);

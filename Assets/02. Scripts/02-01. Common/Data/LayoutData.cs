@@ -11,6 +11,9 @@ public class LayoutData
     ///<summary>레이아웃 이름</summary>
     public readonly string Name;
 
+    ///<summary>티어</summary>
+    public readonly int Tier;
+
     ///<summary>시작 임대료</summary>
     public readonly int InitialRentCost;
 
@@ -20,14 +23,19 @@ public class LayoutData
     ///<summary>씬 이름</summary>
     public readonly string SceneName;
 
+    ///<summary>상품 TID</summary>
+    public readonly int ProductTID;
+
     public LayoutData(BinaryReader reader)
     {
         TID = reader.ReadInt32();
         int name = reader.ReadInt32();
         Name = Encoding.UTF8.GetString(reader.ReadBytes(name));
+        Tier = reader.ReadInt32();
         InitialRentCost = reader.ReadInt32();
         RentIncrement = reader.ReadInt32();
         int scenename = reader.ReadInt32();
         SceneName = Encoding.UTF8.GetString(reader.ReadBytes(scenename));
+        ProductTID = reader.ReadInt32();
     }
 }

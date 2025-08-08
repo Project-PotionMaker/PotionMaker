@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class StructureFactory : NetworkFactoryBase<EStructureType, StructureFactoryInfo, StructureFactory>
 {
-    public event Action<GameObject> OnReturn;
     private void Start()
     {
         _factoryLogic.Initialize(_factoryInfoList, _poolParentObject);   
@@ -33,7 +32,6 @@ public class StructureFactory : NetworkFactoryBase<EStructureType, StructureFact
             return;
         }
 
-        OnReturn?.Invoke(obj);
         NetworkServer.UnSpawn(obj);
     }
 }

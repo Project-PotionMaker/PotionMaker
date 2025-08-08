@@ -22,7 +22,6 @@ public class PlayerPickupAbility : PlayerAbility
         _animationAbility = _owner.GetAbility<PlayerAnimationAbility>();
         PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += ResetItem;
         PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase].OnPhaseExited += ResetItem;
-        StructureFactory.Instance.OnReturn += CmdTryResetItem;
     }
 
     private void Update()
@@ -115,23 +114,18 @@ public class PlayerPickupAbility : PlayerAbility
         return item;
     }
 
-    [Command(requiresAuthority =false)]
-    private void CmdTryResetItem(GameObject obj)
-    {
-        if(_heldItemIdentity != null && _heldItemIdentity.gameObject == obj)
-        {
-            ResetItem();
-        }
-    }
-
-    [Server]
     private void ResetItem()
     {
         if (!ReferenceEquals(_heldItemIdentity, null))
         {
             _heldItemIdentity = null;
-            GridManager.Instance.StopPlacement();
         }
+    }
+
+    [Client]
+    public void ReceiveRefundCompleted()
+    {
+        ResetItem();
     }
 
     [Client]
@@ -162,6 +156,7 @@ public class PlayerPickupAbility : PlayerAbility
         if (oldIdentity != null)
         {
             oldIdentity.transform.SetParent(null);
+            GridManager.Instance.StopPlacement();
         }
 
         // 2. 새롭게 들게 된 가구가 있다면 부모-자식 관계를 설정합니다.
@@ -169,8 +164,8 @@ public class PlayerPickupAbility : PlayerAbility
         {
             // 부모를 _heldPosition으로 설정
             newIdentity.transform.SetParent(_owner.HeldPosition, true);
-            newIdentity.transform.localPosition = -0.5f * Vector3.one;
-            newIdentity.transform.localRotation = Quaternion.Euler(Vector3.zero);
+            newIdentity.transform.localPosition = new Vector3(-1f, 0f, -1f);
+            newIdentity.transform.localRotation = Quaternion.identity;
         }
     }
 
@@ -186,7 +181,6 @@ public class PlayerPickupAbility : PlayerAbility
     public void CmdDropItem()
     {
         if (!_owner.isServer) return;
-
         _heldItemIdentity = null;
     }
 }

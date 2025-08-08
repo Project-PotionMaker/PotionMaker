@@ -31,17 +31,17 @@ public class CustomerOrderHandler
         _pickupTableDict.Clear();
         _oldChairDict.Clear();
         _luxuryChairDict.Clear();
-        foreach (GameObject pickupTable in GridManager.Instance.PickUpTableList)
+        foreach (NetworkIdentity pickupTableNetId in GridManager.Instance.GetCustomerFurnitureList(ESpecialStructureType.PickUpTable))
         {
-            _pickupTableDict.Add(pickupTable.GetComponent<NetworkIdentity>().netId, new FurnitureUsingStat()); // 각 픽업 테이블에 대해 초기화
+            _pickupTableDict.Add(pickupTableNetId.netId, new FurnitureUsingStat()); // 각 픽업 테이블에 대해 초기화
         }
-        foreach (GameObject oldChair in GridManager.Instance.OldChairList)
+        foreach (NetworkIdentity oldChairNetId in GridManager.Instance.GetCustomerFurnitureList(ESpecialStructureType.OldChair))
         {
-            _oldChairDict.Add(oldChair.GetComponent<NetworkIdentity>().netId, new FurnitureUsingStat()); // 각 오래된 의자에 대해 초기화
+            _oldChairDict.Add(oldChairNetId.netId, new FurnitureUsingStat()); // 각 오래된 의자에 대해 초기화
         }
-        foreach (GameObject luxuryChair in GridManager.Instance.LuxuryChairList)
+        foreach (NetworkIdentity luxuryChairNetId in GridManager.Instance.GetCustomerFurnitureList(ESpecialStructureType.LuxuryChair))
         {
-            _luxuryChairDict.Add(luxuryChair.GetComponent<NetworkIdentity>().netId, new FurnitureUsingStat()); // 각 고급 의자에 대해 초기화
+            _luxuryChairDict.Add(luxuryChairNetId.netId, new FurnitureUsingStat()); // 각 고급 의자에 대해 초기화
         }
     }
 

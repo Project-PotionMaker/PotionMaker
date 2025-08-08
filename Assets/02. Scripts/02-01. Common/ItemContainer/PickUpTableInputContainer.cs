@@ -6,8 +6,15 @@ public class PickUpTableInputContainer : IInputContainer<Furniture>
     {
         if (furniture.InputObject == null)
         {
-            CustomerManager.Instance.CmdPlaceOnTable(tid, furniture.netId);
-            CustomerManager.Instance.CmdServePotion(tid, furniture.netId);
+            if (GridManager.Instance.PickupTableForCustomerList.Contains(furniture.netIdentity))
+            {
+                CustomerManager.Instance.CmdPlaceOnTable(tid, furniture.netId);
+                CustomerManager.Instance.CmdServePotion(tid, furniture.netId);
+            }
+
+            furniture.InputObject = inputObject;
+            furniture.InputObject.transform.position = furniture.InputPosition.position;
+            furniture.InputObject.transform.rotation = Quaternion.identity;
             return true;
         }
         return false;

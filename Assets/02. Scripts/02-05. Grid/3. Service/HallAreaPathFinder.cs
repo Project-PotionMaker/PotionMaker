@@ -172,10 +172,10 @@ public class HallAreaPathFinder
         _visited.Add(start);
     }
 
-    private bool IsPositionValid(Vector3Int nextPosition)
+    private bool IsPositionValid(Vector3Int position)
     {
-        return _hallAreaPositionHashSet.Contains(nextPosition) 
-            && !_placedPositionHashSet.Contains(nextPosition) 
-            && !_visited.Contains(nextPosition);
+        return _hallAreaPositionHashSet.Contains(position) 
+            && !_placedPositionHashSet.Contains(position) 
+            && !_visited.Contains(position);
     }
 }

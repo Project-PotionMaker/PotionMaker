@@ -87,6 +87,33 @@ public partial class DataTable
         }
     }
     #endregion
+    #region Potion
+    private ReadOnlyList<PotionData> PotionList = null;
+    private ReadOnlyDictionary<int, PotionData> PotionTable = null;
+
+    public ReadOnlyList<PotionData> GetPotionDataList()
+    {
+        return PotionList;
+    }
+
+    public PotionData GetPotionData(int key)
+    {
+        if (key == 0)
+        {
+            return null;
+        }
+
+        if (PotionTable.TryGetValue(key, out PotionData retVal) == true)
+        {
+            return retVal;
+        }
+        else
+        {
+            Debug.LogError($"Can not find UniqueID of PotionData: <{key}>");
+            return null;
+        }
+    }
+    #endregion
     #region Product
     private ReadOnlyList<ProductData> ProductList = null;
     private ReadOnlyDictionary<int, ProductData> ProductTable = null;
@@ -328,6 +355,12 @@ public partial class DataTable
             loadedCount++;
         });
         allCount++;
+        GetBytes_FromResources("Potion", (bytes) =>
+        {
+            LoadPotionData(bytes);
+            loadedCount++;
+        });
+        allCount++;
         GetBytes_FromResources("Product", (bytes) =>
         {
             LoadProductData(bytes);
@@ -387,6 +420,8 @@ public partial class DataTable
         LoadPotionData(potionBytes);
         byte[] outputBytes = GetBytes_ForEditor("OutputData");
         LoadOutputData(outputBytes);
+        byte[] potionBytes = GetBytes_ForEditor("PotionData");
+        LoadPotionData(potionBytes);
         byte[] productBytes = GetBytes_ForEditor("ProductData");
         LoadProductData(productBytes);
         byte[] structureBytes = GetBytes_ForEditor("StructureData");
@@ -496,6 +531,37 @@ public partial class DataTable
 
         OutputList = new ReadOnlyList<OutputData>(outputList);
         OutputTable = new ReadOnlyDictionary<int, OutputData>(outputTable);
+    }
+
+    private void LoadPotionData(byte[] bytes)
+    {
+        List<PotionData> potionList = new List<PotionData>();
+        Dictionary<int, PotionData> potionTable = new Dictionary<int, PotionData>();
+
+        Reader = new BinaryReader(new MemoryStream(bytes));
+
+        while (Reader.BaseStream.Position < bytes.Length)
+        {
+            PotionData data = new PotionData(Reader);
+            if (potionTable.ContainsKey(data.TID) == true)
+            {
+                Debug.LogError("The duplicate TID: " + data.TID + " in Potion");
+                continue;
+            }
+            else if (data.TID == 0)
+            {
+                Debug.LogError("TID is 0 in Potion");
+                continue;
+            }
+
+            potionList.Add(data);
+            potionTable.Add(data.TID, data);
+        }
+
+        Reader.Close();
+
+        PotionList = new ReadOnlyList<PotionData>(potionList);
+        PotionTable = new ReadOnlyDictionary<int, PotionData>(potionTable);
     }
 
     private void LoadProductData(byte[] bytes)

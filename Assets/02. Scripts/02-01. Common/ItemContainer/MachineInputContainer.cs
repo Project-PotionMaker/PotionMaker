@@ -15,12 +15,6 @@ public class MachineInputContainer : IInputContainer<Machine>
         machine.ServerSetInputType(inputType);
         machine.ServerAddInputTID(tid);
 
-        Debug.Log("리턴하는거 추가 필요");
-        //if (item.GetInputType() != EInputType.Potion)
-        //{
-        //    Return(inputObjeect);
-        //}
-
         return true;
     }
 }

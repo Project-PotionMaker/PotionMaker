@@ -11,7 +11,7 @@ public class CustomerMove : NetworkBehaviour
 
     private Customer _owner;
     private Animator _animator; // 애니메이터 컴포넌트
-    public Animator Animator { get => _animator; set => _animator = value; } // 애니메이터 컴포넌트
+    private NetworkAnimator _networkAnimator; // 네트워크 애니메이터 컴포넌트
     private Vector3 _lastTarget;
 
     private bool _hasArrived = true;
@@ -31,6 +31,7 @@ public class CustomerMove : NetworkBehaviour
         _rigidbody.isKinematic = false;
         _owner = GetComponent<Customer>();
         _animator = GetComponentInChildren<Animator>();
+        _networkAnimator = GetComponentInChildren<NetworkAnimator>();
     }
     private void Update()
     {
@@ -46,10 +47,6 @@ public class CustomerMove : NetworkBehaviour
     [Server]
     private void ArriveCheck()
     {
-        if (!isServer)
-        {
-            return;
-        }
         if (IsStayOn())
         {
             if (_hasArrived == false)
@@ -91,14 +88,14 @@ public class CustomerMove : NetworkBehaviour
         _animator.SetBool("Move", false);
         if (_owner.CurrentState == ECustomerStateType.Lining)
         {
-            _animator.SetTrigger("Stand");
+            _networkAnimator.SetTrigger("Stand");
             if (ReferenceEquals(_owner, CustomerManager.Instance.OrderHandler.PotionOrderLine.Peek()))
             {
                 CustomerManager.Instance.CanOrdered = true;
             }
         } else if (_owner.CurrentState == ECustomerStateType.Sitting)
         {
-            _animator.SetTrigger("Sit");
+            _networkAnimator.SetTrigger("Sit");
             SittingAction(); // 의자에 앉는 동작 실행
         }
         else if (_owner.CurrentState == ECustomerStateType.PickingUp)
@@ -125,7 +122,8 @@ public class CustomerMove : NetworkBehaviour
         _collider.enabled = false; // 충돌체 비활성화
 
         Sequence sitSeq = DOTween.Sequence();
-        sitSeq.Append(transform.DOMove(_owner.ChairPosition, 1f).SetEase(Ease.OutSine));
+        Vector3 sit = new Vector3(_owner.ChairPosition.x+GRID_OFFSET, _owner.ChairPosition.y, _owner.ChairPosition.z+GRID_OFFSET);
+        sitSeq.Append(transform.DOMove(sit, 1f).SetEase(Ease.OutSine));
         sitSeq.Join(transform.DORotate(new Vector3(0,_owner.ChairRotate+90,0), 1f).SetEase(Ease.InOutSine));
 
     }

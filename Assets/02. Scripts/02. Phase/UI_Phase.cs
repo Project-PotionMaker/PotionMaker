@@ -3,6 +3,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using VInspector;
 using DG.Tweening;
+using System;
+using Mirror;
+using System.Collections;
 
 public class UI_Phase : MonoBehaviour
 {
@@ -12,31 +15,36 @@ public class UI_Phase : MonoBehaviour
     [SerializeField]
     private Slider _serviceTimer;
     [SerializeField]
-    private GameObject _readyPanel;
+    private RectTransform _readyPanel;
     [SerializeField]
     private TextMeshProUGUI _startDayText;
     [SerializeField]
-    private GameObject[] _isVoted;
-    [SerializeField]
     private TextMeshProUGUI[] _playerName;
     [SerializeField]
-    private GameObject[] _playerPanel;
+    private RectTransform[] _playerPanel;
     [SerializeField]
     private GameObject[] _playerMask;
     [SerializeField]
     private GameObject[] _deathCountHeart;
     [SerializeField]
-    private GameObject _alertPanel;
+    private RectTransform _alertPanel;
     [SerializeField]
     private TextMeshProUGUI _alertText;
 
     private const float READY_HIDE_OFFSET = 200f;
     private const float PLAYER_HIDE_OFFSET = 60f;
     private const float ALERT_HIDE_OFFESET = 100f;
+    private const float WINDOW_WIDTH = 1920f;
+    private const float WINDOW_HEIGHT = 1080f;
     private const float DURATION = 1f;
+
+    private UI_VoteSystem _voteSystem;
 
     private void Start()
     {
+        _voteSystem = GetComponent<UI_VoteSystem>();
+        _voteSystem.enabled = false;
+
         _serviceTimer.maxValue = 1f;
         PhaseManager.Instance.OnDayPassed += UpdateDayText;
         PhaseManager.Instance.OnTimerRunning += UpdateServiceTimer;
@@ -47,6 +55,9 @@ public class UI_Phase : MonoBehaviour
 
         PreparingPhase preparingPhase = (PreparingPhase) PhaseManager.Instance.PhaseDictionary[EPhaseType.PreparingPhase];
         preparingPhase.OnPhaseEntered += ChangeTextStartDay;
+        preparingPhase.OnPhaseEntered += StartVote;
+        StartVote();
+
         PracticingPhase practicingPhase = (PracticingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase];
         practicingPhase.OnPhaseEntered += ChangeTextPracticeEnd;
         ServingPhase servingPhase = (ServingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase];
@@ -58,11 +69,8 @@ public class UI_Phase : MonoBehaviour
         EndingPhase endingPhase = (EndingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.EndingPhase];
         endingPhase.OnPhaseExited += ShowReady; // 준비 단계가 시작되면 시작 패널 표시
 
-
-        HidePlayerPanel(0);
-        HidePlayerPanel(1);
-        HidePlayerPanel(2);
-        HidePlayerPanel(3);
+        PlayerListManager.Instance.OnPlayerListUpdated += ResetPlayerPanel;
+        ResetPlayerPanel();
     }
 
     private void UpdateDayText()
@@ -89,23 +97,65 @@ public class UI_Phase : MonoBehaviour
     private void HideReady()
     {
         Debug.Log("Hide Start Day Panel");
-        _readyPanel.transform.DOLocalMoveY(READY_HIDE_OFFSET, DURATION).SetRelative().SetEase(Ease.OutSine);
+        _readyPanel.DOAnchorPosY(READY_HIDE_OFFSET, DURATION).SetRelative().SetEase(Ease.OutSine);
     }
     private void ShowReady()
     {
-        _readyPanel.transform.DOLocalMoveY(-READY_HIDE_OFFSET, DURATION).SetRelative().SetEase(Ease.OutSine);
+        _readyPanel.DOAnchorPosY(-READY_HIDE_OFFSET, DURATION).SetRelative().SetEase(Ease.OutSine);
+        
+    }
+    private void StartVote()
+    {
+        if (VoteManager.Instance == null)
+        {
+            Debug.LogWarning("VoteManager not ready yet. Delaying StartVote.");
+            StartCoroutine(WaitAndStartVote());
+            return;
+        }
+        _voteSystem.enabled = true;
+        VoteManager.Instance.OnVoteDone += NextPhase;
+        VoteManager.Instance.OnVoteDone += StopVote;
+    }
+    private IEnumerator WaitAndStartVote()
+    {
+        while (VoteManager.Instance == null)
+            yield return null;
+
+        StartVote(); // 재시도
+    }
+    private void StopVote()
+    {
+        _voteSystem.enabled = false;
+        VoteManager.Instance.OnVoteDone -= NextPhase;
+        VoteManager.Instance.OnVoteDone -= StopVote;
     }
 
-    private void HidePlayerPanel(int index)
+    private void NextPhase()
     {
-        _playerMask[index].SetActive(true);
-        _playerPanel[index].transform.DOLocalMoveY(-PLAYER_HIDE_OFFSET,DURATION).SetRelative().SetEase(Ease.OutSine);
+        if(NetworkServer.active == false)
+        {
+            return;
+        }
+        PhaseManager.Instance.TransitionPhase(EPhaseType.ServingPhase);
     }
-    private void ShowPlayerPanel(int index)
+
+    private void ResetPlayerPanel()
     {
-        //TODO : Player이름 받아와서 적어두기
-        _playerMask[index].SetActive(false);
-        _playerPanel[index].transform.DOLocalMoveY(PLAYER_HIDE_OFFSET, DURATION).SetRelative().SetEase(Ease.OutSine);
+        for(int index = 0; index < 4; index++)
+        {
+            _playerMask[index].SetActive(true);
+            _playerPanel[index].DOAnchorPosY(-PLAYER_HIDE_OFFSET, DURATION).SetEase(Ease.OutSine);
+        }
+
+        foreach(uint netId in PlayerListManager.Instance.PlayerNetIdList)
+        {
+            Player player = NetworkClient.spawned[netId].GetComponent<Player>();
+            int index = player.PlayerOrderIndex;
+            _playerName[index].text =player.playerName;
+            _playerMask[index].SetActive(false);
+            _playerPanel[index].transform.DOKill();
+            _playerPanel[index].DOAnchorPosY(0, DURATION).SetEase(Ease.OutSine);
+        }
     }
 
     private void ChangeTextStartDay()
@@ -136,7 +186,7 @@ public class UI_Phase : MonoBehaviour
         // 텍스트 세팅
         _alertText.text = text;
 
-        _alertPanel.transform.DOLocalMoveY(showOffsetY, DURATION)
+        _alertPanel.DOAnchorPosY(showOffsetY, DURATION)
             .SetRelative()
             .SetEase(Ease.OutSine)
             .OnComplete(() =>
@@ -144,7 +194,7 @@ public class UI_Phase : MonoBehaviour
                 // 2초 후 사라지기
                 DOVirtual.DelayedCall(stayDuration, () =>
                 {
-                    _alertPanel.transform.DOLocalMoveY(hideOffsetY, DURATION)
+                    _alertPanel.DOAnchorPosY(hideOffsetY, DURATION)
                         .SetRelative()
                         .SetEase(Ease.OutSine);
                 });

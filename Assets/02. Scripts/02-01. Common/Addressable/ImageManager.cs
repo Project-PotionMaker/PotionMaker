@@ -40,10 +40,10 @@ public class ImageManager : MonoBehaviourSingleton<ImageManager>
 
         QueueImageLoading<IngredientData>(DataTable.Instance.GetIngredientDataList());
         QueueImageLoading<PotionData>(DataTable.Instance.GetPotionDataList());
-        // QueueImageLoading<MachineData>(DataTable.Instance.GetMachineDataList());
+        QueueImageLoading<MachineData>(DataTable.Instance.GetMachineDataList());
         // QueueImageLoading<StorageData>(DataTable.Instance.GetStorageDataList());
-        // QueueImageLoading<FurnitureData>(DataTable.Instance.GetFurnitureDataList());
-        // QueueImageLoading<LayoutData>(DataTable.Instance.GetLayoutDataList());
+        QueueImageLoading<FurnitureData>(DataTable.Instance.GetFurnitureDataList());
+        QueueImageLoading<LayoutData>(DataTable.Instance.GetLayoutDataList());
         await Task.WhenAll(imageLoadTasks);
     }
 

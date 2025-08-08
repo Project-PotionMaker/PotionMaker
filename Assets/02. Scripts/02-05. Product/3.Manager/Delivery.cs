@@ -62,7 +62,7 @@ public class Delivery
     /// </summary>
     /// <param name="structureTIDList">배치할 구조물 TID 목록</param>
     /// <param name="areaType">구조물을 배치할 영역의 타입</param>
-    public void DeliverStructures(List<int> structureTIDList, EAreaType areaType)
+    public void DeliverStructures(ReadOnlyList<int> structureTIDList, EAreaType areaType)
     {
         int index = 0;
         foreach (int structureTID in structureTIDList)
@@ -180,7 +180,7 @@ public class Delivery
     /// </summary>
     /// <param name="ingredientTIDList">저장소에 담을 재료 TID 목록</param>
     /// <param name="areaType">저장소를 배치할 영역의 타입</param>
-    public void DeliverStorages(List<int> ingredientTIDList, EAreaType areaType)
+    public void DeliverStorages(ReadOnlyList<int> ingredientTIDList, EAreaType areaType)
     {
         int index = 0;
         foreach (int ingredientTID in ingredientTIDList)

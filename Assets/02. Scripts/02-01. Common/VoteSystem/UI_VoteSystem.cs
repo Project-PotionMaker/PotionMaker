@@ -1,23 +1,24 @@
 using UnityEngine;
 using UnityEngine.UI;
 using Mirror;
+using System.Collections.Generic;
 
 public class UI_VoteSystem : MonoBehaviour
 {
     [SerializeField]
-    private Image[] _voteBackground;
+    private List<Image> _voteBackgroundList;
     [SerializeField]
-    private Image[] _checkIcon;
+    private List<Image> _checkIconList;
 
     private int index = -1;
 
     private void Awake()
     {
-        foreach(Image background in _voteBackground)
+        foreach(Image background in _voteBackgroundList)
         {
             background.enabled = false;
         }
-        foreach (Image checkIcon in _checkIcon)
+        foreach (Image checkIcon in _checkIconList)
         {
             checkIcon.enabled = false;
         }
@@ -53,21 +54,21 @@ public class UI_VoteSystem : MonoBehaviour
         {
             return;
         }
-        foreach (Image background in _voteBackground)
+        foreach (Image background in _voteBackgroundList)
         {
             background.enabled = false;
         }
         foreach (uint netId in PlayerListManager.Instance.PlayerNetIdList)
         {
             int index = NetworkClient.spawned[netId].GetComponent<Player>().PlayerOrderIndex;
-            _voteBackground[index].enabled = true;
+            _voteBackgroundList[index].enabled = true;
             if (VoteManager.Instance.IsVoted[index])
             {
-                _checkIcon[index].enabled = true;
+                _checkIconList[index].enabled = true;
             }
             else
             {
-                _checkIcon[index].enabled = false;
+                _checkIconList[index].enabled = false;
             }
         }
     }
@@ -75,11 +76,11 @@ public class UI_VoteSystem : MonoBehaviour
     private void OnDisable()
     {
         Debug.Log($"{gameObject} OnDisable");
-        foreach (Image background in _voteBackground)
+        foreach (Image background in _voteBackgroundList)
         {
             background.enabled = false;
         }
-        foreach (Image checkIcon in _checkIcon)
+        foreach (Image checkIcon in _checkIconList)
         {
             checkIcon.enabled = false;
         }

@@ -150,5 +150,10 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>
         }
         OnDeathCountChanged?.Invoke();
     }
+    [Server]
+    public void ResetDeathCount()
+    {
+        _deathCount = _maxDeathCount;
+    }
 
 }

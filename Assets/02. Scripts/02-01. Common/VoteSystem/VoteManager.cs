@@ -1,12 +1,13 @@
 using Mirror;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class VoteManager : NetworkBehaviourSingleton<VoteManager>
 {
     private const int MAX_PLAYER_COUNT = 4; // 최대 플레이어 수
-    private bool[] _isVoted = new bool[MAX_PLAYER_COUNT];
-    public bool[] IsVoted => _isVoted;
+    private List<bool> _isVoted = new List<bool>();
+    public List<bool> IsVoted => _isVoted;
     [SyncVar]
     private bool _isVoting = false;
     public event Action OnVoteUpdated;
@@ -18,6 +19,10 @@ public class VoteManager : NetworkBehaviourSingleton<VoteManager>
     public override void OnStartClient()
     {
         base.OnStartClient();
+        for (int i = 0; i < MAX_PLAYER_COUNT; i++)
+        {
+            _isVoted.Add(false);
+        }
         RefreshArray();
     }
 

@@ -1,3 +1,4 @@
+using Mirror;
 using System.Collections;
 using UnityEngine;
 
@@ -8,7 +9,15 @@ public class VFXAutoReturn : MonoBehaviour
 
     private void OnEnable()
     {
-        StartCoroutine(ReturnToFactoryWhenDone());
+        if (NetworkServer.active)
+        {
+            StartCoroutine(ReturnToFactoryWhenDone());
+        }
+    }
+
+    private void OnDisable()
+    {
+        StopAllCoroutines();
     }
 
     private IEnumerator ReturnToFactoryWhenDone()

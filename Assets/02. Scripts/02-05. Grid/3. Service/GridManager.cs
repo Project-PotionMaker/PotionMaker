@@ -238,16 +238,11 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
             if (data.SpecialStructureType == ESpecialStructureType.PickUpTable)
             {
                 HandlePickupTablePlacement(structureIdentity, gridPosition, data);
-                _hallAreaPathFinder.UpdateGridPathFinder(_serverGridData.PlacedPositionHashSet,
-                    ToPickupTablePositionHashSet(_pickupTableForCustomerList));
-                if (!_hallAreaPathFinder.HasPath())
-                {
-                    Debug.LogWarning("경로 없음!!!");
-                    // 경로가 없을 때 로직
-                }
             }
-            else if (data.SpecialStructureType == ESpecialStructureType.OldChair
-                || data.SpecialStructureType == ESpecialStructureType.LuxuryChair)
+
+            if (data.SpecialStructureType == ESpecialStructureType.PickUpTable ||
+                data.SpecialStructureType == ESpecialStructureType.OldChair ||
+                data.SpecialStructureType == ESpecialStructureType.LuxuryChair)
             {
                 _hallAreaPathFinder.UpdateGridPathFinder(_serverGridData.PlacedPositionHashSet,
                     ToPickupTablePositionHashSet(_pickupTableForCustomerList));
@@ -268,7 +263,10 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
         {
             if (_serverGridData.CheckLRUDHasArea(gridPosition, EAreaType.Hall))
             {
-                _pickupTableForCustomerList.Add(structureIdentity);
+                if (!_pickupTableForCustomerList.Contains(structureIdentity))
+                {
+                    _pickupTableForCustomerList.Add(structureIdentity);
+                }
             }
             else
             {

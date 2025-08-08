@@ -14,9 +14,13 @@ public class HallAreaPathFinder
     private Vector3Int _entrancePosition = new(-4, 0, -4); // Init 이후 불변
     private Vector3Int _exitPosition = new(4, 0, -4); // Init 이후 불변
 
-
-    private readonly List<int> _dx = new() { 0, 0, -1, 1 };
-    private readonly List<int> _dz = new() { 1, -1, 0, 0 };
+    private readonly Vector3Int[] _directions =
+    {
+        new(0, 0, 1),
+        new(0, 0, -1),
+        new(-1, 0, 0),
+        new(1, 0, 0)
+    };
 
     private Queue<Vector3Int> _queue = new();
     private HashSet<Vector3Int> _visited = new();
@@ -54,8 +58,7 @@ public class HallAreaPathFinder
         _chairPositionHashSet.Clear();
         foreach (var pos in _placedPositionHashSet)
         {
-            if (_hallAreaPositionHashSet.Contains(pos)
-                && !_chairPositionHashSet.Contains(pos))
+            if (_hallAreaPositionHashSet.Contains(pos))
             {
                 _chairPositionHashSet.Add(pos);
             }
@@ -130,7 +133,7 @@ public class HallAreaPathFinder
             Vector3Int nextPosition;
             for (int i = 0; i < 4; i++)
             {
-                nextPosition = currentPosition + new Vector3Int(_dx[i], 0, _dz[i]);
+                nextPosition = currentPosition + _directions[i];
                 if (nextPosition == destination)
                 {
                     return true;

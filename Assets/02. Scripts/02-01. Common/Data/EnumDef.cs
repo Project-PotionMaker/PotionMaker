@@ -181,3 +181,9 @@ public enum EUnlockType
     Ingredient = 2,
 }
 
+public enum EVFXType
+{
+    ///<summary>핑</summary>
+    Ping = 0,
+}
+

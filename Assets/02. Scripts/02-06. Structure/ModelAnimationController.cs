@@ -22,16 +22,9 @@ public class ModelAnimationController : NetworkBehaviour
 public enum EMachineAnimationType
 {
     Empty,
-    Add,
-    DoOnce,
-    DoProgress,
+    PutItem,
+    Start,
+    Stop,
+    GetItem,
     Done
-}
-
-public enum EMachineVisualType
-{
-    Animation,
-    Mesh,
-    Model,
-    Effect
 }

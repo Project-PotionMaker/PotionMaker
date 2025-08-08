@@ -16,6 +16,7 @@ public class ClickOnceInteract : IInteractable<Machine>
 
         if (!machine.IsProcessStarted)
         {
+            machine.RpcPlayAnimation(EMachineAnimationType.Start);
             CompleteProgress(machine);
         }
         return true;
@@ -24,5 +25,6 @@ public class ClickOnceInteract : IInteractable<Machine>
     private void CompleteProgress(Machine machine)
     {
         machine.ServerIncreaseProgress(machine.Data.MaxProgress);
+
     }
 }

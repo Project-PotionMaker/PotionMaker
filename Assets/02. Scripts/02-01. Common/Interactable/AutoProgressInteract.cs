@@ -1,4 +1,5 @@
 using Mirror;
+using MoreMountains.Tools;
 using System.Collections;
 using UnityEngine;
 
@@ -20,10 +21,12 @@ public class AutoProgressInteract : IInteractable<Machine>
         {
             machine.ServerSetIsProcessStarted(false);
             machine.StopAllCoroutines();
+            machine.RpcPlayAnimation(EMachineAnimationType.Stop);
         }
         else
         {
             machine.ServerSetIsProcessStarted(true);
+            machine.RpcPlayAnimation(EMachineAnimationType.Start);
             machine.StartCoroutine(Interact_CoroutineServer(machine));
         }
 

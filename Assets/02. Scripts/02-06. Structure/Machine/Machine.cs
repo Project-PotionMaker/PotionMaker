@@ -3,6 +3,7 @@ using Mirror.BouncyCastle.Tls;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using VInspector;
@@ -86,6 +87,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
     private IInteractable<Machine> _interactComponent;
     private IInputContainer<Machine> _inputComponent;
     private IOutputContainer<Machine> _outputComponent;
+    private IMachineAnimation _animationComponent;
 
     [Foldout("Project")]
     [SerializeField]
@@ -260,6 +262,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
         {
             ServerSetIsProcessFinished(true);
             ServerSetIsProcessStarted(false);
+            RpcPlayAnimation(EMachineAnimationType.Done);
             StopAllCoroutines(); // 서버의 코루틴만 중지
         }
     }
@@ -328,6 +331,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
         IsProcessStarted = false; // SyncVar 초기화
         CurrentProgress = 0f; // SyncVar 초기화
         InputType = EInputType.None; // SyncVar 초기화
+        RpcPlayAnimation(EMachineAnimationType.Empty);
     }
 
     #endregion
@@ -405,6 +409,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
         if(pickedUpItem != null && sender != null)
         {
             NetworkServer.spawned[pickedUpItem.GetComponent<NetworkIdentity>().netId].AssignClientAuthority(sender);
+            RpcPlayAnimation(EMachineAnimationType.GetItem);
         }
 
         if (pickedUpItem != null)
@@ -442,6 +447,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
                 if (GridManager.Instance.ServerCanPlaceObjectAt(targetPosition, _data.AreaType))
                 {
                     GridManager.Instance.ServerPlaceStructure(targetPosition, dropItemNetId, sender);
+                    RpcPlayAnimation(EMachineAnimationType.PutItem);
                     dropItemIdentity.RemoveClientAuthority();
                     success = true;
                 }
@@ -498,6 +504,8 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
         if (_modelObjectDic.TryGetValue(tid, out GameObject modelToActivate))
         {
             modelToActivate.SetActive(true);
+            _animationComponent = modelToActivate.GetComponent<IMachineAnimation>();
+            _animationComponent.ResetAnimation();
         }
     }
 
@@ -518,6 +526,34 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
 
         return null;
     }
+
+    #region ClientRPC
+    [ClientRpc]
+    public void RpcPlayAnimation(EMachineAnimationType type)
+    {
+        switch (type)
+        {
+            case EMachineAnimationType.PutItem:
+                _animationComponent.PutItemAnimation();
+                break;
+            case EMachineAnimationType.Start:
+                _animationComponent.StartAnimation();
+                break;
+            case EMachineAnimationType.Stop:
+                _animationComponent.StopAnimation();
+                break;
+            case EMachineAnimationType.Empty:
+                _animationComponent.ResetAnimation();
+                break;
+            case EMachineAnimationType.Done:
+                _animationComponent.EndAnimation();
+                break;
+            case EMachineAnimationType.GetItem:
+                _animationComponent.GetItemAnimation();
+                break;
+        }
+    }
+    #endregion
 
     public void TryInteract(NetworkConnectionToClient conn)
     {

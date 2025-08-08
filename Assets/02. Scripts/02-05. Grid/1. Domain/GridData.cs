@@ -10,6 +10,7 @@ using UnityEngine;
 public class GridData
 {
     private Dictionary<Vector3Int, Placement> _placedObjectDict = new();
+    public HashSet<Vector3Int> PlacedPositionHashSet => _placedObjectDict.Keys.ToHashSet();
     public ReadOnlyList<int> PlacedObjectList => new ReadOnlyList<int>(_placedObjectDict.Values.Select(placement => placement.TID).ToList());
     private Dictionary<Vector3Int, EAreaType> _availableAreaDict;
 

@@ -1,10 +1,9 @@
 using Mirror;
-//using Photon.Pun;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ProductManager : NetworkBehaviourSingleton<ProductManager>
 {
@@ -32,42 +31,66 @@ public class ProductManager : NetworkBehaviourSingleton<ProductManager>
     }
     public override void OnStartClient()
     {
-        Global.Instance.OnDataLoaded += InitProductManager;
+        Global.Instance.OnDataLoaded += LoadProductData;
+        LoadProductData();
+
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+    public override void OnStopClient()
+    {
+        base.OnStopClient();
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // 씬이 로드되면 PotionHouse를 찾아 초기화를 시도합니다.
         InitProductManager();
     }
 
-    // 네트워크 매니저에서 처리
-    //public override void OnJoinedRoom()
-    //{
-    //    InitProductManager();
-    //}
-
     private void InitProductManager()
     {
-        // 룸 관련 검사는 게임이 만들어지면 없애도 됨
+        if (!NetworkClient.ready)
+        {
+            NetworkClient.Ready();
+        }
+        if (!isServer)
+        {
+            return;
+        }
+        if (UnlockManager.Instance.NewUnlockedTIDDict != null)
+        {
+            UnlockProducts();
+        }
+        else
+        {
+            UnlockManager.Instance.OnListUpdated -= UnlockProducts;
+            UnlockManager.Instance.OnListUpdated += UnlockProducts;
+        }
+    }
+
+    private void UnlockProducts()
+    {
+        if (UnlockManager.Instance.NewUnlockedTIDDict.TryGetValue(EUnlockType.Structure, out ReadOnlyList<int> unlockedStructureTIDList))
+        {
+            foreach(int unlockedStructureTID in unlockedStructureTIDList)
+            {
+                Debug.Log(NetworkClient.ready);
+                CmdRequestUnlock(DataTable.Instance.GetStructureData(unlockedStructureTID).ProductTID);
+            }
+        }
+        var nextTierLayoutDataList = DataTable.Instance.GetLayoutDataList().Where(data => data.Tier == PotionHouse.Instance.PotionHouseTier + 1);
+        foreach(LayoutData layoutData in nextTierLayoutDataList)
+        {
+            CmdRequestUnlock(layoutData.ProductTID);
+        }
+    }
+    private void LoadProductData()
+    {
         if (!Global.Instance.IsDataLoaded)
         {
             return;
         }
-
-        LoadProductData();
-
-        // 임시 언락
-        ProductManager.Instance.CmdRequestUnlock(10000);
-        ProductManager.Instance.CmdRequestUnlock(10001);
-        ProductManager.Instance.CmdRequestUnlock(10002);
-        ProductManager.Instance.CmdRequestUnlock(10003);
-
-        ProductManager.Instance.CmdRequestUnlock(20000);
-        ProductManager.Instance.CmdRequestUnlock(20001);
-
-        ProductManager.Instance.CmdRequestUnlock(30000);
-
-        CmdRequestUpdateProducts();
-    }
-
-    private void LoadProductData()
-    {
         ReadOnlyList<ProductData> productDataList = DataTable.Instance.GetProductDataList();
         foreach (ProductData productData in productDataList)
         {
@@ -75,7 +98,7 @@ public class ProductManager : NetworkBehaviourSingleton<ProductManager>
         }
     }
 
-    [Command(requiresAuthority =false)]
+    [Command(requiresAuthority = false)]
     public void CmdRequestBuy(EProductType productType, int productID, NetworkConnectionToClient sender = null)
     {
         Product product = _productListDict[productType].Find(product => product.Data.TID == productID);

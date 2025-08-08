@@ -5,8 +5,6 @@ using UnityEngine.UI;
 
 public class UI_DetailPage : MonoBehaviour
 {
-    private const string ASSET_PREFIX = "Image_Product_";
-
     [SerializeField]
     private Image _productImage;
     [SerializeField]
@@ -25,9 +23,10 @@ public class UI_DetailPage : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI _rentIncrementTextUI;
 
-    public async Task Refresh(ProductDTO productDTO)
+    public void Refresh(ProductDTO productDTO)
     {
-        _productImage.sprite = await AssetManager.Instance.LoadAsset<Sprite>($"{ASSET_PREFIX}{productDTO.Data.TID}");
+        Sprite productSprite = ProductImageHelper.GetProductSprite(productDTO);
+        _productImage.sprite = productSprite;
         _productNameTextUI.text = productDTO.Data.Name;
 
         // TODO: 로컬라이제이션 연결로 수정

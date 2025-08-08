@@ -33,33 +33,6 @@ public partial class DataTable
         }
     }
     #endregion
-    #region Output
-    private ReadOnlyList<OutputData> OutputList = null;
-    private ReadOnlyDictionary<int, OutputData> OutputTable = null;
-
-    public ReadOnlyList<OutputData> GetOutputDataList()
-    {
-        return OutputList;
-    }
-
-    public OutputData GetOutputData(int key)
-    {
-        if (key == 0)
-        {
-            return null;
-        }
-
-        if (OutputTable.TryGetValue(key, out OutputData retVal) == true)
-        {
-            return retVal;
-        }
-        else
-        {
-            Debug.LogError($"Can not find UniqueID of OutputData: <{key}>");
-            return null;
-        }
-    }
-    #endregion
     #region Potion
     private ReadOnlyList<PotionData> PotionList = null;
     private ReadOnlyDictionary<int, PotionData> PotionTable = null;
@@ -83,6 +56,33 @@ public partial class DataTable
         else
         {
             Debug.LogError($"Can not find UniqueID of PotionData: <{key}>");
+            return null;
+        }
+    }
+    #endregion
+    #region Output
+    private ReadOnlyList<OutputData> OutputList = null;
+    private ReadOnlyDictionary<int, OutputData> OutputTable = null;
+
+    public ReadOnlyList<OutputData> GetOutputDataList()
+    {
+        return OutputList;
+    }
+
+    public OutputData GetOutputData(int key)
+    {
+        if (key == 0)
+        {
+            return null;
+        }
+
+        if (OutputTable.TryGetValue(key, out OutputData retVal) == true)
+        {
+            return retVal;
+        }
+        else
+        {
+            Debug.LogError($"Can not find UniqueID of OutputData: <{key}>");
             return null;
         }
     }
@@ -316,15 +316,15 @@ public partial class DataTable
             loadedCount++;
         });
         allCount++;
-        GetBytes_FromResources("Output", (bytes) =>
-        {
-            LoadOutputData(bytes);
-            loadedCount++;
-        });
-        allCount++;
         GetBytes_FromResources("Potion", (bytes) =>
         {
             LoadPotionData(bytes);
+            loadedCount++;
+        });
+        allCount++;
+        GetBytes_FromResources("Output", (bytes) =>
+        {
+            LoadOutputData(bytes);
             loadedCount++;
         });
         allCount++;
@@ -383,10 +383,10 @@ public partial class DataTable
     {
         byte[] ingredientBytes = GetBytes_ForEditor("IngredientData");
         LoadIngredientData(ingredientBytes);
-        byte[] outputBytes = GetBytes_ForEditor("OutputData");
-        LoadOutputData(outputBytes);
         byte[] potionBytes = GetBytes_ForEditor("PotionData");
         LoadPotionData(potionBytes);
+        byte[] outputBytes = GetBytes_ForEditor("OutputData");
+        LoadOutputData(outputBytes);
         byte[] productBytes = GetBytes_ForEditor("ProductData");
         LoadProductData(productBytes);
         byte[] structureBytes = GetBytes_ForEditor("StructureData");
@@ -436,37 +436,6 @@ public partial class DataTable
         IngredientTable = new ReadOnlyDictionary<int, IngredientData>(ingredientTable);
     }
 
-    private void LoadOutputData(byte[] bytes)
-    {
-        List<OutputData> outputList = new List<OutputData>();
-        Dictionary<int, OutputData> outputTable = new Dictionary<int, OutputData>();
-
-        Reader = new BinaryReader(new MemoryStream(bytes));
-
-        while (Reader.BaseStream.Position < bytes.Length)
-        {
-            OutputData data = new OutputData(Reader);
-            if (outputTable.ContainsKey(data.TID) == true)
-            {
-                Debug.LogError("The duplicate TID: " + data.TID + " in Output");
-                continue;
-            }
-            else if (data.TID == 0)
-            {
-                Debug.LogError("TID is 0 in Output");
-                continue;
-            }
-
-            outputList.Add(data);
-            outputTable.Add(data.TID, data);
-        }
-
-        Reader.Close();
-
-        OutputList = new ReadOnlyList<OutputData>(outputList);
-        OutputTable = new ReadOnlyDictionary<int, OutputData>(outputTable);
-    }
-
     private void LoadPotionData(byte[] bytes)
     {
         List<PotionData> potionList = new List<PotionData>();
@@ -496,6 +465,37 @@ public partial class DataTable
 
         PotionList = new ReadOnlyList<PotionData>(potionList);
         PotionTable = new ReadOnlyDictionary<int, PotionData>(potionTable);
+    }
+
+    private void LoadOutputData(byte[] bytes)
+    {
+        List<OutputData> outputList = new List<OutputData>();
+        Dictionary<int, OutputData> outputTable = new Dictionary<int, OutputData>();
+
+        Reader = new BinaryReader(new MemoryStream(bytes));
+
+        while (Reader.BaseStream.Position < bytes.Length)
+        {
+            OutputData data = new OutputData(Reader);
+            if (outputTable.ContainsKey(data.TID) == true)
+            {
+                Debug.LogError("The duplicate TID: " + data.TID + " in Output");
+                continue;
+            }
+            else if (data.TID == 0)
+            {
+                Debug.LogError("TID is 0 in Output");
+                continue;
+            }
+
+            outputList.Add(data);
+            outputTable.Add(data.TID, data);
+        }
+
+        Reader.Close();
+
+        OutputList = new ReadOnlyList<OutputData>(outputList);
+        OutputTable = new ReadOnlyDictionary<int, OutputData>(outputTable);
     }
 
     private void LoadProductData(byte[] bytes)

@@ -473,16 +473,8 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
 
     private HashSet<Vector3Int> ToPickupTablePositionHashSet(List<NetworkIdentity> pickupTableList)
     {
-        HashSet<Vector3Int> pickupTablePositionHashSet = new();
-        foreach (NetworkIdentity networkIdentity in pickupTableList)
-        {
-            Vector3Int pickupTableGridPosition = GetGridPosition(networkIdentity.transform.position);
-            if (!pickupTablePositionHashSet.Contains(pickupTableGridPosition))
-            {
-                pickupTablePositionHashSet.Add(pickupTableGridPosition);
-            }
-        }
-        return pickupTablePositionHashSet;
+        return pickupTableList.Select
+            (networkIdentity => GetGridPosition(networkIdentity.transform.position)).ToHashSet();
     }
 }
 

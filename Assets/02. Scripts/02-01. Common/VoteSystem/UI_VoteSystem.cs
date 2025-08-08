@@ -89,5 +89,9 @@ public class UI_VoteSystem : MonoBehaviour
         VoteManager.Instance.SetVoteTime(false);
     }
 
+    private void OnDestroy()
+    {
+        VoteManager.Instance.OnRefreshed -= Refresh;
+    }
 
 }

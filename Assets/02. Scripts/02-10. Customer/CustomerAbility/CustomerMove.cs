@@ -2,7 +2,6 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.AI;
 using Mirror;
-using Mirror.BouncyCastle.Asn1.Crmf;
 public class CustomerMove : NetworkBehaviour
 {
     private NavMeshAgent _agent;

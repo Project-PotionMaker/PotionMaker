@@ -81,13 +81,13 @@ public class Player : NetworkBehaviour
 
     public override void OnStartClient()
     {
-        base.OnStartServer();
+        base.OnStartClient();
         PlayerListManager.Instance.AddList(netId);
     }
 
     public override void OnStopClient()
     {
-        base.OnStopServer();
+        base.OnStopClient();
         PlayerListManager.Instance.RemoveList(netId);
     }
 

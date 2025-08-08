@@ -3,7 +3,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using VInspector;
 using DG.Tweening;
-using NUnit.Framework;
 using System;
 using Mirror;
 using System.Collections;
@@ -74,14 +73,6 @@ public class UI_Phase : MonoBehaviour
         ResetPlayerPanel();
     }
 
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Alpha0))
-        {
-            ResetPlayerPanel();
-        }
-    }
     private void UpdateDayText()
     {
         if (_dayText != null)

@@ -52,6 +52,10 @@ public class VoteManager : NetworkBehaviourSingleton<VoteManager>
     [Server]
     private void CheckDone()
     {
+        if (PlayerListManager.Instance.PlayerNetIdList.Count == 0)
+        {
+            return;
+        }
         bool nooneVoted = true;
         bool everyoneVoted = true;
         foreach (uint netId in PlayerListManager.Instance.PlayerNetIdList)

@@ -6,8 +6,9 @@ using UnityEngine.SceneManagement;
 // MonoBehaviourSingleton을 상속받아 씬이 바뀌어도 파괴되지 않는 싱글톤 매니저로 만듭니다.
 public class UnlockManager : MonoBehaviourSingleton<UnlockManager>
 {
+    public event Action OnListUpdated;
     private ReadOnlyDictionary<EUnlockType, ReadOnlyList<int>> _previousUnlockedTIDDict;
-
+    public ReadOnlyDictionary<EUnlockType, ReadOnlyList<int>> PreviousUnlockedTIDDict => _previousUnlockedTIDDict;
     private ReadOnlyDictionary<EUnlockType, ReadOnlyList<int>> _newUnlockedTIDDict;
     public ReadOnlyDictionary<EUnlockType, ReadOnlyList<int>> NewUnlockedTIDDict => _newUnlockedTIDDict;
 
@@ -28,9 +29,9 @@ public class UnlockManager : MonoBehaviourSingleton<UnlockManager>
         }
     }
 
-    public void SaveUnlockedData(ReadOnlyDictionary<EUnlockType, ReadOnlyList<int>> dataToSave)
+    public void SaveUnlockedData()
     {
-        _previousUnlockedTIDDict = dataToSave;
+        _previousUnlockedTIDDict = PotionHouse.Instance.UnlockedTIDDict;
     }
 
     private void CheckForNewUnlocks()
@@ -76,6 +77,8 @@ public class UnlockManager : MonoBehaviourSingleton<UnlockManager>
         );
 
         PotionHouse.Instance.OnInitialized -= CheckForNewUnlocks;
+
+        OnListUpdated?.Invoke();
     }
 
     private void OnDestroy()

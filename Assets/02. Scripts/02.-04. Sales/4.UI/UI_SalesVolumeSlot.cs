@@ -4,8 +4,6 @@ using UnityEngine.UI;
 
 public class UI_SalesVolumeSlot : MonoBehaviour
 {
-    private const string ASSET_PREFIX = "Image_Potion_";
-
     [SerializeField]
     private Image _potionImage;
     [SerializeField]
@@ -15,11 +13,10 @@ public class UI_SalesVolumeSlot : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI _salesAmountTextUI;
 
-    public async void Refresh(int potionTID, bool isTotal)
+    public void Refresh(int potionTID, bool isTotal)
     {
         gameObject.SetActive(false);
         // Todo: 포션 이미지
-
 
         // total 새로 만들어야 될 것 같던데 추후에 없앨듯
         if (isTotal)
@@ -28,7 +25,7 @@ public class UI_SalesVolumeSlot : MonoBehaviour
         }
         else
         {
-            _potionImage.sprite = await AssetManager.Instance.LoadAsset<Sprite>($"{ASSET_PREFIX}{potionTID}");
+            _potionImage.sprite = ImageManager.Instance.GetImage<PotionData>(potionTID);
             PotionData potionData = DataTable.Instance.GetPotionData(potionTID);
             _potionNameTextUI.text = potionData.Name;
             int salesVolume = SalesManager.Instance.Sales.DailySalesVolumeDict[potionTID];

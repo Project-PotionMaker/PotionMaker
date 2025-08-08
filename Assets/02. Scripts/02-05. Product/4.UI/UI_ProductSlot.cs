@@ -6,7 +6,6 @@ using UnityEngine.UI;
 
 public class UI_ProductSlot:MonoBehaviour
 {
-    private const string ASSET_PREFIX = "Image_Product_";
     public event Action<ProductDTO> OnSlotClicked;
 
     [SerializeField]
@@ -18,10 +17,11 @@ public class UI_ProductSlot:MonoBehaviour
     [SerializeField]
     private Button _slotButton;
 
-    public async Task Refresh(ProductDTO productDTO)
+    public void Refresh(ProductDTO productDTO)
     {
         gameObject.SetActive(false);
-        _productImage.sprite = await AssetManager.Instance.LoadAsset<Sprite>($"{ASSET_PREFIX}{productDTO.Data.TID}");
+        Sprite productSprite = ProductImageHelper.GetProductSprite(productDTO);
+        _productImage.sprite = productSprite;
         _productNameTextUI.text = productDTO.Data.Name;
         _productPriceTextUI.text = productDTO.Data.Price.ToString("N0");
         _slotButton.onClick.RemoveAllListeners();

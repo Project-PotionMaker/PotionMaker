@@ -30,6 +30,8 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
     // 서버 전용: 배치 데이터를 관리합니다.
     private GridData _serverGridData;
 
+    private HallAreaPathFinder _hallAreaPathFinder = new();
+
     // 클라이언트 전용: 현재 배치 중인 상태를 관리합니다.
     private IBuildingState _buildingState;
     private Vector3Int _lastDetectedPosition = Vector3Int.zero;
@@ -114,6 +116,11 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
         if (Input.GetKeyDown(KeyCode.F2))
         {
             CmdTest();
+            _hallAreaPathFinder.InitGridPathFinder
+            (GetPositionByAreaType(EAreaType.Hall).ToHashSet(),
+            _serverGridData.PlacedPositionHashSet,
+            GetGridPosition(new Vector3Int(-5, 0, 0)),
+            ToPickupTablePositionHashSet(_pickupTableForCustomerList));
         }
     }
 
@@ -224,27 +231,46 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
                 _placedObjectInGridSyncDict[pos] = newPlacementData;
             }
 
-            if(data.SpecialStructureType == ESpecialStructureType.PickUpTable)
+            if (data.SpecialStructureType == ESpecialStructureType.PickUpTable)
             {
-                if(_serverGridData.CheckLRUDHasArea(gridPosition, EAreaType.Hall))
+                HandlePickupTablePlacement(structureIdentity, gridPosition, data);
+            }
+
+            if (data.SpecialStructureType == ESpecialStructureType.PickUpTable ||
+                data.SpecialStructureType == ESpecialStructureType.OldChair ||
+                data.SpecialStructureType == ESpecialStructureType.LuxuryChair)
+            {
+                _hallAreaPathFinder.UpdateGridPathFinder(_serverGridData.PlacedPositionHashSet,
+                    ToPickupTablePositionHashSet(_pickupTableForCustomerList));
+                if (!_hallAreaPathFinder.HasPath())
                 {
-                    if(_pickupTableForCustomerList.Contains(structureIdentity) == false)
-                    {
-                        _pickupTableForCustomerList.Add(structureIdentity);
-                    }
-                }
-                else
-                {
-                    if (_pickupTableForCustomerList.Contains(structureIdentity))
-                    {
-                        _pickupTableForCustomerList.Remove(structureIdentity);
-                    }
+                    Debug.LogWarning("경로 없음!!!");
+                    // 경로가 없을 때 로직
                 }
             }
 
             TargetRpcOnPlaceStructure(sender, true, structureNetId);
         }
     }
+
+    private void HandlePickupTablePlacement(NetworkIdentity structureIdentity, Vector3Int gridPosition, StructureData data)
+    {
+        if (data.SpecialStructureType == ESpecialStructureType.PickUpTable)
+        {
+            if (_serverGridData.CheckLRUDHasArea(gridPosition, EAreaType.Hall))
+            {
+                if (!_pickupTableForCustomerList.Contains(structureIdentity))
+                {
+                    _pickupTableForCustomerList.Add(structureIdentity);
+                }
+            }
+            else
+            {
+                _pickupTableForCustomerList.Remove(structureIdentity);
+            }
+        }
+    }
+
 
     // --- 클라이언트에게 배치 결과를 전달하는 TargetRpc ---
     [TargetRpc]
@@ -439,6 +465,12 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
         }
 
         return _serverGridData.PlacedObjectList;
+    }
+
+    private HashSet<Vector3Int> ToPickupTablePositionHashSet(List<NetworkIdentity> pickupTableList)
+    {
+        return pickupTableList.Select
+            (networkIdentity => GetGridPosition(networkIdentity.transform.position)).ToHashSet();
     }
 }
 

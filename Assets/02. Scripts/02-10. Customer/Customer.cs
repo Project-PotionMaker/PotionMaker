@@ -24,6 +24,7 @@ public class Customer : NetworkBehaviour
     public GameObject PotionHandler { get => _potionHandler; set => _potionHandler = value; } // 포션 핸들러 오브젝트
 
     public event Action OnStateChanged;
+    public event Action OnCreated;
 
     private Vector3 _chairPosition;
     public  Vector3 ChairPosition { get => _chairPosition; set => _chairPosition = value; } // 의자 위치
@@ -41,7 +42,7 @@ public class Customer : NetworkBehaviour
     }
     private void OnEnable()
     {
-        //_currentState = ECustomerStateType.Lining; // 초기 상태 설정
+        _currentState = ECustomerStateType.Lining; // 초기 상태 설정
         //if(PhaseManager.Instance.PotionDataList.Count > 0 )
         //{
         //    int index = UnityEngine.Random.Range(0, PhaseManager.Instance.PotionDataList.Count);
@@ -66,6 +67,7 @@ public class Customer : NetworkBehaviour
         //    Debug.LogWarning("PotionDataList is empty. Cannot assign a requested potion to the customer.");
         //}
         _requestedPotionTID = 10000;
+        OnCreated?.Invoke(); // 생성 이벤트 호출
     }
 
     [Server]

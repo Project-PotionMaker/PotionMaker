@@ -67,7 +67,6 @@ public class UI_SuccessSummary : MonoBehaviour
     {
         VoteManager.Instance.OnVoteDone -= NextPhase;
         VoteManager.Instance.OnVoteDone -= StopVoting;
-        _voteSystem.Disable();
         _voteSystem.enabled = false;
     }
 

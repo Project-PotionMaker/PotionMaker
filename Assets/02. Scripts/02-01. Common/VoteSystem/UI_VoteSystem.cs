@@ -11,7 +11,7 @@ public class UI_VoteSystem : MonoBehaviour
 
     private int index = -1;
 
-    private void Start()
+    private void Awake()
     {
         foreach(Image background in _voteBackground)
         {
@@ -21,14 +21,14 @@ public class UI_VoteSystem : MonoBehaviour
         {
             checkIcon.enabled = false;
         }
-
-        VoteManager.Instance.OnVoteUpdated += Refresh;
-        VoteManager.Instance.ReadyToVote += Refresh;
-        PlayerListManager.Instance.OnPlayerListUpdated += Refresh;
+        VoteManager.Instance.OnRefreshed += Refresh;
     }
 
     private void OnEnable()
     {
+        Debug.Log($"{gameObject} OnEnable");
+        VoteManager.Instance.OnVoteUpdated += Refresh;
+        PlayerListManager.Instance.OnPlayerListUpdated += Refresh;
         VoteManager.Instance.SetVoteTime(true);
         Refresh();
     }
@@ -48,7 +48,8 @@ public class UI_VoteSystem : MonoBehaviour
 
     private void Refresh()
     {
-        if(PlayerListManager.Instance.PlayerNetIdList.Count == 0)
+        Debug.Log($"{gameObject} Refresh");
+        if (PlayerListManager.Instance.PlayerNetIdList.Count == 0)
         {
             return;
         }
@@ -71,8 +72,9 @@ public class UI_VoteSystem : MonoBehaviour
         }
     }
 
-    public void Disable()
+    private void OnDisable()
     {
+        Debug.Log($"{gameObject} OnDisable");
         foreach (Image background in _voteBackground)
         {
             background.enabled = false;
@@ -81,6 +83,9 @@ public class UI_VoteSystem : MonoBehaviour
         {
             checkIcon.enabled = false;
         }
+
+        VoteManager.Instance.OnVoteUpdated -= Refresh;
+        PlayerListManager.Instance.OnPlayerListUpdated -= Refresh;
         VoteManager.Instance.SetVoteTime(false);
     }
 

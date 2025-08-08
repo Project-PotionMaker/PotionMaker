@@ -7,13 +7,17 @@ public class VoteManager : NetworkBehaviourSingleton<VoteManager>
     private const int MAX_PLAYER_COUNT = 4; // 최대 플레이어 수
     private bool[] _isVoted = new bool[MAX_PLAYER_COUNT];
     public bool[] IsVoted => _isVoted;
+    [SyncVar]
+    private bool _isVoting = false;
     public event Action OnVoteUpdated;
     public event Action OnVoteDone;
     public event Action StopVoting;
-    public event Action ReadyToVote;
+    public event Action OnVoteStarted;
+    public event Action OnRefreshed;
 
     public override void OnStartClient()
     {
+        base.OnStartClient();
         RefreshArray();
     }
 
@@ -29,6 +33,7 @@ public class VoteManager : NetworkBehaviourSingleton<VoteManager>
         {
             _isVoted[i] = false;
         }
+        OnRefreshed?.Invoke();
     }
 
     [Command (requiresAuthority = false)]
@@ -73,34 +78,61 @@ public class VoteManager : NetworkBehaviourSingleton<VoteManager>
     }
 
     [ClientRpc]
-    private void RpcBroadCastStopVoting()
+    public void RpcBroadCastStopVoting()
     {
         StopVoting?.Invoke();
     }
     [ClientRpc]
-    private void RpcBroadCastOnVoteDone()
+    public void RpcBroadCastOnVoteDone()
     {
         OnVoteDone?.Invoke(); // 모든 플레이어가 투표를 완료했음
+    }
+    [ClientRpc]
+    public void RpcBroadCastOnVoteStarted()
+    {
+        OnVoteStarted?.Invoke(); // 투표가 시작됨
     }
 
     public void SetVoteTime(bool voteTime)
     {
-        Debug.Log("여기까진왔음");
-        if(!isServer)
+        if (isServer)
         {
-            return;
-        }
-        if (voteTime)
-        {
-            OnVoteUpdated += CheckDone;
-            ReadyToVote?.Invoke(); // 투표 시작 시 이벤트 호출
+            ServerSetVoteTime(voteTime);
         }
         else
         {
-            Debug.Log("투표 시간 종료");
+            if (voteTime == false)
+            {
+                return;
+            }
+            CmdSetVoteTime(voteTime);
+        }
+    }
+
+    [Command(requiresAuthority = false)]
+    public void CmdSetVoteTime(bool voteTime)
+    {
+        ServerSetVoteTime(voteTime);
+    }
+
+    [Server]
+    public void ServerSetVoteTime(bool voteTime)
+    {
+        if (voteTime)
+        {
+            if (_isVoting)
+            {
+                return;
+            }
+            OnVoteUpdated += CheckDone;
+            _isVoting = true;
+            RpcBroadCastOnVoteStarted();
+        }
+        else
+        {
+            _isVoting = false;
             OnVoteUpdated -= CheckDone;
             RpcRefreshArray(); // 투표 시간 종료 시 투표 상태 초기화
         }
     }
-
 }

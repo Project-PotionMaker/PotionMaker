@@ -134,7 +134,6 @@ public class UI_Phase : MonoBehaviour
     }
     private void StopVote()
     {
-        _voteSystem.Disable();
         _voteSystem.enabled = false;
         VoteManager.Instance.OnVoteDone -= NextPhase;
         VoteManager.Instance.OnVoteDone -= StopVote;

@@ -79,7 +79,7 @@ public class ProductManager : NetworkBehaviourSingleton<ProductManager>
                 CmdRequestUnlock(DataTable.Instance.GetStructureData(unlockedStructureTID).ProductTID);
             }
         }
-        List<LayoutData> nextTierLayoutDataList = DataTable.Instance.GetLayoutDataList().Where(data => data.Tier == PotionHouse.Instance.PotionHouseTier + 1).ToList();
+        var nextTierLayoutDataList = DataTable.Instance.GetLayoutDataList().Where(data => data.Tier == PotionHouse.Instance.PotionHouseTier + 1);
         foreach(LayoutData layoutData in nextTierLayoutDataList)
         {
             CmdRequestUnlock(layoutData.ProductTID);

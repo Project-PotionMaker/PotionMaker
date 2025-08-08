@@ -9,7 +9,7 @@ public class GridInfo : MonoBehaviour
     public Vector2Int GridSize; // 예: (10, 10)
 
     [Tooltip("그리드의 기준점 (일반적으로 Plane의 좌하단 코너)")]
-    public Vector3 Origin;
+    private Vector3 Origin;
 
     // 월드 좌표를 그리드 셀 좌표 (Vector3Int)로 변환
     public Vector3Int WorldToGrid(Vector3 worldPos)

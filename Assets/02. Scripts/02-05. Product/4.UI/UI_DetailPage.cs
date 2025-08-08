@@ -25,33 +25,7 @@ public class UI_DetailPage : MonoBehaviour
 
     public void Refresh(ProductDTO productDTO)
     {
-        Sprite productSprite;
-        switch (productDTO.Data.ProductType)
-        {
-            case EProductType.Machine:
-            {
-                int machineTID = DataTable.Instance.GetStructureData(productDTO.Data.TargetTID).TypeTID;
-                productSprite = ImageManager.Instance.GetImage<MachineData>(machineTID);
-                break;
-            }
-            case EProductType.Furniture:
-            {
-                int furnitureTID = DataTable.Instance.GetStructureData(productDTO.Data.TargetTID).TypeTID;
-                productSprite = ImageManager.Instance.GetImage<FurnitureData>(furnitureTID);
-                break;
-            }
-            case EProductType.HouseMoving:
-            {
-                int layoutTID = productDTO.Data.TargetTID;
-                productSprite = ImageManager.Instance.GetImage<LayoutData>(layoutTID);
-                break;
-            }
-            default:
-            {
-                productSprite = null;
-                break;
-            }
-        }
+        Sprite productSprite = ProductImageHelper.GetProductSprite(productDTO);
         _productImage.sprite = productSprite;
         _productNameTextUI.text = productDTO.Data.Name;
 

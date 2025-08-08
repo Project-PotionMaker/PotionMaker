@@ -59,7 +59,7 @@ public class UI_Customer : MonoBehaviour
             _enduranceSlider.fillRect.GetComponent<Image>().color = targetColor;
         }
     }
-    async private void SetStateImage()
+    private void SetStateImage()
     {
         if (_owner.CurrentState == ECustomerStateType.Lining)
         {
@@ -80,7 +80,7 @@ public class UI_Customer : MonoBehaviour
         else if (_owner.CurrentState == ECustomerStateType.Sitting)
         {
             _canvas.SetActive(true);
-            _stateImage.sprite = await AssetManager.Instance.LoadAsset<Sprite>($"{ASSET_PREFIX}{_owner.RequestedPotionTID}");
+            _stateImage.sprite = ImageManager.Instance.GetImage<PotionData>(_owner.RequestedPotionTID);
             _stateImage.color = Color.white;
             SetBuffIcon();
         }

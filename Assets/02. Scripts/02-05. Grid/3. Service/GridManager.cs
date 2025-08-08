@@ -30,8 +30,6 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
     // 서버 전용: 배치 데이터를 관리합니다.
     private GridData _serverGridData;
 
-    // 길찾기 전용: 그리드 사이즈를 가져오는 용도
-    private GridInfo _gridInfo;
     private HallAreaPathFinder _hallAreaPathFinder = new();
 
     // 클라이언트 전용: 현재 배치 중인 상태를 관리합니다.
@@ -108,8 +106,6 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
         _serverGridData = new GridData(_layout.GetAvailableAreaDict());
         _managedStructureDict = new();
         _pickupTableForCustomerList = new();
-
-        _gridInfo = GameObject.FindGameObjectWithTag(nameof(ETags.Layout))?.GetComponent<GridInfo>();
 
         StopPlacement();
         OnInitialized?.Invoke();

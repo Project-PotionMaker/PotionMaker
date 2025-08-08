@@ -6,33 +6,6 @@ using UnityEngine;
 
 public partial class DataTable
 {
-    #region Potion
-    private ReadOnlyList<PotionData> PotionList = null;
-    private ReadOnlyDictionary<int, PotionData> PotionTable = null;
-
-    public ReadOnlyList<PotionData> GetPotionDataList()
-    {
-        return PotionList;
-    }
-
-    public PotionData GetPotionData(int key)
-    {
-        if (key == 0)
-        {
-            return null;
-        }
-
-        if (PotionTable.TryGetValue(key, out PotionData retVal) == true)
-        {
-            return retVal;
-        }
-        else
-        {
-            Debug.LogError($"Can not find UniqueID of PotionData: <{key}>");
-            return null;
-        }
-    }
-    #endregion
     #region Ingredient
     private ReadOnlyList<IngredientData> IngredientList = null;
     private ReadOnlyDictionary<int, IngredientData> IngredientTable = null;
@@ -56,6 +29,33 @@ public partial class DataTable
         else
         {
             Debug.LogError($"Can not find UniqueID of IngredientData: <{key}>");
+            return null;
+        }
+    }
+    #endregion
+    #region Potion
+    private ReadOnlyList<PotionData> PotionList = null;
+    private ReadOnlyDictionary<int, PotionData> PotionTable = null;
+
+    public ReadOnlyList<PotionData> GetPotionDataList()
+    {
+        return PotionList;
+    }
+
+    public PotionData GetPotionData(int key)
+    {
+        if (key == 0)
+        {
+            return null;
+        }
+
+        if (PotionTable.TryGetValue(key, out PotionData retVal) == true)
+        {
+            return retVal;
+        }
+        else
+        {
+            Debug.LogError($"Can not find UniqueID of PotionData: <{key}>");
             return null;
         }
     }
@@ -141,33 +141,6 @@ public partial class DataTable
         }
     }
     #endregion
-    #region Unlock
-    private ReadOnlyList<UnlockData> UnlockList = null;
-    private ReadOnlyDictionary<int, UnlockData> UnlockTable = null;
-
-    public ReadOnlyList<UnlockData> GetUnlockDataList()
-    {
-        return UnlockList;
-    }
-
-    public UnlockData GetUnlockData(int key)
-    {
-        if (key == 0)
-        {
-            return null;
-        }
-
-        if (UnlockTable.TryGetValue(key, out UnlockData retVal) == true)
-        {
-            return retVal;
-        }
-        else
-        {
-            Debug.LogError($"Can not find UniqueID of UnlockData: <{key}>");
-            return null;
-        }
-    }
-    #endregion
     #region Machine
     private ReadOnlyList<MachineData> MachineList = null;
     private ReadOnlyDictionary<int, MachineData> MachineTable = null;
@@ -249,6 +222,33 @@ public partial class DataTable
         }
     }
     #endregion
+    #region Unlock
+    private ReadOnlyList<UnlockData> UnlockList = null;
+    private ReadOnlyDictionary<int, UnlockData> UnlockTable = null;
+
+    public ReadOnlyList<UnlockData> GetUnlockDataList()
+    {
+        return UnlockList;
+    }
+
+    public UnlockData GetUnlockData(int key)
+    {
+        if (key == 0)
+        {
+            return null;
+        }
+
+        if (UnlockTable.TryGetValue(key, out UnlockData retVal) == true)
+        {
+            return retVal;
+        }
+        else
+        {
+            Debug.LogError($"Can not find UniqueID of UnlockData: <{key}>");
+            return null;
+        }
+    }
+    #endregion
     #region Layout
     private ReadOnlyList<LayoutData> LayoutList = null;
     private ReadOnlyDictionary<int, LayoutData> LayoutTable = null;
@@ -310,15 +310,15 @@ public partial class DataTable
         int loadedCount = 0;
 
         allCount++;
-        GetBytes_FromResources("Potion", (bytes) =>
-        {
-            LoadPotionData(bytes);
-            loadedCount++;
-        });
-        allCount++;
         GetBytes_FromResources("Ingredient", (bytes) =>
         {
             LoadIngredientData(bytes);
+            loadedCount++;
+        });
+        allCount++;
+        GetBytes_FromResources("Potion", (bytes) =>
+        {
+            LoadPotionData(bytes);
             loadedCount++;
         });
         allCount++;
@@ -340,12 +340,6 @@ public partial class DataTable
             loadedCount++;
         });
         allCount++;
-        GetBytes_FromResources("Unlock", (bytes) =>
-        {
-            LoadUnlockData(bytes);
-            loadedCount++;
-        });
-        allCount++;
         GetBytes_FromResources("Machine", (bytes) =>
         {
             LoadMachineData(bytes);
@@ -361,6 +355,12 @@ public partial class DataTable
         GetBytes_FromResources("Furniture", (bytes) =>
         {
             LoadFurnitureData(bytes);
+            loadedCount++;
+        });
+        allCount++;
+        GetBytes_FromResources("Unlock", (bytes) =>
+        {
+            LoadUnlockData(bytes);
             loadedCount++;
         });
         allCount++;
@@ -381,59 +381,28 @@ public partial class DataTable
 
     public void LoadForEditor()
     {
-        byte[] potionBytes = GetBytes_ForEditor("PotionData");
-        LoadPotionData(potionBytes);
         byte[] ingredientBytes = GetBytes_ForEditor("IngredientData");
         LoadIngredientData(ingredientBytes);
+        byte[] potionBytes = GetBytes_ForEditor("PotionData");
+        LoadPotionData(potionBytes);
         byte[] outputBytes = GetBytes_ForEditor("OutputData");
         LoadOutputData(outputBytes);
         byte[] productBytes = GetBytes_ForEditor("ProductData");
         LoadProductData(productBytes);
         byte[] structureBytes = GetBytes_ForEditor("StructureData");
         LoadStructureData(structureBytes);
-        byte[] unlockBytes = GetBytes_ForEditor("UnlockData");
-        LoadUnlockData(unlockBytes);
         byte[] machineBytes = GetBytes_ForEditor("MachineData");
         LoadMachineData(machineBytes);
         byte[] storageBytes = GetBytes_ForEditor("StorageData");
         LoadStorageData(storageBytes);
         byte[] furnitureBytes = GetBytes_ForEditor("FurnitureData");
         LoadFurnitureData(furnitureBytes);
+        byte[] unlockBytes = GetBytes_ForEditor("UnlockData");
+        LoadUnlockData(unlockBytes);
         byte[] layoutBytes = GetBytes_ForEditor("LayoutData");
         LoadLayoutData(layoutBytes);
         byte[] tipBytes = GetBytes_ForEditor("TipData");
         LoadTipData(tipBytes);
-    }
-
-    private void LoadPotionData(byte[] bytes)
-    {
-        List<PotionData> potionList = new List<PotionData>();
-        Dictionary<int, PotionData> potionTable = new Dictionary<int, PotionData>();
-
-        Reader = new BinaryReader(new MemoryStream(bytes));
-
-        while (Reader.BaseStream.Position < bytes.Length)
-        {
-            PotionData data = new PotionData(Reader);
-            if (potionTable.ContainsKey(data.TID) == true)
-            {
-                Debug.LogError("The duplicate TID: " + data.TID + " in Potion");
-                continue;
-            }
-            else if (data.TID == 0)
-            {
-                Debug.LogError("TID is 0 in Potion");
-                continue;
-            }
-
-            potionList.Add(data);
-            potionTable.Add(data.TID, data);
-        }
-
-        Reader.Close();
-
-        PotionList = new ReadOnlyList<PotionData>(potionList);
-        PotionTable = new ReadOnlyDictionary<int, PotionData>(potionTable);
     }
 
     private void LoadIngredientData(byte[] bytes)
@@ -465,6 +434,37 @@ public partial class DataTable
 
         IngredientList = new ReadOnlyList<IngredientData>(ingredientList);
         IngredientTable = new ReadOnlyDictionary<int, IngredientData>(ingredientTable);
+    }
+
+    private void LoadPotionData(byte[] bytes)
+    {
+        List<PotionData> potionList = new List<PotionData>();
+        Dictionary<int, PotionData> potionTable = new Dictionary<int, PotionData>();
+
+        Reader = new BinaryReader(new MemoryStream(bytes));
+
+        while (Reader.BaseStream.Position < bytes.Length)
+        {
+            PotionData data = new PotionData(Reader);
+            if (potionTable.ContainsKey(data.TID) == true)
+            {
+                Debug.LogError("The duplicate TID: " + data.TID + " in Potion");
+                continue;
+            }
+            else if (data.TID == 0)
+            {
+                Debug.LogError("TID is 0 in Potion");
+                continue;
+            }
+
+            potionList.Add(data);
+            potionTable.Add(data.TID, data);
+        }
+
+        Reader.Close();
+
+        PotionList = new ReadOnlyList<PotionData>(potionList);
+        PotionTable = new ReadOnlyDictionary<int, PotionData>(potionTable);
     }
 
     private void LoadOutputData(byte[] bytes)
@@ -560,37 +560,6 @@ public partial class DataTable
         StructureTable = new ReadOnlyDictionary<int, StructureData>(structureTable);
     }
 
-    private void LoadUnlockData(byte[] bytes)
-    {
-        List<UnlockData> unlockList = new List<UnlockData>();
-        Dictionary<int, UnlockData> unlockTable = new Dictionary<int, UnlockData>();
-
-        Reader = new BinaryReader(new MemoryStream(bytes));
-
-        while (Reader.BaseStream.Position < bytes.Length)
-        {
-            UnlockData data = new UnlockData(Reader);
-            if (unlockTable.ContainsKey(data.TID) == true)
-            {
-                Debug.LogError("The duplicate TID: " + data.TID + " in Unlock");
-                continue;
-            }
-            else if (data.TID == 0)
-            {
-                Debug.LogError("TID is 0 in Unlock");
-                continue;
-            }
-
-            unlockList.Add(data);
-            unlockTable.Add(data.TID, data);
-        }
-
-        Reader.Close();
-
-        UnlockList = new ReadOnlyList<UnlockData>(unlockList);
-        UnlockTable = new ReadOnlyDictionary<int, UnlockData>(unlockTable);
-    }
-
     private void LoadMachineData(byte[] bytes)
     {
         List<MachineData> machineList = new List<MachineData>();
@@ -682,6 +651,37 @@ public partial class DataTable
 
         FurnitureList = new ReadOnlyList<FurnitureData>(furnitureList);
         FurnitureTable = new ReadOnlyDictionary<int, FurnitureData>(furnitureTable);
+    }
+
+    private void LoadUnlockData(byte[] bytes)
+    {
+        List<UnlockData> unlockList = new List<UnlockData>();
+        Dictionary<int, UnlockData> unlockTable = new Dictionary<int, UnlockData>();
+
+        Reader = new BinaryReader(new MemoryStream(bytes));
+
+        while (Reader.BaseStream.Position < bytes.Length)
+        {
+            UnlockData data = new UnlockData(Reader);
+            if (unlockTable.ContainsKey(data.TID) == true)
+            {
+                Debug.LogError("The duplicate TID: " + data.TID + " in Unlock");
+                continue;
+            }
+            else if (data.TID == 0)
+            {
+                Debug.LogError("TID is 0 in Unlock");
+                continue;
+            }
+
+            unlockList.Add(data);
+            unlockTable.Add(data.TID, data);
+        }
+
+        Reader.Close();
+
+        UnlockList = new ReadOnlyList<UnlockData>(unlockList);
+        UnlockTable = new ReadOnlyDictionary<int, UnlockData>(unlockTable);
     }
 
     private void LoadLayoutData(byte[] bytes)

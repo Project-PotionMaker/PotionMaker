@@ -117,7 +117,7 @@ public class HallAreaPathFinder
                 return false;
             }
         }
-
+        Debug.LogWarning("경로 존재");
         return true;
     }
 

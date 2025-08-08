@@ -25,7 +25,34 @@ public class UI_DetailPage : MonoBehaviour
 
     public void Refresh(ProductDTO productDTO)
     {
-        _productImage.sprite = ImageManager.Instance.GetImage<ProductData>(productDTO.Data.TID);
+        Sprite productSprite;
+        switch (productDTO.Data.ProductType)
+        {
+            case EProductType.Machine:
+            {
+                int machineTID = DataTable.Instance.GetStructureData(productDTO.Data.TargetTID).TypeTID;
+                productSprite = ImageManager.Instance.GetImage<MachineData>(machineTID);
+                break;
+            }
+            case EProductType.Furniture:
+            {
+                int furnitureTID = DataTable.Instance.GetStructureData(productDTO.Data.TargetTID).TypeTID;
+                productSprite = ImageManager.Instance.GetImage<FurnitureData>(furnitureTID);
+                break;
+            }
+            case EProductType.HouseMoving:
+            {
+                int layoutTID = productDTO.Data.TargetTID;
+                productSprite = ImageManager.Instance.GetImage<LayoutData>(layoutTID);
+                break;
+            }
+            default:
+            {
+                productSprite = null;
+                break;
+            }
+        }
+        _productImage.sprite = productSprite;
         _productNameTextUI.text = productDTO.Data.Name;
 
         // TODO: 로컬라이제이션 연결로 수정

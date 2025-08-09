@@ -170,11 +170,7 @@ public class UI_Phase : MonoBehaviour
     {
         for (int i = 0; i < _deathCountHeart.Length; i++)
         {
-            _deathCountHeart[i].color = Color.black;
-        }
-        for (int i = 0; i < PhaseManager.Instance.DeathCount; i++)
-        {
-            _deathCountHeart[i].color = Color.white;
+            _deathCountHeart[i].color = i < PhaseManager.Instance.DeathCount ? Color.white : Color.black;
         }
     }
     public void ShowAlert(string text)

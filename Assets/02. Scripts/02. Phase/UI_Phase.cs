@@ -25,7 +25,7 @@ public class UI_Phase : MonoBehaviour
     [SerializeField]
     private GameObject[] _playerMask;
     [SerializeField]
-    private GameObject[] _deathCountHeart;
+    private Image[] _deathCountHeart;
     [SerializeField]
     private RectTransform _alertPanel;
     [SerializeField]
@@ -170,11 +170,7 @@ public class UI_Phase : MonoBehaviour
     {
         for (int i = 0; i < _deathCountHeart.Length; i++)
         {
-            _deathCountHeart[i].SetActive(false);
-        }
-        for (int i = 0; i < PhaseManager.Instance.DeathCount; i++)
-        {
-            _deathCountHeart[i].SetActive(true);
+            _deathCountHeart[i].color = i < PhaseManager.Instance.DeathCount ? Color.white : Color.black;
         }
     }
     public void ShowAlert(string text)

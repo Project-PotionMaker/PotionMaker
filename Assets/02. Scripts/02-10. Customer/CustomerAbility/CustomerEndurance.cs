@@ -12,6 +12,7 @@ public class CustomerEndurance : NetworkBehaviour
     private float _enduranceRate;
     public float EnduranceRate { get => _enduranceRate; set => _enduranceRate = value; }
 
+    [SyncVar]
     private float _loseEnduranceSpeed = 1f; // 인내심 감소 속도
     public float LoseEnduranceSpeed { get => _loseEnduranceSpeed; set => _loseEnduranceSpeed = value; } // 인내심 감소 속도
 

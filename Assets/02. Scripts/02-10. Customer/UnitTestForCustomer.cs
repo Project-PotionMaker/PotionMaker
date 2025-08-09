@@ -4,10 +4,10 @@ public class UnitTestForCustomer : MonoBehaviour
 {
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        //if (Input.GetKeyDown(KeyCode.Space))
         {
-            if(PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
-                ServiceStart();
+            //if(PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
+               // ServiceStart();
         }
     }
     public void ServiceStart()

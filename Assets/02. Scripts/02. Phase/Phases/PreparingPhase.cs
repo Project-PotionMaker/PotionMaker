@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Mirror;
 
 public class PreparingPhase : BasePhase
 {
@@ -10,7 +11,10 @@ public class PreparingPhase : BasePhase
     public override void EnterPhase()
     {
         base.EnterPhase();
-        PhaseManager.Instance.DeathCount = PhaseManager.Instance.MaxDeathCount;
+        if(NetworkServer.active)
+        {
+            PhaseManager.Instance.ResetDeathCount();
+        }
     }
 
     public override void ExitPhase()

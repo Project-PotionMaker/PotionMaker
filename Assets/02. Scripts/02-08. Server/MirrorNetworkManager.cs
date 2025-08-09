@@ -12,6 +12,7 @@ public class MirrorNetworkManager : NetworkRoomManager
 
     // netId -> UI 슬롯 번호 매핑 (0~3번만 사용)
     private Dictionary<uint, int> netIdToSlotMapping = new Dictionary<uint, int>();
+    public Dictionary<uint, int> NetIdToSlotMapping => netIdToSlotMapping;
     private bool[] slotUsed = new bool[4]; // UI 슬롯 사용 여부 (0~3번)
 
     public int GetSlotForNetId(uint netId)
@@ -160,7 +161,7 @@ public class MirrorNetworkManager : NetworkRoomManager
             if(gamePlayer.TryGetComponent<Player>(out Player playerScript))
             {
                 playerScript.playerName = roomPlayerScript.PlayerName;
-                playerScript.playerOrderIndex = roomPlayerScript.index;
+                playerScript.PlayerOrderIndex = roomPlayerScript.index;
             }
         }
 

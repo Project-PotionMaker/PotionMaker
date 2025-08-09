@@ -22,7 +22,7 @@ public class Player : NetworkBehaviour
     private Dictionary<Type, PlayerAbility> _abilityMap = new Dictionary<Type, PlayerAbility>();
 
     [SyncVar(hook = nameof(OnPlayerOrderIndexChanged))]
-    public int playerOrderIndex = -1;
+    public int PlayerOrderIndex = -1;
 
     [SyncVar(hook = nameof(OnPlayerNameChanged))]
     public string playerName = "플레이어";
@@ -79,6 +79,18 @@ public class Player : NetworkBehaviour
         }
     }
 
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        PlayerListManager.Instance.AddList(netId);
+    }
+
+    public override void OnStopClient()
+    {
+        base.OnStopClient();
+        PlayerListManager.Instance.RemoveList(netId);
+    }
+
     public GameObject GetObjectInFront()
     {
         Vector3 targetPosition = GetFrontPosition();
@@ -126,5 +138,12 @@ public class Player : NetworkBehaviour
     private void OnPlayerNameChanged(string oldName, string newName)
     {
         OnDataChanged?.Invoke();
+    }
+
+    [Command]
+    public void CmdRequestPing()
+    {
+        Vector3 position = GetFrontPosition();
+        VFXFactory.Instance.CreateObject(EVFXType.Ping, position, Quaternion.identity);
     }
 }

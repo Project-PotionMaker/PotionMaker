@@ -6,7 +6,7 @@ using System.Collections.Generic;
 public class UI_VoteSystem : MonoBehaviour
 {
     [SerializeField]
-    private List<Image> _voteBackgroundList;
+    private List<GameObject> _voteBackgroundList;
     [SerializeField]
     private List<Image> _checkIconList;
 
@@ -14,9 +14,9 @@ public class UI_VoteSystem : MonoBehaviour
 
     private void Awake()
     {
-        foreach(Image background in _voteBackgroundList)
+        foreach(GameObject background in _voteBackgroundList)
         {
-            background.enabled = false;
+            background.SetActive(false);
         }
         foreach (Image checkIcon in _checkIconList)
         {
@@ -54,14 +54,14 @@ public class UI_VoteSystem : MonoBehaviour
         {
             return;
         }
-        foreach (Image background in _voteBackgroundList)
+        foreach (GameObject background in _voteBackgroundList)
         {
-            background.enabled = false;
+            background.SetActive(false);
         }
         foreach (uint netId in PlayerListManager.Instance.PlayerNetIdList)
         {
             int index = NetworkClient.spawned[netId].GetComponent<Player>().PlayerOrderIndex;
-            _voteBackgroundList[index].enabled = true;
+            _voteBackgroundList[index].SetActive(true);
             if (VoteManager.Instance.IsVoted[index])
             {
                 _checkIconList[index].enabled = true;
@@ -76,9 +76,9 @@ public class UI_VoteSystem : MonoBehaviour
     private void OnDisable()
     {
         Debug.Log($"{gameObject} OnDisable");
-        foreach (Image background in _voteBackgroundList)
+        foreach (GameObject background in _voteBackgroundList)
         {
-            background.enabled = false;
+            background.SetActive(false);
         }
         foreach (Image checkIcon in _checkIconList)
         {

@@ -1,4 +1,4 @@
-﻿//////////////////////////////////////////////////////
+//////////////////////////////////////////////////////
 // MK Toon URP Standard Simple + Outline			//
 //					                                //
 // Created by Michael Kremmel                       //
@@ -203,7 +203,7 @@ Shader "MK/Toon/URP/Standard/Simple + Outline"
 			#pragma exclude_renderers gles gles3 glcore d3d11_9x wiiu n3ds switch
 			#pragma shader_feature_local __ _MK_LIGHT_CEL _MK_LIGHT_BANDED _MK_LIGHT_RAMP
 			#pragma shader_feature_local __ _MK_THRESHOLD_MAP
-			#pragma shader_feature_local __ _MK_ARTISTIC_DRAWN _MK_ARTISTIC_HATCHING _MK_ARTISTIC_SKETCH
+			#pragma multi_compile_local __ _MK_ARTISTIC_DRAWN _MK_ARTISTIC_HATCHING _MK_ARTISTIC_SKETCH
 			#pragma shader_feature_local __ _MK_ARTISTIC_PROJECTION_SCREEN_SPACE
 			//#pragma shader_feature_local __ _MK_ARTISTIC_ANIMATION_STUTTER
 			#pragma shader_feature_local __ _MK_NORMAL_MAP
@@ -350,7 +350,7 @@ Shader "MK/Toon/URP/Standard/Simple + Outline"
 			#pragma exclude_renderers gles gles3 glcore d3d11_9x wiiu n3ds switch
 			#pragma shader_feature_local __ _MK_LIGHT_CEL _MK_LIGHT_BANDED _MK_LIGHT_RAMP
 			#pragma shader_feature_local __ _MK_THRESHOLD_MAP
-			#pragma shader_feature_local __ _MK_ARTISTIC_DRAWN _MK_ARTISTIC_HATCHING _MK_ARTISTIC_SKETCH
+			#pragma multi_compile_local __ _MK_ARTISTIC_DRAWN _MK_ARTISTIC_HATCHING _MK_ARTISTIC_SKETCH
 			#pragma shader_feature_local __ _MK_ARTISTIC_PROJECTION_SCREEN_SPACE
 			//#pragma shader_feature_local __ _MK_ARTISTIC_ANIMATION_STUTTER
 			#pragma shader_feature_local __ _MK_NORMAL_MAP
@@ -893,7 +893,7 @@ Shader "MK/Toon/URP/Standard/Simple + Outline"
 			#pragma exclude_renderers gles d3d11_9x ps4 ps5 xboxone
 			#pragma shader_feature_local __ _MK_LIGHT_CEL _MK_LIGHT_BANDED _MK_LIGHT_RAMP
 			#pragma shader_feature_local __ _MK_THRESHOLD_MAP
-			#pragma shader_feature_local __ _MK_ARTISTIC_DRAWN _MK_ARTISTIC_HATCHING _MK_ARTISTIC_SKETCH
+			#pragma multi_compile_local __ _MK_ARTISTIC_DRAWN _MK_ARTISTIC_HATCHING _MK_ARTISTIC_SKETCH
 			#pragma shader_feature_local __ _MK_ARTISTIC_PROJECTION_SCREEN_SPACE
 			//#pragma shader_feature_local __ _MK_ARTISTIC_ANIMATION_STUTTER
 			#pragma shader_feature_local __ _MK_NORMAL_MAP
@@ -1036,7 +1036,7 @@ Shader "MK/Toon/URP/Standard/Simple + Outline"
 			#pragma exclude_renderers gles d3d11_9x ps4 ps5 xboxone
 			#pragma shader_feature_local __ _MK_LIGHT_CEL _MK_LIGHT_BANDED _MK_LIGHT_RAMP
 			#pragma shader_feature_local __ _MK_THRESHOLD_MAP
-			#pragma shader_feature_local __ _MK_ARTISTIC_DRAWN _MK_ARTISTIC_HATCHING _MK_ARTISTIC_SKETCH
+			#pragma multi_compile_local __ _MK_ARTISTIC_DRAWN _MK_ARTISTIC_HATCHING _MK_ARTISTIC_SKETCH
 			#pragma shader_feature_local __ _MK_ARTISTIC_PROJECTION_SCREEN_SPACE
 			//#pragma shader_feature_local __ _MK_ARTISTIC_ANIMATION_STUTTER
 			#pragma shader_feature_local __ _MK_NORMAL_MAP
@@ -1573,7 +1573,7 @@ Shader "MK/Toon/URP/Standard/Simple + Outline"
 			#pragma exclude_renderers gles3 d3d11 ps4 ps5 xboxone wiiu n3ds switch
 			#pragma shader_feature_local __ _MK_LIGHT_CEL _MK_LIGHT_BANDED _MK_LIGHT_RAMP
 			#pragma shader_feature_local __ _MK_THRESHOLD_MAP
-			#pragma shader_feature_local __ _MK_ARTISTIC_DRAWN _MK_ARTISTIC_HATCHING _MK_ARTISTIC_SKETCH
+			#pragma multi_compile_local __ _MK_ARTISTIC_DRAWN _MK_ARTISTIC_HATCHING _MK_ARTISTIC_SKETCH
 			#pragma shader_feature_local __ _MK_ARTISTIC_PROJECTION_SCREEN_SPACE
 			//#pragma shader_feature_local __ _MK_ARTISTIC_ANIMATION_STUTTER
 			#pragma shader_feature_local __ _MK_SURFACE_TYPE_TRANSPARENT
@@ -1704,7 +1704,7 @@ Shader "MK/Toon/URP/Standard/Simple + Outline"
 			#pragma exclude_renderers gles3 d3d11 ps4 ps5 xboxone wiiu n3ds switch
 			#pragma shader_feature_local __ _MK_LIGHT_CEL _MK_LIGHT_BANDED _MK_LIGHT_RAMP
 			#pragma shader_feature_local __ _MK_THRESHOLD_MAP
-			#pragma shader_feature_local __ _MK_ARTISTIC_DRAWN _MK_ARTISTIC_HATCHING _MK_ARTISTIC_SKETCH
+			#pragma multi_compile_local __ _MK_ARTISTIC_DRAWN _MK_ARTISTIC_HATCHING _MK_ARTISTIC_SKETCH
 			#pragma shader_feature_local __ _MK_ARTISTIC_PROJECTION_SCREEN_SPACE
 			//#pragma shader_feature_local __ _MK_ARTISTIC_ANIMATION_STUTTER
 			#pragma shader_feature_local __ _MK_SURFACE_TYPE_TRANSPARENT

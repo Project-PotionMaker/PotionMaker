@@ -1,4 +1,4 @@
-﻿//////////////////////////////////////////////////////
+//////////////////////////////////////////////////////
 // MK Toon URP Particles PBS + Refraction			//
 //					                                //
 // Created by Michael Kremmel                       //
@@ -256,7 +256,7 @@ Shader "MK/Toon/URP/Particles/Physically Based + Refraction"
 			#pragma shader_feature_local __ _MK_COLOR_BLEND_ADDITIVE _MK_COLOR_BLEND_SUBTRACTIVE _MK_COLOR_BLEND_OVERLAY _MK_COLOR_BLEND_COLOR _MK_COLOR_BLEND_DIFFERENCE
 			#pragma shader_feature_local __ _MK_LIGHT_CEL _MK_LIGHT_BANDED _MK_LIGHT_RAMP
 			#pragma shader_feature_local __ _MK_THRESHOLD_MAP
-			#pragma shader_feature_local __ _MK_ARTISTIC_DRAWN _MK_ARTISTIC_HATCHING _MK_ARTISTIC_SKETCH
+			#pragma multi_compile_local __ _MK_ARTISTIC_DRAWN _MK_ARTISTIC_HATCHING _MK_ARTISTIC_SKETCH
 			#pragma shader_feature_local __ _MK_ARTISTIC_PROJECTION_SCREEN_SPACE
 			//#pragma shader_feature_local __ _MK_ARTISTIC_ANIMATION_STUTTER
 			#pragma shader_feature_local __ _MK_NORMAL_MAP
@@ -421,7 +421,7 @@ Shader "MK/Toon/URP/Particles/Physically Based + Refraction"
 			#pragma shader_feature_local __ _MK_COLOR_BLEND_ADDITIVE _MK_COLOR_BLEND_SUBTRACTIVE _MK_COLOR_BLEND_OVERLAY _MK_COLOR_BLEND_COLOR _MK_COLOR_BLEND_DIFFERENCE
 			#pragma shader_feature_local __ _MK_LIGHT_CEL _MK_LIGHT_BANDED _MK_LIGHT_RAMP
 			#pragma shader_feature_local __ _MK_THRESHOLD_MAP
-			#pragma shader_feature_local __ _MK_ARTISTIC_DRAWN _MK_ARTISTIC_HATCHING _MK_ARTISTIC_SKETCH
+			#pragma multi_compile_local __ _MK_ARTISTIC_DRAWN _MK_ARTISTIC_HATCHING _MK_ARTISTIC_SKETCH
 			#pragma shader_feature_local __ _MK_ARTISTIC_PROJECTION_SCREEN_SPACE
 			//#pragma shader_feature_local __ _MK_ARTISTIC_ANIMATION_STUTTER
 			#pragma shader_feature_local __ _MK_NORMAL_MAP
@@ -732,7 +732,7 @@ Shader "MK/Toon/URP/Particles/Physically Based + Refraction"
 			#pragma shader_feature_local __ _MK_COLOR_BLEND_ADDITIVE _MK_COLOR_BLEND_SUBTRACTIVE _MK_COLOR_BLEND_OVERLAY _MK_COLOR_BLEND_COLOR _MK_COLOR_BLEND_DIFFERENCE
 			#pragma shader_feature_local __ _MK_LIGHT_CEL _MK_LIGHT_BANDED _MK_LIGHT_RAMP
 			#pragma shader_feature_local __ _MK_THRESHOLD_MAP
-			#pragma shader_feature_local __ _MK_ARTISTIC_DRAWN _MK_ARTISTIC_HATCHING _MK_ARTISTIC_SKETCH
+			#pragma multi_compile_local __ _MK_ARTISTIC_DRAWN _MK_ARTISTIC_HATCHING _MK_ARTISTIC_SKETCH
 			#pragma shader_feature_local __ _MK_ARTISTIC_PROJECTION_SCREEN_SPACE
 			//#pragma shader_feature_local __ _MK_ARTISTIC_ANIMATION_STUTTER
 			#pragma shader_feature_local __ _MK_NORMAL_MAP
@@ -893,7 +893,7 @@ Shader "MK/Toon/URP/Particles/Physically Based + Refraction"
 			#pragma shader_feature_local __ _MK_COLOR_BLEND_ADDITIVE _MK_COLOR_BLEND_SUBTRACTIVE _MK_COLOR_BLEND_OVERLAY _MK_COLOR_BLEND_COLOR _MK_COLOR_BLEND_DIFFERENCE
 			#pragma shader_feature_local __ _MK_LIGHT_CEL _MK_LIGHT_BANDED _MK_LIGHT_RAMP
 			#pragma shader_feature_local __ _MK_THRESHOLD_MAP
-			#pragma shader_feature_local __ _MK_ARTISTIC_DRAWN _MK_ARTISTIC_HATCHING _MK_ARTISTIC_SKETCH
+			#pragma multi_compile_local __ _MK_ARTISTIC_DRAWN _MK_ARTISTIC_HATCHING _MK_ARTISTIC_SKETCH
 			#pragma shader_feature_local __ _MK_ARTISTIC_PROJECTION_SCREEN_SPACE
 			//#pragma shader_feature_local __ _MK_ARTISTIC_ANIMATION_STUTTER
 			#pragma shader_feature_local __ _MK_NORMAL_MAP
@@ -1199,7 +1199,7 @@ Shader "MK/Toon/URP/Particles/Physically Based + Refraction"
 			#pragma shader_feature_local __ _MK_COLOR_BLEND_ADDITIVE _MK_COLOR_BLEND_SUBTRACTIVE _MK_COLOR_BLEND_OVERLAY _MK_COLOR_BLEND_COLOR _MK_COLOR_BLEND_DIFFERENCE
 			#pragma shader_feature_local __ _MK_LIGHT_CEL _MK_LIGHT_BANDED _MK_LIGHT_RAMP
 			#pragma shader_feature_local __ _MK_THRESHOLD_MAP
-			#pragma shader_feature_local __ _MK_ARTISTIC_DRAWN _MK_ARTISTIC_HATCHING _MK_ARTISTIC_SKETCH
+			#pragma multi_compile_local __ _MK_ARTISTIC_DRAWN _MK_ARTISTIC_HATCHING _MK_ARTISTIC_SKETCH
 			#pragma shader_feature_local __ _MK_ARTISTIC_PROJECTION_SCREEN_SPACE
 			//#pragma shader_feature_local __ _MK_ARTISTIC_ANIMATION_STUTTER
 			#pragma shader_feature_local __ _MK_SURFACE_TYPE_TRANSPARENT
@@ -1348,7 +1348,7 @@ Shader "MK/Toon/URP/Particles/Physically Based + Refraction"
 			#pragma shader_feature_local __ _MK_COLOR_BLEND_ADDITIVE _MK_COLOR_BLEND_SUBTRACTIVE _MK_COLOR_BLEND_OVERLAY _MK_COLOR_BLEND_COLOR _MK_COLOR_BLEND_DIFFERENCE
 			#pragma shader_feature_local __ _MK_LIGHT_CEL _MK_LIGHT_BANDED _MK_LIGHT_RAMP
 			#pragma shader_feature_local __ _MK_THRESHOLD_MAP
-			#pragma shader_feature_local __ _MK_ARTISTIC_DRAWN _MK_ARTISTIC_HATCHING _MK_ARTISTIC_SKETCH
+			#pragma multi_compile_local __ _MK_ARTISTIC_DRAWN _MK_ARTISTIC_HATCHING _MK_ARTISTIC_SKETCH
 			#pragma shader_feature_local __ _MK_ARTISTIC_PROJECTION_SCREEN_SPACE
 			//#pragma shader_feature_local __ _MK_ARTISTIC_ANIMATION_STUTTER
 			#pragma shader_feature_local __ _MK_SURFACE_TYPE_TRANSPARENT

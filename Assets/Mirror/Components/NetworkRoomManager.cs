@@ -141,7 +141,7 @@ namespace Mirror
                     ? Instantiate(playerPrefab, startPos.position, startPos.rotation)
                     : Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
             }
-
+            DontDestroyOnLoad(gamePlayer);
             if (!OnRoomServerSceneLoadedForPlayer(conn, roomPlayer, gamePlayer))
                 return;
 
@@ -287,6 +287,7 @@ namespace Mirror
         /// <param name="conn">Connection from client.</param>
         public override void OnServerAddPlayer(NetworkConnectionToClient conn)
         {
+            Debug.Log("확인");
             // increment the index before adding the player, so first player starts at 1
             clientIndex++;
 

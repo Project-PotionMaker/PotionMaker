@@ -26,7 +26,8 @@ public class MovingHouse
         UnlockManager.Instance.SaveUnlockedData();
 
         UnlockManager.Instance.OnListUpdated += OnHouseMoved;
-        MirrorNetworkManager.Instance.ServerChangeScene(sceneName);
+        //MirrorNetworkManager.Instance.ServerChangeScene(sceneName);
+        MirrorNetworkManager.Instance.TestMove();
     }
 
     private void OnHouseMoved()

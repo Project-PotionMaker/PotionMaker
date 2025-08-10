@@ -15,7 +15,6 @@ public class ShopInfo
 
     // 추가적으로 필요한 정보
     // 그리드 가구 배치정보
-    // 누적 판매량
 
     public ShopInfo(string shopName)
     {
@@ -28,10 +27,11 @@ public class ShopInfo
         ShopName = shopName;
         Currency = new Currency();
         Reputation = new Reputation();
+        Sales = new Sales(0);
         Day = 1;
     }
 
-    public ShopInfo(string shopName, Currency currency, Reputation reputation, int day)
+    public ShopInfo(string shopName, Currency currency, Reputation reputation, Sales sales, int day)
     {
         ShopInfoSpecification shopInfoSpecification = new ShopInfoSpecification();
         if (!shopInfoSpecification.IsSatisfied(shopName, currency, reputation, day))
@@ -42,6 +42,21 @@ public class ShopInfo
         ShopName = shopName;
         Currency = currency;
         Reputation = reputation;
+        Sales = sales;
         Day = day;
+    }
+
+    public ShopInfo(ShopInfoDTO shopInfoDto)
+    {
+        ShopName = shopInfoDto.ShopName;
+        Currency = shopInfoDto.Currency;
+        Reputation = shopInfoDto.Reputation;
+        Sales = shopInfoDto.Sales;
+        Day = shopInfoDto.Day;
+    }
+
+    public ShopInfoDTO ToDTO()
+    {
+        return new ShopInfoDTO(this);
     }
 }

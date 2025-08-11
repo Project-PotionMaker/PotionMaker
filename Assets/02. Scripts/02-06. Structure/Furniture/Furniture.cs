@@ -46,6 +46,8 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
     public FurnitureData Data => _data;
 
     [SerializeField]
+    private Collider _collider;
+    [SerializeField]
     private Transform _model;
 
     [SerializeField]
@@ -223,6 +225,8 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
             if (pickedUpItem != null && sender != null)
             {
                 NetworkServer.spawned[pickedUpItem.GetComponent<NetworkIdentity>().netId].AssignClientAuthority(sender);
+                //GetComponent<NetworkTransformReliable>().syncMode = SyncMode.Owner;
+
                 // GridManager의 TargetRpc를 호출하여 클라이언트에서 배치 상태를 시작하도록 지시
                 GridManager.Instance.TargetRpcStartPlacement(sender, pickedUpItem.GetComponent<NetworkIdentity>().netId);
             }
@@ -268,6 +272,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
             {
                 if (GridManager.Instance.ServerCanPlaceObjectAt(targetPosition, _data.AreaType))
                 {
+                    //GetComponent<NetworkTransformReliable>().syncMode = SyncMode.Observers;
                     GridManager.Instance.ServerPlaceStructure(targetPosition, dropItemNetId, sender);
                     dropItemIdentity.RemoveClientAuthority();
                     success = true;
@@ -286,7 +291,12 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
             }
         }
 
-        TargetRpcOnDrop(sender, success);
+        if (success)
+        {
+            dropItemIdentity.RemoveClientAuthority();
+        }
+
+        TargetRpcOnDrop(sender, success, transform.position);
     }
 
     [Command(requiresAuthority = false)]
@@ -353,12 +363,12 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
     }
 
     [TargetRpc]
-    private void TargetRpcOnDrop(NetworkConnectionToClient target, bool success)
+    private void TargetRpcOnDrop(NetworkConnectionToClient target, bool success, Vector3 position)
     {
         //transform.position = _grid.CellToWorld(gridPosition) + new Vector3(0.5f, 0, 0.5f);
         if (NetworkClient.connection.identity.TryGetComponent<Player>(out Player player))
         {
-            player.GetAbility<PlayerPickupAbility>().ReceiveDroppedItem(success);
+            player.GetAbility<PlayerPickupAbility>().ReceiveDroppedItem(success, position);
         }
     }
     #endregion
@@ -420,6 +430,11 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
     public int GetStructureTID()
     {
         return _data.StructureTID;
+    }
+
+    public void SetCollider(bool active)
+    {
+        _collider.enabled = active;
     }
 
     public void StartRefund()

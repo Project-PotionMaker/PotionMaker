@@ -17,6 +17,8 @@ public class ModelOnTID
 public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
 {
     [SerializeField]
+    private Collider _collider;
+    [SerializeField]
     private Transform _model;
     [SerializeField]
     private Transform _putItemPosition;
@@ -390,6 +392,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
             if (pickedUpItem != null && sender != null)
             {
                 NetworkServer.spawned[pickedUpItem.GetComponent<NetworkIdentity>().netId].AssignClientAuthority(sender);
+                //GetComponent<NetworkTransformReliable>().syncMode = SyncMode.Owner;
                 // GridManager의 TargetRpc를 호출하여 클라이언트에서 배치 상태를 시작하도록 지시
                 GridManager.Instance.TargetRpcStartPlacement(sender, pickedUpItem.GetComponent<NetworkIdentity>().netId);
             }
@@ -441,6 +444,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
             {
                 if (GridManager.Instance.ServerCanPlaceObjectAt(targetPosition, _data.AreaType))
                 {
+                    //GetComponent<NetworkTransformReliable>().syncMode = SyncMode.Observers;
                     GridManager.Instance.ServerPlaceStructure(targetPosition, dropItemNetId, sender);
                     dropItemIdentity.RemoveClientAuthority();
                     success = true;
@@ -460,17 +464,18 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
 
         if (success)
         {
+            dropItemIdentity.RemoveClientAuthority();
         }
 
-        TargetRpcOnDrop(sender, success);
+        TargetRpcOnDrop(sender, success, transform.position);
     }
 
     [TargetRpc]
-    private void TargetRpcOnDrop(NetworkConnectionToClient target, bool success)
+    private void TargetRpcOnDrop(NetworkConnectionToClient target, bool success, Vector3 position)
     {
         if (NetworkClient.connection.identity.TryGetComponent<Player>(out Player player))
         {
-            player.GetAbility<PlayerPickupAbility>().ReceiveDroppedItem(success);
+            player.GetAbility<PlayerPickupAbility>().ReceiveDroppedItem(success, position);
         }
     }
 
@@ -540,6 +545,11 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
     public int GetStructureTID()
     {
         return _data.StructureTID;
+    }
+
+    public void SetCollider(bool active)
+    {
+        _collider.enabled = active;
     }
 
     public void StartRefund()

@@ -4,10 +4,6 @@ using UnityEngine.InputSystem;
 
 public class InputManager : MonoBehaviourSingleton<InputManager>
 {
-    [Header("Input Action Asset")]
-    [SerializeField]
-    private InputActionAsset _inputActions;
-
     private Vector2 _moveInput;
     public Vector2 MoveInput => _moveInput;
 

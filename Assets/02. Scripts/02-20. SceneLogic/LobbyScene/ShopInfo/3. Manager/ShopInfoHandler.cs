@@ -29,6 +29,7 @@ public class ShopInfoHandler : MonoBehaviour
         foreach (var slot in _shopInfoList)
         {
             slot.InitShopInfoSlot(_createPopup);
+            slot.OnShopInfoSelected += ChangeShopInfo;
             slot.OnShopInfoDeleted += DeleteSelectedShopInfo;
         }
     }
@@ -51,8 +52,15 @@ public class ShopInfoHandler : MonoBehaviour
         OnShopInfoUpdated?.Invoke(shopInfo);
     }
 
+    public void ChangeShopInfo(ShopInfo shopInfo)
+    {
+        _selectedShopInfo = shopInfo;
+        OnShopInfoUpdated?.Invoke(shopInfo);
+    }
+
     private void DeleteSelectedShopInfo()
     {
         _selectedShopInfo = null;
+        OnShopInfoUpdated?.Invoke(null);
     }
 }

@@ -10,7 +10,7 @@ public enum SlotState
 public class ShopInfoSlot : MonoBehaviour
 {
     public event Action<ShopInfo> OnShopInfoCreated;
-    public event Action OnShopInfoSelected;
+    public event Action<ShopInfo> OnShopInfoSelected;
     public event Action OnShopInfoUnSelected;
     public event Action OnShopInfoDeleted;
 
@@ -34,7 +34,7 @@ public class ShopInfoSlot : MonoBehaviour
 
     public void Select()
     {
-        OnShopInfoSelected?.Invoke();
+        OnShopInfoSelected?.Invoke(_shopInfo);
     }
 
     public void UnSelect()

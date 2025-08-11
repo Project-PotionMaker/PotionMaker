@@ -49,7 +49,7 @@ public class UI_ShopInfoSlot : MonoBehaviour
         _buttonShopName.gameObject.SetActive(false);
     }
 
-    public void RefreshOnSelected()
+    public void RefreshOnSelected(ShopInfo shopInfo)
     {
         ChangeButtonColor(_buttonShopName, Color.white);
         _buttonDelete.gameObject.SetActive(true);

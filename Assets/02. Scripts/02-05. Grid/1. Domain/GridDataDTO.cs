@@ -5,8 +5,8 @@ using UnityEngine;
 [Serializable]
 public class GridDataDTO
 {
-    public readonly Dictionary<Vector3Int, PlacementDTO> _placedObjectDict;
-    public readonly Dictionary<Vector3Int, EAreaType> _availableAreaDict;
+    public readonly Dictionary<Vector3Int, PlacementDTO> PlacedObjectDict;
+    public readonly Dictionary<Vector3Int, EAreaType> AvailableAreaDict;
     public GridDataDTO(Dictionary<Vector3Int, Placement> placedObjectDict, Dictionary<Vector3Int, EAreaType> availableAreaDict)
     {
         Dictionary<Vector3Int, PlacementDTO> temporaryPlacedDict = new();
@@ -14,13 +14,13 @@ public class GridDataDTO
         {
             temporaryPlacedDict.Add(entry.Key, entry.Value.ToDTO());
         }
-        _placedObjectDict = temporaryPlacedDict;
-        _availableAreaDict = availableAreaDict;
+        PlacedObjectDict = temporaryPlacedDict;
+        AvailableAreaDict = availableAreaDict;
     }
 
     public GridDataDTO(GridData gridData)
     {
-        _placedObjectDict = gridData.PlacedObjectDict;
-        _availableAreaDict = gridData.AvailableAreaDict;
+        PlacedObjectDict = gridData.PlacedObjectDict;
+        AvailableAreaDict = gridData.AvailableAreaDict;
     }
 }

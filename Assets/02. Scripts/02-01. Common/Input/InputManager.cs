@@ -19,6 +19,7 @@ public class InputManager : MonoBehaviourSingleton<InputManager>
     private void OnMove(InputValue value)
     {
         _moveInput = value.Get<Vector2>();
+        Debug.Log(_moveInput);
     }
 
     private void OnInteract(InputValue value)
@@ -26,25 +27,30 @@ public class InputManager : MonoBehaviourSingleton<InputManager>
         if (value.isPressed)
         {
             OnInteractChanged?.Invoke(true);
+            Debug.Log("Interact : true");
         }
         else
         {
             OnInteractChanged?.Invoke(false);
+            Debug.Log("Interact : false");
         }
     }
 
     private void OnPickup()
     {
         OnPickupEvent?.Invoke();
+        Debug.Log("Pickup");
     }
 
     private void OnPing()
     {
         OnPingEvent?.Invoke();
+        Debug.Log("Ping");
     }
 
     private void OnReady()
     {
         OnReadyEvent?.Invoke();
+        Debug.Log("Ready");
     }
 }

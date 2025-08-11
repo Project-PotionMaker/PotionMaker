@@ -6,7 +6,7 @@ public class GridSaveData
     public int StructureTID;
     public int IngredientTID;
 
-    public GridSaveData(Vector3Int gridPosition, int strucutreTID, int ingredientTID)
+    public GridSaveData(Vector3Int gridPosition, int strucutreTID, int ingredientTID = 0)
     {
         GridPosition = gridPosition;
         StructureTID = strucutreTID;

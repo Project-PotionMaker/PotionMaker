@@ -23,7 +23,7 @@ public class TitleScene : MonoBehaviour
     [SerializeField]
     private float _pressSpaceToStartTextFadeTime;
 
-    private bool _isDirectionEnd = false;
+    private bool _isTitleFadeEnd = false;
 
     private void Start()
     {
@@ -32,7 +32,7 @@ public class TitleScene : MonoBehaviour
 
     private void Update()
     {
-        if (_isDirectionEnd && Input.GetKeyDown(KeyCode.Space))
+        if (_isTitleFadeEnd && Input.GetKeyDown(KeyCode.Space))
         {
             SceneManager.LoadScene("1_LobbyScene");
         }
@@ -43,7 +43,7 @@ public class TitleScene : MonoBehaviour
         _titleImage.DOFade(1f, _titleImageFadeTime).OnComplete
             (() =>
             {
-                _isDirectionEnd = true;
+                _isTitleFadeEnd = true;
                 _pressSpaceToStartText.DOFade(1f, _pressSpaceToStartTextFadeTime).SetLoops(-1, LoopType.Yoyo)
                 .SetEase(Ease.InSine);
                 _titleVFX.Play();

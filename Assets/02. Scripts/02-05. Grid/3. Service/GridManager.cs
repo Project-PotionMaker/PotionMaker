@@ -222,7 +222,7 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
             GameObject structure = structureIdentity.gameObject;
             StructureData data = DataTable.Instance.GetStructureData(structure.GetComponent<IGridItemHandler>().GetStructureTID());
 
-            structure.transform.rotation = Quaternion.identity;
+            //structure.transform.rotation = Quaternion.identity;
             structure.transform.position = _grid.CellToWorld(gridPosition) + new Vector3(0.5f, 0, 0.5f);
             _serverGridData.AddObjectAt(gridPosition, new Vector2Int(data.Width, data.Length), data.TID, data.StructureType, structure);
 

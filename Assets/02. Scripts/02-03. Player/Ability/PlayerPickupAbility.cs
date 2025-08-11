@@ -155,8 +155,9 @@ public class PlayerPickupAbility : PlayerAbility
         // 1. 이전에 들고 있던 가구가 있었다면 부모-자식 관계를 해제합니다.
         if (oldIdentity != null)
         {
+            _heldItemIdentity.transform.rotation = Quaternion.identity;
+            _heldItemIdentity.transform.localPosition = Vector3.zero;
             oldIdentity.transform.SetParent(null);
-            GridManager.Instance.StopPlacement();
         }
 
         // 2. 새롭게 들게 된 가구가 있다면 부모-자식 관계를 설정합니다.
@@ -181,6 +182,10 @@ public class PlayerPickupAbility : PlayerAbility
     public void CmdDropItem()
     {
         if (!_owner.isServer) return;
+        _heldItemIdentity.transform.rotation = Quaternion.identity;
+        _heldItemIdentity.transform.localPosition = Vector3.zero;
+
         _heldItemIdentity = null;
+
     }
 }

@@ -2,6 +2,7 @@ using Mirror;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 using VInspector;
@@ -354,6 +355,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
     [TargetRpc]
     private void TargetRpcOnDrop(NetworkConnectionToClient target, bool success)
     {
+        //transform.position = _grid.CellToWorld(gridPosition) + new Vector3(0.5f, 0, 0.5f);
         if (NetworkClient.connection.identity.TryGetComponent<Player>(out Player player))
         {
             player.GetAbility<PlayerPickupAbility>().ReceiveDroppedItem(success);

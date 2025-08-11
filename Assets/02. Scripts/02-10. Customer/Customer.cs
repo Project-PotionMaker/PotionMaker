@@ -15,8 +15,7 @@ public class Customer : NetworkBehaviour
     public CustomerEndurance CustomerEndurance { get => _customerEndurance; set => _customerEndurance = value; } // 인내심 컴포넌트
 
     [SyncVar]
-    [SerializeField]
-    private int _requestedPotionTID = 10000;
+    private int _requestedPotionTID;
     public int RequestedPotionTID { get => _requestedPotionTID; set => _requestedPotionTID = value; } // 요청한 포션 ID
 
     [SerializeField]
@@ -43,30 +42,11 @@ public class Customer : NetworkBehaviour
     private void OnEnable()
     {
         _currentState = ECustomerStateType.Lining; // 초기 상태 설정
-        //if(PhaseManager.Instance.PotionDataList.Count > 0 )
-        //{
-        //    int index = UnityEngine.Random.Range(0, PhaseManager.Instance.PotionDataList.Count);
-        //    _requestedPotionTID = PhaseManager.Instance.PotionDataList[index].TID;
-        //}
-        //else
-        //{
-        //    Debug.LogWarning("PotionDataList is empty. Cannot assign a requested potion to the customer.");
-        //}
-    }
-
-    public override void OnStartClient()
-    {
-        _currentState = ECustomerStateType.Lining; // 초기 상태 설정
-        //if (PhaseManager.Instance.PotionDataList.Count > 0)
-        //{
-        //    int index = UnityEngine.Random.Range(0, PhaseManager.Instance.PotionDataList.Count);
-        //    _requestedPotionTID = PhaseManager.Instance.PotionDataList[index].TID;
-        //}
-        //else
-        //{
-        //    Debug.LogWarning("PotionDataList is empty. Cannot assign a requested potion to the customer.");
-        //}
-        _requestedPotionTID = 10000;
+        if (PhaseManager.Instance.PotionTIDList.Count > 0)
+        {
+            int index = UnityEngine.Random.Range(0, PhaseManager.Instance.PotionTIDList.Count);
+            _requestedPotionTID = PhaseManager.Instance.PotionTIDList[index];
+        }
         OnCreated?.Invoke(); // 생성 이벤트 호출
     }
 

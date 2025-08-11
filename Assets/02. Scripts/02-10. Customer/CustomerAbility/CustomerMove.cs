@@ -100,6 +100,7 @@ public class CustomerMove : NetworkBehaviour
         }
         else if (_owner.CurrentState == ECustomerStateType.PickingUp)
         {
+            Debug.Log(_lastTarget);
             CustomerManager.Instance.OnServedSuccess(_owner, _owner.PickupTableId);
         }
         else if (_owner.CurrentState == ECustomerStateType.Leaving)
@@ -122,7 +123,7 @@ public class CustomerMove : NetworkBehaviour
         _collider.enabled = false; // 충돌체 비활성화
 
         Sequence sitSeq = DOTween.Sequence();
-        Vector3 sit = new Vector3(_owner.ChairPosition.x+GRID_OFFSET, _owner.ChairPosition.y, _owner.ChairPosition.z+GRID_OFFSET);
+        Vector3 sit = new Vector3(_owner.ChairPosition.x, _owner.ChairPosition.y, _owner.ChairPosition.z);
         sitSeq.Append(transform.DOMove(sit, 1f).SetEase(Ease.OutSine));
         sitSeq.Join(transform.DORotate(new Vector3(0,_owner.ChairRotate+90,0), 1f).SetEase(Ease.InOutSine));
 

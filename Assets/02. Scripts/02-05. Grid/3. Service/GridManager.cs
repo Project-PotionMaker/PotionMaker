@@ -426,6 +426,7 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
             ServerCreateStructure(10003, new Vector3(-3, 0, 4)); //가열 냄비
             ServerCreateStructure(10003, new Vector3(-2, 0, 4)); //가열 냄비
             ServerCreateStructure(10003, new Vector3(-1, 0, 4)); //가열 냄비
+            ServerCreateStructure(10002, new Vector3(0, 0, 3)); // 혼합기
             ServerCreateStructure(10012, new Vector3(-1, 0, 0)); // 픽업테이블
             ServerCreateStructure(10012, new Vector3(-1, 0, 1)); // 픽업테이블
             ServerCreateStructure(10012, new Vector3(-1, 0, 2)); // 픽업테이블
@@ -438,7 +439,7 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
             ServerCreateStructure(10017, new Vector3(4, 0, 2), 10005); // 식물상자
             ServerCreateStructure(10017, new Vector3(4, 0, 3), 10006); // 식물상자
             ServerCreateStructure(10017, new Vector3(4, 0, 4), 10007); // 식물상자
-            //ServerCreateStructure(10018, new Vector3(4, 0, 5), 20002); // 동물상자
+            ServerCreateStructure(10018, new Vector3(4, 0, 1), 20002); // 동물상자
         }
         
     }

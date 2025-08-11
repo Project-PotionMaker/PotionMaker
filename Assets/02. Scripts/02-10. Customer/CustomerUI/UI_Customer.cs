@@ -30,6 +30,7 @@ public class UI_Customer : MonoBehaviour
         _owner.OnStateChanged += SetSlide;
         _owner.OnStateChanged += SetStateImage;
         _owner.CustomerEndurance.OnEnduranceChanged += SetSlide; // 인내심 변경 이벤트에 슬라이더 설정 메서드 등록
+        _owner.CustomerEndurance.OnEnduranceChanged += SetBuffIcon;
         _owner.OnCreated += SetSlide; // 생성 시 슬라이더 설정 메서드 등록
         _owner.OnCreated += SetStateImage; // 생성 시 상태 이미지 설정 메서드 등록
         SetSlide(); // 초기 슬라이더 설정
@@ -82,7 +83,6 @@ public class UI_Customer : MonoBehaviour
             _canvas.SetActive(true);
             _stateImage.sprite = ImageManager.Instance.GetImage<PotionData>(_owner.RequestedPotionTID);
             _stateImage.color = Color.white;
-            SetBuffIcon();
         }
     }
 

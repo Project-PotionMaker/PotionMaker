@@ -29,6 +29,7 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
 
     // 서버 전용: 배치 데이터를 관리합니다.
     private GridData _serverGridData;
+    public GridData ServerGridData => _serverGridData;
 
     private HallAreaPathFinder _hallAreaPathFinder = new();
 
@@ -221,8 +222,8 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
             GameObject structure = structureIdentity.gameObject;
             StructureData data = DataTable.Instance.GetStructureData(structure.GetComponent<IGridItemHandler>().GetStructureTID());
 
-            structure.transform.position = _grid.CellToWorld(gridPosition);
             structure.transform.rotation = Quaternion.identity;
+            structure.transform.position = _grid.CellToWorld(gridPosition) + new Vector3(0.5f, 0, 0.5f);
             _serverGridData.AddObjectAt(gridPosition, new Vector2Int(data.Width, data.Length), data.TID, data.StructureType, structure);
 
             PlacementData newPlacementData = new PlacementData(structureNetId, data.TID, structure.transform.rotation);
@@ -348,8 +349,8 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
         Vector3Int gridPosition = GetGridPosition(position);
         if (_serverGridData.CanPlaceObjectAt(gridPosition, data.AreaType))
         {
-            newObject.transform.position = _grid.CellToWorld(gridPosition);
             newObject.transform.rotation = Quaternion.identity;
+            newObject.transform.position = _grid.CellToWorld(gridPosition) + new Vector3(0.5f, 0, 0.5f);
             _serverGridData.AddObjectAt(gridPosition, new Vector2Int(data.Width, data.Length), data.TID, data.StructureType, newObject);
 
             PlacementData newPlacementData = new PlacementData(newObject.GetComponent<NetworkIdentity>().netId, data.TID, newObject.transform.rotation);

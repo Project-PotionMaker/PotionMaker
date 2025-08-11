@@ -18,5 +18,7 @@ public class PlayerPingAbility : PlayerAbility
     private void Ping()
     {
         _animationAbility.SetTrigger(EPlayerAnimationParameter.Ping);
+
+        _owner.CmdRequestPing();
     }
 }

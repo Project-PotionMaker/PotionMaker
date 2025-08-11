@@ -25,6 +25,7 @@ public class UI_Machine : MonoBehaviour
         _machine.OnDataChanged += Refresh;
         PhaseManager.Instance.OnPhaseChanged += ChangeState;
         ChangeState();
+        Refresh();
     }
 
     public void ChangeState()
@@ -32,22 +33,18 @@ public class UI_Machine : MonoBehaviour
         if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
         {
             _interactPanel.SetActive(true);
-            _sliderPanel.SetActive(false);
         }
         else
         {
             _interactPanel.SetActive(false);
-            _sliderPanel.SetActive(true);
         }
-
-        // 테스트
-        _interactPanel.SetActive(false);
     }
 
     public void Refresh()
     {
         _nameTextUI.text = _machine.Data.Name;
 
+        ProgressSlider.gameObject.SetActive(_machine.CurrentProgress > 0);
         ProgressSlider.value = _machine.CurrentProgress / _machine.Data.MaxProgress;
         _refundSlider.gameObject.SetActive(_machine.RefundProgress > 0);
         _refundSlider.value = _machine.RefundProgress;

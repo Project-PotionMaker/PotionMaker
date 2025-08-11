@@ -39,16 +39,29 @@ public class Customer : NetworkBehaviour
         _customerEndurance = GetComponent<CustomerEndurance>();
 
     }
-    private void OnEnable()
+    public override void OnStartClient()
     {
+        base.OnStartClient();
         _currentState = ECustomerStateType.Lining; // 초기 상태 설정
-        if (PhaseManager.Instance.PotionTIDList.Count > 0)
+        Debug.Log("Customer created with netId: " + netId);
+        if (isServer)
         {
-            int index = UnityEngine.Random.Range(0, PhaseManager.Instance.PotionTIDList.Count);
-            _requestedPotionTID = PhaseManager.Instance.PotionTIDList[index];
+            PickRandomPotion(); // 서버에서 랜덤 포션 선택
         }
         OnCreated?.Invoke(); // 생성 이벤트 호출
     }
+    [Server]
+    private void PickRandomPotion()
+    {
+        Debug.Log("Picking random potion for customer: " + netId);
+        if (PhaseManager.Instance.PotionTIDList.Count > 0)
+        {
+            Debug.Log("Available potion TIDs: " + string.Join(", ", PhaseManager.Instance.PotionTIDList));
+            int index = UnityEngine.Random.Range(0, PhaseManager.Instance.PotionTIDList.Count);
+            _requestedPotionTID = PhaseManager.Instance.PotionTIDList[index];
+        }
+    }
+
 
     [Server]
     public void TransitionState(ECustomerStateType nextState)

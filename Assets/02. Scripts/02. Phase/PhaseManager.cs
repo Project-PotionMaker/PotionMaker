@@ -33,8 +33,8 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>
     private DailyPotionPicker _dailyPotionPicker;
     public DailyPotionPicker DailyPotionPicker => _dailyPotionPicker;
 
-    private List<int> _potionTIDList = new();
-    public List<int> PotionTIDList => _potionTIDList;
+    private SyncList<int> _potionTIDList = new();
+    public IReadOnlyList<int> PotionTIDList => _potionTIDList;
 
     [SyncVar]
     private bool _isGameOver = false;
@@ -55,10 +55,6 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>
             {
                 ServerInitializePotionDataList();
             }
-        }
-        else
-        {
-            CmdSyncPotionList();
         }
     }
 
@@ -119,20 +115,7 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>
         {
             PotionData data = potionDataList[i];
             _potionTIDList.Add(data.TID);
-        }
-        RpcSyncPotionDataList(_potionTIDList);
-        
-    }
-    [Command]
-    private void CmdSyncPotionList()
-    {
-        RpcSyncPotionDataList(_potionTIDList);
-    }
-
-    [ClientRpc]
-    private void RpcSyncPotionDataList(List<int> potionTIDList)
-    {
-        _potionTIDList = potionTIDList;
+        }   
     }
 
     [Server]

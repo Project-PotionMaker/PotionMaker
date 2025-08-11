@@ -100,7 +100,6 @@ public class CustomerMove : NetworkBehaviour
         }
         else if (_owner.CurrentState == ECustomerStateType.PickingUp)
         {
-            Debug.Log(_lastTarget);
             CustomerManager.Instance.OnServedSuccess(_owner, _owner.PickupTableId);
         }
         else if (_owner.CurrentState == ECustomerStateType.Leaving)

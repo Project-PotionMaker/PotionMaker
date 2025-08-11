@@ -69,8 +69,13 @@ public class GridData
             return false;
         }
 
+        if (_availableAreaDict.ContainsKey(gridPosition) == false)
+        {
+            return false;
+        }
+
         // 배치하려는 첫 번째 위치의 AreaType을 확인합니다.
-        if (_availableAreaDict.ContainsKey(gridPosition) && (_availableAreaDict[gridPosition] != StructureType && _availableAreaDict[gridPosition] != EAreaType.FrontYard))
+        if (_availableAreaDict[gridPosition] != StructureType && _availableAreaDict[gridPosition] != EAreaType.FrontYard)
         {
             return false;
         }

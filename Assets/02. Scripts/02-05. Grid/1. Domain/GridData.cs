@@ -35,24 +35,9 @@ public class GridData
         _availableAreaDict = availableAreaDict;
     }
 
-    public GridData()
-    {
-        _availableAreaDict = new();
-    }
-
-    public GridDataDTO ToDTO()
-    {
-        return new GridDataDTO(this);
-    }
-
     public void InitAvailableAreaDict(Dictionary<Vector3Int, EAreaType> availableAreaDict)
     {
         _availableAreaDict = availableAreaDict;
-    }
-
-    public void LoadGridData(Dictionary<Vector3Int, int> gridDeploymentDict)
-    {
-
     }
 
     public void AddObjectAt(Vector3Int gridPosition, Vector2Int objectSize, int tid, EStructureType type, GameObject sturctureObject)

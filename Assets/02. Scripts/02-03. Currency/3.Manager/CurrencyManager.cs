@@ -1,7 +1,5 @@
 using Mirror;
-//using Photon.Pun;
 using System;
-using System.Diagnostics;
 
 public class CurrencyManager : NetworkBehaviourSingleton<CurrencyManager>
 {

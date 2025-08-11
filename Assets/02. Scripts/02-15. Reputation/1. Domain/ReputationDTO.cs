@@ -1,5 +1,6 @@
-using UnityEngine;
+using System;
 
+[Serializable]
 public class ReputationDTO
 {
     public readonly float Value;

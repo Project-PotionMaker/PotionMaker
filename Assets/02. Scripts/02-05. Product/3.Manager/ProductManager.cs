@@ -35,7 +35,6 @@ public class ProductManager : NetworkBehaviourSingleton<ProductManager>
         base.OnStartClient();
         Global.Instance.OnDataLoaded += LoadProductData;
         LoadProductData();
-        //CmdRequestUpdateProducts();
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
     public override void OnStopClient()
@@ -52,15 +51,6 @@ public class ProductManager : NetworkBehaviourSingleton<ProductManager>
 
     private void InitProductManager()
     {
-        //if (!NetworkClient.ready)
-        //{
-        //    NetworkClient.Ready();
-        //}
-        //if (!isServer)
-        //{
-        //    return;
-        //}
-
         if (UnlockManager.Instance.NewUnlockedTIDDict != null)
         {
             UnlockProducts();
@@ -156,50 +146,9 @@ public class ProductManager : NetworkBehaviourSingleton<ProductManager>
         Debug.Log($"구매 결과: {result}");
     }
 
-    //[Command(requiresAuthority = false)]
-    //public void CmdRequestUnlock(int productID)
-    //{
-    //    Unlock(productID);
-    //}
-
-    //[Server]
     private void Unlock(int productTID)
     {
-        //if (!isServer)
-        //{
-        //    throw new InvalidOperationException($"{nameof(Unlock)}() is server-only. Use {nameof(CmdRequestUnlock)}() from client.");
-        //}
-
         Product targetProduct = _productListDict.SelectMany(keyValuePair => keyValuePair.Value).FirstOrDefault(product => product.Data.TID == productTID);
         targetProduct.Unlock();
-        //UpdateProduct(targetProduct.Data.TID, targetProduct.IsUnlocked);
     }
-
-    //[Command(requiresAuthority = false)]
-    //public void CmdRequestUpdateProducts()
-    //{
-    //    UpdateProducts();
-    //}
-
-    //[Server]
-    //private void UpdateProducts()
-    //{
-    //    if (!isServer)
-    //    {
-    //        throw new InvalidOperationException("UpdateProducts() is server-only. Use CmdRequestUpdateProducts() from client.");
-    //    }
-
-    //    List<ProductDTO> targetProductList = ProductListDict.SelectMany(keyValuePair => keyValuePair.Value).ToList();
-    //    foreach (ProductDTO productDTO in targetProductList)
-    //    {
-    //        UpdateProduct(productDTO.Data.TID, productDTO.IsUnlocked);
-    //    }
-    //}
-
-    //[ClientRpc]
-    //public void UpdateProduct(int productTID, bool isUnlocked)
-    //{
-    //    Product targetProduct = _productListDict.SelectMany(keyValuePair => keyValuePair.Value).FirstOrDefault(product => product.Data.TID == productTID);
-    //    targetProduct.SetProduct(isUnlocked);
-    //}
 }

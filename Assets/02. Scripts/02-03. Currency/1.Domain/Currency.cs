@@ -18,6 +18,11 @@ public class Currency
         _value = value;
     }
 
+    public Currency(CurrencyDTO currencyDto)
+    {
+        _value = currencyDto.Value;
+    }
+
     public void SetCurrency(int value)
     {
         if (value < 0)

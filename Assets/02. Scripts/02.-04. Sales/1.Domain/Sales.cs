@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using static UnityEngine.Rendering.DebugUI;
 
 public class Sales
 {
@@ -54,6 +53,13 @@ public class Sales
         }
     }
     
+    public Sales(SalesDTO salesDto)
+    {
+        _totalSales = salesDto.TotalSales;
+        _dailySales = salesDto.DailySales;
+        _totalSalesVolumeDict = salesDto.TotalSalesVolumeDict;
+        _dailySalesVolumeDict = salesDto.DailySalesVolumeDict;
+    }
     public int GetTotalSalesVolume()
     {
         int sum = 0;

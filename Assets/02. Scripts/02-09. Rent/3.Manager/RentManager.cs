@@ -1,5 +1,4 @@
 using Mirror;
-//using Photon.Pun;
 using System;
 using UnityEngine;
 
@@ -10,6 +9,7 @@ public class RentManager : NetworkBehaviourSingleton<RentManager>
   
     public override void OnStartClient()
     {
+        base.OnStartClient();
         Global.Instance.OnDataLoaded += InitRentManager;
         InitRentManager();
     }

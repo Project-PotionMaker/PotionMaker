@@ -1,4 +1,3 @@
-//using Photon.Pun;
 using UnityEngine;
 
 public class CurrencyTest : MonoBehaviour
@@ -29,14 +28,6 @@ public class CurrencyTest : MonoBehaviour
             SalesManager.Instance.RequestSell(10001);
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            ProductManager.Instance.CmdRequestUnlock(10000);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha4))
-        {
-            ProductManager.Instance.CmdRequestUnlock(10001);
-        }
 
         if (Input.GetKeyDown(KeyCode.M))
         {

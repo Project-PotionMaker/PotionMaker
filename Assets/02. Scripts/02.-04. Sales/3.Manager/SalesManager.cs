@@ -1,5 +1,4 @@
 using Mirror;
-//using Photon.Pun;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,13 +10,6 @@ public class SalesManager : NetworkBehaviourSingleton<SalesManager>
 
     private Sales _sales;
     public SalesDTO Sales => _sales.ToDTO();
-
-
-    // 네트워크 매니저에서 처리
-    //public override void OnJoinedRoom()
-    //{
-    //    InitSalesManager();
-    //}
 
     private void InitSalesManager()
     {

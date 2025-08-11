@@ -46,6 +46,7 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
     }
     public override void OnStartClient()
     {
+        base.OnStartClient();
         Dictionary<EPhaseType, BasePhase> phaseDictionary = PhaseManager.Instance.PhaseDictionary;
         phaseDictionary[EPhaseType.ServingPhase].OnPhaseEntered += PreService;
         phaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += ForceReturn; 

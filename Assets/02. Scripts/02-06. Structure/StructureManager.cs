@@ -9,6 +9,7 @@ public class StructureManager : NetworkBehaviourSingleton<StructureManager>
 
     public override void OnStartClient()
     {
+        base.OnStartClient();
         ReadOnlyList<StructureData> structureDataList = DataTable.Instance.GetStructureDataList();
 
         foreach(StructureData data in structureDataList)

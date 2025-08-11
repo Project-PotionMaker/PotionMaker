@@ -15,6 +15,8 @@ using VInspector;
 /// </summary>
 public class GridManager : NetworkBehaviourSingleton<GridManager>
 {
+    public Action OnInitialized;
+
     [Foldout("Hierarchy")]
     [SerializeField]
     private Grid _grid;
@@ -47,7 +49,8 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
     private List<NetworkIdentity> _pickupTableForCustomerList = new();
     public List<NetworkIdentity> PickupTableForCustomerList => _pickupTableForCustomerList;
 
-    public Action OnInitialized;
+    private List<GridSaveData> _gridSaveDataList = new();
+    public List<GridSaveDataDTO> GridSaveDataList => _gridSaveDataList.Select(gridSaveData => gridSaveData.ToDTO()).ToList();
 
     public override void OnStartClient()
     {
@@ -390,11 +393,31 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
     }
 
     [Server]
-    public void ServerCreateStructuresOnSaveData(Dictionary<Vector3Int, int> gridDeploymentDict)
+    public void MakeGridSaveDataList()
     {
-        foreach (var deploymentInfo in gridDeploymentDict)
+        foreach (var placedInfo in _serverGridData.PlacedObjectDict)
         {
-            ServerCreateStructure(deploymentInfo.Value, deploymentInfo.Key);
+            Vector3Int gridPosition = placedInfo.Key;
+            int structureTID = placedInfo.Value.TID;
+            int ingredientTID = placedInfo.Value.IngredientTID;
+            _gridSaveDataList.Add(new GridSaveData(gridPosition, structureTID, ingredientTID));
+        }
+    }
+
+    [Server]
+    public void ServerCreateStructuresOnSaveData(GridData gridData)
+    {
+        foreach (var objectInfo in gridData.PlacedObjectDict)
+        {
+            Vector3Int gridPosition = objectInfo.Key;
+            int TID = objectInfo.Value.TID;
+            int ingredientTID = objectInfo.Value.IngredientTID;
+
+            StructureData data = DataTable.Instance.GetStructureData(TID);
+            GameObject newObject = StructureManager.Instance.ServerCreateStructure(TID, ingredientTID);
+
+            newObject.transform.rotation = Quaternion.identity;
+            newObject.transform.position = _grid.CellToWorld(gridPosition) + new Vector3(0.5f, 0, 0.5f);
         }
     }
 
@@ -485,8 +508,7 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
 }
 
 
-
-[System.Serializable]
+[Serializable]
 public struct PlacementData
 {
     public uint netId;

@@ -13,7 +13,7 @@ public class ShopInfo
     public Currency Currency;
     public Reputation Reputation;
     public Sales Sales;
-    public GridData GridData; // 그리드 가구 배치정보
+    public List<GridSaveData> GridSaveDataList;
     public int Day;
 
     public ShopInfo(string shopName)
@@ -27,13 +27,13 @@ public class ShopInfo
         ShopName = shopName;
         Currency = new Currency();
         Reputation = new Reputation();
-        GridData = new GridData();
+        GridSaveDataList = new();
         Sales = new Sales(0);
         Day = 1;
     }
 
     public ShopInfo(string shopName, Currency currency, Reputation reputation, Sales sales,
-         GridData gridData, int day)
+         List<GridSaveData> gridSaveDataList, int day)
     {
         ShopInfoSpecification shopInfoSpecification = new ShopInfoSpecification();
         if (!shopInfoSpecification.IsSatisfied(shopName, currency, reputation, day))
@@ -44,7 +44,7 @@ public class ShopInfo
         ShopName = shopName;
         Currency = currency;
         Reputation = reputation;
-        GridDeploymentDict = gridDeploymentDict;
+        GridSaveDataList = gridSaveDataList;
         Sales = sales;
         Day = day;
     }
@@ -55,7 +55,7 @@ public class ShopInfo
         Currency = new Currency(shopInfoDto.Currency);
         Reputation = new Reputation(shopInfoDto.Reputation);
         Sales = new Sales(shopInfoDto.Sales);
-        GridDeploymentDict = shopInfoDto.GridDeploymentDict;
+        GridSaveDataList = shopInfoDto.GridSaveDataList.Select(gridSaveData => new GridSaveData(gridSaveData)).ToList();
         Day = shopInfoDto.Day;
     }
 

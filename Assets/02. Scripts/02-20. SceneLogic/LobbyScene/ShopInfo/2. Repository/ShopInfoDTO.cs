@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 
@@ -10,7 +11,7 @@ public class ShopInfoDTO
     public readonly CurrencyDTO Currency;
     public readonly ReputationDTO Reputation;
     public readonly SalesDTO Sales;
-    public readonly GridDataDTO GridData; // 그리드 가구 배치정보
+    public readonly List<GridSaveDataDTO> GridSaveDataList; // 그리드 가구 배치정보
     public readonly int Day;
 
     public ShopInfoDTO(string shopName, CurrencyDTO currency, 
@@ -29,7 +30,7 @@ public class ShopInfoDTO
         Currency = shopInfo.Currency.ToDTO();
         Reputation = shopInfo.Reputation.ToDTO();
         Sales = shopInfo.Sales.ToDTO();
-        GridData = shopInfo.GridData.ToDTO();
+        GridSaveDataList = shopInfo.GridSaveDataList.Select(gridSaveData => gridSaveData.ToDTO()).ToList();
         Day = shopInfo.Day;
     }
 }

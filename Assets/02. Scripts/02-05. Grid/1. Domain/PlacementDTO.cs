@@ -7,12 +7,15 @@ public class PlacementDTO
 {
     public readonly List<Vector3Int> OccupiedPositions;
     public readonly int TID;
-    public readonly int PlacedObjectIndex;
+    public readonly EStructureType StructureType;
+    public readonly int IngredientTID;
 
-    public PlacementDTO(List<Vector3Int> occupiedPositions, int tid, int placedObjectIndex)
+    public PlacementDTO(List<Vector3Int> occupiedPositions, int tid, EStructureType structureType,
+        int ingredientTID)
     {
         OccupiedPositions = occupiedPositions;
         TID = tid;
-        PlacedObjectIndex = placedObjectIndex;
+        StructureType = structureType;
+        IngredientTID = ingredientTID;
     }
 }

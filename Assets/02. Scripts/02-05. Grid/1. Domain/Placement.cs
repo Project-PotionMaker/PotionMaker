@@ -22,9 +22,16 @@ public class Placement
         IngredientTID = ingredientTID;
     }
 
+    public Placement(PlacementDTO placemenmtDto)
+    {
+        OccupiedPositionList = placemenmtDto.OccupiedPositions;
+        TID = placemenmtDto.TID;
+        StructureType = placemenmtDto.StructureType;
+        IngredientTID = placemenmtDto.IngredientTID;
+    }
+
     public PlacementDTO ToDTO()
     {
-        // return new PlacementDTO(OccupiedPositionList, TID, PlacedObjectIndex);
-        return null;
+        return new PlacementDTO(OccupiedPositionList, TID, StructureType, IngredientTID);
     }
 }

@@ -390,6 +390,15 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
     }
 
     [Server]
+    public void ServerCreateStructuresOnSaveData(Dictionary<Vector3Int, int> gridDeploymentDict)
+    {
+        foreach (var deploymentInfo in gridDeploymentDict)
+        {
+            ServerCreateStructure(deploymentInfo.Value, deploymentInfo.Key);
+        }
+    }
+
+    [Server]
     public void ServerRefundStructure(int structureTID, GameObject refundObject)
     {
         _managedStructureDict[structureTID].Remove(refundObject.GetComponent<NetworkIdentity>());

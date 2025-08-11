@@ -1,5 +1,3 @@
-using NUnit.Framework;
-using NUnit.Framework.Constraints;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,7 +7,8 @@ public class Placement
     public int TID { get; private set; }
     public EStructureType StructureType { get; private set; }
     public GameObject StructureObject { get; private set; }
-    public Placement(List<Vector3Int> occupiedPositionList, int tid, EStructureType type, GameObject structureObject)
+    public int IngredientTID { get; private set; }
+    public Placement(List<Vector3Int> occupiedPositionList, int tid, EStructureType type, GameObject structureObject, int ingredientTID = 0)
     {
         if (tid < 10000)
         {
@@ -20,11 +19,12 @@ public class Placement
         TID = tid;
         StructureType = type;
         StructureObject = structureObject;
+        IngredientTID = ingredientTID;
     }
 
     public PlacementDTO ToDTO()
     {
-        //return new PlacementDTO(OccupiedPositionList, TID, PlacedObjectIndex);
+        // return new PlacementDTO(OccupiedPositionList, TID, PlacedObjectIndex);
         return null;
     }
 }

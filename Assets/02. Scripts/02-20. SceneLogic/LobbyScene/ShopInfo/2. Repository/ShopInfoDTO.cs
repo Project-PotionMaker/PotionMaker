@@ -1,21 +1,20 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 
 [Serializable]
 public class ShopInfoDTO
 {
     public readonly string ShopName;
-    public readonly Currency Currency;
-    public readonly Reputation Reputation;
-    public readonly Sales Sales;
-    public int Day;
+    public readonly CurrencyDTO Currency;
+    public readonly ReputationDTO Reputation;
+    public readonly SalesDTO Sales;
+    public readonly GridDataDTO GridData; // 그리드 가구 배치정보
+    public readonly int Day;
 
-    // 추가적으로 필요한 정보
-    // 현재 포션 상점에서의 그리드 가구 배치정보
-
-    public ShopInfoDTO(string shopName, Currency currency, 
-        Reputation reputation, Sales sales, int day)
+    public ShopInfoDTO(string shopName, CurrencyDTO currency, 
+        ReputationDTO reputation, SalesDTO sales, int day)
     {
         ShopName = shopName;
         Currency = currency;
@@ -27,9 +26,10 @@ public class ShopInfoDTO
     public ShopInfoDTO(ShopInfo shopInfo)
     {
         ShopName = shopInfo.ShopName;
-        Currency = shopInfo.Currency;
-        Reputation = shopInfo.Reputation;
-        Sales = shopInfo.Sales;
+        Currency = shopInfo.Currency.ToDTO();
+        Reputation = shopInfo.Reputation.ToDTO();
+        Sales = shopInfo.Sales.ToDTO();
+        GridData = shopInfo.GridData.ToDTO();
         Day = shopInfo.Day;
     }
 }

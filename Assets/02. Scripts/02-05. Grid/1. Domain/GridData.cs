@@ -10,9 +10,14 @@ using UnityEngine;
 public class GridData
 {
     private Dictionary<Vector3Int, Placement> _placedObjectDict = new();
+
+    public Dictionary<Vector3Int, PlacementDTO> PlacedObjectDict => _placedObjectDict.ToDictionary(pair => pair.Key, pair => pair.Value.ToDTO());
+
     public HashSet<Vector3Int> PlacedPositionHashSet => _placedObjectDict.Keys.ToHashSet();
     public ReadOnlyList<int> PlacedObjectList => new ReadOnlyList<int>(_placedObjectDict.Values.Select(placement => placement.TID).ToList());
+
     private Dictionary<Vector3Int, EAreaType> _availableAreaDict;
+    public Dictionary<Vector3Int, EAreaType> AvailableAreaDict => _availableAreaDict;
 
     private List<Vector3Int> LRUDPositionList = new List<Vector3Int> { new Vector3Int(0,0,1)
                                                                        , new Vector3Int(1,0,0)
@@ -28,6 +33,26 @@ public class GridData
         }
 
         _availableAreaDict = availableAreaDict;
+    }
+
+    public GridData()
+    {
+        _availableAreaDict = new();
+    }
+
+    public GridDataDTO ToDTO()
+    {
+        return new GridDataDTO(this);
+    }
+
+    public void InitAvailableAreaDict(Dictionary<Vector3Int, EAreaType> availableAreaDict)
+    {
+        _availableAreaDict = availableAreaDict;
+    }
+
+    public void LoadGridData(Dictionary<Vector3Int, int> gridDeploymentDict)
+    {
+
     }
 
     public void AddObjectAt(Vector3Int gridPosition, Vector2Int objectSize, int tid, EStructureType type, GameObject sturctureObject)

@@ -17,4 +17,10 @@ public class GridDataDTO
         _placedObjectDict = temporaryPlacedDict;
         _availableAreaDict = availableAreaDict;
     }
+
+    public GridDataDTO(GridData gridData)
+    {
+        _placedObjectDict = gridData.PlacedObjectDict;
+        _availableAreaDict = gridData.AvailableAreaDict;
+    }
 }

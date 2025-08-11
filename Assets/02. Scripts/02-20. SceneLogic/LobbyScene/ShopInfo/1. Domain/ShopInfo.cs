@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 
@@ -11,10 +13,8 @@ public class ShopInfo
     public Currency Currency;
     public Reputation Reputation;
     public Sales Sales;
+    public GridData GridData; // 그리드 가구 배치정보
     public int Day;
-
-    // 추가적으로 필요한 정보
-    // 그리드 가구 배치정보
 
     public ShopInfo(string shopName)
     {
@@ -27,11 +27,13 @@ public class ShopInfo
         ShopName = shopName;
         Currency = new Currency();
         Reputation = new Reputation();
+        GridData = new GridData();
         Sales = new Sales(0);
         Day = 1;
     }
 
-    public ShopInfo(string shopName, Currency currency, Reputation reputation, Sales sales, int day)
+    public ShopInfo(string shopName, Currency currency, Reputation reputation, Sales sales,
+         GridData gridData, int day)
     {
         ShopInfoSpecification shopInfoSpecification = new ShopInfoSpecification();
         if (!shopInfoSpecification.IsSatisfied(shopName, currency, reputation, day))
@@ -42,6 +44,7 @@ public class ShopInfo
         ShopName = shopName;
         Currency = currency;
         Reputation = reputation;
+        GridDeploymentDict = gridDeploymentDict;
         Sales = sales;
         Day = day;
     }
@@ -49,9 +52,10 @@ public class ShopInfo
     public ShopInfo(ShopInfoDTO shopInfoDto)
     {
         ShopName = shopInfoDto.ShopName;
-        Currency = shopInfoDto.Currency;
-        Reputation = shopInfoDto.Reputation;
-        Sales = shopInfoDto.Sales;
+        Currency = new Currency(shopInfoDto.Currency);
+        Reputation = new Reputation(shopInfoDto.Reputation);
+        Sales = new Sales(shopInfoDto.Sales);
+        GridDeploymentDict = shopInfoDto.GridDeploymentDict;
         Day = shopInfoDto.Day;
     }
 

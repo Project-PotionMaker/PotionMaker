@@ -13,6 +13,8 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>, IShopInfoSa
     public event Action OnTimerRunning;
     public event Action OnDeathCountChanged;
 
+    public static event Action OnInitialized;
+
     private BasePhase _currentPhase;
     public BasePhase CurrentPhase { get => _currentPhase; set => _currentPhase = value; }
     private Dictionary<EPhaseType, BasePhase> _phaseDictionary;
@@ -65,13 +67,7 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>, IShopInfoSa
 
     public void InitPhase()
     {
-        //if(저장 데이터가 null이면)
-        {
-            _day = 1;
-        }//else
-        {
-            //저장 데이터에서 _day를 불러오기
-        }
+        _day = ShopInfoManager.Instance.ShopInfo.Day;
         _phaseDictionary = new Dictionary<EPhaseType, BasePhase>
         {
             { EPhaseType.PreparingPhase, new PreparingPhase() },
@@ -81,6 +77,7 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>, IShopInfoSa
         };
         _currentPhase = _phaseDictionary[EPhaseType.PreparingPhase];
         _currentPhase.EnterPhase();
+        OnInitialized?.Invoke();
     }
 
     [Server]

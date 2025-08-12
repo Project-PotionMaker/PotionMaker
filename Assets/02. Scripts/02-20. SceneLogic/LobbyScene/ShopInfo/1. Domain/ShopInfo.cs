@@ -6,14 +6,14 @@ using System.Linq;
 // 저장 데이터가 굉장히 많이 추가될 예정
 public class ShopInfo
 {
-    public string ShopName;
-    public int SlotIndex;
-    public int Day;
-    public int PotionHouseTier;
-    public Currency Currency;
-    public Reputation Reputation;
-    public Sales Sales;
-    public List<GridSaveData> GridSaveDataList;
+    public string ShopName; // 포션 상점명
+    public int SlotIndex; // 포션 상점이 저장될 슬롯 인덱스
+    public int Day; // 영업일 수
+    public int PotionHouseTier; // 포션 상점 티어
+    public Currency Currency; // 재화
+    public Reputation Reputation; // 평판
+    public Sales Sales; // 판매량
+    public List<GridSaveData> GridSaveDataList; // 그리드 가구 배치 정보
 
     public ShopInfo(string shopName, int slotIndex)
     {

@@ -450,6 +450,10 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
         {
             ServerCreateStructure(data.StructureTID, data.GridPosition, data.IngredientTID);
         }
+
+        ServerCreateStructure(10014, PotionHouse.Instance.Layout.CashierSpawnPosition); // 계산기 스폰
+        ServerCreateStructure(10020, PotionHouse.Instance.Layout.PracticeSpawnPosition); // 연습모드 스폰
+
         _hallAreaPathFinder.InitGridPathFinder
             (GetPositionByAreaType(EAreaType.Hall).ToHashSet(),
             _serverGridData.PlacedPositionHashSet,
@@ -504,6 +508,11 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
         _gridSaveDataList.Clear();
         foreach (var placedInfo in _serverGridData.PlacedObjectDict)
         {
+            if (StructureManager.Instance.SpecialStructureTIDDict[ESpecialStructureType.Casher] == placedInfo.Value.TID ||
+                StructureManager.Instance.SpecialStructureTIDDict[ESpecialStructureType.Practice] == placedInfo.Value.TID)
+            {
+                continue;
+            }
             Vector3Int gridPosition = placedInfo.Key;
             int structureTID = placedInfo.Value.TID;
             int ingredientTID = placedInfo.Value.IngredientTID;

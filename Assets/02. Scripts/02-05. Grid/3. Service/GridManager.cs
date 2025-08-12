@@ -14,8 +14,6 @@ using VInspector;
 /// </summary>
 public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSaveable
 {
-    public Action OnInitialized;
-
     [Foldout("Hierarchy")]
     [SerializeField]
     private Grid _grid;
@@ -115,7 +113,6 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
         LoadGridSaveData();
 
         StopPlacement();
-        OnInitialized?.Invoke();
     }
 
     public List<NetworkIdentity> GetCustomerFurnitureList(ESpecialStructureType type)
@@ -128,6 +125,11 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
         }
         else
         {
+            if(_managedStructureDict.TryGetValue(tid, out List<NetworkIdentity> value))
+            {
+                return value;
+            }
+            _managedStructureDict.Add(tid, new List<NetworkIdentity>());
             return _managedStructureDict[tid];
         }
     }
@@ -378,7 +380,7 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
             return true;
         }
 
-        NetworkServer.Destroy(newObject);
+        StructureFactory.Instance.ReturnObject(newObject);
         return false;
     }
 

@@ -54,9 +54,6 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
             phaseDictionary[EPhaseType.PracticingPhase].OnPhaseEntered += PreService;
             phaseDictionary[EPhaseType.PracticingPhase].OnPhaseExited += ForceReturn;
         }
-
-        _customerSpawnPosition = PotionHouse.Instance.Layout.CustomerSpawnPosition;
-        _customerUnspawnPosition = PotionHouse.Instance.Layout.CustomerUnspawnPosition;
     }
 
     [Server]

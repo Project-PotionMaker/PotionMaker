@@ -16,11 +16,36 @@ MonoBehaviour:
   LimitToCurrentRefreshRate: 0
   LimitToUniqueResolutions: 1
   LimitMaxResolutionToDisplayResolution: 0
-  SkipRefreshRatesWith59Hz: 1
+  SkipRefreshRatesWith59Hz: 0
   AddRefreshRateToLabels: 0
-  AllowedAspectRatios: []
+  AllowedAspectRatios:
+  - {x: 16, y: 9}
   AllowedAspectRatioDelta: 0.02
-  CustomResolutions: []
+  CustomResolutions:
+  - Width: 960
+    Height: 540
+    RefreshNumerator: 0
+    RefreshDenominator: 0
+  - Width: 1280
+    Height: 720
+    RefreshNumerator: 0
+    RefreshDenominator: 0
+  - Width: 1600
+    Height: 900
+    RefreshNumerator: 0
+    RefreshDenominator: 0
+  - Width: 1920
+    Height: 1080
+    RefreshNumerator: 0
+    RefreshDenominator: 0
+  - Width: 2560
+    Height: 1440
+    RefreshNumerator: 0
+    RefreshDenominator: 0
+  - Width: 3840
+    Height: 2160
+    RefreshNumerator: 0
+    RefreshDenominator: 0
   ResolutionFormat: '{0}x{1}'
   RefreshRateFormat: ' ({0}Hz)'
   AddCustomResolutionOptionIfWindowed: 0

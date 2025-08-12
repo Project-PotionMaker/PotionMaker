@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using VInspector;
 using Mirror;
+using System.Collections;
 
 public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>, IShopInfoSaveable
 {
@@ -32,19 +33,29 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>, IShopInfoSa
     private DailyPotionPicker _dailyPotionPicker;
     public DailyPotionPicker DailyPotionPicker => _dailyPotionPicker;
 
-    private List<PotionData> _potionDataList = new();
-    public List<PotionData> PotionDataList => _potionDataList;
+    private SyncList<int> _potionTIDList = new();
+    public IReadOnlyList<int> PotionTIDList => _potionTIDList;
 
     [SyncVar]
     private bool _isGameOver = false;
     public bool IsGameOver { get => _isGameOver; set => _isGameOver = value; }
 
-    protected override void Awake()
+    public override void OnStartClient()
     {
-        base.Awake();
+        base.OnStartClient();
         _deathCount = _maxDeathCount;
         InitPhase();
-        Global.Instance.OnDataLoaded += InitializePotionDataList;
+        if (isServer)
+        {
+            if(DataTable.Instance.GetPotionDataList() == null)
+            {
+                Global.Instance.OnDataLoaded += ServerInitializePotionDataList;
+            }
+            else
+            {
+                ServerInitializePotionDataList();
+            }
+        }
     }
 
     private void Update()
@@ -72,10 +83,39 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>, IShopInfoSa
         _currentPhase.EnterPhase();
     }
 
-    private void InitializePotionDataList()
+    [Server]
+    private void ServerInitializePotionDataList()
     {
+        Debug.Log("서버에서 포션 데이터 리스트 초기화 시작");
         _dailyPotionPicker = new DailyPotionPicker();
-        // _potionDataList = _dailyPotionPicker.PickDailyPotion(int currentPotionHouseTier);
+
+        ServerPickPotionListFromHouse();
+    }
+    private IEnumerator WaitPotionHouse()
+    {
+        while (PotionHouse.Instance == null)
+            yield return null;
+
+        ServerPickPotionListFromHouse(); // 재시도
+    }
+    [Server]
+    private void ServerPickPotionListFromHouse()
+    {
+        if(PotionHouse.Instance == null)
+        {
+            Debug.LogWarning("PotionHouse가 아직 초기화되지 않았습니다. 잠시 기다립니다.");
+            StartCoroutine(WaitPotionHouse());
+            return;
+        }
+
+        Debug.Log("서버에서 포션 리스트를 포션 하우스에서 선택합니다.");
+        _potionTIDList.Clear();
+        List<PotionData> potionDataList = _dailyPotionPicker.PickDailyPotion(PotionHouse.Instance.PotionHouseTier);
+        for(int i = 0; i < potionDataList.Count; i++)
+        {
+            PotionData data = potionDataList[i];
+            _potionTIDList.Add(data.TID);
+        }   
     }
 
     [Server]
@@ -94,8 +134,7 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>, IShopInfoSa
             OnDayPassed?.Invoke();
             if (isServer)
             {
-                // _potionDataList = _dailyPotionPicker.PickDailyPotion(int currentPotionHouseTier);
-                SyncDailyPotionsToClients();
+                ServerPickPotionListFromHouse(); 
             }
         }
         _currentPhase = _phaseDictionary[nextPhase];
@@ -103,36 +142,6 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>, IShopInfoSa
         OnPhaseChanged?.Invoke();
     }
 
-    [Server]
-    public void SyncDailyPotionsToClients()
-    {
-        int[] potionIDs = new int[_potionDataList.Count];
-        for (int i = 0; i < _potionDataList.Count; i++)
-        {
-            potionIDs[i] = _potionDataList[i].TID;
-        }
-
-        RpcSyncPotionList(potionIDs);
-    }
-
-    [ClientRpc]
-    private void RpcSyncPotionList(int[] potionIDs)
-    {
-        _potionDataList = new List<PotionData>();
-
-        for (int i = 0; i < potionIDs.Length; i++)
-        {
-            PotionData data = DataTable.Instance.GetPotionData(potionIDs[i]);
-            if (data != null)
-            {
-                _potionDataList.Add(data);
-            }
-            else
-            {
-                Debug.LogWarning($"ID {potionIDs[i]}에 해당하는 포션 데이터를 찾을 수 없습니다.");
-            }
-        }
-    }
     [Server]
     public void SetCurrnetTime(float value)
     {

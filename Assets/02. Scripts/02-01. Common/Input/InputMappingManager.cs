@@ -23,7 +23,7 @@ public class InputMappingManager : MonoBehaviourSingleton<InputMappingManager>
         // Load();
     }
 
-    public void StartRebinding(InputAction action, EBindingType bindingType, bool excludeKeyboard = false, bool excludeGamepad = false)
+    public void StartRebinding(InputAction action, EBindingType bindingType)
     {
         if (action == null)
         {
@@ -45,14 +45,16 @@ public class InputMappingManager : MonoBehaviourSingleton<InputMappingManager>
 
         _currentRebindOperation = action.PerformInteractiveRebinding((int)bindingType);
 
-        if (excludeKeyboard)
-        {
-            _currentRebindOperation = _currentRebindOperation.WithControlsExcluding("<Keyboard>");
-        }
-        if (excludeGamepad)
+        if (bindingType == EBindingType.KeyboardMain || bindingType == EBindingType.KeyboardSub)
         {
             _currentRebindOperation = _currentRebindOperation.WithControlsExcluding("<Gamepad>");
         }
+
+        if (bindingType == EBindingType.GamepadMain || bindingType == EBindingType.GamepadSub)
+        {
+            _currentRebindOperation = _currentRebindOperation.WithControlsExcluding("<Keyboard>");
+        }
+        
 
         _currentRebindOperation = _currentRebindOperation.WithCancelingThrough("<Keyboard>/escape");
 
@@ -65,7 +67,7 @@ public class InputMappingManager : MonoBehaviourSingleton<InputMappingManager>
     private void RebindComplete(InputActionRebindingExtensions.RebindingOperation operation, EBindingType bindingType)
     {
         InputAction action = operation.action;
-        if (CheckDuplicateBindings(action, bindingType, operation.selectedControl.path))
+        if (CheckDuplicateBindings(action, bindingType))
         {
             // 중복이 발견되면 원래 바인딩으로 되돌리고 다시 시도
             RevertToPreviousBinding(action, bindingType);
@@ -79,6 +81,11 @@ public class InputMappingManager : MonoBehaviourSingleton<InputMappingManager>
         OnRebindComplete?.Invoke(action, bindingType);
         SaveBindingOverrides();
 
+        if (_rebindOverlay != null)
+        {
+            _rebindOverlay.SetActive(false);
+        }
+
         operation.Dispose();
         _currentRebindOperation = null;
     }
@@ -88,13 +95,22 @@ public class InputMappingManager : MonoBehaviourSingleton<InputMappingManager>
         _inputActionAsset.Enable();
         OnRebindCanceled?.Invoke();
 
+        if (_rebindOverlay != null)
+        {
+            _rebindOverlay.SetActive(false);
+        }
+
         operation.Dispose();
         _currentRebindOperation = null;
     }
 
-    private bool CheckDuplicateBindings(InputAction action, EBindingType bindingType, string newPath)
+    private bool CheckDuplicateBindings(InputAction action, EBindingType bindingType)
     {
         int bindingIndex = (int)bindingType;
+
+        InputBinding newBinding = action.bindings[bindingIndex];
+        string newBindingPath = newBinding.effectivePath;
+
         foreach (InputAction otherAction in _inputActionAsset)
         {
             for (int i = 0; i < otherAction.bindings.Count; i++)
@@ -104,9 +120,11 @@ public class InputMappingManager : MonoBehaviourSingleton<InputMappingManager>
                     continue;
                 }
 
-                if (otherAction.bindings[i].effectivePath == newPath)
+                
+
+                if (newBindingPath == otherAction.bindings[i].effectivePath)
                 {
-                    Debug.Log($"중복된 키 Binding : {newPath}는 이미 {otherAction.name}에 사용되고 있습니다.");
+                    Debug.Log($"중복된 키 Binding : {newBindingPath}는 이미 {otherAction.name}에 사용되고 있습니다.");
                     return true;
                 }
             }

@@ -67,13 +67,7 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>, IShopInfoSa
 
     public void InitPhase()
     {
-        //if(저장 데이터가 null이면)
-        {
-            _day = 1;
-        }//else
-        {
-            //저장 데이터에서 _day를 불러오기
-        }
+        _day = ShopInfoManager.Instance.ShopInfo.Day;
         _phaseDictionary = new Dictionary<EPhaseType, BasePhase>
         {
             { EPhaseType.PreparingPhase, new PreparingPhase() },

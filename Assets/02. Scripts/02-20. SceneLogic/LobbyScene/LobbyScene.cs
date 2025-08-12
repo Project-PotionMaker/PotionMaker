@@ -19,7 +19,7 @@ public class LobbyScene : MonoBehaviour
         //    $"{_roomInfoHandler.RoomInfo.ShopInfo.Day}, " +
         //    $"{_roomInfoHandler.RoomInfo.ShopInfo.Currency}, " +
         //    $"{_roomInfoHandler.RoomInfo.Visibility}");
-
+        MirrorNetworkManager.Instance.ShopInfo = _roomInfoHandler.ShopInfoHandler.SelectedShopInfo;
         MirrorNetworkManager.Instance.StartHost();
     }
 

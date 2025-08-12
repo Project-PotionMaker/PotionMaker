@@ -21,8 +21,9 @@ public class CurrencyManager : NetworkBehaviourSingleton<CurrencyManager>, IShop
         {
             return;
         }
-        _coin = new Currency(0);
+        _coin = ShopInfoManager.Instance.ShopInfo.Currency;
         CmdRequestUpdateCurrency();
+
         OnDataChanged?.Invoke();
         // Todo: Save총괄로부터 데이터 받아온 후 초기화
     }

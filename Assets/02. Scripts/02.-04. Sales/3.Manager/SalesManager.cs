@@ -17,7 +17,7 @@ public class SalesManager : NetworkBehaviourSingleton<SalesManager>, IShopInfoSa
         {
             return;
         }
-        _sales = new Sales(0);
+        _sales = ShopInfoManager.Instance.ShopInfo.Sales;
         CmdRequestUpdateSales(false);
     }
     public override void OnStartClient()

@@ -47,8 +47,8 @@ public class UI_Phase : MonoBehaviour
 
         _serviceTimer.maxValue = 1f;
 
-        PhaseManager.OnInitialized += OnPhaseManagerInitialized;
-        PlayerListManager.OnInitialized += OnPlayerListManagerInitialized;
+        OnPhaseManagerInitialized();
+        OnPlayerListManagerInitialized();
         ResetPlayerPanel();
     }
 

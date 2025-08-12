@@ -8,8 +8,6 @@ public class ReputationManager : NetworkBehaviourSingleton<ReputationManager>, I
     private Reputation _reputation;
     public ReputationDTO Reputation => _reputation.ToDTO();
 
-    private ReputationRepository _reputationRepository;
-
     private const float _increaseAmountOnSuccessOrder = 0.2f;
     private const float _decreaseAmountOnFailOrder = 0.1f;
 
@@ -25,9 +23,8 @@ public class ReputationManager : NetworkBehaviourSingleton<ReputationManager>, I
         {
             return;
         }
-
-        _reputationRepository = new ReputationRepository();
-        _reputation = new Reputation(2.5f);
+        
+        _reputation = ShopInfoManager.Instance.ShopInfo.Reputation;
 
         PhaseManager.OnInitialized += OnTargetInitialized;
 

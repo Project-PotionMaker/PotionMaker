@@ -15,6 +15,9 @@ public class MirrorNetworkManager : NetworkRoomManager
     public Dictionary<uint, int> NetIdToSlotMapping => netIdToSlotMapping;
     private bool[] slotUsed = new bool[4]; // UI 슬롯 사용 여부 (0~3번)
 
+    private ShopInfo _shopInfo;
+    public ShopInfo ShopInfo { get => _shopInfo; set => _shopInfo = value; }
+
     [Scene]
     public string LoadingScene;
 

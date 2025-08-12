@@ -10,6 +10,18 @@ public class Layout : MonoBehaviour
     // 런타임에 사용할 구역 맵 (Key: GridPosition, Value: AreaType)
     private Dictionary<Vector3Int, EAreaType> _areaDict;
 
+    [SerializeField]
+    private Vector3Int _enterDoorPosition;
+    public Vector3Int EnterDoorPosition => _enterDoorPosition;
+
+    [SerializeField]
+    private Vector3Int _exitDoorPosition;
+    public Vector3Int ExitDoorPosition => _exitDoorPosition;
+
+    [SerializeField]
+    private Vector3Int _cashierSpawnPosition;
+    public Vector3Int CashierSpawnPosition => _cashierSpawnPosition;
+
     void Awake()
     {
         InitializeAreaMap();

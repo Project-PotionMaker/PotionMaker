@@ -1,5 +1,6 @@
 using Mirror;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -30,6 +31,10 @@ public class OutputItem : NetworkBehaviour, IItem
     private List<ColorOnType> _colorOnTypeList = new List<ColorOnType>();
     private Dictionary<EOutputType, ColorOnType> _colorOnTypeDict;
 
+    [SerializeField]
+    private GameObject _models;
+    private Coroutine _visibleRoutine;
+
     private void Awake()
     {
         InitOutput();
@@ -49,6 +54,12 @@ public class OutputItem : NetworkBehaviour, IItem
     public override void OnStartClient()
     {
         base.OnStartClient();
+        _models.SetActive(false);
+        if (!ReferenceEquals(_visibleRoutine, null))
+        {
+            StopCoroutine(VisibleRoutine());
+        }
+        _visibleRoutine = StartCoroutine(VisibleRoutine());
     }
 
     private void OnOutputItemTIDUpdated(int oldValue, int newValue)
@@ -70,6 +81,11 @@ public class OutputItem : NetworkBehaviour, IItem
         _outputData = DataTable.Instance.GetOutputData(_outputTID);
 
         // 데이터에 따라 모델 및 색상을 한 번만 설정
+
+        foreach (var objectInf in _colorOnTypeList)
+        {
+            objectInf.TypeObject.SetActive(false);
+        }
         if (_colorOnTypeDict.TryGetValue(_outputData.OutputType, out ColorOnType objectInfo))
         {
             if (ColorUtility.TryParseHtmlString(_outputData.ColorCode, out Color parsedColor))
@@ -94,5 +110,11 @@ public class OutputItem : NetworkBehaviour, IItem
     public int GetTID()
     {
         return _outputTID;
+    }
+
+    private IEnumerator VisibleRoutine()
+    {
+        yield return new WaitForSeconds(.05f);
+        _models.gameObject.SetActive(true);
     }
 }

@@ -65,6 +65,7 @@ public class CraftItemManager : NetworkBehaviourSingleton<CraftItemManager>
             recipeCode = _recipeCodeHandler.MakeNewRecipeCode(TIDList, machineTID);
             if (_recipeCodeVerifier.IsValidProcess(recipeCode))
             {
+                Debug.Log($"x:{machinePosition.x},y:{machinePosition.y}, z:{machinePosition.z}");
                 output = CraftItemFactory.Instance.CreateObject(EInputType.Output, machinePosition, Quaternion.identity);
                 output.GetComponent<OutputItem>().ServerUpdateOutputData(EInputType.Output, _outputDataTIDDict[recipeCode]);
                 return output;

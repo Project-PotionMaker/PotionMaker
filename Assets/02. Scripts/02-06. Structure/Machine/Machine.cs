@@ -347,7 +347,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
     [Command(requiresAuthority = false)]
     private void CmdTryInteract(NetworkConnectionToClient sender = null)
     {
-        if(isServer == false)
+        if (isServer == false)
         {
             return;
         }
@@ -355,7 +355,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
         bool result = false;
         EPhaseType currentPhase = PhaseManager.Instance.CurrentPhase.PhaseType;
 
-        if(currentPhase == EPhaseType.PreparingPhase)
+        if (currentPhase == EPhaseType.PreparingPhase)
         {
             ServerRotateModel();
             result = true;
@@ -383,7 +383,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
     [Command(requiresAuthority = false)]
     private void CmdTryPickUp(NetworkConnectionToClient sender = null)
     {
-        if(isServer == false)
+        if (isServer == false)
         {
             return;
         }
@@ -407,13 +407,13 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
         }
         else
         {
-            if(ReferenceEquals(_outputComponent, null) == false)
+            if (ReferenceEquals(_outputComponent, null) == false)
             {
                 pickedUpItem = _outputComponent.ServerTakeItem(this);
             }
         }
 
-        if(pickedUpItem != null && sender != null)
+        if (pickedUpItem != null && sender != null)
         {
             NetworkServer.spawned[pickedUpItem.GetComponent<NetworkIdentity>().netId].AssignClientAuthority(sender);
         }
@@ -444,7 +444,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
         bool success = false;
         EPhaseType currentPhase = PhaseManager.Instance.CurrentPhase.PhaseType;
 
-        if(NetworkServer.spawned.TryGetValue(dropItemNetId, out NetworkIdentity dropItemIdentity))
+        if (NetworkServer.spawned.TryGetValue(dropItemNetId, out NetworkIdentity dropItemIdentity))
         {
             GameObject inputObject = dropItemIdentity.gameObject;
 
@@ -466,7 +466,10 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
             else
             {
                 success = _inputComponent.ServerTryInput(this, tid, inputType, inputObject);
-                CraftItemFactory.Instance.ReturnObject(inputObject);
+                if (success)
+                {
+                    CraftItemFactory.Instance.ReturnObject(inputObject);
+                }
             }
 
         }
@@ -550,7 +553,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
 
     public void TryDrop(NetworkConnectionToClient conn, Vector3 targetPosition, NetworkIdentity inputNetId, int tid = 10000, EInputType inputType = EInputType.None)
     {
-        if(inputNetId != null)
+        if (inputNetId != null)
         {
             CmdTryDrop(targetPosition, tid, inputType, inputNetId.netId, conn);
         }

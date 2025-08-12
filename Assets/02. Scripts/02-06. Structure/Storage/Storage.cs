@@ -209,7 +209,6 @@ public class Storage : NetworkBehaviour, IGridItemHandler
                 transform.position = targetPosition;
                 GridManager.Instance.ServerPlaceStructure2(targetPosition, dropItemNetId, sender, _ingredientTID);
                 RpcOnDrop();
-                TargetRpcOnDrop(sender, success, transform.position);
                 success = true;
             }
             else
@@ -222,6 +221,8 @@ public class Storage : NetworkBehaviour, IGridItemHandler
         {
             dropItemIdentity.RemoveClientAuthority();
         }
+
+        TargetRpcOnDrop(sender, success, transform.position);
     }
     #endregion
 

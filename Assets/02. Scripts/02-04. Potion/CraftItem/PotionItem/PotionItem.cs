@@ -1,5 +1,6 @@
 using Mirror;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -23,6 +24,10 @@ public class PotionItem : NetworkBehaviour, IItem
     private List<ModelOnTID> _potionModelList = new List<ModelOnTID>();
     private Dictionary<int, GameObject> _potionModelDict;
 
+    [SerializeField]
+    private GameObject _models;
+    private Coroutine _visibleRoutine;
+
     private void Awake()
     {
         InitPotion();
@@ -43,6 +48,12 @@ public class PotionItem : NetworkBehaviour, IItem
     public override void OnStartClient()
     {
         base.OnStartClient();
+        _models.SetActive(false);
+        if (!ReferenceEquals(_visibleRoutine, null))
+        {
+            StopCoroutine(VisibleRoutine());
+        }
+        _visibleRoutine = StartCoroutine(VisibleRoutine());
     }
 
     private void OnPotionItemTIDUpdated(int oldValue, int newValue)
@@ -80,7 +91,7 @@ public class PotionItem : NetworkBehaviour, IItem
     {
         _potionBottleRenderer = _currentModel.GetComponent<Renderer>();
         _pointLight = _currentModel.GetComponentInChildren<Light>();
-        _particles = _currentModel.GetComponentInChildren<ParticleSystem>();
+        _particles = _currentModel.GetComponentInChildren<ParticleSystem>(true);
     }
 
     private void UpdateVFX()
@@ -136,5 +147,12 @@ public class PotionItem : NetworkBehaviour, IItem
     public int GetTID()
     {
         return _potionTID;
+    }
+
+
+    private IEnumerator VisibleRoutine()
+    {
+        yield return new WaitForSeconds(0.05f);
+        _models.gameObject.SetActive(true);
     }
 }

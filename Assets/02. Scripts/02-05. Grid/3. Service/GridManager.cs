@@ -1,4 +1,3 @@
-// 수정된 GridManager 클래스
 using Mirror;
 using Steamworks;
 using System;
@@ -426,31 +425,42 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
             return;
         }
 
-        if(PotionHouse.Instance.PotionHouseTier == 1)
+        if (PotionHouse.Instance.PotionHouseTier == 1)
         {
-            ServerCreateStructure(10000, new Vector3(-5, 0, 4)); //절구
-            ServerCreateStructure(10001, new Vector3(-4, 0, 4)); //분쇄기
-            ServerCreateStructure(10003, new Vector3(-3, 0, 4)); //가열 냄비
-            ServerCreateStructure(10003, new Vector3(-2, 0, 4)); //가열 냄비
-            ServerCreateStructure(10003, new Vector3(-1, 0, 4)); //가열 냄비
-            ServerCreateStructure(10002, new Vector3(0, 0, 3)); // 혼합기
-            ServerCreateStructure(10012, new Vector3(-1, 0, 0)); // 픽업테이블
-            ServerCreateStructure(10012, new Vector3(-1, 0, 1)); // 픽업테이블
-            ServerCreateStructure(10012, new Vector3(-1, 0, 2)); // 픽업테이블
-            ServerCreateStructure(10012, new Vector3(0, 0, 0)); // 픽업테이블
-            ServerCreateStructure(10013, new Vector3(0, 0, 4)); // 쓰레기통
-            ServerCreateStructure(10014, new Vector3(-5, 0, 0)); // 계산기
-            ServerCreateStructure(10015, new Vector3(-1, 0, -5)); // 허름한 의자
-            ServerCreateStructure(10016, new Vector3(0, 0, -5)); // 푹신한 의자
-            ServerCreateStructure(10006, new Vector3(0, 0, 2)); // 병입기
-            ServerCreateStructure(10017, new Vector3(4, 0, 2), 10005); // 식물상자
-            ServerCreateStructure(10017, new Vector3(4, 0, 3), 10006); // 식물상자
-            ServerCreateStructure(10017, new Vector3(4, 0, 4), 10007); // 식물상자
-            ServerCreateStructure(10018, new Vector3(4, 0, 1), 20002); // 동물상자
+            ServerCreateStructure(10000, new Vector3Int(-5, 0, 4)); //절구
+            ServerCreateStructure(10001, new Vector3Int(-4, 0, 4)); //분쇄기
+            ServerCreateStructure(10003, new Vector3Int(-3, 0, 4)); //가열 냄비
+            ServerCreateStructure(10003, new Vector3Int(-2, 0, 4)); //가열 냄비
+            ServerCreateStructure(10003, new Vector3Int(-1, 0, 4)); //가열 냄비
+            ServerCreateStructure(10002, new Vector3Int(0, 0, 3)); // 혼합기
+            ServerCreateStructure(10012, new Vector3Int(-1, 0, 0)); // 픽업테이블
+            ServerCreateStructure(10012, new Vector3Int(-1, 0, 1)); // 픽업테이블
+            ServerCreateStructure(10012, new Vector3Int(-1, 0, 2)); // 픽업테이블
+            ServerCreateStructure(10012, new Vector3Int(0, 0, 0)); // 픽업테이블
+            ServerCreateStructure(10013, new Vector3Int(0, 0, 4)); // 쓰레기통
+            ServerCreateStructure(10014, new Vector3Int(-5, 0, 0)); // 계산기
+            ServerCreateStructure(10015, new Vector3Int(-1, 0, -5)); // 허름한 의자
+            ServerCreateStructure(10016, new Vector3Int(0, 0, -5)); // 푹신한 의자
+            ServerCreateStructure(10006, new Vector3Int(0, 0, 2)); // 병입기
+            ServerCreateStructure(10017, new Vector3Int(4, 0, 2), 10005); // 식물상자
+            ServerCreateStructure(10017, new Vector3Int(4, 0, 3), 10006); // 식물상자
+            ServerCreateStructure(10017, new Vector3Int(4, 0, 4), 10007); // 식물상자
+            ServerCreateStructure(10018, new Vector3Int(4, 0, 1), 20002); // 동물상자
         }
-        
     }
 
+    [Command(requiresAuthority = false)]
+    public void LoadGridSaveData()
+    {
+        if (!isServer)
+        {
+            return;
+        }
+        foreach (GridSaveData data in ShopInfoManager.Instance.ShopInfo.GridSaveDataList)
+        {
+            ServerCreateStructure(data.StructureTID, data.GridPosition, data.IngredientTID);
+        }
+    }
 
     // --- 클라이언트/서버 공용 메서드 ---
     public Vector3Int GetGridPosition(Vector3 targetPosition)

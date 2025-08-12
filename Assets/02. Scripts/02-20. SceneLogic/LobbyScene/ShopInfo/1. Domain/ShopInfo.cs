@@ -7,6 +7,7 @@ using System.Linq;
 public class ShopInfo
 {
     public string ShopName;
+    public int SlotIndex;
     public int Day;
     public int PotionHouseTier;
     public Currency Currency;
@@ -14,7 +15,7 @@ public class ShopInfo
     public Sales Sales;
     public List<GridSaveData> GridSaveDataList;
 
-    public ShopInfo(string shopName)
+    public ShopInfo(string shopName, int slotIndex)
     {
         ShopInfoSpecification shopInfoSpecification = new ShopInfoSpecification();
         if (!shopInfoSpecification.IsSatisfied(shopName, new Currency(), new Reputation(), 1))
@@ -23,16 +24,17 @@ public class ShopInfo
         }
 
         ShopName = shopName;
+        SlotIndex = slotIndex;
         Day = 1;
-        PotionHouseTier = 1; // PotionHouseTier 초기값 추가
+        PotionHouseTier = 1;
         Currency = new Currency();
         Reputation = new Reputation();
         Sales = new Sales(0);
         GridSaveDataList = new();
     }
 
-    public ShopInfo(string shopName, int day, int potionHouseTier, Currency currency, Reputation reputation, Sales sales,
-          List<GridSaveData> gridSaveDataList)
+    public ShopInfo(string shopName, int slotIndex, int day, int potionHouseTier, Currency currency, Reputation reputation, Sales sales,
+         List<GridSaveData> gridSaveDataList)
     {
         ShopInfoSpecification shopInfoSpecification = new ShopInfoSpecification();
         if (!shopInfoSpecification.IsSatisfied(shopName, currency, reputation, day))
@@ -41,6 +43,7 @@ public class ShopInfo
         }
 
         ShopName = shopName;
+        SlotIndex = slotIndex;
         Day = day;
         PotionHouseTier = potionHouseTier;
         Currency = currency;
@@ -52,6 +55,7 @@ public class ShopInfo
     public ShopInfo(ShopInfoDTO shopInfoDto)
     {
         ShopName = shopInfoDto.ShopName;
+        SlotIndex = shopInfoDto.SlotIndex;
         Day = shopInfoDto.Day;
         PotionHouseTier = shopInfoDto.PotionHouseTier;
         Currency = new Currency(shopInfoDto.Currency);

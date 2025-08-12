@@ -7,27 +7,31 @@ using System.Linq;
 public class ShopInfoDTO
 {
     public readonly string ShopName;
+    public readonly int SlotIndex;
     public readonly int Day;
     public readonly int PotionHouseTier;
     public readonly CurrencyDTO Currency;
     public readonly ReputationDTO Reputation;
     public readonly SalesDTO Sales;
-    public readonly List<GridSaveDataDTO> GridSaveDataList; // 그리드 가구 배치정보
+    public readonly List<GridSaveDataDTO> GridSaveDataList;
 
-    public ShopInfoDTO(string shopName, int day, int potionHouseTier, CurrencyDTO currency,
-        ReputationDTO reputation, SalesDTO sales)
+    public ShopInfoDTO(string shopName, int slotIndex, int day, int potionHouseTier, CurrencyDTO currency,
+        ReputationDTO reputation, SalesDTO sales, List<GridSaveDataDTO> gridSaveDataList)
     {
         ShopName = shopName;
+        SlotIndex = slotIndex;
         Day = day;
         PotionHouseTier = potionHouseTier;
         Currency = currency;
         Reputation = reputation;
         Sales = sales;
+        GridSaveDataList = gridSaveDataList;
     }
 
     public ShopInfoDTO(ShopInfo shopInfo)
     {
         ShopName = shopInfo.ShopName;
+        SlotIndex = shopInfo.SlotIndex;
         Day = shopInfo.Day;
         PotionHouseTier = shopInfo.PotionHouseTier;
         Currency = shopInfo.Currency.ToDTO();

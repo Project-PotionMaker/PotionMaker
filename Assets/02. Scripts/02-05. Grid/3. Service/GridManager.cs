@@ -118,8 +118,8 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
     {
         if (Input.GetKeyDown(KeyCode.F2))
         {
-            CmdTest();
-            // LoadGridSaveData();
+            // CmdTest();
+            LoadGridSaveData();
             _hallAreaPathFinder.InitGridPathFinder
             (GetPositionByAreaType(EAreaType.Hall).ToHashSet(),
             _serverGridData.PlacedPositionHashSet,

@@ -930,6 +930,52 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1846938552}
   m_CullTransparentMesh: 1
+--- !u!1 &1852959933
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1852959934}
+  - component: {fileID: 1852959935}
+  m_Layer: 0
+  m_Name: ShopInfoManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1852959934
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1852959933}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1016.16504, y: 661.3671, z: -671.5764}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1852959935
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1852959933}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94793a8fab18f9941a930f840aeddc89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _dontDestroy: 1
+  _lazyInitialization: 0
 --- !u!1 &1979723550 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4419053640579281834, guid: b4f1a0b38e8e3c440b8ccfb7337f1bac, type: 3}
@@ -2664,6 +2710,10 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: ShopInfoSlot, Assembly-CSharp
       objectReference: {fileID: 0}
+    - target: {fileID: 2350139442748409599, guid: 7565d7e2e0520d7489b05f6312c68a8e, type: 3}
+      propertyPath: _slotIndex
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 2385021203300640130, guid: 7565d7e2e0520d7489b05f6312c68a8e, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -3212,6 +3262,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -25
       objectReference: {fileID: 0}
+    - target: {fileID: 8370250536661976138, guid: 7565d7e2e0520d7489b05f6312c68a8e, type: 3}
+      propertyPath: _slotIndex
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8378002714597975173, guid: 7565d7e2e0520d7489b05f6312c68a8e, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -3452,3 +3506,4 @@ SceneRoots:
   - {fileID: 1452751101}
   - {fileID: 997959125}
   - {fileID: 1388561340}
+  - {fileID: 1852959934}

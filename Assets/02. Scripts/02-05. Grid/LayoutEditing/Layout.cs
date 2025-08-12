@@ -22,6 +22,14 @@ public class Layout : MonoBehaviour
     private Vector3Int _cashierSpawnPosition;
     public Vector3Int CashierSpawnPosition => _cashierSpawnPosition;
 
+    [SerializeField]
+    private Vector3Int _customerSpawnPosition;
+    public Vector3Int CustomerSpawnPosition => _customerSpawnPosition;
+
+    [SerializeField]
+    private Vector3Int _customerUnspawnPosition;
+    public Vector3Int CustomerUnspawnPosition => _customerUnspawnPosition;
+
     void Awake()
     {
         InitializeAreaMap();

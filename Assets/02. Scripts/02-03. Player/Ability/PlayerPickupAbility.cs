@@ -20,11 +20,6 @@ public class PlayerPickupAbility : PlayerAbility
 
         InputManager.Instance.OnPickupEvent += OnPickupInput;
         _animationAbility = _owner.GetAbility<PlayerAnimationAbility>();
-        PhaseManager.OnInitialized += OnTargetInitialized;
-    }
-
-    public void OnTargetInitialized()
-    {
         PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += ResetItem;
         PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase].OnPhaseExited += ResetItem;
     }

@@ -26,14 +26,9 @@ public class ReputationManager : NetworkBehaviourSingleton<ReputationManager>, I
         
         _reputation = ShopInfoManager.Instance.ShopInfo.Reputation;
 
-        PhaseManager.OnInitialized += OnTargetInitialized;
-
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += AddDailyReputation;
         CmdRequestUpdateReputation();
         OnDataChanged?.Invoke();
-    }
-    public void OnTargetInitialized()
-    {
-        PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += AddDailyReputation;
     }
 
     [Command(requiresAuthority = false)]

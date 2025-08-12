@@ -25,11 +25,6 @@ public class RentManager : NetworkBehaviourSingleton<RentManager>
         _rent = new Rent(1, data.InitialRentCost, data.RentIncrement);
         CmdRequestUpdateRent();
 
-        PhaseManager.OnInitialized += OnTargetInitialized;
-    }
-
-    private void OnTargetInitialized()
-    {
         PhaseManager.Instance.OnDayPassed += IncreaseRentCount;
         PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += PayRent;
     }

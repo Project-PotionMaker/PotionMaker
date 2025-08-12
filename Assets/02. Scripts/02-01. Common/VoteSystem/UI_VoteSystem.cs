@@ -94,5 +94,4 @@ public class UI_VoteSystem : MonoBehaviour
     {
         VoteManager.Instance.OnRefreshed -= Refresh;
     }
-
 }

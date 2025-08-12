@@ -192,6 +192,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
 
     private void OnInputTIDListChanged(SyncList<int>.Operation op, int itemIndex, int oldItem, int newItem)
     {
+        RpcPlayAnimation(EMachineAnimationType.PutItem); 
         OnDataChanged?.Invoke(); // UI (인풋 슬롯) 업데이트
         Debug.Log($"InputTIDList changed: {op}, Index: {itemIndex}, Old: {oldItem}, New: {newItem}");
     }
@@ -262,7 +263,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
         {
             ServerSetIsProcessFinished(true);
             ServerSetIsProcessStarted(false);
-            RpcPlayAnimation(EMachineAnimationType.Done);
+            //RpcPlayAnimation(EMachineAnimationType.Done);
             StopAllCoroutines(); // 서버의 코루틴만 중지
         }
     }
@@ -331,7 +332,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
         IsProcessStarted = false; // SyncVar 초기화
         CurrentProgress = 0f; // SyncVar 초기화
         InputType = EInputType.None; // SyncVar 초기화
-        RpcPlayAnimation(EMachineAnimationType.Empty);
+        //RpcPlayAnimation(EMachineAnimationType.Empty);
     }
 
     #endregion
@@ -409,7 +410,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
         if(pickedUpItem != null && sender != null)
         {
             NetworkServer.spawned[pickedUpItem.GetComponent<NetworkIdentity>().netId].AssignClientAuthority(sender);
-            RpcPlayAnimation(EMachineAnimationType.GetItem);
+            //RpcPlayAnimation(EMachineAnimationType.GetItem);
         }
 
         if (pickedUpItem != null)
@@ -447,7 +448,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
                 if (GridManager.Instance.ServerCanPlaceObjectAt(targetPosition, _data.AreaType))
                 {
                     GridManager.Instance.ServerPlaceStructure(targetPosition, dropItemNetId, sender);
-                    RpcPlayAnimation(EMachineAnimationType.PutItem);
+                    //RpcPlayAnimation(EMachineAnimationType.PutItem);
                     dropItemIdentity.RemoveClientAuthority();
                     success = true;
                 }

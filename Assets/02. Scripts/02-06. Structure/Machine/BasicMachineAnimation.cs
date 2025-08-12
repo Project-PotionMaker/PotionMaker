@@ -7,11 +7,34 @@ public class BasicMachineAnimation : MonoBehaviour, IMachineAnimation
 {
     [SerializeField]
     private List<AnimationState> _animationState;
+
     [SerializeField]
-    private List<GameObject> _ingredientObjectList;
+    private List<ModelOnTID> _ingredientObjectList = new List<ModelOnTID>();
+    private Dictionary<int, GameObject> _ingredientObjectDic;
+
+    private Machine _owner;
+
+    private void Awake()
+    {
+        _owner = GetComponent<Machine>();
+        _ingredientObjectDic = new Dictionary<int, GameObject>();
+        foreach (var modelInfo in _ingredientObjectList)
+        {
+            modelInfo.Model.SetActive(false);
+            _ingredientObjectDic.Add(modelInfo.TID, modelInfo.Model);
+        }
+    }
 
     public void PutItemAnimation()
     {
+        foreach(ModelOnTID ingredient in _ingredientObjectList)
+        {
+            ingredient.Model.SetActive(false);
+        }
+        foreach(int tid in _owner.InputTIDList)
+        {
+            _ingredientObjectDic[tid].SetActive(true);
+        }
     }
 
     public void EndAnimation()

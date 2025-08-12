@@ -14,6 +14,10 @@ public class ShopInfoSlot : MonoBehaviour
     public event Action OnShopInfoUnSelected;
     public event Action OnShopInfoDeleted;
 
+    [SerializeField]
+    private int _slotIndex;
+    public int SlotIndex => _slotIndex;
+
     public SlotState CurrentState { get; private set; } = SlotState.Empty;
     private ShopInfo _shopInfo;
 

@@ -44,6 +44,9 @@ public class ImageManager : MonoBehaviourSingleton<ImageManager>
         // QueueImageLoading<StorageData>(DataTable.Instance.GetStorageDataList());
         QueueImageLoading<FurnitureData>(DataTable.Instance.GetFurnitureDataList());
         QueueImageLoading<LayoutData>(DataTable.Instance.GetLayoutDataList());
+        QueueImageLoading<KeyboardMouseData>(DataTable.Instance.GetKeyboardMouseDataList());
+        QueueImageLoading<PlayStation5Data>(DataTable.Instance.GetPlayStation5DataList());
+        QueueImageLoading<XboxData>(DataTable.Instance.GetXboxDataList());
         await Task.WhenAll(imageLoadTasks);
     }
 

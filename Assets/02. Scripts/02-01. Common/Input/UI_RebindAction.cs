@@ -16,7 +16,9 @@ public class UI_RebindAction : MonoBehaviour
     [SerializeField]
     private Button _rebindButton;
     [SerializeField]
-    private TextMeshProUGUI _bindKey;
+    private TextMeshProUGUI _bindKeyText;
+    [SerializeField]
+    private Image _bindImage;
     [SerializeField]
     private GameObject _activeOverlay;
 
@@ -74,13 +76,34 @@ public class UI_RebindAction : MonoBehaviour
     {
         if (_action == null || _action.action == null)
         {
-            _bindKey.text = "N/A";
+            _bindKeyText.text = "N/A";
+            _bindKeyText.gameObject.SetActive(true);
+            _bindImage.gameObject.SetActive(false);
             return;
         }
 
-        var options = InputBinding.DisplayStringOptions.DontUseShortDisplayNames | InputBinding.DisplayStringOptions.DontIncludeInteractions;
+        
 
-        _bindKey.text = _action.action.GetBindingDisplayString((int)_bindingType, options);
+        int bindingIndex = (int)_bindingType;
+        string path = _action.action.bindings[bindingIndex].effectivePath;
+
+        Sprite icon = BindingIconManager.Instance.GetSpriteForPath(path);
+
+        if (icon != null)
+        {
+            _bindImage.sprite = icon;
+            _bindImage.gameObject.SetActive(true);
+            _bindKeyText.gameObject.SetActive(false);
+        }
+        else
+        {
+            var options = InputBinding.DisplayStringOptions.DontUseShortDisplayNames | InputBinding.DisplayStringOptions.DontIncludeInteractions;
+            _bindKeyText.text = _action.action.GetBindingDisplayString((int)_bindingType, options);
+            _bindKeyText.gameObject.SetActive(true);
+            _bindImage.gameObject.SetActive(false);
+        }
+
+            
     }
 
     private void CleanUp()
@@ -91,12 +114,4 @@ public class UI_RebindAction : MonoBehaviour
         _activeOverlay.SetActive(false);
         _rebindButton.interactable = true;
     }
-
-#if UNITY_EDITOR
-    private void OnValidate()
-    {
-        if (Application.isPlaying) return;
-        Initialize();
-    }
-#endif
 }

@@ -136,6 +136,11 @@ public class PlacementState : IBuildingState
 
     public void UpdateState(Vector3Int gridPosition)
     {
+        if (PotionHouse.Instance.Layout.GetAvailableAreaDict().ContainsKey(gridPosition) == false)
+        {
+            return;
+        }
+
         bool placementValidity = CheckPlacementValidity(gridPosition);
         _previewSystem.UpdatePosition(_grid.CellToWorld(gridPosition), placementValidity);
     }

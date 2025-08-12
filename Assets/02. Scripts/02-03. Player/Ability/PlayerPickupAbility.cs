@@ -164,7 +164,7 @@ public class PlayerPickupAbility : PlayerAbility
         {
             // 부모를 _heldPosition으로 설정
             newIdentity.transform.SetParent(_owner.HeldPosition, true);
-            newIdentity.transform.localPosition = new Vector3(-1f, 0f, -1f);
+            newIdentity.transform.localPosition = Vector3.zero;
             newIdentity.transform.localRotation = Quaternion.identity;
         }
     }

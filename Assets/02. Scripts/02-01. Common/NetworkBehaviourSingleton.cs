@@ -9,7 +9,7 @@ public class NetworkBehaviourSingleton<T> : NetworkBehaviour where T : NetworkBe
 
     private static T _instance;
 
-    public event Action OnInitialized;
+    public static event Action OnInitialized;
 
     public static T Instance
     {

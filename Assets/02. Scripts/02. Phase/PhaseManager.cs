@@ -13,6 +13,8 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>
     public event Action OnTimerRunning;
     public event Action OnDeathCountChanged;
 
+    public static event Action OnInitialized;
+
     private BasePhase _currentPhase;
     public BasePhase CurrentPhase { get => _currentPhase; set => _currentPhase = value; }
     private Dictionary<EPhaseType, BasePhase> _phaseDictionary;
@@ -81,6 +83,7 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>
         };
         _currentPhase = _phaseDictionary[EPhaseType.PreparingPhase];
         _currentPhase.EnterPhase();
+        OnInitialized?.Invoke();
     }
 
     [Server]

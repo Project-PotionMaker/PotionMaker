@@ -17,7 +17,6 @@ public class ReputationManager : NetworkBehaviourSingleton<ReputationManager>
     {
         base.OnStartClient();
         InitReputationManager();
-        PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += AddDailyReputation;
     }
 
     private void InitReputationManager()
@@ -30,8 +29,14 @@ public class ReputationManager : NetworkBehaviourSingleton<ReputationManager>
         _reputationRepository = new ReputationRepository();
         _reputation = new Reputation(2.5f);
 
+        PhaseManager.OnInitialized += OnTargetInitialized;
+
         CmdRequestUpdateReputation();
         OnDataChanged?.Invoke();
+    }
+    public void OnTargetInitialized()
+    {
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += AddDailyReputation;
     }
 
     [Command(requiresAuthority = false)]

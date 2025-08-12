@@ -46,6 +46,19 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
     public override void OnStartClient()
     {
         base.OnStartClient();
+        PhaseManager.OnInitialized += OnTargetInitialized;
+
+        //CustomerPool.Instance.ObjectSpawnedActions.TryAdd(ENPCType.Customer, null);
+        //CustomerPool.Instance.ObjectSpawnedActions[ENPCType.Customer] += OnCustomerIn;
+
+        _enterDoor = GameObject.FindGameObjectWithTag(nameof(ETags.EnterDoor))?.transform;
+        _exitDoor = GameObject.FindGameObjectWithTag(nameof(ETags.ExitDoor))?.transform;
+
+        SceneManager.sceneLoaded += OnSceneLoad;
+    }
+
+    private void OnTargetInitialized()
+    {
         Dictionary<EPhaseType, BasePhase> phaseDictionary = PhaseManager.Instance.PhaseDictionary;
         if (isServer)
         {
@@ -54,13 +67,6 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
             phaseDictionary[EPhaseType.PracticingPhase].OnPhaseEntered += PreService;
             phaseDictionary[EPhaseType.PracticingPhase].OnPhaseExited += ForceReturn;
         }
-        //CustomerPool.Instance.ObjectSpawnedActions.TryAdd(ENPCType.Customer, null);
-        //CustomerPool.Instance.ObjectSpawnedActions[ENPCType.Customer] += OnCustomerIn;
-
-        _enterDoor = GameObject.FindGameObjectWithTag(nameof(ETags.EnterDoor))?.transform;
-        _exitDoor = GameObject.FindGameObjectWithTag(nameof(ETags.ExitDoor))?.transform;
-
-        SceneManager.sceneLoaded += OnSceneLoad;
     }
 
     public void OnSceneLoad(Scene scene, LoadSceneMode mode)

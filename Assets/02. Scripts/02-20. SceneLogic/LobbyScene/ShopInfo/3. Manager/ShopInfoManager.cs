@@ -16,9 +16,19 @@ public class ShopInfoManager : MonoBehaviourSingleton<ShopInfoManager>
         base.Awake();
     }
 
-    private void InitShopInfoManager()
+    public void InitShopInfoManager(ShopInfo shopInfo)
     {
+        if (!ReferenceEquals(shopInfo, null))
+        {
+            _shopInfo = shopInfo;
+        }
         _shopInfoRepository = new ShopInfoRepository();
+    }
+
+    public void SaveShopInfo()
+    {
+        ShopInfoSaveEvents.TriggerSaveRequest(_shopInfo);
+        _shopInfoRepository.Save(_shopInfo);
     }
 
 

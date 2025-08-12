@@ -147,6 +147,8 @@ public enum ESpecialStructureType
     OldChair = 5,
     ///<summary>푹신한의자</summary>
     LuxuryChair = 6,
+    ///<summary>연습모드</summary>
+    Practice = 7,
 }
 
 public enum ECustomerStateType

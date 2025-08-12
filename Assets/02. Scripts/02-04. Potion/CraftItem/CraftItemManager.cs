@@ -122,7 +122,7 @@ public class CraftItemManager : NetworkBehaviourSingleton<CraftItemManager>
                 }
                 else
                 {
-                    return -1;
+                    return FailureOutputTID;
                 }
             }
         }

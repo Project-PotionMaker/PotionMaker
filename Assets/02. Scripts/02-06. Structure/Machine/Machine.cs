@@ -87,7 +87,6 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
     private IInteractable<Machine> _interactComponent;
     private IInputContainer<Machine> _inputComponent;
     private IOutputContainer<Machine> _outputComponent;
-    private IMachineAnimation _animationComponent;
 
     [Foldout("Project")]
     [SerializeField]
@@ -502,8 +501,6 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
         if (_modelObjectDic.TryGetValue(tid, out GameObject modelToActivate))
         {
             modelToActivate.SetActive(true);
-            _animationComponent = modelToActivate.GetComponent<IMachineAnimation>();
-            _animationComponent.ResetAnimation();
         }
     }
 

@@ -30,12 +30,19 @@ public class BasicMachineAnimation : MonoBehaviour, IMachineAnimation
             modelInfo.Model.SetActive(false);
             _ingredientObjectDic.Add(modelInfo.TID, modelInfo.Model);
         }
-        _outputObject?.TypeObject.SetActive(false);
-        _mpb = new MaterialPropertyBlock();
+        if(_outputObject.TypeObject != null)
+        {
+            _outputObject?.TypeObject?.SetActive(false);
+            _mpb = new MaterialPropertyBlock();
+        }
     }
 
     private void OnEnable()
     {
+        if(_owner.DataTID == 100002)
+        {
+            Debug.Log("BasicMachineAnimation OnEnable called for " + _owner.name);
+        }
         _owner.OnDataChanged += RefreshAnimation;
     }
     private void OnDisable()
@@ -64,7 +71,7 @@ public class BasicMachineAnimation : MonoBehaviour, IMachineAnimation
             ingredient.Model.SetActive(false);
         }
 
-        if (_owner.IsProcessFinished && _owner.LeftOutputAmount > 0 && _outputObject != null)
+        if (_owner.IsProcessFinished && _owner.LeftOutputAmount > 0 &&  _outputObject.TypeObject != null)
         {
             _outputObject.TypeObject.SetActive(true);
             int outputTID = CraftItemManager.Instance.GetOutputTID(_owner.InputTIDList.ToArray(), _owner.DataTID, _owner.InputType);
@@ -84,7 +91,10 @@ public class BasicMachineAnimation : MonoBehaviour, IMachineAnimation
         }
         else
         {
-            _outputObject?.TypeObject.SetActive(false);
+            if(_outputObject.TypeObject != null)
+            {
+                _outputObject?.TypeObject?.SetActive(false);
+            }
             foreach (int tid in _owner.InputTIDList)
             {
                 if (_ingredientObjectDic.TryGetValue(tid, out GameObject ingredientObject))
@@ -118,6 +128,7 @@ public class BasicMachineAnimation : MonoBehaviour, IMachineAnimation
                 anime.CreateTween();
             }
             anime.DORestart();
+            Debug.Log($"Start Animation: {anime.gameObject.name} on {_owner.name} with progress {_owner.CurrentProgress}");
         }
     }
 

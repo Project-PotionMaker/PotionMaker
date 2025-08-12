@@ -450,6 +450,20 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
         {
             ServerCreateStructure(data.StructureTID, data.GridPosition, data.IngredientTID);
         }
+
+        ServerCreateStructure(10017, new Vector3Int(7, 0, 3), 10007); // 식물상자
+        ServerCreateStructure(10017, new Vector3Int(7, 0, 2), 10000); // 식물상자
+        ServerCreateStructure(10002, new Vector3Int(0, 0, 3)); // 혼합기
+        ServerCreateStructure(10018, new Vector3Int(7, 0, 4), 20002); // 동물상자
+        ServerCreateStructure(10018, new Vector3Int(7, 0, 5), 20000); // 동물상자
+
+
+        ServerCreateStructure(10007, new Vector3Int(-5, 0, 3)); //절구2
+        ServerCreateStructure(10008, new Vector3Int(-4, 0, 3)); //분쇄기2
+        ServerCreateStructure(10010, new Vector3Int(-2, 0, 3)); //증류기2
+        ServerCreateStructure(10011, new Vector3Int(-1, 0, 3)); //냉가기2
+        ServerCreateStructure(10009, new Vector3Int(-3, 0, 3)); //가열냄비2
+
         _hallAreaPathFinder.InitGridPathFinder
             (GetPositionByAreaType(EAreaType.Hall).ToHashSet(),
             _serverGridData.PlacedPositionHashSet,

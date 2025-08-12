@@ -16,9 +16,7 @@ public class AnimationState
 public interface IMachineAnimation
 {
     public void RefreshAnimation();
-    public void ResetAnimation();
     public void StartAnimation();
     public void StopAnimation();
     public void RefreshModels();
-    public void EndAnimation();
 }

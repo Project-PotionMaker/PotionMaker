@@ -1,5 +1,6 @@
 using System;
 
+[Serializable]
 public class Currency
 {
     private int _value = 0;

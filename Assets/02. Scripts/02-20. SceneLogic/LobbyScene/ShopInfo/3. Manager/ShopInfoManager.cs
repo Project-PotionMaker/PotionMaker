@@ -9,10 +9,17 @@ public class ShopInfoManager : MonoBehaviourSingleton<ShopInfoManager>
         set => _shopInfo = value;
     }
 
+    private ShopInfoRepository _shopInfoRepository;
+
     protected override void Awake()
     {
         base.Awake();
     }
 
-    
+    private void InitShopInfoManager()
+    {
+        _shopInfoRepository = new ShopInfoRepository();
+    }
+
+
 }

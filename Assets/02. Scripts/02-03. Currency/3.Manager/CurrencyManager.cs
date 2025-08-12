@@ -3,8 +3,7 @@ using System;
 
 public class CurrencyManager : NetworkBehaviourSingleton<CurrencyManager>
 {
-    public event Action OnDataChanged;
-    public static Action OnInitialized;
+    public static event Action OnDataChanged;
 
     private Currency _coin;
     public CurrencyDTO Coin => _coin.ToDTO();
@@ -13,7 +12,6 @@ public class CurrencyManager : NetworkBehaviourSingleton<CurrencyManager>
     public override void OnStartClient()
     {
         base.OnStartClient();
-        OnInitialized?.Invoke();
         InitCurrencyManager();
     }
     

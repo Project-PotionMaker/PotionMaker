@@ -3,7 +3,7 @@ using System;
 
 public class ReputationManager : NetworkBehaviourSingleton<ReputationManager>
 {
-    public event Action OnDataChanged;
+    public static event Action OnDataChanged;
 
     private Reputation _reputation;
     public ReputationDTO Reputation => _reputation.ToDTO();

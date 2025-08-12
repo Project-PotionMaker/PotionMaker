@@ -8,8 +8,11 @@ public class UI_Currency : MonoBehaviour
 
     private void Start()
     {
-        CurrencyManager.Instance.OnDataChanged += Refresh;
-        Refresh();
+        CurrencyManager.OnDataChanged += Refresh;
+        if(CurrencyManager.Instance != null)
+        {
+            Refresh();
+        }
     }
 
     public void Refresh()

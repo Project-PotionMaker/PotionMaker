@@ -37,9 +37,8 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
     public Transform ExitDoor { get => _exitDoor; set => _exitDoor = value; }
 
     // 이벤트는 필요시 추가
-    protected override void Awake()
+    protected void Awake()
     {
-        base.Awake(); 
         _orderHandler = new CustomerOrderHandler();
         _lineHandler = new CustomerLineHandler();
         _orderHandler.Init();

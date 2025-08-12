@@ -10,7 +10,6 @@ public class RentManager : NetworkBehaviourSingleton<RentManager>
     public override void OnStartClient()
     {
         base.OnStartClient();
-        Global.Instance.OnDataLoaded += InitRentManager;
         InitRentManager();
     }
 

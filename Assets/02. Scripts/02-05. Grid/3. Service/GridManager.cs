@@ -57,6 +57,7 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
         SceneManager.sceneLoaded += OnSceneLoaded;
         // 현재 씬에 PotionHouse가 이미 존재하는 경우를 대비하여 초기화 시도를 합니다.
         TryInitializeWithPotionHouse();
+        InitGridManager();
     }
 
     public override void OnStopClient()

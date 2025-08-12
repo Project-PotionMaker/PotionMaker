@@ -39,12 +39,11 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>
     private bool _isGameOver = false;
     public bool IsGameOver { get => _isGameOver; set => _isGameOver = value; }
 
-    protected override void Awake()
+    protected void Awake()
     {
-        base.Awake();
         _deathCount = _maxDeathCount;
         InitPhase();
-        Global.Instance.OnDataLoaded += InitializePotionDataList;
+        InitializePotionDataList();
     }
 
     private void Update()

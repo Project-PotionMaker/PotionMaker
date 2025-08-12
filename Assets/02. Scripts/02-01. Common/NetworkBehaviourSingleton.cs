@@ -1,4 +1,5 @@
 using Mirror;
+using System;
 using UnityEngine;
 
 public class NetworkBehaviourSingleton<T> : NetworkBehaviour where T : NetworkBehaviour
@@ -7,6 +8,9 @@ public class NetworkBehaviourSingleton<T> : NetworkBehaviour where T : NetworkBe
     private bool _dontDestroy;
 
     private static T _instance;
+
+    public event Action OnInitialized;
+
     public static T Instance
     {
         get
@@ -19,13 +23,13 @@ public class NetworkBehaviourSingleton<T> : NetworkBehaviour where T : NetworkBe
         }
     }
 
-    protected virtual void Awake()
-    {
-    }
-
     public override void OnStartServer()
     {
         SetupInstance();
+        if (!netIdentity.isServer)
+        {
+            NetworkServer.Spawn(gameObject);
+        }
     }
 
     public override void OnStartClient()

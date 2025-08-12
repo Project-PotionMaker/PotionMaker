@@ -47,12 +47,12 @@ public class ShopInfoRepository
 
         return new List<ShopInfo>()
         {
-            new ShopInfo("테스트 포션상점1", new Currency(2000), new Reputation(2.5f), 
-            new Sales(10000), _gridSaveDataList, 3),
-            new ShopInfo("테스트 포션상점2", new Currency(10), new Reputation(1.7f),
-            new Sales(17000), _gridSaveDataList, 5),
-            new ShopInfo("테스트 포션상점3", new Currency(50000), new Reputation(4.6f),
-            new Sales(53500), _gridSaveDataList, 10)
+            new ShopInfo("테스트 포션상점1", 3, 1, new Currency(2000), new Reputation(2.5f), 
+            new Sales(10000), _gridSaveDataList),
+            new ShopInfo("테스트 포션상점2", 7, 2, new Currency(10000), new Reputation(4.7f),
+            new Sales(17000), _gridSaveDataList),
+            new ShopInfo("테스트 포션상점3", 15, 3, new Currency(50000), new Reputation(3.4f),
+            new Sales(53500), _gridSaveDataList)
         };
     }
 

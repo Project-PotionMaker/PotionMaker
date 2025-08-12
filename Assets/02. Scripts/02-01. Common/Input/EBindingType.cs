@@ -2,6 +2,8 @@ using UnityEngine;
 
 public enum EBindingType
 {
-    Keyboard = 0,
-    Gamepad = 1
+    KeyboardMain = 0,
+    KeyboardSub = 1,
+    GamepadMain = 2,
+    GamepadSub = 3
 }

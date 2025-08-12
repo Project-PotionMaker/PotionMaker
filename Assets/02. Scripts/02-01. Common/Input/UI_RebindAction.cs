@@ -9,15 +9,16 @@ public class UI_RebindAction : MonoBehaviour
     [SerializeField]
     private InputActionReference _action;
     [SerializeField]
-    private EBindingType _bindingtype;
+    private EBindingType _bindingType;
+    public EBindingType BindingType { get => _bindingType; set => _bindingType = value; }
 
     [Header("UI")]
-    [SerializeField]
-    private TextMeshProUGUI _actionNameText;
     [SerializeField]
     private Button _rebindButton;
     [SerializeField]
     private TextMeshProUGUI _bindKey;
+    [SerializeField]
+    private GameObject _activeOverlay;
 
     private void Start()
     {
@@ -40,25 +41,23 @@ public class UI_RebindAction : MonoBehaviour
             return;
         }
 
-        _actionNameText.text = _action.action.name;
-
         UpdateBindingDisplay();
     }
 
     public void StartRebind()
     {
         _rebindButton.interactable = false;
-        _bindKey.text = "Press any key...";
+        _activeOverlay.SetActive(true);
 
         InputMappingManager.Instance.OnRebindComplete += HandleRebindComplete;
         InputMappingManager.Instance.OnRebindCanceled += HandleRebindCanceled;
 
-        InputMappingManager.Instance.StartRebinding(_action, _bindingtype, false, true);
+        InputMappingManager.Instance.StartRebinding(_action, _bindingType);
     }
 
-    private void HandleRebindComplete(InputAction action, EBindingType bindingIndex)
+    private void HandleRebindComplete(InputAction action, EBindingType bindingType)
     {
-        if (action.name == _action.action.name && bindingIndex == _bindingtype)
+        if (action.name == _action.action.name && bindingType == _bindingType)
         {
             UpdateBindingDisplay();
             CleanUp();
@@ -81,7 +80,7 @@ public class UI_RebindAction : MonoBehaviour
 
         var options = InputBinding.DisplayStringOptions.DontUseShortDisplayNames | InputBinding.DisplayStringOptions.DontIncludeInteractions;
 
-        _bindKey.text = _action.action.GetBindingDisplayString((int)_bindingtype, options);
+        _bindKey.text = _action.action.GetBindingDisplayString((int)_bindingType, options);
     }
 
     private void CleanUp()
@@ -89,6 +88,7 @@ public class UI_RebindAction : MonoBehaviour
         InputMappingManager.Instance.OnRebindComplete -= HandleRebindComplete;
         InputMappingManager.Instance.OnRebindCanceled -= HandleRebindCanceled;
 
+        _activeOverlay.SetActive(false);
         _rebindButton.interactable = true;
     }
 

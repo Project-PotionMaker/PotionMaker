@@ -120,6 +120,7 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
         if (Input.GetKeyDown(KeyCode.F2))
         {
             CmdTest();
+            // LoadGridSaveData();
             _hallAreaPathFinder.InitGridPathFinder
             (GetPositionByAreaType(EAreaType.Hall).ToHashSet(),
             _serverGridData.PlacedPositionHashSet,
@@ -344,7 +345,7 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
 
     // --- 서버 전용: 구조물 생성 ---
     [Server]
-    public bool ServerCreateStructure(int tid, Vector3 position, int ingredientTID = 0)
+    public bool ServerCreateStructure(int tid, Vector3Int position, int ingredientTID = 0)
     {
         StructureData data = DataTable.Instance.GetStructureData(tid);
         GameObject newObject = StructureManager.Instance.ServerCreateStructure(tid, ingredientTID);
@@ -405,23 +406,6 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
     }
 
     [Server]
-    public void ServerCreateStructuresOnSaveData(GridData gridData)
-    {
-        foreach (var objectInfo in gridData.PlacedObjectDict)
-        {
-            Vector3Int gridPosition = objectInfo.Key;
-            int TID = objectInfo.Value.TID;
-            int ingredientTID = objectInfo.Value.IngredientTID;
-
-            StructureData data = DataTable.Instance.GetStructureData(TID);
-            GameObject newObject = StructureManager.Instance.ServerCreateStructure(TID, ingredientTID);
-
-            newObject.transform.rotation = Quaternion.identity;
-            newObject.transform.position = _grid.CellToWorld(gridPosition) + new Vector3(0.5f, 0, 0.5f);
-        }
-    }
-
-    [Server]
     public void ServerRefundStructure(int structureTID, GameObject refundObject)
     {
         _managedStructureDict[structureTID].Remove(refundObject.GetComponent<NetworkIdentity>());
@@ -449,22 +433,39 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
     [Command(requiresAuthority = false)]
     public void CmdTest()
     {
-        if (!isServer) return;
+        if (!isServer)
+        {
+            return;
+        }
 
-        ServerCreateStructure(10000, new Vector3(-5, 0, 4)); //절구
-        ServerCreateStructure(10003, new Vector3(-3, 0, 4)); //가열 냄비
-        ServerCreateStructure(10012, new Vector3(-1, 0, 0)); // 픽업테이블
-        ServerCreateStructure(10012, new Vector3(-1, 0, 1)); // 픽업테이블
-        ServerCreateStructure(10012, new Vector3(-1, 0, 2)); // 픽업테이블
-        ServerCreateStructure(10012, new Vector3(0, 0, 0)); // 픽업테이블
-        ServerCreateStructure(10013, new Vector3(0, 0, 4)); // 쓰레기통
-        ServerCreateStructure(10014, new Vector3(-5, 0, 0)); // 계산기
-        ServerCreateStructure(10015, new Vector3(-1, 0, -5)); // 허름한 의자
-        ServerCreateStructure(10016, new Vector3(0, 0, -5)); // 푹신한 의자
-        ServerCreateStructure(10006, new Vector3(0, 0, 2)); // 병입기
-        ServerCreateStructure(10017, new Vector3(4, 0, 2), 10006); // 식물상자
-        ServerCreateStructure(10017, new Vector3(4, 0, 4), 10007); // 식물상자
+        ServerCreateStructure(10000, new Vector3Int(-5, 0, 4)); //절구
+        ServerCreateStructure(10003, new Vector3Int(-3, 0, 4)); //가열 냄비
+        ServerCreateStructure(10012, new Vector3Int(-1, 0, 0)); // 픽업테이블
+        ServerCreateStructure(10012, new Vector3Int(-1, 0, 1)); // 픽업테이블
+        ServerCreateStructure(10012, new Vector3Int(-1, 0, 2)); // 픽업테이블
+        ServerCreateStructure(10012, new Vector3Int(0, 0, 0)); // 픽업테이블
+        ServerCreateStructure(10013, new Vector3Int(0, 0, 4)); // 쓰레기통
+        ServerCreateStructure(10014, new Vector3Int(-5, 0, 0)); // 계산기
+        ServerCreateStructure(10015, new Vector3Int(-1, 0, -5)); // 허름한 의자
+        ServerCreateStructure(10016, new Vector3Int(0, 0, -5)); // 푹신한 의자
+        ServerCreateStructure(10006, new Vector3Int(0, 0, 2)); // 병입기
+        ServerCreateStructure(10017, new Vector3Int(4, 0, 2), 10006); // 식물상자
+        ServerCreateStructure(10017, new Vector3Int(4, 0, 4), 10007); // 식물상자
     }
+
+    [Command(requiresAuthority = false)]
+    public void LoadGridSaveData()
+    {
+        if (!isServer)
+        {
+            return;
+        }
+        foreach (GridSaveData data in ShopInfoManager.Instance.ShopInfo.GridSaveDataList)
+        {
+            ServerCreateStructure(data.StructureTID, data.GridPosition, data.IngredientTID);
+        }
+    }
+
 
     // --- 클라이언트/서버 공용 메서드 ---
     public Vector3Int GetGridPosition(Vector3 targetPosition)

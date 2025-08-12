@@ -1,12 +1,11 @@
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
-using static UnityEngine.Rendering.DebugUI;
 
 public class ShopInfoSpecification
 {
     private static readonly Regex ShopNameRegex =
-        new Regex(@"^[0-9가-힣a-zA-Z]{2,15}$", RegexOptions.Compiled);
+    new Regex(@"^[0-9가-힣a-zA-Z\s]{2,15}$", RegexOptions.Compiled);
 
     public string ErrorMessage { get; private set; }
 

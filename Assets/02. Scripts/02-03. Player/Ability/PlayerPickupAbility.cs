@@ -140,14 +140,13 @@ public class PlayerPickupAbility : PlayerAbility
     }
 
     [Client]
-    public void ReceiveDroppedItem(bool success, Vector3 position)
+    public void ReceiveDroppedItem(bool success)
     {
         if (success == false || _heldItemIdentity == null)
         {
             return;
         }
-
-        CmdDropItem(position);
+        CmdDropItem();
     }
 
     private void OnHeldItemChanged(NetworkIdentity oldIdentity, NetworkIdentity newIdentity)
@@ -155,9 +154,12 @@ public class PlayerPickupAbility : PlayerAbility
         // 1. 이전에 들고 있던 가구가 있었다면 부모-자식 관계를 해제합니다.
         if (oldIdentity != null)
         {
-            oldIdentity.transform.rotation = Quaternion.identity;
             oldIdentity.transform.SetParent(null);
-            oldIdentity.GetComponentInChildren<Collider>().enabled = true;
+            Collider collider = oldIdentity.GetComponentInChildren<Collider>();
+            if(!ReferenceEquals(collider, null))
+            {
+                collider.enabled = true;
+            }
         }
 
         // 2. 새롭게 들게 된 가구가 있다면 부모-자식 관계를 설정합니다.
@@ -167,7 +169,11 @@ public class PlayerPickupAbility : PlayerAbility
             newIdentity.transform.SetParent(_owner.HeldPosition, true);
             newIdentity.transform.localPosition = Vector3.zero;
             newIdentity.transform.localRotation = Quaternion.identity;
-            newIdentity.GetComponentInChildren<Collider>().enabled = false;
+            Collider collider = newIdentity.GetComponentInChildren<Collider>();
+            if(!ReferenceEquals(collider, null))
+            {
+                collider.enabled = false;
+            }
         }
     }
 
@@ -180,12 +186,21 @@ public class PlayerPickupAbility : PlayerAbility
     }
 
     [Command]
-    public void CmdDropItem(Vector3 position)
+    public void CmdDropItem()
     {
         if (!_owner.isServer) return;
-        _heldItemIdentity.transform.rotation = Quaternion.identity;
 
-        _heldItemIdentity.transform.position = position;
+        GameObject heldItemObject = _heldItemIdentity.gameObject;
+        if(heldItemObject.TryGetComponent<IGridItemHandler>(out IGridItemHandler structure))
+        {
+            StructureData data = DataTable.Instance.GetStructureData(structure.GetStructureTID());
+            GridManager.Instance.CmdRemoveStructure(data.TID, heldItemObject);
+        }
+        else
+        {
+            CraftItemFactory.Instance.ReturnObject(_heldItemIdentity.gameObject);
+        }
+
         _heldItemIdentity = null;
     }
 }

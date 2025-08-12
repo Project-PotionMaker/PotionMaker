@@ -252,7 +252,44 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
                 }
             }
 
-            TargetRpcOnPlaceStructure(sender, true, structureNetId);
+            TargetRpcOnPlaceStructure(sender, true);
+        }
+    }
+
+    // --- 서버로 배치를 요청하는 Command ---
+    [Server]
+    public void ServerPlaceStructure2(Vector3 targetPosition, uint structureNetId, NetworkConnectionToClient sender = null, int ingredientTID = 0)
+    {
+        if (!isServer) return;
+
+        // targetPosition을 gridPosition으로 변환
+        Vector3Int gridPosition = GetGridPosition(targetPosition);
+
+        if (NetworkServer.spawned.TryGetValue(structureNetId, out NetworkIdentity structureIdentity))
+        {
+            GameObject structure = structureIdentity.gameObject;
+            StructureData data = DataTable.Instance.GetStructureData(structure.GetComponent<IGridItemHandler>().GetStructureTID());
+
+            //structure.transform.rotation = Quaternion.identity;
+
+            Vector3 position = _grid.CellToWorld(gridPosition) + new Vector3(0.5f, 0, 0.5f);
+
+            ServerCreateStructure(data.TID, position, ingredientTID);
+
+            if (data.SpecialStructureType == ESpecialStructureType.PickUpTable ||
+                data.SpecialStructureType == ESpecialStructureType.OldChair ||
+                data.SpecialStructureType == ESpecialStructureType.LuxuryChair)
+            {
+                _hallAreaPathFinder.UpdateGridPathFinder(_serverGridData.PlacedPositionHashSet,
+                    ToPickupTablePositionHashSet(_pickupTableForCustomerList));
+                if (!_hallAreaPathFinder.HasPath())
+                {
+                    Debug.LogWarning("경로 없음!!!");
+                    // 경로가 없을 때 로직
+                }
+            }
+
+            TargetRpcOnPlaceStructure(sender, true);
         }
     }
 
@@ -277,7 +314,7 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
 
     // --- 클라이언트에게 배치 결과를 전달하는 TargetRpc ---
     [TargetRpc]
-    private void TargetRpcOnPlaceStructure(NetworkConnectionToClient target, bool success, uint structureNetId)
+    private void TargetRpcOnPlaceStructure(NetworkConnectionToClient target, bool success)
     {
         if (NetworkClient.connection.identity == null)
         {
@@ -387,13 +424,14 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
             return true;
         }
 
-        NetworkServer.Destroy(newObject);
+        StructureFactory.Instance.ReturnObject(newObject);
         return false;
     }
 
     [Server]
     public void ServerRefundStructure(int structureTID, GameObject refundObject)
     {
+        Debug.Log(refundObject.GetComponent<NetworkIdentity>() == null);
         _managedStructureDict[structureTID].Remove(refundObject.GetComponent<NetworkIdentity>());
         StopPlacement();
         StructureFactory.Instance.ReturnObject(refundObject);
@@ -429,11 +467,17 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
         ServerCreateStructure(10012, new Vector3(0, 0, 0)); // 픽업테이블
         ServerCreateStructure(10013, new Vector3(0, 0, 4)); // 쓰레기통
         ServerCreateStructure(10014, new Vector3(-5, 0, 0)); // 계산기
-        ServerCreateStructure(10015, new Vector3(-1, 0, -5)); // 허름한 의자
-        ServerCreateStructure(10016, new Vector3(0, 0, -5)); // 푹신한 의자
+        ServerCreateStructure(10015, new Vector3(-1, 0, -4)); // 허름한 의자
+        ServerCreateStructure(10016, new Vector3(0, 0, -4)); // 푹신한 의자
         ServerCreateStructure(10006, new Vector3(0, 0, 2)); // 병입기
         ServerCreateStructure(10017, new Vector3(4, 0, 2), 10006); // 식물상자
         ServerCreateStructure(10017, new Vector3(4, 0, 4), 10007); // 식물상자
+    }
+
+    [Command(requiresAuthority = false)]
+    public void CmdRemoveStructure(int structureTID, GameObject removeObject)
+    {
+        ServerRefundStructure(structureTID, removeObject);
     }
 
     // --- 클라이언트/서버 공용 메서드 ---

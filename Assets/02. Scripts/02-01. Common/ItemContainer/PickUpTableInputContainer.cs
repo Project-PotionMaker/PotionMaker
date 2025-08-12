@@ -12,9 +12,35 @@ public class PickUpTableInputContainer : IInputContainer<Furniture>
                 CustomerManager.Instance.CmdServePotion(tid, furniture.netId);
             }
 
-            furniture.InputObject = inputObject;
-            furniture.InputObject.transform.position = furniture.InputPosition.position;
-            furniture.InputObject.transform.rotation = Quaternion.identity;
+            //furniture.InputObject = inputObject;
+            //furniture.InputObject.transform.position = furniture.InputPosition.position;
+            //furniture.InputObject.transform.rotation = Quaternion.identity;
+
+            furniture.InputObject = CraftItemFactory.Instance.CreateObject(inputType, furniture.InputPosition.position, Quaternion.identity);
+            switch (inputType)
+            {
+                case EInputType.Ingredient:
+                {
+                    furniture.InputObject.GetComponent<IngredientItem>().ServerUpdateIngredientData(tid);
+                    break;
+                }
+                case EInputType.Output:
+                {
+                    furniture.InputObject.GetComponent<OutputItem>().ServerUpdateOutputData(EInputType.Output, tid);
+                    break;
+                }
+                case EInputType.FailureOutput:
+                {
+                    furniture.InputObject.GetComponent<OutputItem>().ServerUpdateOutputData(EInputType.FailureOutput, tid);
+                    break;
+                }
+                case EInputType.Potion:
+                {
+                    furniture.InputObject.GetComponent<PotionItem>().ServerUpdatePotionData(tid);
+                    break;
+                }
+            }
+
             return true;
         }
         return false;

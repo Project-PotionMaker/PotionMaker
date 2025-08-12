@@ -94,9 +94,11 @@ public class FactoryLogic<TEnum, TFactoryInfo>
         if (_typeToPoolDict[type].Count <= 0)
         {
             networkObject = UnityEngine.Object.Instantiate(_typeToPrefabDict[type]);
+            Debug.Log("A");
         }
         else
         {
+            Debug.Log("B");
             networkObject = _typeToPoolDict[type].Dequeue();
         }
 
@@ -106,8 +108,8 @@ public class FactoryLogic<TEnum, TFactoryInfo>
             identity.enabled = true;
         }
 
-        networkObject.SetActive(true);
         networkObject.transform.SetPositionAndRotation(position, rotation);
+        networkObject.SetActive(true);
 
         _objectToTypeDict[networkObject] = type;
 

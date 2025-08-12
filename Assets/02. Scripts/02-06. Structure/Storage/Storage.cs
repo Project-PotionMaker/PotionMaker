@@ -1,6 +1,8 @@
 using Mirror;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using VInspector;
 
@@ -39,6 +41,8 @@ public class Storage : NetworkBehaviour, IGridItemHandler
     private List<ModelOnTID> _modelObjectList = new List<ModelOnTID>();
     private Dictionary<int, GameObject> _modelObjectDic;
 
+    private Coroutine _visibleRoutine;
+
     private void Awake()
     {
         _modelObjectDic = new Dictionary<int, GameObject>();
@@ -52,6 +56,12 @@ public class Storage : NetworkBehaviour, IGridItemHandler
     public override void OnStartClient()
     {
         base.OnStartClient();
+        _model.gameObject.SetActive(false);
+        if (!ReferenceEquals(_visibleRoutine, null))
+        {
+            StopCoroutine(VisibleRoutine());
+        }
+        _visibleRoutine = StartCoroutine(VisibleRoutine());
     }
 
     #region SyncVar Hook Functions
@@ -196,9 +206,10 @@ public class Storage : NetworkBehaviour, IGridItemHandler
 
             if (GridManager.Instance.ServerCanPlaceObjectAt(targetPosition, EAreaType.Storage))
             {
-                //GetComponent<NetworkTransformReliable>().syncMode = SyncMode.Observers;
-                GridManager.Instance.ServerPlaceStructure(targetPosition, dropItemNetId, sender);
-                dropItemIdentity.RemoveClientAuthority();
+                transform.position = targetPosition;
+                GridManager.Instance.ServerPlaceStructure2(targetPosition, dropItemNetId, sender, _ingredientTID);
+                RpcOnDrop();
+                TargetRpcOnDrop(sender, success, transform.position);
                 success = true;
             }
             else
@@ -211,9 +222,6 @@ public class Storage : NetworkBehaviour, IGridItemHandler
         {
             dropItemIdentity.RemoveClientAuthority();
         }
-
-
-        TargetRpcOnDrop(sender, success, transform.position);
     }
     #endregion
 
@@ -241,10 +249,16 @@ public class Storage : NetworkBehaviour, IGridItemHandler
     {
         if (NetworkClient.connection.identity.TryGetComponent<Player>(out Player player))
         {
-            player.GetAbility<PlayerPickupAbility>().ReceiveDroppedItem(success, position);
+            player.GetAbility<PlayerPickupAbility>().ReceiveDroppedItem(success);
         }
     }
     #endregion
+
+    [ClientRpc]
+    private void RpcOnDrop()
+    {
+        gameObject.SetActive(false);
+    }
 
     private void ActivateModelForTID(int tid)
     {
@@ -285,5 +299,11 @@ public class Storage : NetworkBehaviour, IGridItemHandler
     public void SetCollider(bool active)
     {
         _collider.enabled = active;
+    }
+
+    private IEnumerator VisibleRoutine()
+    {
+        yield return new WaitForSeconds(0.05f);
+        _model.gameObject.SetActive(true);
     }
 }

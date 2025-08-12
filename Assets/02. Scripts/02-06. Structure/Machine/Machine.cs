@@ -1,5 +1,6 @@
 using Mirror;
 using Mirror.BouncyCastle.Tls;
+using MoreMountains.Feedbacks;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -97,6 +98,8 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
     private RefundSystem _refundSystem;
     public Action OnDataChanged;
 
+    private Coroutine _visibleRoutine;
+
     private void Awake()
     {
         _modelObjectDic = new Dictionary<int, GameObject>();
@@ -116,7 +119,12 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
     public override void OnStartClient()
     {
         base.OnStartClient();
-
+        _model.gameObject.SetActive(false);
+        if (!ReferenceEquals(_visibleRoutine, null))
+        {
+            StopCoroutine(VisibleRoutine());
+        }
+        _visibleRoutine = StartCoroutine(VisibleRoutine());
         if (!isServer)
         {
             InputTIDList.Callback += OnInputTIDListChanged;
@@ -444,10 +452,11 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
             {
                 if (GridManager.Instance.ServerCanPlaceObjectAt(targetPosition, _data.AreaType))
                 {
-                    //GetComponent<NetworkTransformReliable>().syncMode = SyncMode.Observers;
-                    GridManager.Instance.ServerPlaceStructure(targetPosition, dropItemNetId, sender);
+                    transform.position = targetPosition;
+                    GridManager.Instance.ServerPlaceStructure2(targetPosition, dropItemNetId, sender);
                     dropItemIdentity.RemoveClientAuthority();
                     success = true;
+                    RpcOnDrop();
                 }
                 else
                 {
@@ -464,19 +473,24 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
 
         if (success)
         {
-            dropItemIdentity.RemoveClientAuthority();
+            TargetRpcOnDrop(sender, success);
         }
 
-        TargetRpcOnDrop(sender, success, transform.position);
     }
 
     [TargetRpc]
-    private void TargetRpcOnDrop(NetworkConnectionToClient target, bool success, Vector3 position)
+    private void TargetRpcOnDrop(NetworkConnectionToClient target, bool success)
     {
         if (NetworkClient.connection.identity.TryGetComponent<Player>(out Player player))
         {
-            player.GetAbility<PlayerPickupAbility>().ReceiveDroppedItem(success, position);
+            player.GetAbility<PlayerPickupAbility>().ReceiveDroppedItem(success);
         }
+    }
+
+    [ClientRpc]
+    private void RpcOnDrop()
+    {
+        gameObject.SetActive(false);
     }
 
     [Command(requiresAuthority = false)]
@@ -560,5 +574,11 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
     public void CancelRefund()
     {
         CmdCancelRefund();
+    }
+
+    private IEnumerator VisibleRoutine()
+    {
+        yield return new WaitForSeconds(0.05f);
+        _model.gameObject.SetActive(true);
     }
 }

@@ -68,6 +68,8 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
     private List<ModelOnTID> _modelObjectList = new List<ModelOnTID>();
     private Dictionary<int, GameObject> _modelObjectDic;
 
+    private Coroutine _visibleRoutine;
+
     private void Awake()
     {
         _modelObjectDic = new Dictionary<int, GameObject>();
@@ -79,10 +81,17 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
         _refundSystem = new RefundSystem();
     }
 
+    
     public override void OnStartClient()
     {
         base.OnStartClient();
-
+        _model.gameObject.SetActive(false);
+        
+        if(!ReferenceEquals(_visibleRoutine, null))
+        {
+            StopCoroutine(VisibleRoutine());
+        }
+        _visibleRoutine = StartCoroutine(VisibleRoutine());
         if (isServer)
         {
             PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += ResetData;
@@ -272,9 +281,10 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
             {
                 if (GridManager.Instance.ServerCanPlaceObjectAt(targetPosition, _data.AreaType))
                 {
-                    //GetComponent<NetworkTransformReliable>().syncMode = SyncMode.Observers;
-                    GridManager.Instance.ServerPlaceStructure(targetPosition, dropItemNetId, sender);
+                    transform.position = targetPosition;
+                    GridManager.Instance.ServerPlaceStructure2(targetPosition, dropItemNetId, sender);
                     dropItemIdentity.RemoveClientAuthority();
+                    RpcOnDrop();
                     success = true;
                 }
                 else
@@ -293,10 +303,8 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
 
         if (success)
         {
-            dropItemIdentity.RemoveClientAuthority();
+            TargetRpcOnDrop(sender, success, transform.position);
         }
-
-        TargetRpcOnDrop(sender, success, transform.position);
     }
 
     [Command(requiresAuthority = false)]
@@ -368,10 +376,16 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
         //transform.position = _grid.CellToWorld(gridPosition) + new Vector3(0.5f, 0, 0.5f);
         if (NetworkClient.connection.identity.TryGetComponent<Player>(out Player player))
         {
-            player.GetAbility<PlayerPickupAbility>().ReceiveDroppedItem(success, position);
+            player.GetAbility<PlayerPickupAbility>().ReceiveDroppedItem(success);
         }
     }
     #endregion
+
+    [ClientRpc]
+    private void RpcOnDrop()
+    {
+        gameObject.SetActive(false);
+    }
 
     #region Public Interface (IGridItemHandler)
     private void ActivateModelForTID(int tid)
@@ -447,4 +461,10 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
         CmdCancelRefund();
     }
     #endregion
+
+    private IEnumerator VisibleRoutine()
+    {
+        yield return new WaitForSeconds(0.05f);
+        _model.gameObject.SetActive(true);
+    }
 }

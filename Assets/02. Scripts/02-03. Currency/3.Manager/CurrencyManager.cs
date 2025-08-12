@@ -1,7 +1,7 @@
 using Mirror;
 using System;
 
-public class CurrencyManager : NetworkBehaviourSingleton<CurrencyManager>
+public class CurrencyManager : NetworkBehaviourSingleton<CurrencyManager>, IShopInfoSaveable
 {
     public static event Action OnDataChanged;
 
@@ -82,5 +82,15 @@ public class CurrencyManager : NetworkBehaviourSingleton<CurrencyManager>
     public void CmdRequestUpdateCurrency()
     {
         UpdateCurrency(_coin.Value);
+    }
+
+    public void ApplyLoadedData(ShopInfo shopInfo)
+    {
+        _coin = shopInfo.Currency;
+    }
+
+    public void ProvideSaveData(ShopInfo shopInfo)
+    {
+        shopInfo.Currency = _coin;
     }
 }

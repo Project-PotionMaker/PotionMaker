@@ -22,7 +22,7 @@ public class UI_ShopInfoSlot : MonoBehaviour
 
     private ShopInfoSlot _shopInfoSlot;
 
-    private void Start()
+    private void Awake()
     {
         _shopInfoSlot = GetComponent<ShopInfoSlot>();
         _shopInfoSlot.OnShopInfoCreated += RefreshOnCreated;
@@ -49,7 +49,7 @@ public class UI_ShopInfoSlot : MonoBehaviour
         _buttonShopName.gameObject.SetActive(false);
     }
 
-    public void RefreshOnSelected()
+    public void RefreshOnSelected(ShopInfo shopInfo)
     {
         ChangeButtonColor(_buttonShopName, Color.white);
         _buttonDelete.gameObject.SetActive(true);

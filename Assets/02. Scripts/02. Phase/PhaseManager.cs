@@ -6,12 +6,14 @@ using VInspector;
 using Mirror;
 using System.Collections;
 
-public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>
+public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>, IShopInfoSaveable
 {
     public event Action OnDayPassed;
     public event Action OnPhaseChanged;
     public event Action OnTimerRunning;
     public event Action OnDeathCountChanged;
+
+    public static event Action OnInitialized;
 
     private BasePhase _currentPhase;
     public BasePhase CurrentPhase { get => _currentPhase; set => _currentPhase = value; }
@@ -65,13 +67,7 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>
 
     public void InitPhase()
     {
-        //if(저장 데이터가 null이면)
-        {
-            _day = 1;
-        }//else
-        {
-            //저장 데이터에서 _day를 불러오기
-        }
+        _day = ShopInfoManager.Instance.ShopInfo.Day;
         _phaseDictionary = new Dictionary<EPhaseType, BasePhase>
         {
             { EPhaseType.PreparingPhase, new PreparingPhase() },
@@ -81,6 +77,7 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>
         };
         _currentPhase = _phaseDictionary[EPhaseType.PreparingPhase];
         _currentPhase.EnterPhase();
+        OnInitialized?.Invoke();
     }
 
     [Server]
@@ -165,4 +162,13 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>
         _deathCount = _maxDeathCount;
     }
 
+    public void ApplyLoadedData(ShopInfo shopInfo)
+    {
+        _day = shopInfo.Day;
+    }
+
+    public void ProvideSaveData(ShopInfo shopInfo)
+    {
+        shopInfo.Day = _day;
+    }
 }

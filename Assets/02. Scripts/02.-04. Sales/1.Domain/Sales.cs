@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using static UnityEngine.Rendering.DebugUI;
 
+[Serializable]
 public class Sales
 {
     private int _totalSales;
@@ -54,6 +54,13 @@ public class Sales
         }
     }
     
+    public Sales(SalesDTO salesDto)
+    {
+        _totalSales = salesDto.TotalSales;
+        _dailySales = salesDto.DailySales;
+        _totalSalesVolumeDict = salesDto.TotalSalesVolumeDict;
+        _dailySalesVolumeDict = salesDto.DailySalesVolumeDict;
+    }
     public int GetTotalSalesVolume()
     {
         int sum = 0;

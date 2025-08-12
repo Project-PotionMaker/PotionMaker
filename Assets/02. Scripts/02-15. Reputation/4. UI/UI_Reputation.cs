@@ -7,8 +7,11 @@ public class UI_Reputation : MonoBehaviour
     private Slider[] _reputationStar;
     private void Start()
     {
-        ReputationManager.Instance.OnDataChanged += RefreshReputation;
-        RefreshReputation();
+        ReputationManager.OnDataChanged += RefreshReputation;
+        if(ReputationManager.Instance != null)
+        {
+            RefreshReputation();
+        }
     }
 
     private void RefreshReputation() // 슬라이더는 1이 빈칸이고 0이 꽉찬칸임

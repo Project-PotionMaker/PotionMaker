@@ -20,10 +20,10 @@ public class CraftItemManager : NetworkBehaviourSingleton<CraftItemManager>
 
     private const int FailureOutputTID = 10000;
 
-    protected override void Awake()
+    public override void OnStartServer()
     {
-        base.Awake();
-        Global.Instance.OnDataLoaded += InitCraftItemManager;
+        base.OnStartServer();
+        InitCraftItemManager();
     }
 
     [Server]

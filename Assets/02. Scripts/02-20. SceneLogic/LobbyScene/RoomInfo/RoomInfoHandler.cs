@@ -5,13 +5,14 @@ public class RoomInfoHandler : MonoBehaviour
     [Header("Hierarchy")]
     [SerializeField]
     private ShopInfoHandler _shopInfoHandler;
+    public ShopInfoHandler ShopInfoHandler => _shopInfoHandler;
 
     private RoomInfo _roomInfo;
     public RoomInfo RoomInfo => _roomInfo;
 
     private Visibility _selectedVisibility = Visibility.Public;
 
-    private void Start()
+    private void Awake()
     {
         _shopInfoHandler.OnShopInfoUpdated += UpdateRoomInfo;
     }

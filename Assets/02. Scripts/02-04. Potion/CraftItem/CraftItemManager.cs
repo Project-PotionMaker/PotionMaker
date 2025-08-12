@@ -103,4 +103,35 @@ public class CraftItemManager : NetworkBehaviourSingleton<CraftItemManager>
 
         return output;
     }
+
+    public int GetOutputTID(int[] TIDList, int machineTID, EInputType type)
+    {
+        string recipeCode;
+        if (type != EInputType.Ingredient)
+        {
+            recipeCode = _recipeCodeHandler.MakeNewRecipeCode(TIDList, machineTID);
+            if (_recipeCodeVerifier.IsValidProcess(recipeCode))
+            {
+                if(_outputDataTIDDict.TryGetValue(recipeCode, out int outputTID))
+                {
+                    return outputTID;
+                }
+                else if(_potionDataTIDDict.TryGetValue(recipeCode, out int potionTID))
+                {
+                    return potionTID;
+                }
+                else
+                {
+                    return -1;
+                }
+            }
+        }
+        else
+        {
+            recipeCode = DataTable.Instance.GetIngredientData(TIDList[0]).RecipeCode;
+            return _outputDataTIDDict[recipeCode];
+        }
+
+        return -1;
+    }
 }

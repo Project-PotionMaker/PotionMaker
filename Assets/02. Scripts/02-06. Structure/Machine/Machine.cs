@@ -123,6 +123,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
         }
         else
         {
+            InputTIDList.Callback += OnInputTIDListChanged;
             PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += ResetData; // 서버에서만 호출되도록
             PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase].OnPhaseExited += ResetData; // 서버에서만 호출되도록
 
@@ -192,7 +193,6 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
 
     private void OnInputTIDListChanged(SyncList<int>.Operation op, int itemIndex, int oldItem, int newItem)
     {
-        RpcPlayAnimation(EMachineAnimationType.PutItem); 
         OnDataChanged?.Invoke(); // UI (인풋 슬롯) 업데이트
         Debug.Log($"InputTIDList changed: {op}, Index: {itemIndex}, Old: {oldItem}, New: {newItem}");
     }
@@ -220,7 +220,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
 
         // 나머지 SyncVar 초기값 설정 (서버에서만)
         CurrentProgress = 0f;
-        LeftOutputAmount = _data.OutputAmount;
+        LeftOutputAmount = 0;
         IsProcessFinished = false;
         IsProcessStarted = false;
         CurrentRotation = 0f;
@@ -263,7 +263,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
         {
             ServerSetIsProcessFinished(true);
             ServerSetIsProcessStarted(false);
-            //RpcPlayAnimation(EMachineAnimationType.Done);
+            ServerSetLeftOutputAmount(Data.OutputAmount);
             StopAllCoroutines(); // 서버의 코루틴만 중지
         }
     }
@@ -327,12 +327,11 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
     {
         StopAllCoroutines(); // 서버의 코루틴만 중지
         InputTIDList.Clear(); // SyncList 초기화
-        LeftOutputAmount = Data.OutputAmount; // SyncVar 초기화
+        LeftOutputAmount = 0; // SyncVar 초기화
         IsProcessFinished = false; // SyncVar 초기화
         IsProcessStarted = false; // SyncVar 초기화
         CurrentProgress = 0f; // SyncVar 초기화
         InputType = EInputType.None; // SyncVar 초기화
-        //RpcPlayAnimation(EMachineAnimationType.Empty);
     }
 
     #endregion
@@ -410,7 +409,6 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
         if(pickedUpItem != null && sender != null)
         {
             NetworkServer.spawned[pickedUpItem.GetComponent<NetworkIdentity>().netId].AssignClientAuthority(sender);
-            //RpcPlayAnimation(EMachineAnimationType.GetItem);
         }
 
         if (pickedUpItem != null)
@@ -448,7 +446,6 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
                 if (GridManager.Instance.ServerCanPlaceObjectAt(targetPosition, _data.AreaType))
                 {
                     GridManager.Instance.ServerPlaceStructure(targetPosition, dropItemNetId, sender);
-                    //RpcPlayAnimation(EMachineAnimationType.PutItem);
                     dropItemIdentity.RemoveClientAuthority();
                     success = true;
                 }
@@ -527,34 +524,6 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
 
         return null;
     }
-
-    #region ClientRPC
-    [ClientRpc]
-    public void RpcPlayAnimation(EMachineAnimationType type)
-    {
-        switch (type)
-        {
-            case EMachineAnimationType.PutItem:
-                _animationComponent.PutItemAnimation();
-                break;
-            case EMachineAnimationType.Start:
-                _animationComponent.StartAnimation();
-                break;
-            case EMachineAnimationType.Stop:
-                _animationComponent.StopAnimation();
-                break;
-            case EMachineAnimationType.Empty:
-                _animationComponent.ResetAnimation();
-                break;
-            case EMachineAnimationType.Done:
-                _animationComponent.EndAnimation();
-                break;
-            case EMachineAnimationType.GetItem:
-                _animationComponent.GetItemAnimation();
-                break;
-        }
-    }
-    #endregion
 
     public void TryInteract(NetworkConnectionToClient conn)
     {

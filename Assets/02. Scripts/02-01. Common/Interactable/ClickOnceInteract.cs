@@ -16,7 +16,6 @@ public class ClickOnceInteract : IInteractable<Machine>
 
         if (!machine.IsProcessStarted)
         {
-            //machine.RpcPlayAnimation(EMachineAnimationType.Start);
             CompleteProgress(machine);
         }
         return true;

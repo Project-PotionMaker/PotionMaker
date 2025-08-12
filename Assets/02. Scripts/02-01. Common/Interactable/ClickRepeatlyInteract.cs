@@ -17,9 +17,9 @@ public class ClickRepeatlyInteract : IInteractable<Machine>
 
         if (!machine.IsProcessStarted)
         {
-            //machine.RpcPlayAnimation(EMachineAnimationType.Start);
             machine.ServerSetIsProcessStarted(true);
         }
+
         IncreaseProgress(machine);
         return true;
     }

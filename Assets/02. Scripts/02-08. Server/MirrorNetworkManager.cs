@@ -15,6 +15,18 @@ public class MirrorNetworkManager : NetworkRoomManager
     public Dictionary<uint, int> NetIdToSlotMapping => netIdToSlotMapping;
     private bool[] slotUsed = new bool[4]; // UI 슬롯 사용 여부 (0~3번)
 
+    private ShopInfo _shopInfo;
+    public ShopInfo ShopInfo { get => _shopInfo; set => _shopInfo = value; }
+
+    [Scene]
+    public string LoadingScene;
+
+    //[Tooltip("서버 시작 시 LoadingScene에서 생성할 매니저 프리팹들")]
+    //public List<GameObject> ManagerPrefabList = new List<GameObject>();
+
+    //[Tooltip("서버 시작 시 GamePlayScene에서 생성할 팩토리 프리팹들")]
+    //public List<GameObject> FactoryPrefabList = new List<GameObject>();
+
     public int GetSlotForNetId(uint netId)
     {
         if (netIdToSlotMapping.ContainsKey(netId))
@@ -22,7 +34,7 @@ public class MirrorNetworkManager : NetworkRoomManager
             Debug.Log($"MirrorNetworkManager: NetId {netId} already mapped to UI slot {netIdToSlotMapping[netId]}");
             return netIdToSlotMapping[netId];
         }
-            
+
         // 새로운 매핑 생성 (순차적으로 할당)
         int availableSlot = GetNextAvailableSlot();
         if (availableSlot >= 0)
@@ -30,7 +42,7 @@ public class MirrorNetworkManager : NetworkRoomManager
             netIdToSlotMapping[netId] = availableSlot;
             slotUsed[availableSlot] = true;
             Debug.Log($"MirrorNetworkManager: Mapped NetId {netId} to UI slot {availableSlot}");
-            
+
             // 현재 슬롯 상태 출력
             PrintSlotStatus();
         }
@@ -64,7 +76,7 @@ public class MirrorNetworkManager : NetworkRoomManager
             slotUsed[slot] = false;
             netIdToSlotMapping.Remove(netId);
             Debug.Log($"MirrorNetworkManager: Released UI slot {slot} for NetId {netId}");
-            
+
             // 현재 슬롯 상태 출력
             PrintSlotStatus();
         }
@@ -84,15 +96,6 @@ public class MirrorNetworkManager : NetworkRoomManager
         Debug.Log(status);
     }
 
-    [Scene]
-    public string LoadingScene;
-
-    [Tooltip("서버 시작 시 LoadingScene에서 생성할 매니저 프리팹들")]
-    public List<GameObject> ManagerPrefabList = new List<GameObject>();
-
-    [Tooltip("서버 시작 시 GamePlayScene에서 생성할 팩토리 프리팹들")]
-    public List<GameObject> FactoryPrefabList = new List<GameObject>();
-
     // 모든 플레이어가 준비되면 LoadingScene으로 전환
     public override void OnRoomServerPlayersReady()
     {
@@ -110,28 +113,28 @@ public class MirrorNetworkManager : NetworkRoomManager
             Debug.Log("서버: LoadingScene으로 전환되었습니다. 매니저 프리팹들을 스폰합니다.");
 
             // LoadingScene에서 필요한 매니저 프리팹들을 스폰
-            foreach (GameObject prefab in ManagerPrefabList)
-            {
-                GameObject obj = Instantiate(prefab);
-                NetworkServer.Spawn(obj);
-            }
+            //foreach (GameObject prefab in ManagerPrefabList)
+            //{
+            //    GameObject obj = Instantiate(prefab);
+            //    NetworkServer.Spawn(obj);
+            //}
 
             // 매니저 스폰이 완료되면 GameplayScene으로 전환하라고 명령
             // 클라이언트도 이 명령을 받아 GameplayScene을 로드
             StartCoroutine(LoadGameplaySceneWithDelay());
         }
 
-        if (newSceneName == GameplayScene)
-        {
-            Debug.Log("서버: GameplayScene으로 전환되었습니다. 팩토리 프리팹들을 스폰합니다.");
+        //if (newSceneName == GameplayScene)
+        //{
+        //    Debug.Log("서버: GameplayScene으로 전환되었습니다. 팩토리 프리팹들을 스폰합니다.");
 
-            // GameplayScene에서 필요한 팩토리 프리팹들을 스폰
-            foreach (GameObject prefab in FactoryPrefabList)
-            {
-                GameObject obj = Instantiate(prefab);
-                NetworkServer.Spawn(obj);
-            }
-        }
+        //    // GameplayScene에서 필요한 팩토리 프리팹들을 스폰
+        //    foreach (GameObject prefab in FactoryPrefabList)
+        //    {
+        //        GameObject obj = Instantiate(prefab);
+        //        NetworkServer.Spawn(obj);
+        //    }
+        //}
     }
 
     private IEnumerator LoadLoadingSceneWithDelay()

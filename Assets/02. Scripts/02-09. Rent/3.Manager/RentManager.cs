@@ -10,7 +10,6 @@ public class RentManager : NetworkBehaviourSingleton<RentManager>
     public override void OnStartClient()
     {
         base.OnStartClient();
-        Global.Instance.OnDataLoaded += InitRentManager;
         InitRentManager();
     }
 
@@ -25,6 +24,7 @@ public class RentManager : NetworkBehaviourSingleton<RentManager>
         LayoutData data = DataTable.Instance.GetLayoutData(10000);
         _rent = new Rent(1, data.InitialRentCost, data.RentIncrement);
         CmdRequestUpdateRent();
+
         PhaseManager.Instance.OnDayPassed += IncreaseRentCount;
         PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += PayRent;
     }

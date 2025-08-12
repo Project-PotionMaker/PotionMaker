@@ -18,7 +18,7 @@ public class ShopInfo
     public ShopInfo(string shopName, int slotIndex)
     {
         ShopInfoSpecification shopInfoSpecification = new ShopInfoSpecification();
-        if (!shopInfoSpecification.IsSatisfied(shopName, new Currency(), new Reputation(), 1))
+        if (!shopInfoSpecification.IsSatisfied(shopName, 1))
         {
             throw new Exception(shopInfoSpecification.ErrorMessage);
         }
@@ -37,7 +37,7 @@ public class ShopInfo
          List<GridSaveData> gridSaveDataList)
     {
         ShopInfoSpecification shopInfoSpecification = new ShopInfoSpecification();
-        if (!shopInfoSpecification.IsSatisfied(shopName, currency, reputation, day))
+        if (!shopInfoSpecification.IsSatisfied(shopName, day))
         {
             throw new Exception(shopInfoSpecification.ErrorMessage);
         }

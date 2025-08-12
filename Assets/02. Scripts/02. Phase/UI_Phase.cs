@@ -46,6 +46,19 @@ public class UI_Phase : MonoBehaviour
         _voteSystem.enabled = false;
 
         _serviceTimer.maxValue = 1f;
+
+        OnPhaseManagerInitialized();
+        OnPlayerListManagerInitialized();
+        ResetPlayerPanel();
+    }
+
+    private void OnPlayerListManagerInitialized()
+    {
+        PlayerListManager.Instance.OnPlayerListUpdated += ResetPlayerPanel;
+    }
+
+    private void OnPhaseManagerInitialized()
+    {
         PhaseManager.Instance.OnDayPassed += UpdateDayText;
         PhaseManager.Instance.OnTimerRunning += UpdateServiceTimer;
         PhaseManager.Instance.OnDeathCountChanged += RefreshDeathCount;
@@ -53,7 +66,7 @@ public class UI_Phase : MonoBehaviour
         UpdateDayText();
         RefreshDeathCount();
 
-        PreparingPhase preparingPhase = (PreparingPhase) PhaseManager.Instance.PhaseDictionary[EPhaseType.PreparingPhase];
+        PreparingPhase preparingPhase = (PreparingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.PreparingPhase];
         preparingPhase.OnPhaseEntered += ChangeTextStartDay;
         preparingPhase.OnPhaseEntered += StartVote;
         StartVote();
@@ -61,16 +74,13 @@ public class UI_Phase : MonoBehaviour
         PracticingPhase practicingPhase = (PracticingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase];
         practicingPhase.OnPhaseEntered += ChangeTextPracticeEnd;
         ServingPhase servingPhase = (ServingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase];
-        
+
         servingPhase.OnPhaseEntered += ShowTimer; // 타이머 시작 시 업데이트
         servingPhase.OnPhaseExited += HideTimer;
         servingPhase.OnPhaseEntered += HideReady; // 준비 단계가 끝나면 시작 패널 숨김
         HideTimer();
         EndingPhase endingPhase = (EndingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.EndingPhase];
         endingPhase.OnPhaseExited += ShowReady; // 준비 단계가 시작되면 시작 패널 표시
-
-        PlayerListManager.Instance.OnPlayerListUpdated += ResetPlayerPanel;
-        ResetPlayerPanel();
     }
 
     private void UpdateDayText()

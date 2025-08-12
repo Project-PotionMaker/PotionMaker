@@ -22,11 +22,11 @@ public class CustomerLineHandler // 접수대 앞에 물리적으로 줄 세우�
     public void PutOutCustomer(Customer customer) // 손님 나가게 하기
     {
         customer.TransitionState(ECustomerStateType.Leaving);
-        customer.CustomerMove.MoveTo(CustomerManager.Instance.ExitDoor.position);
+        customer.CustomerMove.MoveTo(CustomerManager.Instance.CustomerUnspawnPosition);
     }
 
     private Vector3 GetLinePosition(int index)
     {
-        return CustomerManager.Instance.CasherLocation.position + ((index+1) * _spacing);
+        return CustomerManager.Instance.CasherPosition + ((index+1) * _spacing);
     }
 }

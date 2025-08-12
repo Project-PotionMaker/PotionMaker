@@ -11,8 +11,8 @@ public class HallAreaPathFinder
     private HashSet<Vector3Int> _chairPositionHashSet = new(); // 가변
     private HashSet<Vector3Int> _pickupTablePositionHashSet = new(); // 가변
     private Vector3Int _cashierPosition = new(); // Init 이후 불변
-    private Vector3Int _entrancePosition = new(-4, 0, -4); // Init 이후 불변
-    private Vector3Int _exitPosition = new(4, 0, -4); // Init 이후 불변
+    private Vector3Int _entrancePosition = new(); // Init 이후 불변
+    private Vector3Int _exitPosition = new(); // Init 이후 불변
 
     private readonly Vector3Int[] _directions =
     {
@@ -34,11 +34,15 @@ public class HallAreaPathFinder
         HashSet<Vector3Int> gridPositionHashSet,
         HashSet<Vector3Int> placedPositionHashSet,
         Vector3Int cashierPosition,
+        Vector3Int entrancePosition,
+        Vector3Int exitPosition,
         HashSet<Vector3Int> pickupTablePositionHashSet)
     {
         _hallAreaPositionHashSet = gridPositionHashSet;
         _placedPositionHashSet = placedPositionHashSet;
         _cashierPosition = cashierPosition;
+        _entrancePosition = entrancePosition;
+        _exitPosition = exitPosition;
         _pickupTablePositionHashSet = pickupTablePositionHashSet;
         MakeChairPositionHashSet();
     }

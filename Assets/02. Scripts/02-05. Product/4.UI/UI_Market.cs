@@ -34,7 +34,7 @@ public class UI_Market : MonoBehaviour
 
     private void Start()
     {
-        CurrencyManager.Instance.OnDataChanged += RefreshCoin;
+        CurrencyManager.OnDataChanged += RefreshCoin;
     }
 
     private void Update()

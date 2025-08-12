@@ -59,6 +59,7 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
         SceneManager.sceneLoaded += OnSceneLoaded;
         // 현재 씬에 PotionHouse가 이미 존재하는 경우를 대비하여 초기화 시도를 합니다.
         TryInitializeWithPotionHouse();
+        InitGridManager();
     }
 
     public override void OnStopClient()
@@ -110,22 +111,11 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
         _managedStructureDict = new();
         _pickupTableForCustomerList = new();
 
+        _gridSaveDataList = ShopInfoManager.Instance.ShopInfo.GridSaveDataList;
+        LoadGridSaveData();
+
         StopPlacement();
         OnInitialized?.Invoke();
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.F2))
-        {
-            // CmdTest();
-            LoadGridSaveData();
-            _hallAreaPathFinder.InitGridPathFinder
-            (GetPositionByAreaType(EAreaType.Hall).ToHashSet(),
-            _serverGridData.PlacedPositionHashSet,
-            GetGridPosition(new Vector3Int(-5, 0, 0)),
-            ToPickupTablePositionHashSet(_pickupTableForCustomerList));
-        }
     }
 
     public List<NetworkIdentity> GetCustomerFurnitureList(ESpecialStructureType type)
@@ -460,6 +450,13 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
         {
             ServerCreateStructure(data.StructureTID, data.GridPosition, data.IngredientTID);
         }
+        _hallAreaPathFinder.InitGridPathFinder
+            (GetPositionByAreaType(EAreaType.Hall).ToHashSet(),
+            _serverGridData.PlacedPositionHashSet,
+            PotionHouse.Instance.Layout.CashierSpawnPosition,
+            PotionHouse.Instance.Layout.EnterDoorPosition,
+            PotionHouse.Instance.Layout.ExitDoorPosition,
+            ToPickupTablePositionHashSet(_pickupTableForCustomerList));
     }
 
     // --- 클라이언트/서버 공용 메서드 ---

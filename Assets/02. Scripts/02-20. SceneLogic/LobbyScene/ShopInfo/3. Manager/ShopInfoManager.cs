@@ -15,11 +15,12 @@ public class ShopInfoManager : NetworkBehaviourSingleton<ShopInfoManager>
 
     private List<IShopInfoSaveable> _shopInfoSaveableList = new();
 
-    protected override void Awake()
+    public override void OnStartServer()
     {
-        base.Awake();
+        base.OnStartServer();
+        _shopInfo = MirrorNetworkManager.Instance.ShopInfo;
+        _shopInfoRepository = new ShopInfoRepository();
     }
-
 
     // ShopInfo와 연동되는 매니저가 존재하는 시점에 호출해줘야 한다.
     // 즉, PhaseManager, PotionHouse, CurrencyManager, ReputationManager,
@@ -34,16 +35,6 @@ public class ShopInfoManager : NetworkBehaviourSingleton<ShopInfoManager>
         {
             _shopInfoSaveableList.Add(shopInfoSaveable);
         }
-    }
-
-    // LobbyScene에서 MakeRoom(방 생성) 버튼을 눌렀을 때 호출해줘야 한다.
-    public void InitShopInfoManager(ShopInfo shopInfo)
-    {
-        if (!ReferenceEquals(shopInfo, null))
-        {
-            _shopInfo = shopInfo;
-        }
-        _shopInfoRepository = new ShopInfoRepository();
     }
 
     // FindAllShopInfoSaveables()가 성공적으로 작동했다면, 그 다음에 즉시

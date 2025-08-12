@@ -3,12 +3,10 @@ using System;
 
 public class ReputationManager : NetworkBehaviourSingleton<ReputationManager>, IShopInfoSaveable
 {
-    public event Action OnDataChanged;
+    public static event Action OnDataChanged;
 
     private Reputation _reputation;
     public ReputationDTO Reputation => _reputation.ToDTO();
-
-    private ReputationRepository _reputationRepository;
 
     private const float _increaseAmountOnSuccessOrder = 0.2f;
     private const float _decreaseAmountOnFailOrder = 0.1f;
@@ -17,7 +15,6 @@ public class ReputationManager : NetworkBehaviourSingleton<ReputationManager>, I
     {
         base.OnStartClient();
         InitReputationManager();
-        PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += AddDailyReputation;
     }
 
     private void InitReputationManager()
@@ -26,10 +23,10 @@ public class ReputationManager : NetworkBehaviourSingleton<ReputationManager>, I
         {
             return;
         }
+        
+        _reputation = ShopInfoManager.Instance.ShopInfo.Reputation;
 
-        _reputationRepository = new ReputationRepository();
-        _reputation = new Reputation(2.5f);
-
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += AddDailyReputation;
         CmdRequestUpdateReputation();
         OnDataChanged?.Invoke();
     }

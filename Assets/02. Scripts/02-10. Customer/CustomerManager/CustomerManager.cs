@@ -48,10 +48,13 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
     {
         base.OnStartClient();
         Dictionary<EPhaseType, BasePhase> phaseDictionary = PhaseManager.Instance.PhaseDictionary;
-        phaseDictionary[EPhaseType.ServingPhase].OnPhaseEntered += PreService;
-        phaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += ForceReturn; 
-        phaseDictionary[EPhaseType.PracticingPhase].OnPhaseEntered += PreService;
-        phaseDictionary[EPhaseType.PracticingPhase].OnPhaseExited += ForceReturn;
+        if (isServer)
+        {
+            phaseDictionary[EPhaseType.ServingPhase].OnPhaseEntered += PreService;
+            phaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += ForceReturn;
+            phaseDictionary[EPhaseType.PracticingPhase].OnPhaseEntered += PreService;
+            phaseDictionary[EPhaseType.PracticingPhase].OnPhaseExited += ForceReturn;
+        }
         //CustomerPool.Instance.ObjectSpawnedActions.TryAdd(ENPCType.Customer, null);
         //CustomerPool.Instance.ObjectSpawnedActions[ENPCType.Customer] += OnCustomerIn;
 

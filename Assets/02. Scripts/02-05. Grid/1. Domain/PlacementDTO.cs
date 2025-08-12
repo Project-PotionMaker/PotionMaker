@@ -1,17 +1,21 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine; 
 
-[System.Serializable]
+[Serializable]
 public class PlacementDTO
 {
-    public ReadOnlyList<Vector3Int> OccupiedPositions;
+    public readonly List<Vector3Int> OccupiedPositions;
     public readonly int TID;
-    public readonly int PlacedObjectIndex;
+    public readonly EStructureType StructureType;
+    public readonly int IngredientTID;
 
-    public PlacementDTO(List<Vector3Int> occupiedPositions, int tid, int placedObjectIndex)
+    public PlacementDTO(List<Vector3Int> occupiedPositions, int tid, EStructureType structureType,
+        int ingredientTID)
     {
-        OccupiedPositions = new ReadOnlyList<Vector3Int>(occupiedPositions);
+        OccupiedPositions = occupiedPositions;
         TID = tid;
-        PlacedObjectIndex = placedObjectIndex;
+        StructureType = structureType;
+        IngredientTID = ingredientTID;
     }
 }

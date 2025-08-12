@@ -10,6 +10,7 @@ public enum EReputationGrade
     Excellent
 }
 
+[Serializable]
 public class Reputation
 {
     private float _value = 0;

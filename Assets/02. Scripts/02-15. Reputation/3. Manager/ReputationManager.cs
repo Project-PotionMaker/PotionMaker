@@ -1,7 +1,7 @@
 using Mirror;
 using System;
 
-public class ReputationManager : NetworkBehaviourSingleton<ReputationManager>
+public class ReputationManager : NetworkBehaviourSingleton<ReputationManager>, IShopInfoSaveable
 {
     public event Action OnDataChanged;
 
@@ -103,5 +103,15 @@ public class ReputationManager : NetworkBehaviourSingleton<ReputationManager>
     public void OnServingPhaseEnd()
     {
         _reputation.UpdateValueYesterday();
+    }
+
+    public void ApplyLoadedData(ShopInfo shopInfo)
+    {
+        _reputation = shopInfo.Reputation;
+    }
+
+    public void ProvideSaveData(ShopInfo shopInfo)
+    {
+        shopInfo.Reputation = _reputation;
     }
 }

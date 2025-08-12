@@ -1,3 +1,6 @@
+using System;
+
+[Serializable]
 public class CurrencyDTO
 {
     public readonly int Value;

@@ -1,5 +1,6 @@
 using System;
 
+[Serializable]
 public class Currency
 {
     private int _value = 0;
@@ -16,6 +17,11 @@ public class Currency
                 $"{nameof(value)} must be zero or greater");
         }
         _value = value;
+    }
+
+    public Currency(CurrencyDTO currencyDto)
+    {
+        _value = currencyDto.Value;
     }
 
     public void SetCurrency(int value)

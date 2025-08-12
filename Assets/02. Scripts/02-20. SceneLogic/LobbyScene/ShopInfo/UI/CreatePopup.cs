@@ -11,6 +11,8 @@ public class CreatePopup : MonoBehaviour
     [SerializeField]
     private TMP_InputField _inputFieldShopName;
 
+    private int _selectedSlotIndex;
+
     private ShopInfoSlot _selectedShopInfoSlot;
 
     public event Action<ShopInfoSlot, ShopInfo> OnShopInfoCreated;
@@ -20,6 +22,7 @@ public class CreatePopup : MonoBehaviour
         gameObject.SetActive(true);
         _inputFieldShopName.text = string.Empty;
         _selectedShopInfoSlot = shopInfoSlot;
+        _selectedSlotIndex = shopInfoSlot.SlotIndex;
     }
 
     public void CreateNewShopInfo()
@@ -29,7 +32,7 @@ public class CreatePopup : MonoBehaviour
             Debug.LogWarning("방 제목은 빈 문자열일 수 없습니다.");
             return;
         }
-        ShopInfo newShopInfo = new ShopInfo(_inputFieldShopName.text);
+        ShopInfo newShopInfo = new ShopInfo(_inputFieldShopName.text, _selectedSlotIndex);
         OnShopInfoCreated?.Invoke(_selectedShopInfoSlot, newShopInfo);
         ClosePopup();
     }

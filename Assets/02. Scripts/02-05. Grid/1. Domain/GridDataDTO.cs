@@ -1,11 +1,12 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
+[Serializable]
 public class GridDataDTO
 {
-    public ReadOnlyDictionary<Vector3Int, PlacementDTO> _placedObjectDict;
-    public ReadOnlyDictionary<Vector3Int, EAreaType> _availableAreaDict;
+    public readonly Dictionary<Vector3Int, PlacementDTO> PlacedObjectDict;
+    public readonly Dictionary<Vector3Int, EAreaType> AvailableAreaDict;
     public GridDataDTO(Dictionary<Vector3Int, Placement> placedObjectDict, Dictionary<Vector3Int, EAreaType> availableAreaDict)
     {
         Dictionary<Vector3Int, PlacementDTO> temporaryPlacedDict = new();
@@ -13,7 +14,13 @@ public class GridDataDTO
         {
             temporaryPlacedDict.Add(entry.Key, entry.Value.ToDTO());
         }
-        _placedObjectDict = new ReadOnlyDictionary<Vector3Int, PlacementDTO>(temporaryPlacedDict);
-        _availableAreaDict = new ReadOnlyDictionary<Vector3Int, EAreaType>(availableAreaDict);
+        PlacedObjectDict = temporaryPlacedDict;
+        AvailableAreaDict = availableAreaDict;
+    }
+
+    public GridDataDTO(GridData gridData)
+    {
+        PlacedObjectDict = gridData.PlacedObjectDict;
+        AvailableAreaDict = gridData.AvailableAreaDict;
     }
 }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class SalesManager : NetworkBehaviourSingleton<SalesManager>
+public class SalesManager : NetworkBehaviourSingleton<SalesManager>, IShopInfoSaveable
 {
     public event Action OnSummaryReady;
 
@@ -90,5 +90,15 @@ public class SalesManager : NetworkBehaviourSingleton<SalesManager>
         SalesRPCData salesRPCData = new SalesRPCData(Sales);
         string salesJson = JsonUtility.ToJson(salesRPCData);
         UpdateSales(salesJson, false);
+    }
+
+    public void ApplyLoadedData(ShopInfo shopInfo)
+    {
+        _sales = shopInfo.Sales;
+    }
+
+    public void ProvideSaveData(ShopInfo shopInfo)
+    {
+        shopInfo.Sales = _sales;
     }
 }

@@ -64,6 +64,8 @@ public class PotionItem : NetworkBehaviour, IItem
         // 클라이언트에서 초기화 시 SyncVar로 받은 TID를 사용
         _potionData = DataTable.Instance.GetPotionData(_potionTID);
 
+        ResetModel();
+
         if (_potionModelDict.TryGetValue(_potionData.TID, out _currentModel))
         {
             _currentModel.SetActive(true);
@@ -73,6 +75,14 @@ public class PotionItem : NetworkBehaviour, IItem
         else
         {
             Debug.LogError($"포션 TID {_potionData.TID}에 대응하는 모델이 딕셔너리에 존재하지 않습니다.");
+        }
+    }
+    private void ResetModel()
+    {
+        if (_potionModelDict == null) return;
+        foreach (var modelInfo in _potionModelDict)
+        {
+            modelInfo.Value.SetActive(false);
         }
     }
 

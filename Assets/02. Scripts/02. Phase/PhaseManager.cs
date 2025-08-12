@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using VInspector;
 using Mirror;
 
-public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>
+public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>, IShopInfoSaveable
 {
     public event Action OnDayPassed;
     public event Action OnPhaseChanged;
@@ -156,4 +156,13 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>
         _deathCount = _maxDeathCount;
     }
 
+    public void ApplyLoadedData(ShopInfo shopInfo)
+    {
+        _day = shopInfo.Day;
+    }
+
+    public void ProvideSaveData(ShopInfo shopInfo)
+    {
+        shopInfo.Day = _day;
+    }
 }

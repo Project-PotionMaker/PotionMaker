@@ -13,7 +13,7 @@ using VInspector;
 /// 모든 배치 정보의 진실의 근원(Source of Truth)은 서버이며,
 /// 클라이언트는 서버의 데이터를 동기화 받아 시각화만 처리합니다.
 /// </summary>
-public class GridManager : NetworkBehaviourSingleton<GridManager>
+public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSaveable
 {
     public Action OnInitialized;
 
@@ -394,18 +394,6 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
     }
 
     [Server]
-    public void MakeGridSaveDataList()
-    {
-        foreach (var placedInfo in _serverGridData.PlacedObjectDict)
-        {
-            Vector3Int gridPosition = placedInfo.Key;
-            int structureTID = placedInfo.Value.TID;
-            int ingredientTID = placedInfo.Value.IngredientTID;
-            _gridSaveDataList.Add(new GridSaveData(gridPosition, structureTID, ingredientTID));
-        }
-    }
-
-    [Server]
     public void ServerRefundStructure(int structureTID, GameObject refundObject)
     {
         _managedStructureDict[structureTID].Remove(refundObject.GetComponent<NetworkIdentity>());
@@ -505,6 +493,29 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>
     {
         return pickupTableList.Select
             (networkIdentity => GetGridPosition(networkIdentity.transform.position)).ToHashSet();
+    }
+
+    public void MakeGridSaveDataList()
+    {
+        _gridSaveDataList.Clear();
+        foreach (var placedInfo in _serverGridData.PlacedObjectDict)
+        {
+            Vector3Int gridPosition = placedInfo.Key;
+            int structureTID = placedInfo.Value.TID;
+            int ingredientTID = placedInfo.Value.IngredientTID;
+            _gridSaveDataList.Add(new GridSaveData(gridPosition, structureTID, ingredientTID));
+        }
+    }
+
+    public void ApplyLoadedData(ShopInfo shopInfo)
+    {
+        _gridSaveDataList = shopInfo.GridSaveDataList;
+    }
+
+    public void ProvideSaveData(ShopInfo shopInfo)
+    {
+        MakeGridSaveDataList();
+        shopInfo.GridSaveDataList = _gridSaveDataList;
     }
 }
 

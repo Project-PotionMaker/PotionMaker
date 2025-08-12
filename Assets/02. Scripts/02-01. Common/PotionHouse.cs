@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class PotionHouse : MonoBehaviourSingleton<PotionHouse>
+public class PotionHouse : MonoBehaviourSingleton<PotionHouse>, IShopInfoSaveable
 {
     [SerializeField]
     private int _potionHouseTier;
@@ -72,5 +72,15 @@ public class PotionHouse : MonoBehaviourSingleton<PotionHouse>
         {
             Global.Instance.OnDataLoaded -= InitPotionHouse;
         }
+    }
+
+    public void ApplyLoadedData(ShopInfo shopInfo)
+    {
+        _potionHouseTier = shopInfo.PotionHouseTier;
+    }
+
+    public void ProvideSaveData(ShopInfo shopInfo)
+    {
+        shopInfo.PotionHouseTier = _potionHouseTier;
     }
 }

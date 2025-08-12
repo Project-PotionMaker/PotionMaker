@@ -22,7 +22,7 @@ public class UI_ShopInfoSlot : MonoBehaviour
 
     private ShopInfoSlot _shopInfoSlot;
 
-    private void Start()
+    private void Awake()
     {
         _shopInfoSlot = GetComponent<ShopInfoSlot>();
         _shopInfoSlot.OnShopInfoCreated += RefreshOnCreated;

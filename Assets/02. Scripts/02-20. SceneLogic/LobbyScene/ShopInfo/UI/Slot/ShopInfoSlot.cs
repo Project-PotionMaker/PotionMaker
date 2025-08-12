@@ -19,12 +19,16 @@ public class ShopInfoSlot : MonoBehaviour
 
     private CreatePopup _createPopup;
 
-    public void InitShopInfoSlot(CreatePopup createPopup)
+    public void InitShopInfoSlot(CreatePopup createPopup, ShopInfo shopInfo = null)
     {
         _createPopup = createPopup;
+        if (!ReferenceEquals(shopInfo, null))
+        {
+            UpdateShopInfoSlot(shopInfo);
+        }
     }
 
-    public void FillShopInfoSlot(ShopInfo shopInfo)
+    public void UpdateShopInfoSlot(ShopInfo shopInfo)
     {
         _shopInfo = shopInfo;
         CurrentState = SlotState.Filled;

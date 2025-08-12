@@ -11,7 +11,7 @@ public class RoomInfoHandler : MonoBehaviour
 
     private Visibility _selectedVisibility = Visibility.Public;
 
-    private void Start()
+    private void Awake()
     {
         _shopInfoHandler.OnShopInfoUpdated += UpdateRoomInfo;
     }

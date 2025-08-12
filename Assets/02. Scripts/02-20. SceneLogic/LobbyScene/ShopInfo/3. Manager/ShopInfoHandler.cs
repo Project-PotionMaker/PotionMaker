@@ -18,6 +18,13 @@ public class ShopInfoHandler : MonoBehaviour
     private ShopInfo _selectedShopInfo;
     public ShopInfo SelectedShopInfo => _selectedShopInfo;
 
+    private ShopInfoRepository _shopInfoRepository;
+
+    private void Awake()
+    {
+        _createPopup.OnShopInfoCreated += UpdateShopInfoList;
+    }
+
     private void Start()
     {
         InitShopInfoHandler();
@@ -25,13 +32,17 @@ public class ShopInfoHandler : MonoBehaviour
 
     private void InitShopInfoHandler()
     {
-        _createPopup.OnShopInfoCreated += UpdateShopInfoList;
+        _shopInfoRepository = new ShopInfoRepository();
+        List<ShopInfo> loadedShopInfoList = _shopInfoRepository.Load();
+        int slotIndex = 0;
         foreach (var slot in _shopInfoList)
         {
-            slot.InitShopInfoSlot(_createPopup);
             slot.OnShopInfoSelected += ChangeShopInfo;
             slot.OnShopInfoDeleted += DeleteSelectedShopInfo;
+            slot.InitShopInfoSlot(_createPopup, loadedShopInfoList[slotIndex]);
+            slotIndex++;
         }
+        UpdateShopInfoList(_shopInfoList[0], loadedShopInfoList[0]);
     }
 
     public void UpdateShopInfoList(ShopInfoSlot shopInfoSlot, ShopInfo shopInfo)
@@ -41,7 +52,7 @@ public class ShopInfoHandler : MonoBehaviour
         {
             if (ReferenceEquals(slot, shopInfoSlot))
             {
-                slot.FillShopInfoSlot(shopInfo);
+                slot.UpdateShopInfoSlot(shopInfo);
 
             }
             else

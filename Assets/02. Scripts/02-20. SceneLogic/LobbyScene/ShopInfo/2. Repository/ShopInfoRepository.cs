@@ -86,11 +86,6 @@ public class ShopInfoRepository
         };
     }
 
-    private void MakeShopInfo()
-    {
-
-    }
-
     private List<ShopInfoDTO> ConvertToDTOList(List<ShopInfo> shopInfoList)
     {
         if (shopInfoList == null)

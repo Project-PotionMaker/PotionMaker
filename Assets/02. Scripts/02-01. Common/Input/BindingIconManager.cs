@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class BindingIconManager : MonoBehaviourSingleton<BindingIconManager>
 {
-    private readonly Dictionary<string, BindingInfo> _bindingInfoDict = new Dictionary<string, BindingInfo>();
+    private readonly Dictionary<EControllerType, Dictionary<string, BindingInfo>> _bindingInfoDict
+        = new Dictionary<EControllerType, Dictionary<string, BindingInfo>>();
 
     private void Start()
     {
@@ -21,9 +23,10 @@ public class BindingIconManager : MonoBehaviourSingleton<BindingIconManager>
     private void Initialize()
     {
         ReadOnlyList<KeyboardMouseData> keyboardMouseDataList = DataTable.Instance.GetKeyboardMouseDataList();
+        _bindingInfoDict[EControllerType.Keyboard] = new Dictionary<string, BindingInfo>();
         foreach (KeyboardMouseData keyboardMouseData in keyboardMouseDataList)
         {
-            _bindingInfoDict[keyboardMouseData.UnityInputPath] = new BindingInfo
+            _bindingInfoDict[EControllerType.Keyboard][keyboardMouseData.UnityInputPath] = new BindingInfo
             {
                 DataType = typeof(KeyboardMouseData),
                 TID = keyboardMouseData.TID
@@ -31,9 +34,10 @@ public class BindingIconManager : MonoBehaviourSingleton<BindingIconManager>
         }
 
         ReadOnlyList<PlayStation5Data> playstationDataList = DataTable.Instance.GetPlayStation5DataList();
+        _bindingInfoDict[EControllerType.PlayStation] = new Dictionary<string, BindingInfo>();
         foreach (PlayStation5Data playstationData in playstationDataList)
         {
-            _bindingInfoDict[playstationData.UnityInputPath] = new BindingInfo
+            _bindingInfoDict[EControllerType.PlayStation][playstationData.UnityInputPath] = new BindingInfo
             {
                 DataType = typeof(PlayStation5Data),
                 TID = playstationData.TID
@@ -41,9 +45,10 @@ public class BindingIconManager : MonoBehaviourSingleton<BindingIconManager>
         }
 
         ReadOnlyList<XboxData> xboxDataList = DataTable.Instance.GetXboxDataList();
+        _bindingInfoDict[EControllerType.Xbox] = new Dictionary<string, BindingInfo>();
         foreach (XboxData xboxData in xboxDataList)
         {
-            _bindingInfoDict[xboxData.UnityInputPath] = new BindingInfo
+            _bindingInfoDict[EControllerType.Xbox][xboxData.UnityInputPath] = new BindingInfo
             {
                 DataType = typeof(XboxData),
                 TID = xboxData.TID
@@ -53,11 +58,41 @@ public class BindingIconManager : MonoBehaviourSingleton<BindingIconManager>
 
     public Sprite GetSpriteForPath(string inputPath)
     {
-        if (_bindingInfoDict.TryGetValue(inputPath, out BindingInfo info))
+        EControllerType controllerType = GetCurrentControllerType();
+        if (inputPath.StartsWith("<Keyboard>"))
         {
-            return ImageManager.Instance.GetImage(info.DataType, info.TID);
+            controllerType = EControllerType.Keyboard;
+        }
+
+        if (_bindingInfoDict.TryGetValue(controllerType, out var deviceDict))
+        {
+            if (deviceDict.TryGetValue(inputPath, out BindingInfo info))
+            {
+                return ImageManager.Instance.GetImage(info.DataType, info.TID);
+            }
         }
 
         return null;
+    }
+
+    private EControllerType GetCurrentControllerType()
+    {
+        if (Gamepad.current == null)
+        {
+            return EControllerType.Keyboard;
+        }
+
+        string deviceName = Gamepad.current.name.ToLower();
+
+        if (deviceName.Contains("dualsense") || deviceName.Contains("dualshock"))
+        {
+            return EControllerType.PlayStation;
+        }
+        if (deviceName.Contains("xbox") || deviceName.Contains("xinput"))
+        {
+            return EControllerType.Xbox;
+        }
+        
+        return EControllerType.Generic;
     }
 }

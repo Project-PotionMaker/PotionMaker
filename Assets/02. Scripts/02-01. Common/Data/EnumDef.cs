@@ -187,5 +187,7 @@ public enum EVFXType
 {
     ///<summary>핑</summary>
     Ping = 0,
+    ///<summary>플레이어 이동</summary>
+    PlayerMovement = 1,
 }
 

@@ -9,7 +9,7 @@ public class ShopInfoSpecification
 
     public string ErrorMessage { get; private set; }
 
-    public bool IsSatisfied(string shopName, Currency currency, Reputation reputation, int day)
+    public bool IsSatisfied(string shopName, int day)
     {
         if (string.IsNullOrEmpty(shopName))
         {

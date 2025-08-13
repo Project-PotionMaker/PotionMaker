@@ -156,8 +156,8 @@ public class InputMappingManager : MonoBehaviourSingleton<InputMappingManager>
             return;
         }
 
-        OnBindingReset?.Invoke();
         action.RemoveBindingOverride(bindingIndex);
+        OnBindingReset?.Invoke();
         SaveBindingOverrides();
     }
 

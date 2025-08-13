@@ -15,5 +15,5 @@ public interface IGridItemHandler
 
     public void SetCollider(bool active);
 
-    public void SetOutline(bool active, float size = 30);
+    public void SetOutline(bool active, float size = 40);
 }

@@ -312,9 +312,17 @@ public class Storage : NetworkBehaviour, IGridItemHandler
         _model.gameObject.SetActive(true);
     }
 
-    public void SetOutline(bool active, float size = 30)
+    public void SetOutline(bool active, float size = 40)
     {
-        _matPropertyBlock.SetFloat("_OutlineSize", size);
+        if (active)
+        {
+            _matPropertyBlock.SetFloat("_OutlineSize", size);
+        }
+        else
+        {
+            _matPropertyBlock.SetFloat("_OutlineSize", 0);
+        }
+
         foreach (var renderer in _modelRenderers)
         {
             renderer.SetPropertyBlock(_matPropertyBlock);

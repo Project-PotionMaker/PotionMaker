@@ -94,11 +94,9 @@ public class FactoryLogic<TEnum, TFactoryInfo>
         if (_typeToPoolDict[type].Count <= 0)
         {
             networkObject = UnityEngine.Object.Instantiate(_typeToPrefabDict[type]);
-            Debug.Log("A");
         }
         else
         {
-            Debug.Log("B");
             networkObject = _typeToPoolDict[type].Dequeue();
         }
 

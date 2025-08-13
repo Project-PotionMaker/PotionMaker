@@ -122,7 +122,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
         _model.gameObject.SetActive(false);
         if (!ReferenceEquals(_visibleRoutine, null))
         {
-            StopCoroutine(VisibleRoutine());
+            StopCoroutine(_visibleRoutine);
         }
         _visibleRoutine = StartCoroutine(VisibleRoutine());
         if (!isServer)

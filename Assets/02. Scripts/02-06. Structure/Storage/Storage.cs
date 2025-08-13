@@ -2,7 +2,6 @@ using Mirror;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 using VInspector;
 
@@ -59,7 +58,7 @@ public class Storage : NetworkBehaviour, IGridItemHandler
         _model.gameObject.SetActive(false);
         if (!ReferenceEquals(_visibleRoutine, null))
         {
-            StopCoroutine(VisibleRoutine());
+            StopCoroutine(_visibleRoutine);
         }
         _visibleRoutine = StartCoroutine(VisibleRoutine());
     }

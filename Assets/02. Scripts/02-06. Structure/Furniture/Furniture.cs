@@ -89,7 +89,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
         
         if(!ReferenceEquals(_visibleRoutine, null))
         {
-            StopCoroutine(VisibleRoutine());
+            StopCoroutine(_visibleRoutine);
         }
         _visibleRoutine = StartCoroutine(VisibleRoutine());
         if (isServer)

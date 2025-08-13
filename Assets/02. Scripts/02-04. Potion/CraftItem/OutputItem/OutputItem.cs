@@ -57,7 +57,7 @@ public class OutputItem : NetworkBehaviour, IItem
         _models.SetActive(false);
         if (!ReferenceEquals(_visibleRoutine, null))
         {
-            StopCoroutine(VisibleRoutine());
+            StopCoroutine(_visibleRoutine);
         }
         _visibleRoutine = StartCoroutine(VisibleRoutine());
     }

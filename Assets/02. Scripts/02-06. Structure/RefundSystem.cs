@@ -64,7 +64,7 @@ public class RefundSystem
             return;
         }
         CurrencyManager.Instance.CmdRequestAddCurrency(_refundPrice);
-        GridManager.Instance.ServerRefundStructure(_structureTID, _refundable.RefundObject);
+        GridManager.Instance.ServerRemoveStructureOnGrid(_structureTID, _refundable.RefundObject);
         RefundComplete(conn);
     }
 

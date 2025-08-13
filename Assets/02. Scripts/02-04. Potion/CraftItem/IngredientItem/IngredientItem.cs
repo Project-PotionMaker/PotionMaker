@@ -1,5 +1,6 @@
 using Mirror;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,6 +16,10 @@ public class IngredientItem : NetworkBehaviour, IItem
     [SerializeField]
     private List<ModelOnTID> _modelObjectList = new List<ModelOnTID>();
     private Dictionary<int, GameObject> _modelObjectDic;
+
+    [SerializeField]
+    private GameObject _models;
+    private Coroutine _visibleRoutine;
 
     private void Awake()
     {
@@ -34,6 +39,12 @@ public class IngredientItem : NetworkBehaviour, IItem
     public override void OnStartClient()
     {
         base.OnStartClient();
+        _models.SetActive(false);
+        if (!ReferenceEquals(_visibleRoutine, null))
+        {
+            StopCoroutine(_visibleRoutine);
+        }
+        _visibleRoutine = StartCoroutine(VisibleRoutine());
     }
 
     private void OnIngredientItemTIDUpdated(int oldValue, int newValue)
@@ -54,6 +65,7 @@ public class IngredientItem : NetworkBehaviour, IItem
         // 클라이언트에서 초기화 시 SyncVar로 받은 TID를 사용해 데이터 로드 및 모델 활성화
         _ingredientData = DataTable.Instance.GetIngredientData(_ingredientTID);
 
+
         ActivateModelForTID(_ingredientData.TID);
     }
 
@@ -64,6 +76,7 @@ public class IngredientItem : NetworkBehaviour, IItem
         {
             modelInfo.Model.SetActive(false);
         }
+
         if (_modelObjectDic.TryGetValue(tid, out GameObject modelToActivate))
         {
             modelToActivate.SetActive(true);
@@ -78,5 +91,11 @@ public class IngredientItem : NetworkBehaviour, IItem
     public int GetTID()
     {
         return _ingredientTID;
+    }
+
+    private IEnumerator VisibleRoutine()
+    {
+        yield return new WaitForSeconds(.05f);
+        _models.gameObject.SetActive(true);
     }
 }

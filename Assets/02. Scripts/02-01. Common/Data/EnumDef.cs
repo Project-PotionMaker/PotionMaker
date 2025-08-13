@@ -147,6 +147,8 @@ public enum ESpecialStructureType
     OldChair = 5,
     ///<summary>푹신한의자</summary>
     LuxuryChair = 6,
+    ///<summary>연습모드</summary>
+    Practice = 7,
 }
 
 public enum ECustomerStateType
@@ -185,5 +187,7 @@ public enum EVFXType
 {
     ///<summary>핑</summary>
     Ping = 0,
+    ///<summary>플레이어 이동</summary>
+    PlayerMovement = 1,
 }
 

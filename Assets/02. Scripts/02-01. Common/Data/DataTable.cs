@@ -276,6 +276,168 @@ public partial class DataTable
         }
     }
     #endregion
+    #region KeyboardMouse
+    private ReadOnlyList<KeyboardMouseData> KeyboardMouseList = null;
+    private ReadOnlyDictionary<int, KeyboardMouseData> KeyboardMouseTable = null;
+
+    public ReadOnlyList<KeyboardMouseData> GetKeyboardMouseDataList()
+    {
+        return KeyboardMouseList;
+    }
+
+    public KeyboardMouseData GetKeyboardMouseData(int key)
+    {
+        if (key == 0)
+        {
+            return null;
+        }
+
+        if (KeyboardMouseTable.TryGetValue(key, out KeyboardMouseData retVal) == true)
+        {
+            return retVal;
+        }
+        else
+        {
+            Debug.LogError($"Can not find UniqueID of KeyboardMouseData: <{key}>");
+            return null;
+        }
+    }
+    #endregion
+    #region PlayStation5
+    private ReadOnlyList<PlayStation5Data> PlayStation5List = null;
+    private ReadOnlyDictionary<int, PlayStation5Data> PlayStation5Table = null;
+
+    public ReadOnlyList<PlayStation5Data> GetPlayStation5DataList()
+    {
+        return PlayStation5List;
+    }
+
+    public PlayStation5Data GetPlayStation5Data(int key)
+    {
+        if (key == 0)
+        {
+            return null;
+        }
+
+        if (PlayStation5Table.TryGetValue(key, out PlayStation5Data retVal) == true)
+        {
+            return retVal;
+        }
+        else
+        {
+            Debug.LogError($"Can not find UniqueID of PlayStation5Data: <{key}>");
+            return null;
+        }
+    }
+    #endregion
+    #region PlayStation4
+    private ReadOnlyList<PlayStation4Data> PlayStation4List = null;
+    private ReadOnlyDictionary<int, PlayStation4Data> PlayStation4Table = null;
+
+    public ReadOnlyList<PlayStation4Data> GetPlayStation4DataList()
+    {
+        return PlayStation4List;
+    }
+
+    public PlayStation4Data GetPlayStation4Data(int key)
+    {
+        if (key == 0)
+        {
+            return null;
+        }
+
+        if (PlayStation4Table.TryGetValue(key, out PlayStation4Data retVal) == true)
+        {
+            return retVal;
+        }
+        else
+        {
+            Debug.LogError($"Can not find UniqueID of PlayStation4Data: <{key}>");
+            return null;
+        }
+    }
+    #endregion
+    #region Xbox
+    private ReadOnlyList<XboxData> XboxList = null;
+    private ReadOnlyDictionary<int, XboxData> XboxTable = null;
+
+    public ReadOnlyList<XboxData> GetXboxDataList()
+    {
+        return XboxList;
+    }
+
+    public XboxData GetXboxData(int key)
+    {
+        if (key == 0)
+        {
+            return null;
+        }
+
+        if (XboxTable.TryGetValue(key, out XboxData retVal) == true)
+        {
+            return retVal;
+        }
+        else
+        {
+            Debug.LogError($"Can not find UniqueID of XboxData: <{key}>");
+            return null;
+        }
+    }
+    #endregion
+    #region Switch
+    private ReadOnlyList<SwitchData> SwitchList = null;
+    private ReadOnlyDictionary<int, SwitchData> SwitchTable = null;
+
+    public ReadOnlyList<SwitchData> GetSwitchDataList()
+    {
+        return SwitchList;
+    }
+
+    public SwitchData GetSwitchData(int key)
+    {
+        if (key == 0)
+        {
+            return null;
+        }
+
+        if (SwitchTable.TryGetValue(key, out SwitchData retVal) == true)
+        {
+            return retVal;
+        }
+        else
+        {
+            Debug.LogError($"Can not find UniqueID of SwitchData: <{key}>");
+            return null;
+        }
+    }
+    #endregion
+    #region SteamDeck
+    private ReadOnlyList<SteamDeckData> SteamDeckList = null;
+    private ReadOnlyDictionary<int, SteamDeckData> SteamDeckTable = null;
+
+    public ReadOnlyList<SteamDeckData> GetSteamDeckDataList()
+    {
+        return SteamDeckList;
+    }
+
+    public SteamDeckData GetSteamDeckData(int key)
+    {
+        if (key == 0)
+        {
+            return null;
+        }
+
+        if (SteamDeckTable.TryGetValue(key, out SteamDeckData retVal) == true)
+        {
+            return retVal;
+        }
+        else
+        {
+            Debug.LogError($"Can not find UniqueID of SteamDeckData: <{key}>");
+            return null;
+        }
+    }
+    #endregion
     #region Tip
     private ReadOnlyList<TipData> TipList = null;
     private ReadOnlyDictionary<int, TipData> TipTable = null;
@@ -370,6 +532,42 @@ public partial class DataTable
             loadedCount++;
         });
         allCount++;
+        GetBytes_FromResources("KeyboardMouse", (bytes) =>
+        {
+            LoadKeyboardMouseData(bytes);
+            loadedCount++;
+        });
+        allCount++;
+        GetBytes_FromResources("PlayStation5", (bytes) =>
+        {
+            LoadPlayStation5Data(bytes);
+            loadedCount++;
+        });
+        allCount++;
+        GetBytes_FromResources("PlayStation4", (bytes) =>
+        {
+            LoadPlayStation4Data(bytes);
+            loadedCount++;
+        });
+        allCount++;
+        GetBytes_FromResources("Xbox", (bytes) =>
+        {
+            LoadXboxData(bytes);
+            loadedCount++;
+        });
+        allCount++;
+        GetBytes_FromResources("Switch", (bytes) =>
+        {
+            LoadSwitchData(bytes);
+            loadedCount++;
+        });
+        allCount++;
+        GetBytes_FromResources("SteamDeck", (bytes) =>
+        {
+            LoadSteamDeckData(bytes);
+            loadedCount++;
+        });
+        allCount++;
         GetBytes_FromResources("Tip", (bytes) =>
         {
             LoadTipData(bytes);
@@ -401,6 +599,18 @@ public partial class DataTable
         LoadUnlockData(unlockBytes);
         byte[] layoutBytes = GetBytes_ForEditor("LayoutData");
         LoadLayoutData(layoutBytes);
+        byte[] keyboardMouseBytes = GetBytes_ForEditor("KeyboardMouseData");
+        LoadKeyboardMouseData(keyboardMouseBytes);
+        byte[] playStation5Bytes = GetBytes_ForEditor("PlayStation5Data");
+        LoadPlayStation5Data(playStation5Bytes);
+        byte[] playStation4Bytes = GetBytes_ForEditor("PlayStation4Data");
+        LoadPlayStation4Data(playStation4Bytes);
+        byte[] xboxBytes = GetBytes_ForEditor("XboxData");
+        LoadXboxData(xboxBytes);
+        byte[] switchBytes = GetBytes_ForEditor("SwitchData");
+        LoadSwitchData(switchBytes);
+        byte[] steamDeckBytes = GetBytes_ForEditor("SteamDeckData");
+        LoadSteamDeckData(steamDeckBytes);
         byte[] tipBytes = GetBytes_ForEditor("TipData");
         LoadTipData(tipBytes);
     }
@@ -713,6 +923,192 @@ public partial class DataTable
 
         LayoutList = new ReadOnlyList<LayoutData>(layoutList);
         LayoutTable = new ReadOnlyDictionary<int, LayoutData>(layoutTable);
+    }
+
+    private void LoadKeyboardMouseData(byte[] bytes)
+    {
+        List<KeyboardMouseData> keyboardMouseList = new List<KeyboardMouseData>();
+        Dictionary<int, KeyboardMouseData> keyboardMouseTable = new Dictionary<int, KeyboardMouseData>();
+
+        Reader = new BinaryReader(new MemoryStream(bytes));
+
+        while (Reader.BaseStream.Position < bytes.Length)
+        {
+            KeyboardMouseData data = new KeyboardMouseData(Reader);
+            if (keyboardMouseTable.ContainsKey(data.TID) == true)
+            {
+                Debug.LogError("The duplicate TID: " + data.TID + " in KeyboardMouse");
+                continue;
+            }
+            else if (data.TID == 0)
+            {
+                Debug.LogError("TID is 0 in KeyboardMouse");
+                continue;
+            }
+
+            keyboardMouseList.Add(data);
+            keyboardMouseTable.Add(data.TID, data);
+        }
+
+        Reader.Close();
+
+        KeyboardMouseList = new ReadOnlyList<KeyboardMouseData>(keyboardMouseList);
+        KeyboardMouseTable = new ReadOnlyDictionary<int, KeyboardMouseData>(keyboardMouseTable);
+    }
+
+    private void LoadPlayStation5Data(byte[] bytes)
+    {
+        List<PlayStation5Data> playStation5List = new List<PlayStation5Data>();
+        Dictionary<int, PlayStation5Data> playStation5Table = new Dictionary<int, PlayStation5Data>();
+
+        Reader = new BinaryReader(new MemoryStream(bytes));
+
+        while (Reader.BaseStream.Position < bytes.Length)
+        {
+            PlayStation5Data data = new PlayStation5Data(Reader);
+            if (playStation5Table.ContainsKey(data.TID) == true)
+            {
+                Debug.LogError("The duplicate TID: " + data.TID + " in PlayStation5");
+                continue;
+            }
+            else if (data.TID == 0)
+            {
+                Debug.LogError("TID is 0 in PlayStation5");
+                continue;
+            }
+
+            playStation5List.Add(data);
+            playStation5Table.Add(data.TID, data);
+        }
+
+        Reader.Close();
+
+        PlayStation5List = new ReadOnlyList<PlayStation5Data>(playStation5List);
+        PlayStation5Table = new ReadOnlyDictionary<int, PlayStation5Data>(playStation5Table);
+    }
+
+    private void LoadPlayStation4Data(byte[] bytes)
+    {
+        List<PlayStation4Data> playStation4List = new List<PlayStation4Data>();
+        Dictionary<int, PlayStation4Data> playStation4Table = new Dictionary<int, PlayStation4Data>();
+
+        Reader = new BinaryReader(new MemoryStream(bytes));
+
+        while (Reader.BaseStream.Position < bytes.Length)
+        {
+            PlayStation4Data data = new PlayStation4Data(Reader);
+            if (playStation4Table.ContainsKey(data.TID) == true)
+            {
+                Debug.LogError("The duplicate TID: " + data.TID + " in PlayStation4");
+                continue;
+            }
+            else if (data.TID == 0)
+            {
+                Debug.LogError("TID is 0 in PlayStation4");
+                continue;
+            }
+
+            playStation4List.Add(data);
+            playStation4Table.Add(data.TID, data);
+        }
+
+        Reader.Close();
+
+        PlayStation4List = new ReadOnlyList<PlayStation4Data>(playStation4List);
+        PlayStation4Table = new ReadOnlyDictionary<int, PlayStation4Data>(playStation4Table);
+    }
+
+    private void LoadXboxData(byte[] bytes)
+    {
+        List<XboxData> xboxList = new List<XboxData>();
+        Dictionary<int, XboxData> xboxTable = new Dictionary<int, XboxData>();
+
+        Reader = new BinaryReader(new MemoryStream(bytes));
+
+        while (Reader.BaseStream.Position < bytes.Length)
+        {
+            XboxData data = new XboxData(Reader);
+            if (xboxTable.ContainsKey(data.TID) == true)
+            {
+                Debug.LogError("The duplicate TID: " + data.TID + " in Xbox");
+                continue;
+            }
+            else if (data.TID == 0)
+            {
+                Debug.LogError("TID is 0 in Xbox");
+                continue;
+            }
+
+            xboxList.Add(data);
+            xboxTable.Add(data.TID, data);
+        }
+
+        Reader.Close();
+
+        XboxList = new ReadOnlyList<XboxData>(xboxList);
+        XboxTable = new ReadOnlyDictionary<int, XboxData>(xboxTable);
+    }
+
+    private void LoadSwitchData(byte[] bytes)
+    {
+        List<SwitchData> switchList = new List<SwitchData>();
+        Dictionary<int, SwitchData> switchTable = new Dictionary<int, SwitchData>();
+
+        Reader = new BinaryReader(new MemoryStream(bytes));
+
+        while (Reader.BaseStream.Position < bytes.Length)
+        {
+            SwitchData data = new SwitchData(Reader);
+            if (switchTable.ContainsKey(data.TID) == true)
+            {
+                Debug.LogError("The duplicate TID: " + data.TID + " in Switch");
+                continue;
+            }
+            else if (data.TID == 0)
+            {
+                Debug.LogError("TID is 0 in Switch");
+                continue;
+            }
+
+            switchList.Add(data);
+            switchTable.Add(data.TID, data);
+        }
+
+        Reader.Close();
+
+        SwitchList = new ReadOnlyList<SwitchData>(switchList);
+        SwitchTable = new ReadOnlyDictionary<int, SwitchData>(switchTable);
+    }
+
+    private void LoadSteamDeckData(byte[] bytes)
+    {
+        List<SteamDeckData> steamDeckList = new List<SteamDeckData>();
+        Dictionary<int, SteamDeckData> steamDeckTable = new Dictionary<int, SteamDeckData>();
+
+        Reader = new BinaryReader(new MemoryStream(bytes));
+
+        while (Reader.BaseStream.Position < bytes.Length)
+        {
+            SteamDeckData data = new SteamDeckData(Reader);
+            if (steamDeckTable.ContainsKey(data.TID) == true)
+            {
+                Debug.LogError("The duplicate TID: " + data.TID + " in SteamDeck");
+                continue;
+            }
+            else if (data.TID == 0)
+            {
+                Debug.LogError("TID is 0 in SteamDeck");
+                continue;
+            }
+
+            steamDeckList.Add(data);
+            steamDeckTable.Add(data.TID, data);
+        }
+
+        Reader.Close();
+
+        SteamDeckList = new ReadOnlyList<SteamDeckData>(steamDeckList);
+        SteamDeckTable = new ReadOnlyDictionary<int, SteamDeckData>(steamDeckTable);
     }
 
     private void LoadTipData(byte[] bytes)

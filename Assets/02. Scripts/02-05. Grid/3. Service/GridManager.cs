@@ -14,8 +14,6 @@ using VInspector;
 /// </summary>
 public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSaveable
 {
-    public Action OnInitialized;
-
     [Foldout("Hierarchy")]
     [SerializeField]
     private Grid _grid;
@@ -115,7 +113,6 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
         LoadGridSaveData();
 
         StopPlacement();
-        OnInitialized?.Invoke();
     }
 
     public List<NetworkIdentity> GetCustomerFurnitureList(ESpecialStructureType type)
@@ -128,7 +125,12 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
         }
         else
         {
-            return _managedStructureDict[tid];
+            if (!_managedStructureDict.TryGetValue(tid, out List<NetworkIdentity> value))
+            {
+                value = new List<NetworkIdentity>();
+                _managedStructureDict.Add(tid, value);
+            }
+            return value;
         }
     }
 
@@ -378,7 +380,7 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
             return true;
         }
 
-        NetworkServer.Destroy(newObject);
+        StructureFactory.Instance.ReturnObject(newObject);
         return false;
     }
 
@@ -406,39 +408,6 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
         _buildingState = null;
     }
 
-    // --- 서버 전용 테스트 커맨드 ---
-    [Command(requiresAuthority = false)]
-    public void CmdTest()
-    {
-        if (!isServer)
-        {
-            return;
-        }
-
-        if (PotionHouse.Instance.PotionHouseTier == 1)
-        {
-            ServerCreateStructure(10000, new Vector3Int(-5, 0, 4)); //절구
-            ServerCreateStructure(10001, new Vector3Int(-4, 0, 4)); //분쇄기
-            ServerCreateStructure(10003, new Vector3Int(-3, 0, 4)); //가열 냄비
-            ServerCreateStructure(10003, new Vector3Int(-2, 0, 4)); //가열 냄비
-            ServerCreateStructure(10003, new Vector3Int(-1, 0, 4)); //가열 냄비
-            ServerCreateStructure(10002, new Vector3Int(0, 0, 3)); // 혼합기
-            ServerCreateStructure(10012, new Vector3Int(-1, 0, 0)); // 픽업테이블
-            ServerCreateStructure(10012, new Vector3Int(-1, 0, 1)); // 픽업테이블
-            ServerCreateStructure(10012, new Vector3Int(-1, 0, 2)); // 픽업테이블
-            ServerCreateStructure(10012, new Vector3Int(0, 0, 0)); // 픽업테이블
-            ServerCreateStructure(10013, new Vector3Int(0, 0, 4)); // 쓰레기통
-            ServerCreateStructure(10014, new Vector3Int(-5, 0, 0)); // 계산기
-            ServerCreateStructure(10015, new Vector3Int(-1, 0, -5)); // 허름한 의자
-            ServerCreateStructure(10016, new Vector3Int(0, 0, -5)); // 푹신한 의자
-            ServerCreateStructure(10006, new Vector3Int(0, 0, 2)); // 병입기
-            ServerCreateStructure(10017, new Vector3Int(4, 0, 2), 10005); // 식물상자
-            ServerCreateStructure(10017, new Vector3Int(4, 0, 3), 10006); // 식물상자
-            ServerCreateStructure(10017, new Vector3Int(4, 0, 4), 10007); // 식물상자
-            ServerCreateStructure(10018, new Vector3Int(4, 0, 1), 20002); // 동물상자
-        }
-    }
-
     [Command(requiresAuthority = false)]
     public void LoadGridSaveData()
     {
@@ -463,6 +432,8 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
         ServerCreateStructure(10010, new Vector3Int(-2, 0, 3)); //증류기2
         ServerCreateStructure(10011, new Vector3Int(-1, 0, 3)); //냉가기2
         ServerCreateStructure(10009, new Vector3Int(-3, 0, 3)); //가열냄비2
+        ServerCreateStructure(StructureManager.Instance.SpecialStructureTIDDict[ESpecialStructureType.Casher], PotionHouse.Instance.Layout.CashierSpawnPosition); // 계산기 스폰
+        ServerCreateStructure(StructureManager.Instance.SpecialStructureTIDDict[ESpecialStructureType.Practice], PotionHouse.Instance.Layout.PracticeSpawnPosition); // 연습모드 스폰
 
         _hallAreaPathFinder.InitGridPathFinder
             (GetPositionByAreaType(EAreaType.Hall).ToHashSet(),
@@ -518,6 +489,11 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
         _gridSaveDataList.Clear();
         foreach (var placedInfo in _serverGridData.PlacedObjectDict)
         {
+            if (StructureManager.Instance.SpecialStructureTIDDict[ESpecialStructureType.Casher] == placedInfo.Value.TID ||
+                StructureManager.Instance.SpecialStructureTIDDict[ESpecialStructureType.Practice] == placedInfo.Value.TID)
+            {
+                continue;
+            }
             Vector3Int gridPosition = placedInfo.Key;
             int structureTID = placedInfo.Value.TID;
             int ingredientTID = placedInfo.Value.IngredientTID;

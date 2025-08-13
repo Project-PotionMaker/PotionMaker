@@ -15,6 +15,7 @@ public class InputMappingManager : MonoBehaviourSingleton<InputMappingManager>
     public event Action<InputAction, EBindingType> OnRebindComplete;
     public event Action OnRebindCanceled;
     public event Action<InputAction, EBindingType> OnRebindStarted;
+    public event Action OnBindingReset;
 
     private InputActionRebindingExtensions.RebindingOperation _currentRebindOperation;
 
@@ -120,8 +121,6 @@ public class InputMappingManager : MonoBehaviourSingleton<InputMappingManager>
                     continue;
                 }
 
-                
-
                 if (newBindingPath == otherAction.bindings[i].effectivePath)
                 {
                     Debug.Log($"중복된 키 Binding : {newBindingPath}는 이미 {otherAction.name}에 사용되고 있습니다.");
@@ -158,6 +157,7 @@ public class InputMappingManager : MonoBehaviourSingleton<InputMappingManager>
         }
 
         action.RemoveBindingOverride(bindingIndex);
+        OnBindingReset?.Invoke();
         SaveBindingOverrides();
     }
 
@@ -167,6 +167,8 @@ public class InputMappingManager : MonoBehaviourSingleton<InputMappingManager>
         {
             actionMap.RemoveAllBindingOverrides();
         }
+
+        OnBindingReset?.Invoke();
         SaveBindingOverrides();
     }
 

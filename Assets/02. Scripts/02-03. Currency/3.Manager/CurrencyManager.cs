@@ -1,10 +1,9 @@
 using Mirror;
 using System;
 
-public class CurrencyManager : NetworkBehaviourSingleton<CurrencyManager>
+public class CurrencyManager : NetworkBehaviourSingleton<CurrencyManager>, IShopInfoSaveable
 {
-    public event Action OnDataChanged;
-    public static Action OnInitialized;
+    public static event Action OnDataChanged;
 
     private Currency _coin;
     public CurrencyDTO Coin => _coin.ToDTO();
@@ -13,7 +12,6 @@ public class CurrencyManager : NetworkBehaviourSingleton<CurrencyManager>
     public override void OnStartClient()
     {
         base.OnStartClient();
-        OnInitialized?.Invoke();
         InitCurrencyManager();
     }
     
@@ -23,8 +21,9 @@ public class CurrencyManager : NetworkBehaviourSingleton<CurrencyManager>
         {
             return;
         }
-        _coin = new Currency(0);
+        _coin = ShopInfoManager.Instance.ShopInfo.Currency;
         CmdRequestUpdateCurrency();
+
         OnDataChanged?.Invoke();
         // Todo: Save총괄로부터 데이터 받아온 후 초기화
     }
@@ -84,5 +83,15 @@ public class CurrencyManager : NetworkBehaviourSingleton<CurrencyManager>
     public void CmdRequestUpdateCurrency()
     {
         UpdateCurrency(_coin.Value);
+    }
+
+    public void ApplyLoadedData(ShopInfo shopInfo)
+    {
+        _coin = shopInfo.Currency;
+    }
+
+    public void ProvideSaveData(ShopInfo shopInfo)
+    {
+        shopInfo.Currency = _coin;
     }
 }

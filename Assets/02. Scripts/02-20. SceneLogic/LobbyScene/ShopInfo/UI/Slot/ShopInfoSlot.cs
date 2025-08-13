@@ -1,0 +1,60 @@
+using System;
+using UnityEngine;
+
+public enum SlotState 
+{ 
+    Empty, 
+    Filled 
+}
+
+public class ShopInfoSlot : MonoBehaviour
+{
+    public event Action<ShopInfo> OnShopInfoCreated;
+    public event Action<ShopInfo> OnShopInfoSelected;
+    public event Action OnShopInfoUnSelected;
+    public event Action OnShopInfoDeleted;
+
+    [SerializeField]
+    private int _slotIndex;
+    public int SlotIndex => _slotIndex;
+
+    public SlotState CurrentState { get; private set; } = SlotState.Empty;
+    private ShopInfo _shopInfo;
+
+    private CreatePopup _createPopup;
+
+    public void InitShopInfoSlot(CreatePopup createPopup, ShopInfo shopInfo = null)
+    {
+        _createPopup = createPopup;
+        if (!ReferenceEquals(shopInfo, null))
+        {
+            UpdateShopInfoSlot(shopInfo);
+        }
+    }
+
+    public void UpdateShopInfoSlot(ShopInfo shopInfo)
+    {
+        _shopInfo = shopInfo;
+        CurrentState = SlotState.Filled;
+        OnShopInfoCreated?.Invoke(_shopInfo);
+        Select();
+    }
+
+    public void Select()
+    {
+        OnShopInfoSelected?.Invoke(_shopInfo);
+    }
+
+    public void UnSelect()
+    {
+        OnShopInfoUnSelected?.Invoke();
+    }
+
+    public void Delete()
+    {
+        _shopInfo = null;
+        CurrentState = SlotState.Empty;
+        OnShopInfoDeleted?.Invoke();
+    }
+}
+

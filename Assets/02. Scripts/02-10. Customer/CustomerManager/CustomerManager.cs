@@ -28,18 +28,17 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
     [Foldout("Hierarchy")]
     [Header("임시 포지션")]    //TODO : 임시 포지션, Layout에서 가져오는 것으로 변경 필요
     [SerializeField]
-    private Transform _enterDoor;
-    public Transform EnterDoor { get => _enterDoor; set => _enterDoor = value; }
-    private Transform _casherLocation; // 접수대 위치
-    public Transform CasherLocation { get => _casherLocation; set => _casherLocation = value; }
+    private Vector3Int _customerSpawnPosition;
+    public Vector3Int EnterDoor { get => _customerSpawnPosition; set => _customerSpawnPosition = value; }
+    private Vector3Int _casherPosition; // 접수대 위치
+    public Vector3Int CasherPosition { get => _casherPosition; set => _casherPosition = value; }
     [SerializeField]
-    private Transform _exitDoor; // 손님이 나가는 문 위치
-    public Transform ExitDoor { get => _exitDoor; set => _exitDoor = value; }
+    private Vector3Int _customerUnspawnPosition; // 손님이 나가는 문 위치
+    public Vector3Int CustomerUnspawnPosition { get => _customerUnspawnPosition; set => _customerUnspawnPosition = value; }
 
     // 이벤트는 필요시 추가
-    protected override void Awake()
+    protected void Awake()
     {
-        base.Awake(); 
         _orderHandler = new CustomerOrderHandler();
         _lineHandler = new CustomerLineHandler();
         _orderHandler.Init();
@@ -48,30 +47,22 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
     {
         base.OnStartClient();
         Dictionary<EPhaseType, BasePhase> phaseDictionary = PhaseManager.Instance.PhaseDictionary;
-        phaseDictionary[EPhaseType.ServingPhase].OnPhaseEntered += PreService;
-        phaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += ForceReturn; 
-        phaseDictionary[EPhaseType.PracticingPhase].OnPhaseEntered += PreService;
-        phaseDictionary[EPhaseType.PracticingPhase].OnPhaseExited += ForceReturn;
-        //CustomerPool.Instance.ObjectSpawnedActions.TryAdd(ENPCType.Customer, null);
-        //CustomerPool.Instance.ObjectSpawnedActions[ENPCType.Customer] += OnCustomerIn;
-
-        _enterDoor = GameObject.FindGameObjectWithTag(nameof(ETags.EnterDoor))?.transform;
-        _exitDoor = GameObject.FindGameObjectWithTag(nameof(ETags.ExitDoor))?.transform;
-
-        SceneManager.sceneLoaded += OnSceneLoad;
-    }
-
-    public void OnSceneLoad(Scene scene, LoadSceneMode mode)
-    {
-        _enterDoor = GameObject.FindGameObjectWithTag(nameof(ETags.EnterDoor))?.transform;
-        _exitDoor = GameObject.FindGameObjectWithTag(nameof(ETags.ExitDoor))?.transform;
+        if (isServer)
+        {
+            phaseDictionary[EPhaseType.ServingPhase].OnPhaseEntered += PreService;
+            phaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += ForceReturn;
+            phaseDictionary[EPhaseType.PracticingPhase].OnPhaseEntered += PreService;
+            phaseDictionary[EPhaseType.PracticingPhase].OnPhaseExited += ForceReturn;
+        }
     }
 
     [Server]
     public void PreService()
     {
         _orderHandler.SetLists();
-        _casherLocation = GridManager.Instance.GetCustomerFurnitureList(ESpecialStructureType.Casher)[0].transform;
+        _casherPosition = PotionHouse.Instance.Layout.CashierSpawnPosition;
+        _customerSpawnPosition = PotionHouse.Instance.Layout.CustomerSpawnPosition;
+        _customerUnspawnPosition = PotionHouse.Instance.Layout.CustomerUnspawnPosition;
         _inviteTimer = _inviteCoolTime;
         _remainCustomers = 0;
         _inviteIndex = 0;
@@ -91,7 +82,7 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
         GameObject customer = CustomerFactory.Instance.CreateObject(ENPCType.Customer,Vector3.zero,Quaternion.identity); // TODO : PoolManager완성 후 수정
         //OnCustomerIn(customer.GetComponent<PhotonView>().ViewID); //TODO : PoolManager완성 후 수정
         //CustomerPool.Instance.GetObjectAsync(0);
-        customer.transform.position = _enterDoor.position; // 손님을 상점 입구에 생성
+        customer.transform.position = _customerSpawnPosition; // 손님을 상점 입구에 생성
         _orderHandler.PotionOrderLine.Enqueue(customer.GetComponent<Customer>());
         RemainCustomers++;
         _inviteIndex++;

@@ -15,9 +15,16 @@ public class LobbyScene : MonoBehaviour
 
     public void OnMakeRoomButtonClick()
     {
-        Debug.Log($"{_roomInfoHandler.RoomInfo.ShopInfo.ShopName}, " +
-            $"{_roomInfoHandler.RoomInfo.ShopInfo.Day}, " +
-            $"{_roomInfoHandler.RoomInfo.ShopInfo.Currency}, " +
-            $"{_roomInfoHandler.RoomInfo.Visibility}");
+        //Debug.Log($"{_roomInfoHandler.RoomInfo.ShopInfo.ShopName}, " +
+        //    $"{_roomInfoHandler.RoomInfo.ShopInfo.Day}, " +
+        //    $"{_roomInfoHandler.RoomInfo.ShopInfo.Currency}, " +
+        //    $"{_roomInfoHandler.RoomInfo.Visibility}");
+        MirrorNetworkManager.Instance.ShopInfo = _roomInfoHandler.ShopInfoHandler.SelectedShopInfo;
+        MirrorNetworkManager.Instance.StartHost();
+    }
+
+    public void OnEnerRoonButtonClick()
+    {
+        MirrorNetworkManager.Instance.StartClient();
     }
 }

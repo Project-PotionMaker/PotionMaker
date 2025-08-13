@@ -98,7 +98,17 @@ public class OutputItem : NetworkBehaviour, IItem
             }
 
             objectInfo.ColorChangeRenderer.SetPropertyBlock(_mpb);
+            ResetModel();
             objectInfo.TypeObject.SetActive(true);
+        }
+    }
+
+    private void ResetModel()
+    {
+        if (_colorOnTypeList == null) return;
+        foreach (var modelInfo in _colorOnTypeList)
+        {
+            modelInfo.TypeObject.SetActive(false);
         }
     }
 

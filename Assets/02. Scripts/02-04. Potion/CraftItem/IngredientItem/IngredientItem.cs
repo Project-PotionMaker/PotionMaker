@@ -65,12 +65,19 @@ public class IngredientItem : NetworkBehaviour, IItem
         // 클라이언트에서 초기화 시 SyncVar로 받은 TID를 사용해 데이터 로드 및 모델 활성화
         _ingredientData = DataTable.Instance.GetIngredientData(_ingredientTID);
 
-        // TID에 맞는 모델을 한 번만 활성화
+
+        ActivateModelForTID(_ingredientData.TID);
+    }
+
+    private void ActivateModelForTID(int tid)
+    {
+        if (_modelObjectDic == null) return;
         foreach (var modelInfo in _modelObjectList)
         {
             modelInfo.Model.SetActive(false);
         }
-        if (_modelObjectDic.TryGetValue(_ingredientData.TID, out GameObject modelToActivate))
+
+        if (_modelObjectDic.TryGetValue(tid, out GameObject modelToActivate))
         {
             modelToActivate.SetActive(true);
         }

@@ -200,6 +200,15 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
 
         if (currentPhase == EPhaseType.PreparingPhase)
         {
+            // 임시 코드
+            Debug.Log("임시 코드");
+            if (_data.SpecialStructureType == ESpecialStructureType.Casher)
+            {
+                Test_MarketSingleton.Instance.ShowHideMarket();
+                TargetRpcOnInteract(sender, true);
+                return;
+            }
+
             ServerRotateModel();
             success = true;
         }
@@ -227,6 +236,13 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
 
         if (currentPhase == EPhaseType.PreparingPhase)
         {
+            // 임시 코드
+            Debug.Log("임시 코드");
+            if (_data.SpecialStructureType == ESpecialStructureType.Casher ||
+                _data.SpecialStructureType == ESpecialStructureType.Practice)
+            {
+                return;
+            }
             // GridManager의 서버 전용 메서드를 호출하여 서버에서 그리드 정보만 제거하고 오브젝트를 반환받음
             pickedUpItem = GridManager.Instance.ServerRemovePlacementDataOnly(transform.position);
 
@@ -279,6 +295,14 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
 
             if (currentPhase == EPhaseType.PreparingPhase)
             {
+                // 임시 코드
+                Debug.Log("임시 코드");
+                if (_data.SpecialStructureType == ESpecialStructureType.Casher ||
+                    _data.SpecialStructureType == ESpecialStructureType.Practice)
+                {
+                    TargetRpcOnDrop(sender, false);
+                    return;
+                }
                 if (GridManager.Instance.ServerCanPlaceObjectAt(targetPosition, _data.AreaType))
                 {
                     transform.position = targetPosition;

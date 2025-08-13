@@ -16,9 +16,8 @@ public class ProductManager : NetworkBehaviourSingleton<ProductManager>
         );
     private Delivery _delivery;
     private MovingHouse _movingHouse;
-    protected override void Awake()
+    protected void Awake()
     {
-        base.Awake();
         _delivery = new Delivery();
         _movingHouse = new MovingHouse();
         _movingHouse.InitMovingHouse(_delivery);

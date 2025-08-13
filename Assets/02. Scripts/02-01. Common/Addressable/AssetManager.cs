@@ -23,6 +23,11 @@ public class AssetManager : MonoBehaviourSingleton<AssetManager>
             return cachedPrefab as T;
         }
 
+        if (!System.Enum.IsDefined(typeof(EAddressableKeys), key))
+        {
+            return null;
+        }
+
         AsyncOperationHandle<T> handle = Addressables.LoadAssetAsync<T>(key);
         T asset = await handle.Task;
 

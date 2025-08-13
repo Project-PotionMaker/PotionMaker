@@ -33,7 +33,7 @@ public class UI_Phase : MonoBehaviour
 
     private const float READY_HIDE_OFFSET = 200f;
     private const float PLAYER_HIDE_OFFSET = 60f;
-    private const float ALERT_HIDE_OFFESET = 100f;
+    private const float ALERT_HIDE_OFFSET = 100f;
     private const float WINDOW_WIDTH = 1920f;
     private const float WINDOW_HEIGHT = 1080f;
     private const float DURATION = 1f;
@@ -97,11 +97,11 @@ public class UI_Phase : MonoBehaviour
 
     private void ShowTimer()
     {
-        _serviceTimer.gameObject.SetActive(true);
+        _serviceTimer.GetComponent<RectTransform>().DOAnchorPosY(-ALERT_HIDE_OFFSET, DURATION).SetRelative().SetEase(Ease.OutSine);
     }
     private void HideTimer()
     {
-        _serviceTimer.gameObject.SetActive(false);
+        _serviceTimer.GetComponent<RectTransform>().DOAnchorPosY(ALERT_HIDE_OFFSET, DURATION).SetRelative().SetEase(Ease.OutSine);
     }
 
     private void HideReady()
@@ -185,8 +185,8 @@ public class UI_Phase : MonoBehaviour
     }
     public void ShowAlert(string text)
     {
-        const float showOffsetY = -ALERT_HIDE_OFFESET;
-        const float hideOffsetY = ALERT_HIDE_OFFESET;
+        const float showOffsetY = -ALERT_HIDE_OFFSET;
+        const float hideOffsetY = ALERT_HIDE_OFFSET;
         const float stayDuration = 2f;
 
         // 텍스트 세팅

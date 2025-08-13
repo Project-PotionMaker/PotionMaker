@@ -31,6 +31,9 @@ public class Storage : NetworkBehaviour, IGridItemHandler
     [SerializeField]
     private Transform _model;
 
+    private Renderer[] _modelRenderers;
+    private MaterialPropertyBlock _matPropertyBlock;
+
     private IOutputContainer<Storage> _outputComponent;
 
     public Action OnDataChanged;
@@ -50,6 +53,7 @@ public class Storage : NetworkBehaviour, IGridItemHandler
             modelInfo.Model.SetActive(false);
             _modelObjectDic.Add(modelInfo.TID, modelInfo.Model);
         }
+        _matPropertyBlock = new MaterialPropertyBlock();
     }
 
     public override void OnStartClient()
@@ -270,6 +274,7 @@ public class Storage : NetworkBehaviour, IGridItemHandler
         if (_modelObjectDic.TryGetValue(tid, out GameObject modelToActivate))
         {
             modelToActivate.SetActive(true);
+            _modelRenderers = GetComponentsInChildren<Renderer>();
         }
     }
 
@@ -305,5 +310,14 @@ public class Storage : NetworkBehaviour, IGridItemHandler
     {
         yield return new WaitForSeconds(0.05f);
         _model.gameObject.SetActive(true);
+    }
+
+    public void SetOutline(bool active, float size = 30)
+    {
+        _matPropertyBlock.SetFloat("_OutlineSize", size);
+        foreach (var renderer in _modelRenderers)
+        {
+            renderer.SetPropertyBlock(_matPropertyBlock);
+        }
     }
 }

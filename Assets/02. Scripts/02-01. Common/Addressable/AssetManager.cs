@@ -23,6 +23,12 @@ public class AssetManager : MonoBehaviourSingleton<AssetManager>
             return cachedPrefab as T;
         }
 
+        if (!System.Enum.IsDefined(typeof(EAddressableKeys), key))
+        {
+            Debug.LogWarning($"[Addressables] '{key}'는 Addressable 그룹에 등록되지 않은 키입니다. Addressable Group을 확인해주세요.");
+            return null;
+        }
+
         AsyncOperationHandle<T> handle = Addressables.LoadAssetAsync<T>(key);
         T asset = await handle.Task;
 

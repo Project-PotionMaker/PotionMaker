@@ -27,7 +27,7 @@ public class InputMappingManager : MonoBehaviourSingleton<InputMappingManager>
     {
         if (action == null)
         {
-            Debug.LogError($"Action {action.name}을 못 찾았습니다.");
+            Debug.LogError($"Action을 못 찾았습니다.");
             return;
         }
         

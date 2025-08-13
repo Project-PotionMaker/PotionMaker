@@ -21,6 +21,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
     private Transform _model;
     [SerializeField]
     private Transform _putItemPosition;
+    public Transform PutItemPosition => _putItemPosition;
 
     private MachineData _data;
     public MachineData Data => _data;

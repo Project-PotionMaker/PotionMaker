@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 3230178061579800583}
   - component: {fileID: 3230178061579781983}
   - component: {fileID: 6418608931626196445}
+  - component: {fileID: 5377390093658279188}
+  - component: {fileID: 3107013552894527745}
   m_Layer: 0
   m_Name: GrinderClick
   m_TagString: Untagged
@@ -53,7 +55,7 @@ ParticleSystem:
   emitterVelocityMode: 0
   looping: 0
   prewarm: 0
-  playOnAwake: 0
+  playOnAwake: 1
   useUnscaledTime: 0
   autoRandomSeed: 1
   startDelay:
@@ -4940,6 +4942,36 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
+--- !u!114 &5377390093658279188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3230178061560578731}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6f3a114bc1640488361a1527906c3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _returnTime: 2
+--- !u!114 &3107013552894527745
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3230178061560578731}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 1478977111
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
 --- !u!1 &3230178061560594253
 GameObject:
   m_ObjectHideFlags: 0
@@ -4990,7 +5022,7 @@ ParticleSystem:
   emitterVelocityMode: 0
   looping: 0
   prewarm: 0
-  playOnAwake: 0
+  playOnAwake: 1
   useUnscaledTime: 0
   autoRandomSeed: 1
   startDelay:
@@ -9857,7 +9889,7 @@ ParticleSystem:
   emitterVelocityMode: 0
   looping: 0
   prewarm: 0
-  playOnAwake: 0
+  playOnAwake: 1
   useUnscaledTime: 0
   autoRandomSeed: 1
   startDelay:

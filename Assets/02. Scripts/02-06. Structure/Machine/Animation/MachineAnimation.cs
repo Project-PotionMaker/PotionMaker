@@ -194,7 +194,7 @@ public class MachineAnimation : MonoBehaviour, IMachineAnimation
         }
         foreach (EVFXType particle in _clickParticleList)
         {
-            VFXFactory.Instance.CreateObject(particle, _owner.transform.position, Quaternion.identity);
+            VFXFactory.Instance.CreateObject(particle, _owner.PutItemPosition.position, Quaternion.identity);
         }
     }
 

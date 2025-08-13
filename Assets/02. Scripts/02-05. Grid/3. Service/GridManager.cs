@@ -267,7 +267,7 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
 
             //structure.transform.rotation = Quaternion.identity;
 
-            Vector3 position = _grid.CellToWorld(gridPosition) + new Vector3(0.5f, 0, 0.5f);
+            Vector3Int position = GetGridPosition(targetPosition);
 
             ServerCreateStructure(data.TID, position, ingredientTID);
 

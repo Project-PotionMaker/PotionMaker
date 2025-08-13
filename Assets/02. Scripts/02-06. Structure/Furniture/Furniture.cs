@@ -300,7 +300,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
                 if (_data.SpecialStructureType == ESpecialStructureType.Casher ||
                     _data.SpecialStructureType == ESpecialStructureType.Practice)
                 {
-                    TargetRpcOnDrop(sender, false);
+                    TargetRpcOnDrop(sender, false, transform.position);
                     return;
                 }
                 if (GridManager.Instance.ServerCanPlaceObjectAt(targetPosition, _data.AreaType))

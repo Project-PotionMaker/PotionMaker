@@ -100,6 +100,8 @@ public class MirrorNetworkManager : NetworkRoomManager
     public override void OnRoomServerPlayersReady()
     {
         Debug.Log("서버: 모든 플레이어가 준비되었습니다. LoadingScene으로 전환합니다.");
+
+
         StartCoroutine(LoadLoadingSceneWithDelay());
     }
 
@@ -111,30 +113,8 @@ public class MirrorNetworkManager : NetworkRoomManager
         if (newSceneName == LoadingScene)
         {
             Debug.Log("서버: LoadingScene으로 전환되었습니다. 매니저 프리팹들을 스폰합니다.");
-
-            // LoadingScene에서 필요한 매니저 프리팹들을 스폰
-            //foreach (GameObject prefab in ManagerPrefabList)
-            //{
-            //    GameObject obj = Instantiate(prefab);
-            //    NetworkServer.Spawn(obj);
-            //}
-
-            // 매니저 스폰이 완료되면 GameplayScene으로 전환하라고 명령
-            // 클라이언트도 이 명령을 받아 GameplayScene을 로드
             StartCoroutine(LoadGameplaySceneWithDelay());
         }
-
-        //if (newSceneName == GameplayScene)
-        //{
-        //    Debug.Log("서버: GameplayScene으로 전환되었습니다. 팩토리 프리팹들을 스폰합니다.");
-
-        //    // GameplayScene에서 필요한 팩토리 프리팹들을 스폰
-        //    foreach (GameObject prefab in FactoryPrefabList)
-        //    {
-        //        GameObject obj = Instantiate(prefab);
-        //        NetworkServer.Spawn(obj);
-        //    }
-        //}
     }
 
     private IEnumerator LoadLoadingSceneWithDelay()
@@ -220,12 +200,5 @@ public class MirrorNetworkManager : NetworkRoomManager
         }
         
         base.OnRoomServerDisconnect(conn);
-    }
-
-    // RoomPlayer가 추가될 때 호출
-    public override void OnRoomServerAddPlayer(NetworkConnectionToClient conn)
-    {
-        base.OnRoomServerAddPlayer(conn);
-        Debug.Log($"서버: RoomPlayer가 추가되었습니다. ConnectionId: {conn.connectionId}");
     }
 }

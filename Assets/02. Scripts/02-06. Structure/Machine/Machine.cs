@@ -4,6 +4,7 @@ using MoreMountains.Feedbacks;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using VInspector;
@@ -23,6 +24,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
     private Transform _model;
     [SerializeField]
     private Transform _putItemPosition;
+    public Transform PutItemPosition => _putItemPosition;
 
     private MachineData _data;
     public MachineData Data => _data;
@@ -131,6 +133,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
         }
         else
         {
+            InputTIDList.Callback += OnInputTIDListChanged;
             PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += ResetData; // 서버에서만 호출되도록
             PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase].OnPhaseExited += ResetData; // 서버에서만 호출되도록
 
@@ -227,7 +230,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
 
         // 나머지 SyncVar 초기값 설정 (서버에서만)
         CurrentProgress = 0f;
-        LeftOutputAmount = _data.OutputAmount;
+        LeftOutputAmount = 0;
         IsProcessFinished = false;
         IsProcessStarted = false;
         CurrentRotation = 0f;
@@ -270,6 +273,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
         {
             ServerSetIsProcessFinished(true);
             ServerSetIsProcessStarted(false);
+            ServerSetLeftOutputAmount(Data.OutputAmount);
             StopAllCoroutines(); // 서버의 코루틴만 중지
         }
     }
@@ -333,7 +337,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
     {
         StopAllCoroutines(); // 서버의 코루틴만 중지
         InputTIDList.Clear(); // SyncList 초기화
-        LeftOutputAmount = Data.OutputAmount; // SyncVar 초기화
+        LeftOutputAmount = 0; // SyncVar 초기화
         IsProcessFinished = false; // SyncVar 초기화
         IsProcessStarted = false; // SyncVar 초기화
         CurrentProgress = 0f; // SyncVar 초기화

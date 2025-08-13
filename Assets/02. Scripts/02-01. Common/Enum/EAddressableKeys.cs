@@ -279,4 +279,7 @@ public enum EAddressableKeys
     Image_KeyboardMouse_10022 = 252,
     Image_Xbox_10015 = 253,
     Image_PlayStation5_10009 = 254,
+    VFX_GrinderClick = 255,
+    VFX_MixerClick = 256,
+    VFX_MortarClick = 257,
 }

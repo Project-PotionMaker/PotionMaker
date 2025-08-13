@@ -19,6 +19,7 @@ public class ClickRepeatlyInteract : IInteractable<Machine>
         {
             machine.ServerSetIsProcessStarted(true);
         }
+
         IncreaseProgress(machine);
         return true;
     }

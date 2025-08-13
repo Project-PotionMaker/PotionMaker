@@ -73,6 +73,14 @@ public class Reputation
         _reputationGrade = reputationDto.ReputationGrade;
     }
 
+    public Reputation(float value, float valueYesterday, float difference, EReputationGrade grade)
+    {
+        _value = value;
+        _valueYesterday = valueYesterday;
+        _difference = difference;
+        _reputationGrade = grade;
+    }
+
     public void SetReputation(float value)
     {
         if (value < 0f)

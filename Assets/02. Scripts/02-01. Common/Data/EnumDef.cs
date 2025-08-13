@@ -189,5 +189,11 @@ public enum EVFXType
     Ping = 0,
     ///<summary>플레이어 이동</summary>
     PlayerMovement = 1,
+    ///<summary>절구</summary>
+    MortarClick = 2,
+    ///<summary>분쇄기</summary>
+    GrinderClick = 3,
+    ///<summary>혼합기</summary>
+    MixerClick = 4,
 }
 

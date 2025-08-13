@@ -165,8 +165,11 @@ public class MirrorNetworkManager : NetworkRoomManager
             {
                 playerScript.playerName = roomPlayerScript.PlayerName;
                 playerScript.PlayerOrderIndex = roomPlayerScript.index;
+
+                gamePlayer.transform.position = PotionHouse.Instance.Layout.PlayerSpawnPositions[playerScript.PlayerOrderIndex];
             }
         }
+
 
         // NetworkServer.ReplacePlayerForConnection()은 roomPlayer를 파괴
         NetworkServer.ReplacePlayerForConnection(conn, gamePlayer, ReplacePlayerOptions.Destroy);

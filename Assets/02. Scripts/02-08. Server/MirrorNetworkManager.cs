@@ -100,6 +100,8 @@ public class MirrorNetworkManager : NetworkRoomManager
     public override void OnRoomServerPlayersReady()
     {
         Debug.Log("서버: 모든 플레이어가 준비되었습니다. LoadingScene으로 전환합니다.");
+
+
         StartCoroutine(LoadLoadingSceneWithDelay());
     }
 
@@ -205,5 +207,10 @@ public class MirrorNetworkManager : NetworkRoomManager
     {
         base.OnRoomServerAddPlayer(conn);
         Debug.Log($"서버: RoomPlayer가 추가되었습니다. ConnectionId: {conn.connectionId}");
+    }
+
+    public override void OnServerAddPlayer(NetworkConnectionToClient conn)
+    {
+        base.OnServerAddPlayer(conn);
     }
 }

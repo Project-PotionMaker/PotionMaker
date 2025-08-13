@@ -20,18 +20,12 @@ public class ShopInfoManager : NetworkBehaviourSingleton<ShopInfoManager>
     {
         base.OnStartServer();
         _shopInfoRepository = new ShopInfoRepository();
+        _shopInfo = MirrorNetworkManager.Instance.ShopInfo;
     }
 
     public override void OnStartClient()
     {
         base.OnStartClient();
-        ClientRpcGetShopInfo(MirrorNetworkManager.Instance.ShopInfo);
-    }
-
-    [Command]
-    public void ClientRpcGetShopInfo(ShopInfo shopInfo)
-    {
-        _shopInfo = shopInfo;
     }
 
     // ShopInfo와 연동되는 매니저가 존재하는 시점에 호출해줘야 한다.

@@ -183,4 +183,17 @@ public class PlayerPickupAbility : PlayerAbility
         if (!_owner.isServer) return;
         _heldItemIdentity = null;
     }
+
+    private void OnDestroy()
+    {
+        if(InputManager.Instance != null)
+        {
+            InputManager.Instance.OnPickupEvent -= OnPickupInput;
+        }
+        if(PhaseManager.Instance != null)
+        {
+            PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseExited -= ResetItem;
+            PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase].OnPhaseExited -= ResetItem;
+        }
+    }
 }

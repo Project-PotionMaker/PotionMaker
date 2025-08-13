@@ -1,5 +1,6 @@
 using Mirror;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using VInspector;
@@ -26,6 +27,8 @@ public class Storage : NetworkBehaviour, IGridItemHandler
     public StorageData Data => _data;
 
     [SerializeField]
+    private Collider _collider;
+    [SerializeField]
     private Transform _model;
 
     private IOutputContainer<Storage> _outputComponent;
@@ -36,6 +39,8 @@ public class Storage : NetworkBehaviour, IGridItemHandler
     [SerializeField]
     private List<ModelOnTID> _modelObjectList = new List<ModelOnTID>();
     private Dictionary<int, GameObject> _modelObjectDic;
+
+    private Coroutine _visibleRoutine;
 
     private void Awake()
     {
@@ -50,6 +55,12 @@ public class Storage : NetworkBehaviour, IGridItemHandler
     public override void OnStartClient()
     {
         base.OnStartClient();
+        _model.gameObject.SetActive(false);
+        if (!ReferenceEquals(_visibleRoutine, null))
+        {
+            StopCoroutine(_visibleRoutine);
+        }
+        _visibleRoutine = StartCoroutine(VisibleRoutine());
     }
 
     #region SyncVar Hook Functions
@@ -149,6 +160,8 @@ public class Storage : NetworkBehaviour, IGridItemHandler
             if (pickedUpItem != null && sender != null)
             {
                 NetworkServer.spawned[pickedUpItem.GetComponent<NetworkIdentity>().netId].AssignClientAuthority(sender);
+                //GetComponent<NetworkTransformReliable>().syncMode = SyncMode.Owner;
+
                 // GridManager의 TargetRpc를 호출하여 클라이언트에서 배치 상태를 시작하도록 지시
                 GridManager.Instance.TargetRpcStartPlacement(sender, pickedUpItem.GetComponent<NetworkIdentity>().netId);
             }
@@ -192,7 +205,9 @@ public class Storage : NetworkBehaviour, IGridItemHandler
 
             if (GridManager.Instance.ServerCanPlaceObjectAt(targetPosition, EAreaType.Storage))
             {
-                GridManager.Instance.ServerPlaceStructure(targetPosition, dropItemNetId, sender);
+                transform.position = targetPosition;
+                GridManager.Instance.ServerPlaceStructure(targetPosition, dropItemNetId, sender, _ingredientTID);
+                RpcOnDrop();
                 success = true;
             }
             else
@@ -206,8 +221,7 @@ public class Storage : NetworkBehaviour, IGridItemHandler
             dropItemIdentity.RemoveClientAuthority();
         }
 
-
-        TargetRpcOnDrop(sender, success);
+        TargetRpcOnDrop(sender, success, transform.position);
     }
     #endregion
 
@@ -231,7 +245,7 @@ public class Storage : NetworkBehaviour, IGridItemHandler
     }
 
     [TargetRpc]
-    private void TargetRpcOnDrop(NetworkConnectionToClient target, bool success)
+    private void TargetRpcOnDrop(NetworkConnectionToClient target, bool success, Vector3 position)
     {
         if (NetworkClient.connection.identity.TryGetComponent<Player>(out Player player))
         {
@@ -239,6 +253,12 @@ public class Storage : NetworkBehaviour, IGridItemHandler
         }
     }
     #endregion
+
+    [ClientRpc]
+    private void RpcOnDrop()
+    {
+        gameObject.SetActive(false);
+    }
 
     private void ActivateModelForTID(int tid)
     {
@@ -274,5 +294,16 @@ public class Storage : NetworkBehaviour, IGridItemHandler
     public int GetStructureTID()
     {
         return _data.StructureTID;
+    }
+
+    public void SetCollider(bool active)
+    {
+        _collider.enabled = active;
+    }
+
+    private IEnumerator VisibleRoutine()
+    {
+        yield return new WaitForSeconds(0.05f);
+        _model.gameObject.SetActive(true);
     }
 }

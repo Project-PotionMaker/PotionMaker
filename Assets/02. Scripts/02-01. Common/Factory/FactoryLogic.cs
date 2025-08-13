@@ -106,8 +106,8 @@ public class FactoryLogic<TEnum, TFactoryInfo>
             identity.enabled = true;
         }
 
-        networkObject.SetActive(true);
         networkObject.transform.SetPositionAndRotation(position, rotation);
+        networkObject.SetActive(true);
 
         _objectToTypeDict[networkObject] = type;
 

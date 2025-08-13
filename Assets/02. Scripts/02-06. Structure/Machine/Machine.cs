@@ -1,5 +1,6 @@
 using Mirror;
 using Mirror.BouncyCastle.Tls;
+using MoreMountains.Feedbacks;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,6 +17,8 @@ public class ModelOnTID
 
 public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
 {
+    [SerializeField]
+    private Collider _collider;
     [SerializeField]
     private Transform _model;
     [SerializeField]
@@ -95,6 +98,8 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
     private RefundSystem _refundSystem;
     public Action OnDataChanged;
 
+    private Coroutine _visibleRoutine;
+
     private void Awake()
     {
         _modelObjectDic = new Dictionary<int, GameObject>();
@@ -114,7 +119,12 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
     public override void OnStartClient()
     {
         base.OnStartClient();
-
+        _model.gameObject.SetActive(false);
+        if (!ReferenceEquals(_visibleRoutine, null))
+        {
+            StopCoroutine(_visibleRoutine);
+        }
+        _visibleRoutine = StartCoroutine(VisibleRoutine());
         if (!isServer)
         {
             InputTIDList.Callback += OnInputTIDListChanged;
@@ -337,7 +347,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
     [Command(requiresAuthority = false)]
     private void CmdTryInteract(NetworkConnectionToClient sender = null)
     {
-        if(isServer == false)
+        if (isServer == false)
         {
             return;
         }
@@ -345,7 +355,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
         bool result = false;
         EPhaseType currentPhase = PhaseManager.Instance.CurrentPhase.PhaseType;
 
-        if(currentPhase == EPhaseType.PreparingPhase)
+        if (currentPhase == EPhaseType.PreparingPhase)
         {
             ServerRotateModel();
             result = true;
@@ -373,7 +383,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
     [Command(requiresAuthority = false)]
     private void CmdTryPickUp(NetworkConnectionToClient sender = null)
     {
-        if(isServer == false)
+        if (isServer == false)
         {
             return;
         }
@@ -390,19 +400,20 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
             if (pickedUpItem != null && sender != null)
             {
                 NetworkServer.spawned[pickedUpItem.GetComponent<NetworkIdentity>().netId].AssignClientAuthority(sender);
+                //GetComponent<NetworkTransformReliable>().syncMode = SyncMode.Owner;
                 // GridManager의 TargetRpc를 호출하여 클라이언트에서 배치 상태를 시작하도록 지시
                 GridManager.Instance.TargetRpcStartPlacement(sender, pickedUpItem.GetComponent<NetworkIdentity>().netId);
             }
         }
         else
         {
-            if(ReferenceEquals(_outputComponent, null) == false)
+            if (ReferenceEquals(_outputComponent, null) == false)
             {
                 pickedUpItem = _outputComponent.ServerTakeItem(this);
             }
         }
 
-        if(pickedUpItem != null && sender != null)
+        if (pickedUpItem != null && sender != null)
         {
             NetworkServer.spawned[pickedUpItem.GetComponent<NetworkIdentity>().netId].AssignClientAuthority(sender);
         }
@@ -433,7 +444,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
         bool success = false;
         EPhaseType currentPhase = PhaseManager.Instance.CurrentPhase.PhaseType;
 
-        if(NetworkServer.spawned.TryGetValue(dropItemNetId, out NetworkIdentity dropItemIdentity))
+        if (NetworkServer.spawned.TryGetValue(dropItemNetId, out NetworkIdentity dropItemIdentity))
         {
             GameObject inputObject = dropItemIdentity.gameObject;
 
@@ -441,9 +452,11 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
             {
                 if (GridManager.Instance.ServerCanPlaceObjectAt(targetPosition, _data.AreaType))
                 {
+                    transform.position = targetPosition;
                     GridManager.Instance.ServerPlaceStructure(targetPosition, dropItemNetId, sender);
                     dropItemIdentity.RemoveClientAuthority();
                     success = true;
+                    RpcOnDrop();
                 }
                 else
                 {
@@ -453,16 +466,19 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
             else
             {
                 success = _inputComponent.ServerTryInput(this, tid, inputType, inputObject);
-                CraftItemFactory.Instance.ReturnObject(inputObject);
+                if (success)
+                {
+                    CraftItemFactory.Instance.ReturnObject(inputObject);
+                }
             }
 
         }
 
         if (success)
         {
+            TargetRpcOnDrop(sender, success);
         }
 
-        TargetRpcOnDrop(sender, success);
     }
 
     [TargetRpc]
@@ -472,6 +488,12 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
         {
             player.GetAbility<PlayerPickupAbility>().ReceiveDroppedItem(success);
         }
+    }
+
+    [ClientRpc]
+    private void RpcOnDrop()
+    {
+        gameObject.SetActive(false);
     }
 
     [Command(requiresAuthority = false)]
@@ -531,7 +553,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
 
     public void TryDrop(NetworkConnectionToClient conn, Vector3 targetPosition, NetworkIdentity inputNetId, int tid = 10000, EInputType inputType = EInputType.None)
     {
-        if(inputNetId != null)
+        if (inputNetId != null)
         {
             CmdTryDrop(targetPosition, tid, inputType, inputNetId.netId, conn);
         }
@@ -542,6 +564,11 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
         return _data.StructureTID;
     }
 
+    public void SetCollider(bool active)
+    {
+        _collider.enabled = active;
+    }
+
     public void StartRefund()
     {
         CmdStartRefund();
@@ -550,5 +577,11 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
     public void CancelRefund()
     {
         CmdCancelRefund();
+    }
+
+    private IEnumerator VisibleRoutine()
+    {
+        yield return new WaitForSeconds(0.05f);
+        _model.gameObject.SetActive(true);
     }
 }

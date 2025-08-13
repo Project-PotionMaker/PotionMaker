@@ -146,7 +146,6 @@ public class PlayerPickupAbility : PlayerAbility
         {
             return;
         }
-
         CmdDropItem();
     }
 
@@ -156,7 +155,11 @@ public class PlayerPickupAbility : PlayerAbility
         if (oldIdentity != null)
         {
             oldIdentity.transform.SetParent(null);
-            GridManager.Instance.StopPlacement();
+            Collider collider = oldIdentity.GetComponentInChildren<Collider>();
+            if(!ReferenceEquals(collider, null))
+            {
+                collider.enabled = true;
+            }
         }
 
         // 2. 새롭게 들게 된 가구가 있다면 부모-자식 관계를 설정합니다.
@@ -166,6 +169,11 @@ public class PlayerPickupAbility : PlayerAbility
             newIdentity.transform.SetParent(_owner.HeldPosition, true);
             newIdentity.transform.localPosition = Vector3.zero;
             newIdentity.transform.localRotation = Quaternion.identity;
+            Collider collider = newIdentity.GetComponentInChildren<Collider>();
+            if(!ReferenceEquals(collider, null))
+            {
+                collider.enabled = false;
+            }
         }
     }
 
@@ -181,6 +189,18 @@ public class PlayerPickupAbility : PlayerAbility
     public void CmdDropItem()
     {
         if (!_owner.isServer) return;
+
+        GameObject heldItemObject = _heldItemIdentity.gameObject;
+        if(heldItemObject.TryGetComponent<IGridItemHandler>(out IGridItemHandler structure))
+        {
+            StructureData data = DataTable.Instance.GetStructureData(structure.GetStructureTID());
+            GridManager.Instance.CmdRemoveStructure(data.TID, heldItemObject);
+        }
+        else
+        {
+            CraftItemFactory.Instance.ReturnObject(_heldItemIdentity.gameObject);
+        }
+
         _heldItemIdentity = null;
     }
 

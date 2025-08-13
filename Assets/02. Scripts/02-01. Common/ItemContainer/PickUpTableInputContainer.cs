@@ -16,26 +16,33 @@ public class PickUpTableInputContainer : IInputContainer<Furniture>
             //furniture.InputObject.transform.position = furniture.InputPosition.position;
             //furniture.InputObject.transform.rotation = Quaternion.identity;
 
-            furniture.InputObject = CraftItemFactory.Instance.CreateObject(inputType, furniture.InputPosition.position, Quaternion.identity);
             switch (inputType)
             {
                 case EInputType.Ingredient:
                 {
+                    furniture.InputObject = CraftItemFactory.Instance.CreateObject(inputType, furniture.InputPosition.position, Quaternion.identity);
+
                     furniture.InputObject.GetComponent<IngredientItem>().ServerUpdateIngredientData(tid);
                     break;
                 }
                 case EInputType.Output:
                 {
+                    furniture.InputObject = CraftItemFactory.Instance.CreateObject(inputType, furniture.InputPosition.position, Quaternion.identity);
+
                     furniture.InputObject.GetComponent<OutputItem>().ServerUpdateOutputData(EInputType.Output, tid);
                     break;
                 }
                 case EInputType.FailureOutput:
                 {
-                    furniture.InputObject.GetComponent<OutputItem>().ServerUpdateOutputData(EInputType.FailureOutput, tid);
+                    furniture.InputObject = CraftItemFactory.Instance.CreateObject(EInputType.Output, furniture.InputPosition.position, Quaternion.identity);
+
+                    furniture.InputObject.GetComponent<OutputItem>().ServerUpdateOutputData(EInputType.FailureOutput, 10000);
                     break;
                 }
                 case EInputType.Potion:
                 {
+                    furniture.InputObject = CraftItemFactory.Instance.CreateObject(inputType, furniture.InputPosition.position, Quaternion.identity);
+
                     furniture.InputObject.GetComponent<PotionItem>().ServerUpdatePotionData(tid);
                     break;
                 }

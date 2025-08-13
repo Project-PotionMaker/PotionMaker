@@ -207,7 +207,7 @@ public class Storage : NetworkBehaviour, IGridItemHandler
             if (GridManager.Instance.ServerCanPlaceObjectAt(targetPosition, EAreaType.Storage))
             {
                 transform.position = targetPosition;
-                GridManager.Instance.ServerPlaceStructure2(targetPosition, dropItemNetId, sender, _ingredientTID);
+                GridManager.Instance.ServerPlaceStructure(targetPosition, dropItemNetId, sender, _ingredientTID);
                 RpcOnDrop();
                 success = true;
             }

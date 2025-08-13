@@ -306,7 +306,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
                 if (GridManager.Instance.ServerCanPlaceObjectAt(targetPosition, _data.AreaType))
                 {
                     transform.position = targetPosition;
-                    GridManager.Instance.ServerPlaceStructure2(targetPosition, dropItemNetId, sender);
+                    GridManager.Instance.ServerPlaceStructure(targetPosition, dropItemNetId, sender);
                     dropItemIdentity.RemoveClientAuthority();
                     RpcOnDrop();
                     success = true;

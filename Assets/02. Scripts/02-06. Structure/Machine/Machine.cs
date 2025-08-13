@@ -453,7 +453,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
                 if (GridManager.Instance.ServerCanPlaceObjectAt(targetPosition, _data.AreaType))
                 {
                     transform.position = targetPosition;
-                    GridManager.Instance.ServerPlaceStructure2(targetPosition, dropItemNetId, sender);
+                    GridManager.Instance.ServerPlaceStructure(targetPosition, dropItemNetId, sender);
                     dropItemIdentity.RemoveClientAuthority();
                     success = true;
                     RpcOnDrop();

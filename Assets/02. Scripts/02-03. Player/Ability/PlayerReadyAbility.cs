@@ -19,4 +19,9 @@ public class PlayerReadyAbility : PlayerAbility
         _isReady = !_isReady;
         Debug.Log($"Ready : {_isReady}");
     }
+
+    private void OnDestroy()
+    {
+        InputManager.Instance.OnReadyEvent -= Ready;
+    }
 }

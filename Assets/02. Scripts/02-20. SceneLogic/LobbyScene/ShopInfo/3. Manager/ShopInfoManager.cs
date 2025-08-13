@@ -1,3 +1,4 @@
+using Mirror;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -18,8 +19,8 @@ public class ShopInfoManager : NetworkBehaviourSingleton<ShopInfoManager>
     public override void OnStartServer()
     {
         base.OnStartServer();
-        _shopInfo = MirrorNetworkManager.Instance.ShopInfo;
         _shopInfoRepository = new ShopInfoRepository();
+        _shopInfo = MirrorNetworkManager.Instance.ShopInfo;
     }
 
     // ShopInfo와 연동되는 매니저가 존재하는 시점에 호출해줘야 한다.

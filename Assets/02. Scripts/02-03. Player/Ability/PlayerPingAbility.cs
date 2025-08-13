@@ -21,4 +21,12 @@ public class PlayerPingAbility : PlayerAbility
 
         _owner.CmdRequestPing();
     }
+
+    private void OnDestroy()
+    {
+        if(InputManager.Instance != null)
+        {
+            InputManager.Instance.OnPingEvent -= Ping;
+        }
+    }
 }

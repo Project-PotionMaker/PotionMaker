@@ -32,7 +32,7 @@ public class UI_RecipeBook : MonoBehaviour
 
     private void Start()
     {
-        RecipeManager.Instance.OnInitialized += Initialize;
+        Initialize();
     }
 
     private void Initialize()

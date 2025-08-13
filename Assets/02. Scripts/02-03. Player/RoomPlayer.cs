@@ -68,6 +68,10 @@ public class RoomPlayer : NetworkRoomPlayer
         else
         {
             CmdRequestAddToPlayerList();
+            if (isOwned)
+            {
+                CmdGetShopInfo();
+            }
         }
     }
 
@@ -88,6 +92,22 @@ public class RoomPlayer : NetworkRoomPlayer
         {
             CmdRequestRemoveToPlayerList();
         }
+    }
+
+    [Command]
+    private void CmdGetShopInfo()
+    {
+        if (connectionToClient != null)
+        {
+            RpcReceiveShopInfo(connectionToClient, MirrorNetworkManager.Instance.ShopInfo);
+        }
+    }
+
+    [TargetRpc]
+    private void RpcReceiveShopInfo(NetworkConnection target, ShopInfo shopInfo)
+    {
+        // 클라이언트 쪽 싱글톤 인스턴스에 ShopInfo 복원
+        ShopInfoManager.Instance.ShopInfo = shopInfo;
     }
 
     [Command]

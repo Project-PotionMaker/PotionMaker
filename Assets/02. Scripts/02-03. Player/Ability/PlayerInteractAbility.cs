@@ -107,4 +107,12 @@ public class PlayerInteractAbility : PlayerAbility
         }
         
     }
+
+    private void OnDestroy()
+    {
+        if(InputManager.Instance != null)
+        {
+            InputManager.Instance.OnInteractChanged -= ChangeInteractState;
+        }
+    }
 }

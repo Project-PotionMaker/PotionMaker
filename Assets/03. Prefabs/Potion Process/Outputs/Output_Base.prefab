@@ -1,5 +1,39 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &165176519968310014
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4184161655649119103}
+  m_Layer: 0
+  m_Name: Models
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4184161655649119103
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 165176519968310014}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 5748118399932950910}
+  - {fileID: 7199261038023593851}
+  - {fileID: 6488479290564697283}
+  m_Father: {fileID: 2137511542502651881}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7542705898741003357
 GameObject:
   m_ObjectHideFlags: 0
@@ -32,9 +66,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 5748118399932950910}
-  - {fileID: 7199261038023593851}
-  - {fileID: 6488479290564697283}
+  - {fileID: 4184161655649119103}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3100848595513464600
@@ -62,6 +94,7 @@ MonoBehaviour:
   - OuputType: 2
     TypeObject: {fileID: 5854790725507876473}
     ColorChangeRenderer: {fileID: 5350444948246865836}
+  _models: {fileID: 165176519968310014}
 --- !u!114 &6711331726108257617
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -74,7 +107,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ff3ba0becae47b8b9381191598957c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  syncDirection: 1
+  syncDirection: 0
   syncMode: 0
   syncInterval: 0
   target: {fileID: 2137511542502651881}
@@ -83,11 +116,11 @@ MonoBehaviour:
   syncScale: 0
   onlySyncOnChange: 1
   compressRotation: 1
-  interpolatePosition: 1
+  interpolatePosition: 0
   interpolateRotation: 1
   interpolateScale: 1
   coordinateSpace: 0
-  timelineOffset: 1
+  timelineOffset: 0
   showGizmos: 0
   showOverlay: 0
   overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
@@ -119,7 +152,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 2137511542502651881}
+    m_TransformParent: {fileID: 4184161655649119103}
     m_Modifications:
     - target: {fileID: 4765631366601958005, guid: 8020ff2dd0c6cdc4fbcaf75f588f4837, type: 3}
       propertyPath: m_LocalScale.x
@@ -207,7 +240,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 2137511542502651881}
+    m_TransformParent: {fileID: 4184161655649119103}
     m_Modifications:
     - target: {fileID: 395306105648233878, guid: e274ac90011d6a6468a6cfa0a6aa7a87, type: 3}
       propertyPath: m_LocalScale.x
@@ -295,7 +328,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 2137511542502651881}
+    m_TransformParent: {fileID: 4184161655649119103}
     m_Modifications:
     - target: {fileID: 2521495255269740463, guid: 51979db2dffcad64390ad5ae6b6317ab, type: 3}
       propertyPath: m_LocalScale.x

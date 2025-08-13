@@ -59,7 +59,7 @@ public class BindingIconManager : MonoBehaviourSingleton<BindingIconManager>
     public Sprite GetSpriteForPath(string inputPath)
     {
         EControllerType controllerType = GetCurrentControllerType();
-        if (inputPath.StartsWith("<Keyboard>"))
+        if (inputPath.StartsWith("<Keyboard>") || inputPath.StartsWith("<Mouse>"))
         {
             controllerType = EControllerType.Keyboard;
         }

@@ -24,6 +24,7 @@ public class UI_RebindAction : MonoBehaviour
 
     private void Start()
     {
+        InputMappingManager.Instance.OnBindingReset += UpdateBindingDisplay;
         Initialize();
     }
 
@@ -33,6 +34,7 @@ public class UI_RebindAction : MonoBehaviour
         {
             InputMappingManager.Instance.OnRebindComplete -= HandleRebindComplete;
             InputMappingManager.Instance.OnRebindCanceled -= HandleRebindCanceled;
+            InputMappingManager.Instance.OnBindingReset -= UpdateBindingDisplay;
         }
     }
 
@@ -41,6 +43,11 @@ public class UI_RebindAction : MonoBehaviour
         if (_action == null)
         {
             return;
+        }
+
+        if (_activeOverlay != null)
+        {
+            _activeOverlay.SetActive(false);
         }
 
         UpdateBindingDisplay();

@@ -12,4 +12,6 @@ public interface IGridItemHandler
     public void ResetData();
 
     public int GetStructureTID();
+
+    public void SetCollider(bool active);
 }

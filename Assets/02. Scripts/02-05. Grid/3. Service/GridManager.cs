@@ -203,9 +203,57 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
         return false;
     }
 
+    //// --- 서버로 배치를 요청하는 Command ---
+    //[Server]
+    //public void ServerPlaceStructure(Vector3 targetPosition, uint structureNetId, NetworkConnectionToClient sender = null)
+    //{
+    //    if (!isServer) return;
+
+    //    // targetPosition을 gridPosition으로 변환
+    //    Vector3Int gridPosition = GetGridPosition(targetPosition);
+
+    //    if (NetworkServer.spawned.TryGetValue(structureNetId, out NetworkIdentity structureIdentity))
+    //    {
+    //        GameObject structure = structureIdentity.gameObject;
+    //        StructureData data = DataTable.Instance.GetStructureData(structure.GetComponent<IGridItemHandler>().GetStructureTID());
+
+    //        //structure.transform.rotation = Quaternion.identity;
+
+    //        Vector3 position = _grid.CellToWorld(gridPosition) + new Vector3(0.5f, 0, 0.5f);
+    //        structure.transform.position = position;
+    //        _serverGridData.AddObjectAt(gridPosition, new Vector2Int(data.Width, data.Length), data.TID, data.StructureType, structure);
+
+    //        PlacementData newPlacementData = new PlacementData(structureNetId, data.TID, structure.transform.rotation);
+    //        foreach (var pos in _serverGridData.CalculatePositionList(gridPosition, new Vector2Int(data.Width, data.Length)))
+    //        {
+    //            _placedObjectInGridSyncDict[pos] = newPlacementData;
+    //        }
+
+    //        if (data.SpecialStructureType == ESpecialStructureType.PickUpTable)
+    //        {
+    //            HandlePickupTablePlacement(structureIdentity, gridPosition, data);
+    //        }
+
+    //        if (data.SpecialStructureType == ESpecialStructureType.PickUpTable ||
+    //            data.SpecialStructureType == ESpecialStructureType.OldChair ||
+    //            data.SpecialStructureType == ESpecialStructureType.LuxuryChair)
+    //        {
+    //            _hallAreaPathFinder.UpdateGridPathFinder(_serverGridData.PlacedPositionHashSet,
+    //                ToPickupTablePositionHashSet(_pickupTableForCustomerList));
+    //            if (!_hallAreaPathFinder.HasPath())
+    //            {
+    //                Debug.LogWarning("경로 없음!!!");
+    //                // 경로가 없을 때 로직
+    //            }
+    //        }
+
+    //        TargetRpcOnPlaceStructure(sender, true);
+    //    }
+    //}
+
     // --- 서버로 배치를 요청하는 Command ---
     [Server]
-    public void ServerPlaceStructure(Vector3 targetPosition, uint structureNetId, NetworkConnectionToClient sender = null)
+    public void ServerPlaceStructure(Vector3 targetPosition, uint structureNetId, NetworkConnectionToClient sender = null, int ingredientTID = 0)
     {
         if (!isServer) return;
 
@@ -217,20 +265,11 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
             GameObject structure = structureIdentity.gameObject;
             StructureData data = DataTable.Instance.GetStructureData(structure.GetComponent<IGridItemHandler>().GetStructureTID());
 
-            structure.transform.rotation = Quaternion.identity;
-            structure.transform.position = _grid.CellToWorld(gridPosition) + new Vector3(0.5f, 0, 0.5f);
-            _serverGridData.AddObjectAt(gridPosition, new Vector2Int(data.Width, data.Length), data.TID, data.StructureType, structure);
+            //structure.transform.rotation = Quaternion.identity;
 
-            PlacementData newPlacementData = new PlacementData(structureNetId, data.TID, structure.transform.rotation);
-            foreach (var pos in _serverGridData.CalculatePositionList(gridPosition, new Vector2Int(data.Width, data.Length)))
-            {
-                _placedObjectInGridSyncDict[pos] = newPlacementData;
-            }
+            Vector3Int position = GetGridPosition(targetPosition);
 
-            if (data.SpecialStructureType == ESpecialStructureType.PickUpTable)
-            {
-                HandlePickupTablePlacement(structureIdentity, gridPosition, data);
-            }
+            ServerCreateStructure(data.TID, position, ingredientTID);
 
             if (data.SpecialStructureType == ESpecialStructureType.PickUpTable ||
                 data.SpecialStructureType == ESpecialStructureType.OldChair ||
@@ -245,7 +284,7 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
                 }
             }
 
-            TargetRpcOnPlaceStructure(sender, true, structureNetId);
+            TargetRpcOnPlaceStructure(sender, true);
         }
     }
 
@@ -270,7 +309,7 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
 
     // --- 클라이언트에게 배치 결과를 전달하는 TargetRpc ---
     [TargetRpc]
-    private void TargetRpcOnPlaceStructure(NetworkConnectionToClient target, bool success, uint structureNetId)
+    private void TargetRpcOnPlaceStructure(NetworkConnectionToClient target, bool success)
     {
         if (NetworkClient.connection.identity == null)
         {
@@ -385,8 +424,9 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
     }
 
     [Server]
-    public void ServerRefundStructure(int structureTID, GameObject refundObject)
+    public void ServerRemoveStructureOnGrid(int structureTID, GameObject refundObject)
     {
+        Debug.Log(refundObject.GetComponent<NetworkIdentity>() == null);
         _managedStructureDict[structureTID].Remove(refundObject.GetComponent<NetworkIdentity>());
         StopPlacement();
         StructureFactory.Instance.ReturnObject(refundObject);
@@ -420,18 +460,7 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
             ServerCreateStructure(data.StructureTID, data.GridPosition, data.IngredientTID);
         }
 
-        ServerCreateStructure(10017, new Vector3Int(7, 0, 3), 10007); // 식물상자
-        ServerCreateStructure(10017, new Vector3Int(7, 0, 2), 10000); // 식물상자
-        ServerCreateStructure(10002, new Vector3Int(0, 0, 3)); // 혼합기
-        ServerCreateStructure(10018, new Vector3Int(7, 0, 4), 20002); // 동물상자
-        ServerCreateStructure(10018, new Vector3Int(7, 0, 5), 20000); // 동물상자
 
-
-        ServerCreateStructure(10007, new Vector3Int(-5, 0, 3)); //절구2
-        ServerCreateStructure(10008, new Vector3Int(-4, 0, 3)); //분쇄기2
-        ServerCreateStructure(10010, new Vector3Int(-2, 0, 3)); //증류기2
-        ServerCreateStructure(10011, new Vector3Int(-1, 0, 3)); //냉가기2
-        ServerCreateStructure(10009, new Vector3Int(-3, 0, 3)); //가열냄비2
         ServerCreateStructure(StructureManager.Instance.SpecialStructureTIDDict[ESpecialStructureType.Casher], PotionHouse.Instance.Layout.CashierSpawnPosition); // 계산기 스폰
         ServerCreateStructure(StructureManager.Instance.SpecialStructureTIDDict[ESpecialStructureType.Practice], PotionHouse.Instance.Layout.PracticeSpawnPosition); // 연습모드 스폰
 
@@ -442,6 +471,12 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
             PotionHouse.Instance.Layout.EnterDoorPosition,
             PotionHouse.Instance.Layout.ExitDoorPosition,
             ToPickupTablePositionHashSet(_pickupTableForCustomerList));
+    }
+
+    [Command(requiresAuthority = false)]
+    public void CmdRemoveStructure(int structureTID, GameObject removeObject)
+    {
+        ServerRemoveStructureOnGrid(structureTID, removeObject);
     }
 
     // --- 클라이언트/서버 공용 메서드 ---

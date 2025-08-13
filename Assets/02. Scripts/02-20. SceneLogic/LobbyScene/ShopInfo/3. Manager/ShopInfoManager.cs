@@ -23,11 +23,6 @@ public class ShopInfoManager : NetworkBehaviourSingleton<ShopInfoManager>
         _shopInfo = MirrorNetworkManager.Instance.ShopInfo;
     }
 
-    public override void OnStartClient()
-    {
-        base.OnStartClient();
-    }
-
     // ShopInfo와 연동되는 매니저가 존재하는 시점에 호출해줘야 한다.
     // 즉, PhaseManager, PotionHouse, CurrencyManager, ReputationManager,
     // SalesManager, GridManger가 존재할 때 호출해줘야 한다.

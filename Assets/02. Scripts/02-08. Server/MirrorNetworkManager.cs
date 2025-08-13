@@ -201,16 +201,4 @@ public class MirrorNetworkManager : NetworkRoomManager
         
         base.OnRoomServerDisconnect(conn);
     }
-
-    // RoomPlayer가 추가될 때 호출
-    public override void OnRoomServerAddPlayer(NetworkConnectionToClient conn)
-    {
-        base.OnRoomServerAddPlayer(conn);
-        Debug.Log($"서버: RoomPlayer가 추가되었습니다. ConnectionId: {conn.connectionId}");
-    }
-
-    public override void OnServerAddPlayer(NetworkConnectionToClient conn)
-    {
-        base.OnServerAddPlayer(conn);
-    }
 }

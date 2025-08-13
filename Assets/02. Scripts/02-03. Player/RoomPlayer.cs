@@ -68,7 +68,10 @@ public class RoomPlayer : NetworkRoomPlayer
         else
         {
             CmdRequestAddToPlayerList();
-            CommandGetShopInfo();
+            if (isOwned)
+            {
+                CmdGetShopInfo();
+            }
         }
     }
 
@@ -91,17 +94,17 @@ public class RoomPlayer : NetworkRoomPlayer
         }
     }
 
-    [Command(requiresAuthority = false)]
-    private void CommandGetShopInfo()
+    [Command]
+    private void CmdGetShopInfo()
     {
         if (connectionToClient != null)
         {
-            TargetRpcReceiveShopInfo(connectionToClient, MirrorNetworkManager.Instance.ShopInfo);
+            RpcReceiveShopInfo(connectionToClient, MirrorNetworkManager.Instance.ShopInfo);
         }
     }
 
     [TargetRpc]
-    private void TargetRpcReceiveShopInfo(NetworkConnection target, ShopInfo shopInfo)
+    private void RpcReceiveShopInfo(NetworkConnection target, ShopInfo shopInfo)
     {
         // 클라이언트 쪽 싱글톤 인스턴스에 ShopInfo 복원
         ShopInfoManager.Instance.ShopInfo = shopInfo;

@@ -110,6 +110,9 @@ public class PlayerInteractAbility : PlayerAbility
 
     private void OnDestroy()
     {
-        InputManager.Instance.OnInteractChanged -= ChangeInteractState;
+        if(InputManager.Instance != null)
+        {
+            InputManager.Instance.OnInteractChanged -= ChangeInteractState;
+        }
     }
 }

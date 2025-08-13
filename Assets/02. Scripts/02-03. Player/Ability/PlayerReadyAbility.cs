@@ -22,6 +22,9 @@ public class PlayerReadyAbility : PlayerAbility
 
     private void OnDestroy()
     {
-        InputManager.Instance.OnReadyEvent -= Ready;
+        if(InputManager.Instance != null)
+        {
+            InputManager.Instance.OnReadyEvent -= Ready;
+        }
     }
 }

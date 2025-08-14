@@ -9,7 +9,15 @@ public class BindingIconManager : MonoBehaviourSingleton<BindingIconManager>
 
     private void Start()
     {
-        Global.Instance.OnDataLoaded += Initialize;
+        if (DataTable.Instance.GetKeyboardMouseDataList() == null)
+        {
+            Global.Instance.OnDataLoaded += Initialize;
+        }
+        else
+        {
+            Initialize();
+        }
+        
     }
 
     private void OnDestroy()

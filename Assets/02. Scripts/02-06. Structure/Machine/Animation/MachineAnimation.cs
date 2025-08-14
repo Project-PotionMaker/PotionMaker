@@ -124,7 +124,7 @@ public class MachineAnimation : MonoBehaviour, IMachineAnimation
                 _baseObject.SetActive(false);
             }
         }
-        if (_owner.IsProcessFinished && _owner.LeftOutputAmount > 0 && _outputObject.TypeObject != null)
+        if (_owner.IsProcessFinished && _owner.LeftOutputAmount > 0 && _outputObject.TypeObject != null && _owner.InputTIDList.Count>0)
         {
             _outputObject.TypeObject.SetActive(true);
             int outputTID = CraftItemManager.Instance.GetOutputTID(_owner.InputTIDList.ToArray(), _owner.DataTID, _owner.InputType);

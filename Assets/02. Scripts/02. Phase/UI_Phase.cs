@@ -97,7 +97,7 @@ public class UI_Phase : MonoBehaviour
 
     private void ShowTimer()
     {
-        _serviceTimer.GetComponent<RectTransform>().DOAnchorPosY(-ALERT_HIDE_OFFSET, DURATION).SetRelative().SetEase(Ease.OutSine);
+        _serviceTimer.GetComponent<RectTransform>().DOAnchorPosY(-ALERT_HIDE_OFFSET, DURATION).SetRelative().SetEase(Ease.OutSine).SetDelay(0.5f);
     }
     private void HideTimer()
     {

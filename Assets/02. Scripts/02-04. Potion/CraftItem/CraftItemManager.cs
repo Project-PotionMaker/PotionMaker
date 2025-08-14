@@ -12,8 +12,8 @@ public class CraftItemManager : NetworkBehaviourSingleton<CraftItemManager>
     [SerializeField]
     private GameObject _failureOutput;
 
-    private Dictionary<string, int> _outputDataTIDDict;
-    private Dictionary<string, int> _potionDataTIDDict;
+    private SyncDictionary<string, int> _outputDataTIDDict = new SyncDictionary<string, int>();
+    private SyncDictionary<string, int> _potionDataTIDDict = new SyncDictionary<string, int>();
 
     private RecipeCodeHandler _recipeCodeHandler;
     private RecipeCodeVerifier _recipeCodeVerifier;
@@ -29,14 +29,14 @@ public class CraftItemManager : NetworkBehaviourSingleton<CraftItemManager>
     [Server]
     private void InitCraftItemManager()
     {
-        _outputDataTIDDict = new Dictionary<string, int>();
+        //_outputDataTIDDict = new SyncDictionary<string, int>();
         var outputDataList = DataTable.Instance.GetOutputDataList();
         foreach (var outputData in outputDataList)
         {
             _outputDataTIDDict.Add(outputData.RecipeCode, outputData.TID);
         }
 
-        _potionDataTIDDict = new Dictionary<string, int>();
+        //_potionDataTIDDict = new SyncDictionary<string, int>();
         var potionDataList = DataTable.Instance.GetPotionDataList();
         foreach (var potionData in potionDataList)
         {

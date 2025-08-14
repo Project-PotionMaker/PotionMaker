@@ -36,7 +36,7 @@ public class UI_RecipeBook : MonoBehaviour
     }
 
     private void Initialize()
-    {
+    { 
         for (int i = 0; i < _tierButtonList.Count; i++)
         {
             int index = i + 1;

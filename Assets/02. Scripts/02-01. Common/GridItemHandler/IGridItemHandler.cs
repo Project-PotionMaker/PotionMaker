@@ -14,4 +14,6 @@ public interface IGridItemHandler
     public int GetStructureTID();
 
     public void SetCollider(bool active);
+
+    public void SetOutline(bool active, float size = 40);
 }

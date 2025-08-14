@@ -406,6 +406,16 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
     }
 
 
+    [Server]
+    public Vector3? GetPickupPoint(Vector3 position)
+    {
+        Vector3Int gridPosition = GetGridPosition(position);
+
+        Vector3? hallVector =  _serverGridData.GetLRUDArea(gridPosition, EAreaType.Hall);
+        return (hallVector + position) / 2;
+    }
+
+
     // --- 클라이언트 전용: 현재 배치 상태 종료 ---
     [Client]
     public void StopPlacement()

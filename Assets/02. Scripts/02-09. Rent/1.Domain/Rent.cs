@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 
+[Serializable]
 public class Rent
 {
     private const int RENT_PERIOD = 3;
@@ -56,6 +57,13 @@ public class Rent
         _rentDayCounter = rentDayCounter;
         _currentRentCost = currentRentCost;
         _rentIncrement = rentIncrement;
+    }
+
+    public Rent(RentDTO rentDto)
+    {
+        _rentDayCounter = rentDto.RentDayCounter;
+        _currentRentCost = rentDto.CurrentRentCost;
+        _rentIncrement = rentDto.RentIncrement;
     }
 
     public void SetRent(int rentDayCounter, int currentRentCost, int rentIncrement)

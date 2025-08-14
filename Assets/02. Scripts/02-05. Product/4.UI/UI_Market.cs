@@ -22,7 +22,6 @@ public class UI_Market : MonoBehaviour
     private void Awake()
     {
         _productSlotList = new List<UI_ProductSlot>();
-        gameObject.SetActive(false);
     }
 
     private void OnEnable()
@@ -35,15 +34,9 @@ public class UI_Market : MonoBehaviour
     private void Start()
     {
         CurrencyManager.OnDataChanged += RefreshCoin;
+        gameObject.SetActive(false);
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            gameObject.SetActive(false);
-        }
-    }
     public void OnProductTypeButtonClicked(EProductType productType)
     {
         bool isDetailPageRefreshed = false;

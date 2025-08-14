@@ -340,11 +340,11 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
     public void ResetData()
     {
         StopAllCoroutines(); // 서버의 코루틴만 중지
-        InputTIDList.Clear(); // SyncList 초기화
         LeftOutputAmount = 0; // SyncVar 초기화
         IsProcessFinished = false; // SyncVar 초기화
         IsProcessStarted = false; // SyncVar 초기화
         CurrentProgress = 0f; // SyncVar 초기화
+        InputTIDList.Clear(); // SyncList 초기화
         InputType = EInputType.None; // SyncVar 초기화
     }
 

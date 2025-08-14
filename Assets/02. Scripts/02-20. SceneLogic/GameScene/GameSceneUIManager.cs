@@ -25,14 +25,7 @@ public class GameSceneUIManager : MonoBehaviourSingleton<GameSceneUIManager>
     private void Start()
     {
         InputManager.Instance.OnOptionEvent += OpenRecipeBookPopup;
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            CloseLatestPopup();
-        }
+        InputManager.Instance.OnEscapeEvent += CloseLatestPopup;
     }
 
     public void OpenPopup(GameObject popup)

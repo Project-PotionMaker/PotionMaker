@@ -42,42 +42,22 @@ public class GameSceneUIManager : MonoBehaviourSingleton<GameSceneUIManager>
 
     public void OpenNewspaperPopup()
     {
-        if (_popupNewsPaper.activeSelf)
-        {
-            return;
-        }
-        _popupNewsPaper.SetActive(true);
-        _popupStack.Push(_popupNewsPaper);
+        OpenPopup(_popupNewsPaper);
     }
 
     public void OpenRecipeBookPopup()
     {
-        if (_popupRecipeBook.activeSelf)
-        {
-            return;
-        }
-        _popupRecipeBook.SetActive(true);
-        _popupStack.Push(_popupRecipeBook);
+        OpenPopup(_popupRecipeBook);
     }
 
     public void OpenMarketPopup()
     {
-        if (_popupMarket.activeSelf)
-        {
-            return;
-        }
-        _popupMarket.SetActive(true);
-        _popupStack.Push(_popupMarket);
+        OpenPopup(_popupMarket);
     }
 
     public void OpenSettingsIngamePopup()
     {
-        if (_popupSettingsIngame.activeSelf)
-        {
-            return;
-        }
-        _popupSettingsIngame.SetActive(true);
-        _popupStack.Push(_popupSettingsIngame);
+        OpenPopup(_popupSettingsIngame);
     }
 
     public void ClosePopup(GameObject popup)

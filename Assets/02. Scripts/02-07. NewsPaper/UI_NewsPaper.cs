@@ -10,6 +10,7 @@ public class UI_NewsPaper : MonoBehaviour
     public void Start()
     {
         PhaseManager.Instance.DailyPotionPicker.OnPickCompleted += Refresh;
+        gameObject.SetActive(false);
     }
 
     private void Refresh(List<PotionData> dailyPotionDataList)

@@ -9,6 +9,8 @@ public class UI_SuccessSummary : MonoBehaviour
     private const string POSITIVE_COLOR = "#65BC04";
     private const string NEGATIVE_COLOR = "#CB0000";
 
+    private LightColorByPhase _lightColorByPhase;
+
     [Header("영업기록")]
     [SerializeField]
     private TextMeshProUGUI _currentCurrencyTextUI;
@@ -27,8 +29,9 @@ public class UI_SuccessSummary : MonoBehaviour
     private void Start()
     {
         gameObject.SetActive(false);
-        PhaseManager.Instance.PhaseDictionary[EPhaseType.EndingPhase].OnPhaseExited += HidePanel;
         _voteSystem = GetComponent<UI_VoteSystem>();
+        Light light = FindAnyObjectByType<Light>();
+        _lightColorByPhase = light.GetComponent<LightColorByPhase>();
         _voteSystem.enabled = false; 
     }
     public void ShowSummary()
@@ -61,7 +64,9 @@ public class UI_SuccessSummary : MonoBehaviour
         {
             return;
         }
-        PhaseManager.Instance.TransitionPhase(EPhaseType.PreparingPhase);
+
+        HidePanel();
+        _lightColorByPhase.DayChangeLight();
     }
     private void StopVoting()
     {

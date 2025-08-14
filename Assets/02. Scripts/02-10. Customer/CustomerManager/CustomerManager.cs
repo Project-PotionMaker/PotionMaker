@@ -156,7 +156,7 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
         }
 
         //CmdPlaceOnTable(potionTID, pickupTableNetId);
-        Vector3 position = NetworkServer.spawned[pickupTableNetId].transform.position; // 판매대 위치 찾기
+        Vector3 position = (Vector3)GridManager.Instance.GetPickupPoint(NetworkServer.spawned[pickupTableNetId].transform.position); // 판매대 위치 찾기
         customer.TransitionState(ECustomerStateType.PickingUp);
         customer.CustomerMove.MoveTo(position); // 손님을 판매대 위치로 이동
         customer.PickupTableId = pickupTableNetId;

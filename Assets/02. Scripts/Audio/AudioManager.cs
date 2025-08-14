@@ -6,6 +6,9 @@ using System;
 
 public class AudioManager : MonoBehaviourSingleton<AudioManager>
 {
+    private const string BGM_KEY = "BGM";
+    private const string SFX_KEY = "SFX";
+
     [SerializeField]
     private AudioMixer _mixer;
     [SerializeField]
@@ -23,6 +26,8 @@ public class AudioManager : MonoBehaviourSingleton<AudioManager>
     private AudioMap<EStorageAudioType> _storageAudio;
     [SerializeField]
     private AudioMap<ECustomerAudioType> _customerAudio;
+    [SerializeField]
+    private AudioMap<EPhaseAudioType> _phaseAudio;
     [SerializeField]
     private AudioMap<EUIAudioType> _UIAudio;
     [SerializeField]
@@ -62,13 +67,13 @@ public class AudioManager : MonoBehaviourSingleton<AudioManager>
     public void SetBGMVolume(float sliderValue)
     {
         float volume = Mathf.Log10(sliderValue <= 0.001f ? 0.001f : sliderValue) * 20;
-        _mixer.SetFloat("BGM", volume);
+        _mixer.SetFloat(BGM_KEY, volume);
     }
 
     public void SetSFXVolume(float sliderValue)
     {
         float volume = Mathf.Log10(sliderValue <= 0.001f ? 0.001f : sliderValue) * 20;
-        _mixer.SetFloat("SFX", volume);
+        _mixer.SetFloat(SFX_KEY, volume);
     }
 
 
@@ -83,17 +88,17 @@ public class AudioManager : MonoBehaviourSingleton<AudioManager>
     private IEnumerator ChangeBGMRoutine(EBGMAudioType BGMAudioType, float fadeTime)
     {
         float currentVolume;
-        _mixer.GetFloat("BGM", out currentVolume);
+        _mixer.GetFloat(BGM_KEY, out currentVolume);
 
         // 1. 볼륨 줄이기
-        yield return StartCoroutine(SetMixerVolume("BGM", currentVolume, -80f, fadeTime / 2f));
+        yield return StartCoroutine(SetMixerVolume(BGM_KEY, currentVolume, -80f, fadeTime / 2f));
 
         // 2. 클립 교체 후 재생
         BGMAudioSource.resource = _BGMAudio[BGMAudioType];
         BGMAudioSource.Play();
 
         // 3. 볼륨 다시 올리기
-        yield return StartCoroutine(SetMixerVolume("BGM", -80f, currentVolume, fadeTime / 2f));
+        yield return StartCoroutine(SetMixerVolume(BGM_KEY, -80f, currentVolume, fadeTime / 2f));
     }
 
     private IEnumerator SetMixerVolume(string exposedParam, float from, float to, float duration)
@@ -114,6 +119,7 @@ public class AudioManager : MonoBehaviourSingleton<AudioManager>
     public void PlaySFX(EMachineAudioType audioType) => PlaySFXInternal(_machineAudio, audioType);
     public void PlaySFX(EStorageAudioType audioType) => PlaySFXInternal(_storageAudio, audioType);
     public void PlaySFX(ECustomerAudioType audioType) => PlaySFXInternal(_customerAudio, audioType);
+    public void PlaySFX(EPhaseAudioType audioType) => PlaySFXInternal(_phaseAudio, audioType);
     public void PlaySFX(EUIAudioType audioType) => PlaySFXInternal(_UIAudio, audioType);
     public void PlaySFX(EPopupAudioType audioType) => PlaySFXInternal(_popupAudio, audioType);
     private void PlaySFXInternal<T>(AudioMap<T> audioMap, T audioType) where T:Enum
@@ -130,6 +136,9 @@ public class AudioManager : MonoBehaviourSingleton<AudioManager>
         {
             if (!source.isPlaying) return source;
         }
-        return null;
+
+        var newSource = Instantiate(AudioSourceChildObject, transform.position, Quaternion.identity, gameObject.transform).GetComponent<AudioSource>();
+        audioSourceList.Add(newSource);
+        return newSource;
     }
 }

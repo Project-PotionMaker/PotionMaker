@@ -6,9 +6,9 @@ using UnityEngine;
 [CustomPropertyDrawer(typeof(AudioMapBase), true)]
 public class AudioMapDrawer : PropertyDrawer
 {
+    private const int BLANK = 2;
     static Type GetEnumArgType(Type t)
     {
-        // 현 필드 타입에서 제네릭 인자를 추적 (PlayerAudioMap -> EnumAudioMap<T>)
         var cur = t;
         while (cur != null && cur != typeof(object))
         {
@@ -23,7 +23,7 @@ public class AudioMapDrawer : PropertyDrawer
     {
         var enumType = GetEnumArgType(fieldInfo.FieldType);
         int len = enumType != null ? Enum.GetNames(enumType).Length : 0;
-        return EditorGUIUtility.singleLineHeight * (len + 1) + 6;
+        return (EditorGUIUtility.singleLineHeight + BLANK) * (len + 1);
     }
 
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
@@ -34,25 +34,25 @@ public class AudioMapDrawer : PropertyDrawer
         var names = enumType != null ? Enum.GetNames(enumType) : Array.Empty<string>();
         int len = names.Length;
 
-        var clipsProp = property.FindPropertyRelative(AudioMap<EPlayerAudioType>.ClipsFieldName);
+        var clipsProp = property.FindPropertyRelative(AudioMapBase.ClipsFieldName);
         if (clipsProp != null && clipsProp.arraySize != len)
             clipsProp.arraySize = len;
 
         var r = new Rect(position.x, position.y, position.width, EditorGUIUtility.singleLineHeight);
         EditorGUI.LabelField(r, label);
-        r.y += EditorGUIUtility.singleLineHeight;
+        r.y += (EditorGUIUtility.singleLineHeight + BLANK);
 
         for (int i = 0; i < len; i++)
         {
             var elem = clipsProp.GetArrayElementAtIndex(i);
 
-            int prevIndent = EditorGUI.indentLevel;   // 안전하게 복구용
-            EditorGUI.indentLevel = prevIndent + 1;   // ← 들여쓰기 한 단계
+            int prevIndent = EditorGUI.indentLevel;
+            EditorGUI.indentLevel = prevIndent + 1;
 
             EditorGUI.PropertyField(r, elem, new GUIContent(names[i]));
 
-            EditorGUI.indentLevel = prevIndent;       // ← 복구
-            r.y += EditorGUIUtility.singleLineHeight;
+            EditorGUI.indentLevel = prevIndent;
+            r.y += (EditorGUIUtility.singleLineHeight + BLANK);
         }
 
         EditorGUI.EndProperty();

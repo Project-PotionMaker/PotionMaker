@@ -3,17 +3,25 @@ using Mirror;
 using System;
 using UnityEngine;
 
+public enum ELightType
+{
+    OutDoorLight,
+    InDoorLight
+}
 public class LightColorByPhase : MonoBehaviour
 {
+    [SerializeField]
+    private ELightType LightType;
     private Light targetLight;
 
-    private Color dawnBlue = new Color(0.40f, 0.60f, 1.0f); 
-    private Color duskRed = new Color(1.00f, 0.70f, 0.10f); 
-    private Color darker = new Color(0.05f, 0.05f, 0.10f);
+    private Color dawnBlue = new Color(0.20f, 0.20f, 0.4f); 
+    private Color duskRed = new Color(1.00f, 0.40f, 0.10f); 
+    private Color darker = new Color(0.00f, 0.00f, 0.00f);
     private Color noonWhite = Color.white;                   
+    private Color Yellow = new Color(1f, 0.9f, 0.5f);
 
-    private Vector3 dawnEuler = new Vector3(40f, -50f, 0f);   
-    private Vector3 duskEuler = new Vector3(40f, 50f, 0f);  
+    private Vector3 dawnEuler = new Vector3(80f, -50f, 0f);   
+    private Vector3 duskEuler = new Vector3(80f, 50f, 0f);  
     private Vector3 dipEuler = new Vector3(-40f, 180f, 0f); 
     private Vector3 noonEuler = new Vector3(40f, 0f, 0f);
 
@@ -51,7 +59,11 @@ public class LightColorByPhase : MonoBehaviour
         {
             float t = Mathf.Clamp01(PhaseManager.Instance.CurrentTimeRate);
             targetLight.color = EvaluateServingColor(t);
-            UpdateServingRotation(t);
+            if(LightType == ELightType.OutDoorLight)
+            {
+                UpdateServingRotation(t);
+            }
+
         }
     }
     private void UpdateServingRotation(float t01)
@@ -74,19 +86,28 @@ public class LightColorByPhase : MonoBehaviour
 
     public void DayChangeLight()
     {
-        KillTween();
-        _colorTween = DOTween.Sequence()
-            .Append(targetLight.DOColor(darker, DURATION * 0.5f).SetEase(Ease.InSine))
-            .Join(transform.DORotate(dipEuler, DURATION * 0.5f, RotateMode.Fast).SetEase(Ease.InSine))
-            .Append(targetLight.DOColor(noonWhite, DURATION * 0.5f).SetEase(Ease.OutSine))
-            .Join(transform.DORotate(dawnEuler, DURATION * 0.5f, RotateMode.Fast).SetEase(Ease.OutSine))
-            .OnComplete(() =>
-            {
-                if(NetworkServer.active)
+        if(LightType == ELightType.OutDoorLight)
+        {
+            _colorTween = DOTween.Sequence()
+                .Append(targetLight.DOColor(darker, DURATION * 0.5f).SetEase(Ease.InSine))
+                .Join(transform.DORotate(dipEuler, DURATION * 0.5f, RotateMode.Fast).SetEase(Ease.InSine))
+                .Append(targetLight.DOColor(noonWhite, DURATION * 0.5f).SetEase(Ease.OutSine))
+                .Join(transform.DORotate(dawnEuler, DURATION * 0.5f, RotateMode.Fast).SetEase(Ease.OutSine))
+                .OnComplete(() =>
                 {
-                    PhaseManager.Instance.TransitionPhase(EPhaseType.PreparingPhase);
-                }
-            });
+                    if (NetworkServer.active)
+                    {
+                        PhaseManager.Instance.TransitionPhase(EPhaseType.PreparingPhase);
+                    }
+                });
+        }
+        else
+        {
+            _colorTween = DOTween.Sequence()
+                .Append(targetLight.DOColor(darker, DURATION * 0.5f).SetEase(Ease.InSine))
+                .Append(targetLight.DOColor(noonWhite, DURATION * 0.5f).SetEase(Ease.OutSine));
+        }
+
     }
 
     private void KillTween()
@@ -100,37 +121,74 @@ public class LightColorByPhase : MonoBehaviour
 
     private Color EvaluateServingColor(float t01)
     {
-        if (t01 < 0.4f && t01 >=0.2f)
+        if(LightType == ELightType.InDoorLight)
         {
-            // 0 ~ 0.5 : 새벽(푸른빛) → 화이트
-            float u = (t01-0.2f) / 0.2f; // 0~1로 정규화
-            return Color.Lerp(duskRed, noonWhite, u);
-        }
-        else if(t01<0.2f)
-        {
-            // 0.5 ~ 1 : 화이트 → 저녁(붉은빛)
-            float u = t01 / 0.2f; // 0~1로 정규화
-            return Color.Lerp(dawnBlue, duskRed, u);
+            if (t01 < 0.4f && t01 >= 0.2f)
+            {
+                // 0 ~ 0.5 : 새벽(푸른빛) → 화이트
+                float u = (t01 - 0.2f) / 0.2f; // 0~1로 정규화
+                return Color.Lerp(Yellow, noonWhite, u);
+            }
+            else if (t01 < 0.2f)
+            {
+                return Yellow;
+            }
+            else
+            {
+                return Color.white;
+            }
         }
         else
         {
-            return Color.white;
+            if (t01 < 0.4f && t01 >= 0.2f)
+            {
+                // 0 ~ 0.5 : 새벽(푸른빛) → 화이트
+                float u = (t01 - 0.2f) / 0.2f; // 0~1로 정규화
+                return Color.Lerp(duskRed, noonWhite, u);
+            }
+            else if (t01 < 0.2f)
+            {
+                // 0.5 ~ 1 : 화이트 → 저녁(붉은빛)
+                float u = t01 / 0.2f; // 0~1로 정규화
+                return Color.Lerp(dawnBlue, duskRed, u);
+            }
+            else
+            {
+                return Color.white;
+            }
         }
+
     }
 
     // 현재 페이즈 기준으로 즉시 색 적용
     private void ApplyPhaseImmediate()
     {
-        switch (PhaseManager.Instance.CurrentPhase.PhaseType)
+        if(LightType == ELightType.OutDoorLight)
         {
-            case EPhaseType.PreparingPhase:
-                targetLight.color = noonWhite;
-                targetLight.transform.rotation = Quaternion.Euler(dawnEuler);
-                break;
-            case EPhaseType.EndingPhase:
-                targetLight.color = dawnBlue;
-                targetLight.transform.rotation = Quaternion.Euler(duskEuler);
-                break;
+            switch (PhaseManager.Instance.CurrentPhase.PhaseType)
+            {
+                case EPhaseType.PreparingPhase:
+                    targetLight.color = noonWhite;
+                    targetLight.transform.rotation = Quaternion.Euler(dawnEuler);
+                    break;
+                case EPhaseType.EndingPhase:
+                    targetLight.color = dawnBlue;
+                    targetLight.transform.rotation = Quaternion.Euler(duskEuler);
+                    break;
+            }
+        }
+        else
+        {
+            switch (PhaseManager.Instance.CurrentPhase.PhaseType)
+            {
+                case EPhaseType.PreparingPhase:
+                    targetLight.color = noonWhite;
+                    break;
+                case EPhaseType.EndingPhase:
+                    targetLight.color = Yellow;
+                    break;
+            }
+
         }
     }
 }

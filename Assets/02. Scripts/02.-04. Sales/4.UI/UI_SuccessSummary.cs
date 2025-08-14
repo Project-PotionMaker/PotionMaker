@@ -9,7 +9,8 @@ public class UI_SuccessSummary : MonoBehaviour
     private const string POSITIVE_COLOR = "#65BC04";
     private const string NEGATIVE_COLOR = "#CB0000";
 
-    private LightColorByPhase _lightColorByPhase;
+    private LightColorByPhase _outDoorLight; 
+    private LightColorByPhase _inDoorLight;
 
     [Header("영업기록")]
     [SerializeField]
@@ -30,8 +31,8 @@ public class UI_SuccessSummary : MonoBehaviour
     {
         gameObject.SetActive(false);
         _voteSystem = GetComponent<UI_VoteSystem>();
-        Light light = FindAnyObjectByType<Light>();
-        _lightColorByPhase = light.GetComponent<LightColorByPhase>();
+        _outDoorLight = GameObject.FindWithTag("OutDoorLight").GetComponent<LightColorByPhase>();
+        _inDoorLight = GameObject.FindWithTag("InDoorLight").GetComponent<LightColorByPhase>();
         _voteSystem.enabled = false; 
     }
     public void ShowSummary()
@@ -64,9 +65,9 @@ public class UI_SuccessSummary : MonoBehaviour
         {
             return;
         }
-
+        _inDoorLight.DayChangeLight();
+        _outDoorLight.DayChangeLight();
         HidePanel();
-        _lightColorByPhase.DayChangeLight();
     }
     private void StopVoting()
     {

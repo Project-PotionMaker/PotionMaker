@@ -128,7 +128,7 @@ public class MirrorNetworkManager : NetworkRoomManager
     private IEnumerator LoadGameplaySceneWithDelay()
     {
         // 프리팹 스폰 후 최소 1초 대기 (네트워크 동기화 시간 확보)
-        yield return new WaitForSeconds(1.0f);
+        yield return new WaitForSeconds(5.0f);
 
         Debug.Log("서버: GameplayScene으로 전환 명령을 보냅니다.");
         ServerChangeScene(GameplayScene);

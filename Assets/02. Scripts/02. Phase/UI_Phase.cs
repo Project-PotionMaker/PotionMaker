@@ -78,7 +78,7 @@ public class UI_Phase : MonoBehaviour
         servingPhase.OnPhaseEntered += ShowTimer; // 타이머 시작 시 업데이트
         servingPhase.OnPhaseExited += HideTimer;
         servingPhase.OnPhaseEntered += HideReady; // 준비 단계가 끝나면 시작 패널 숨김
-        HideTimer();
+
         EndingPhase endingPhase = (EndingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.EndingPhase];
         endingPhase.OnPhaseExited += ShowReady; // 준비 단계가 시작되면 시작 패널 표시
     }

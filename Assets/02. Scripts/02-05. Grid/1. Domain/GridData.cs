@@ -127,7 +127,7 @@ public class GridData
         return false;
     }
 
-    public Vector3 GetLRUDArea(Vector3Int gridPosition, EAreaType areaType)
+    public Vector3? GetLRUDArea(Vector3Int gridPosition, EAreaType areaType)
     {
         for (int i = 0; i < LRUDPositionList.Count; i++)
         {
@@ -139,6 +139,6 @@ public class GridData
                 }
             }
         }
-        return Vector3.zero;
+        return null;
     }
 }

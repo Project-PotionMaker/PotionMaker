@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UIElements;
 using VInspector;
 
 /// <summary>
@@ -435,15 +434,12 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
 
 
     [Server]
-    public Vector3 GetPickupPoint(Vector3 position)
+    public Vector3? GetPickupPoint(Vector3 position)
     {
         Vector3Int gridPosition = GetGridPosition(position);
-        if (_serverGridData.CheckLRUDHasArea(gridPosition, EAreaType.Hall))
-        {
-            Vector3 hallVector =  _serverGridData.GetLRUDArea(gridPosition, EAreaType.Hall);
-            return (hallVector + position) / 2;
-        }
-        return Vector3.zero;
+
+        Vector3? hallVector =  _serverGridData.GetLRUDArea(gridPosition, EAreaType.Hall);
+        return (hallVector + position) / 2;
     }
 
 

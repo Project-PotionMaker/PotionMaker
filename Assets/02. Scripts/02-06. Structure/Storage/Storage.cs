@@ -325,7 +325,7 @@ public class Storage : NetworkBehaviour, IGridItemHandler
 
         foreach (var renderer in _modelRenderers)
         {
-            renderer.SetPropertyBlock(_matPropertyBlock);
+            renderer?.SetPropertyBlock(_matPropertyBlock);
         }
     }
 }

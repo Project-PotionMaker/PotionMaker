@@ -607,7 +607,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
 
         foreach (var renderer in _modelRenderers)
         {
-            renderer.SetPropertyBlock(_matPropertyBlock);
+            renderer?.SetPropertyBlock(_matPropertyBlock);
         }
     }
 }

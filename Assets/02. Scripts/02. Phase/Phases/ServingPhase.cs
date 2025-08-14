@@ -28,7 +28,7 @@ public class ServingPhase : BasePhase
             return;
         }
 
-        //_currentTime = Mathf.Max(0, _currentTime - deltaTime);
+        _currentTime = Mathf.Max(0, _currentTime - deltaTime);
         if (_currentTime <= 0)
         {
             if(_timesUp == false)
@@ -46,7 +46,7 @@ public class ServingPhase : BasePhase
         else
         {
             PhaseManager.Instance.SetCurrnetTime(_currentTime / INIT_TIMER); // 타이머 비율 계산
-            //CustomerManager.Instance.InviteCustomer(deltaTime); // 손님 초대
+            CustomerManager.Instance.InviteCustomer(deltaTime); // 손님 초대
         }
 
     }

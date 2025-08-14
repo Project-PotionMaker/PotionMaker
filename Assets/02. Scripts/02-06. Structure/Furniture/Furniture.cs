@@ -510,7 +510,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
 
         foreach (var renderer in _modelRenderers)
         {
-            renderer.SetPropertyBlock(_matPropertyBlock);
+            renderer?.SetPropertyBlock(_matPropertyBlock);
         }
     }
 }

@@ -70,6 +70,16 @@ public class GameSceneUIManager : MonoBehaviourSingleton<GameSceneUIManager>
         _popupStack.Push(_popupMarket);
     }
 
+    public void OpenSettingsIngamePopup()
+    {
+        if (_popupSettingsIngame.activeSelf)
+        {
+            return;
+        }
+        _popupSettingsIngame.SetActive(true);
+        _popupStack.Push(_popupSettingsIngame);
+    }
+
     public void ClosePopup(GameObject popup)
     {
         if (_popupStack.TryPeek(out GameObject latestPopup) && ReferenceEquals(latestPopup, popup))

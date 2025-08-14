@@ -28,16 +28,6 @@ public class UI_NewsPaper : MonoBehaviour
                 _slotDailyPotionList[i].gameObject.SetActive(false);
             }
         }
-        OpenNewsPaperPopup();
-    }
-
-    public void OpenNewsPaperPopup()
-    {
-        gameObject.SetActive(true);
-    }
-
-    public void CloseNewsPaperPopup()
-    {
-        gameObject.SetActive(false);
+        GameSceneUIManager.Instance?.OpenNewspaperPopup();
     }
 }

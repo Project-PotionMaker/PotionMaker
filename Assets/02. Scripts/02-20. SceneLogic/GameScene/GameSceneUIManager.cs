@@ -40,6 +40,16 @@ public class GameSceneUIManager : MonoBehaviourSingleton<GameSceneUIManager>
         popup.SetActive(true);
     }
 
+    public void OpenNewspaperPopup()
+    {
+        if (_popupNewsPaper.activeSelf)
+        {
+            return;
+        }
+        _popupNewsPaper.SetActive(true);
+        _popupStack.Push(_popupNewsPaper);
+    }
+
     public void OpenMarketPopup()
     {
         if (_popupMarket.activeSelf)

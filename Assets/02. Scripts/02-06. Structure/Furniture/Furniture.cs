@@ -206,7 +206,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
         {
             if (_data.SpecialStructureType == ESpecialStructureType.Casher)
             {
-                GameSceneUIManager.Instance.OpenMarketPopup();
+                GameSceneUIManager.Instance?.OpenMarketPopup();
                 TargetRpcOnInteract(sender, true);
                 return;
             }

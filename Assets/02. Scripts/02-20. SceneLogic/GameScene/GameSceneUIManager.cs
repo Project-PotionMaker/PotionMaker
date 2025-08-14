@@ -50,6 +50,16 @@ public class GameSceneUIManager : MonoBehaviourSingleton<GameSceneUIManager>
         _popupStack.Push(_popupNewsPaper);
     }
 
+    public void OpenRecipeBookPopup()
+    {
+        if (_popupRecipeBook.activeSelf)
+        {
+            return;
+        }
+        _popupRecipeBook.SetActive(true);
+        _popupStack.Push(_popupRecipeBook);
+    }
+
     public void OpenMarketPopup()
     {
         if (_popupMarket.activeSelf)

@@ -23,6 +23,10 @@ public static class CustomNetworkSerializer
         Writer<Sales>.write = WriteSales;
         Reader<Sales>.read = ReadSales;
 
+        // Rent 추가
+        Writer<Rent>.write = WriteRent;
+        Reader<Rent>.read = ReadRent;
+
         // ShopInfo
         Writer<ShopInfo>.write = WriteShopInfo;
         Reader<ShopInfo>.read = ReadShopInfo;
@@ -69,7 +73,6 @@ public static class CustomNetworkSerializer
         float difference = reader.ReadFloat();
         EReputationGrade grade = (EReputationGrade)reader.ReadInt();
 
-        // 중요: 이 생성자가 Reputation 클래스에 있어야 합니다.
         return new Reputation(value, valueYesterday, difference, grade);
     }
 
@@ -114,6 +117,22 @@ public static class CustomNetworkSerializer
         return new Sales(totalSales, dailySales, totalSalesVolumeDict, dailySalesVolumeDict);
     }
 
+    public static void WriteRent(this NetworkWriter writer, Rent rent)
+    {
+        writer.WriteInt(rent.RentDayCounter);
+        writer.WriteInt(rent.CurrentRentCost);
+        writer.WriteInt(rent.RentIncrement);
+    }
+
+    public static Rent ReadRent(this NetworkReader reader)
+    {
+        int rentDayCounter = reader.ReadInt();
+        int currentRentCost = reader.ReadInt();
+        int rentIncrement = reader.ReadInt();
+
+        return new Rent(rentDayCounter, currentRentCost, rentIncrement);
+    }
+
     public static void WriteShopInfo(this NetworkWriter writer, ShopInfo info)
     {
         writer.WriteString(info.ShopName);
@@ -123,6 +142,7 @@ public static class CustomNetworkSerializer
         writer.Write(info.Currency);
         writer.Write(info.Reputation);
         writer.Write(info.Sales);
+        writer.Write(info.Rent);
         writer.WriteList(info.GridSaveDataList);
     }
 
@@ -135,8 +155,9 @@ public static class CustomNetworkSerializer
         Currency currency = reader.Read<Currency>();
         Reputation reputation = reader.Read<Reputation>();
         Sales sales = reader.Read<Sales>();
+        Rent rent = reader.Read<Rent>();
         List<GridSaveData> gridSaveDataList = reader.ReadList<GridSaveData>();
 
-        return new ShopInfo(shopName, slotIndex, day, potionHouseTier, currency, reputation, sales, gridSaveDataList);
+        return new ShopInfo(shopName, slotIndex, day, potionHouseTier, currency, reputation, sales, rent, gridSaveDataList);
     }
 }

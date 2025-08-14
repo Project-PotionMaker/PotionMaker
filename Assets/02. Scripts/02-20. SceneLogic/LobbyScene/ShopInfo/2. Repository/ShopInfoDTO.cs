@@ -13,10 +13,11 @@ public class ShopInfoDTO
     public readonly CurrencyDTO Currency;
     public readonly ReputationDTO Reputation;
     public readonly SalesDTO Sales;
+    public readonly RentDTO Rent;
     public readonly List<GridSaveDataDTO> GridSaveDataList;
 
     public ShopInfoDTO(string shopName, int slotIndex, int day, int potionHouseTier, CurrencyDTO currency,
-        ReputationDTO reputation, SalesDTO sales, List<GridSaveDataDTO> gridSaveDataList)
+        ReputationDTO reputation, SalesDTO sales, RentDTO rent, List<GridSaveDataDTO> gridSaveDataList)
     {
         ShopName = shopName;
         SlotIndex = slotIndex;
@@ -25,6 +26,7 @@ public class ShopInfoDTO
         Currency = currency;
         Reputation = reputation;
         Sales = sales;
+        Rent = rent;
         GridSaveDataList = gridSaveDataList;
     }
 
@@ -37,6 +39,7 @@ public class ShopInfoDTO
         Currency = shopInfo.Currency.ToDTO();
         Reputation = shopInfo.Reputation.ToDTO();
         Sales = shopInfo.Sales.ToDTO();
+        Rent = shopInfo.Rent.ToDTO();
         GridSaveDataList = shopInfo.GridSaveDataList.Select(gridSaveData => gridSaveData.ToDTO()).ToList();
     }
 }

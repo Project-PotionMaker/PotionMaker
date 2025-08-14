@@ -13,6 +13,7 @@ public class ShopInfo
     public Currency Currency; // 재화
     public Reputation Reputation; // 평판
     public Sales Sales; // 판매량
+    public Rent Rent; // 방세 관련 정보
     public List<GridSaveData> GridSaveDataList; // 그리드 가구 배치 정보
 
     public ShopInfo(string shopName, int slotIndex)
@@ -30,11 +31,12 @@ public class ShopInfo
         Currency = new Currency();
         Reputation = new Reputation();
         Sales = new Sales(0);
+        Rent = new Rent(); // Rent 추가
         GridSaveDataList = new();
     }
 
-    public ShopInfo(string shopName, int slotIndex, int day, int potionHouseTier, Currency currency, Reputation reputation, Sales sales,
-         List<GridSaveData> gridSaveDataList)
+    public ShopInfo(string shopName, int slotIndex, int day, int potionHouseTier, Currency currency, Reputation reputation, Sales sales, Rent rent,
+        List<GridSaveData> gridSaveDataList)
     {
         ShopInfoSpecification shopInfoSpecification = new ShopInfoSpecification();
         if (!shopInfoSpecification.IsSatisfied(shopName, day))
@@ -49,6 +51,7 @@ public class ShopInfo
         Currency = currency;
         Reputation = reputation;
         Sales = sales;
+        Rent = rent;
         GridSaveDataList = gridSaveDataList;
     }
 
@@ -61,6 +64,7 @@ public class ShopInfo
         Currency = new Currency(shopInfoDto.Currency);
         Reputation = new Reputation(shopInfoDto.Reputation);
         Sales = new Sales(shopInfoDto.Sales);
+        Rent = new Rent(shopInfoDto.Rent);
         GridSaveDataList = shopInfoDto.GridSaveDataList.Select(gridSaveData => new GridSaveData(gridSaveData)).ToList();
     }
 

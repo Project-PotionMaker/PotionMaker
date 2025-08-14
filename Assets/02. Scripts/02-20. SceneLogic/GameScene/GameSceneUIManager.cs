@@ -25,7 +25,8 @@ public class GameSceneUIManager : MonoBehaviourSingleton<GameSceneUIManager>
     private void Start()
     {
         InputManager.Instance.OnOptionEvent += OpenRecipeBookPopup;
-        InputManager.Instance.OnEscapeEvent += CloseLatestPopup;
+        InputManager.Instance.OnSettingEvent += OpenSettingsIngamePopup;
+        InputManager.Instance.OnCloseEvent += CloseLatestPopup;
     }
 
     public void OpenPopup(GameObject popup)
@@ -36,6 +37,7 @@ public class GameSceneUIManager : MonoBehaviourSingleton<GameSceneUIManager>
         }
         _popupStack.Push(popup);
         popup.SetActive(true);
+        InputManager.Instance.ChangeToUIInput();
     }
 
     public void OpenNewspaperPopup()
@@ -62,8 +64,7 @@ public class GameSceneUIManager : MonoBehaviourSingleton<GameSceneUIManager>
     {
         if (_popupStack.TryPeek(out GameObject latestPopup) && ReferenceEquals(latestPopup, popup))
         {
-            _popupStack.Pop();
-            popup.SetActive(false);
+            CloseLatestPopup();
         }
     }
 
@@ -72,6 +73,10 @@ public class GameSceneUIManager : MonoBehaviourSingleton<GameSceneUIManager>
         if (_popupStack.TryPop(out GameObject latestPopup))
         {
             latestPopup.SetActive(false);
+            if (_popupStack.Count <= 0)
+            {
+                InputManager.Instance.ChangeToPlayerInput();
+            }
         }
     }
 }

@@ -16,6 +16,14 @@ public class Rent
     public int RentIncrement => _rentIncrement;
 
     public bool IsRentDay => _rentDayCounter == RENT_PERIOD;
+
+    public Rent()
+    {
+        _rentDayCounter = 0;
+        _currentRentCost = 0;
+        _rentIncrement = 0;
+    }
+
     public Rent(int rentDayCounter, int currentRentCost, int rentIncrement)
     {
         if (rentDayCounter < 1 || rentDayCounter > RENT_PERIOD)

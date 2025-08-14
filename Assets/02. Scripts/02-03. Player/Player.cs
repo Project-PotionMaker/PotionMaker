@@ -27,7 +27,8 @@ public class Player : NetworkBehaviour
     [SyncVar(hook = nameof(OnPlayerNameChanged))]
     public string playerName = "플레이어";
 
-    private CanvasAlphaChanger _lastHighlightedStructure;
+    private CanvasAlphaChanger _lastStructureCanvas;
+    private IGridItemHandler _lastHighlightedStructure;
 
     public Action OnDataChanged;
 
@@ -45,27 +46,33 @@ public class Player : NetworkBehaviour
         GameObject frontObject = GetObjectInFront();
         if (frontObject != null)
         {
-            if (_lastHighlightedStructure != null)
+            if (_lastStructureCanvas != null)
             {
-                if (_lastHighlightedStructure.GetInstanceID() == frontObject.GetInstanceID())
+                if (_lastStructureCanvas.GetInstanceID() == frontObject.GetInstanceID())
                 {
                     return;
                 }
-                _lastHighlightedStructure.HideCanvas();
+                _lastStructureCanvas.HideCanvas();
+                _lastHighlightedStructure.SetOutline(false);
             }
-            CanvasAlphaChanger currentStructure = frontObject.GetComponent<CanvasAlphaChanger>();
-            if (currentStructure != null)
+            CanvasAlphaChanger currentStructureCanvas = frontObject.GetComponent<CanvasAlphaChanger>();
+            IGridItemHandler currentStructure = frontObject.GetComponent<IGridItemHandler>();
+            if (currentStructureCanvas != null)
             {
-                currentStructure.ShowCanvas();
+                currentStructureCanvas.ShowCanvas();
+                currentStructure.SetOutline(true);
             }
 
+            _lastStructureCanvas = currentStructureCanvas;
             _lastHighlightedStructure = currentStructure;
         }
         else
         {
-            if (_lastHighlightedStructure != null)
+            if (_lastStructureCanvas != null)
             {
-                _lastHighlightedStructure.HideCanvas();
+                _lastStructureCanvas.HideCanvas();
+                _lastHighlightedStructure.SetOutline(false);
+                _lastStructureCanvas = null;
                 _lastHighlightedStructure = null;
             }
         }

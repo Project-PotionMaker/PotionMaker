@@ -92,6 +92,9 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
     private IInputContainer<Machine> _inputComponent;
     private IOutputContainer<Machine> _outputComponent;
 
+    private Renderer[] _modelRenderers;
+    private MaterialPropertyBlock _matPropertyBlock;
+
     [Foldout("Project")]
     [SerializeField]
     private List<ModelOnTID> _modelObjectList = new List<ModelOnTID>();
@@ -111,6 +114,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
             _modelObjectDic.Add(modelInfo.TID, modelInfo.Model);
         }
         _refundSystem = new RefundSystem();
+        _matPropertyBlock = new MaterialPropertyBlock();
     }
 
     public override void OnStartServer()
@@ -524,6 +528,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
         if (_modelObjectDic.TryGetValue(tid, out GameObject modelToActivate))
         {
             modelToActivate.SetActive(true);
+            _modelRenderers = GetComponentsInChildren<Renderer>();
         }
     }
 
@@ -587,5 +592,22 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
     {
         yield return new WaitForSeconds(0.05f);
         _model.gameObject.SetActive(true);
+    }
+
+    public void SetOutline(bool active, float size = 40)
+    {
+        if (active)
+        {
+            _matPropertyBlock.SetFloat("_OutlineSize", size);
+        }
+        else
+        {
+            _matPropertyBlock.SetFloat("_OutlineSize", 0);
+        }
+
+        foreach (var renderer in _modelRenderers)
+        {
+            renderer?.SetPropertyBlock(_matPropertyBlock);
+        }
     }
 }

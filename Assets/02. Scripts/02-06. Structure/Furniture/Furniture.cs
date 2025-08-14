@@ -54,6 +54,9 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
     private Transform _inputPosition;
     public Transform InputPosition => _inputPosition;
 
+    private Renderer[] _modelRenderers;
+    private MaterialPropertyBlock _matPropertyBlock;
+
     // 서버 전용 컴포넌트들
     private IInteractable<Furniture> _interactComponent;
     private IInputContainer<Furniture> _inputComponent;
@@ -79,6 +82,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
             _modelObjectDic.Add(modelInfo.TID, modelInfo.Model);
         }
         _refundSystem = new RefundSystem();
+        _matPropertyBlock = new MaterialPropertyBlock();
     }
 
     
@@ -422,6 +426,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
         if (_modelObjectDic.TryGetValue(tid, out GameObject modelToActivate))
         {
             modelToActivate.SetActive(true);
+            _modelRenderers = GetComponentsInChildren<Renderer>();
         }
     }
 
@@ -490,5 +495,22 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
     {
         yield return new WaitForSeconds(0.05f);
         _model.gameObject.SetActive(true);
+    }
+
+    public void SetOutline(bool active, float size = 40)
+    {
+        if (active)
+        {
+            _matPropertyBlock.SetFloat("_OutlineSize", size);
+        }
+        else
+        {
+            _matPropertyBlock.SetFloat("_OutlineSize", 0);
+        }
+
+        foreach (var renderer in _modelRenderers)
+        {
+            renderer?.SetPropertyBlock(_matPropertyBlock);
+        }
     }
 }

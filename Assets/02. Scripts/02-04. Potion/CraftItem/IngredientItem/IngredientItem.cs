@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class IngredientItem : NetworkBehaviour, IItem
 {
+    public event Action<int> OnItemTIDUpdated;
+
     [SyncVar(hook = nameof(OnIngredientItemTIDUpdated))]
     private int _ingredientTID;
     public int IngredientTID => _ingredientTID;
@@ -64,9 +66,8 @@ public class IngredientItem : NetworkBehaviour, IItem
     {
         // 클라이언트에서 초기화 시 SyncVar로 받은 TID를 사용해 데이터 로드 및 모델 활성화
         _ingredientData = DataTable.Instance.GetIngredientData(_ingredientTID);
-
-
         ActivateModelForTID(_ingredientData.TID);
+        OnItemTIDUpdated?.Invoke(_ingredientData.AvailableMachineTID);
     }
 
     private void ActivateModelForTID(int tid)

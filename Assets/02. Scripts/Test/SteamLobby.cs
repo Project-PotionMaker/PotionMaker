@@ -11,6 +11,10 @@ public class SteamLobby : MonoBehaviour
 {
     public static SteamLobby Instance;
 
+    [Header("Hierarchy")]
+    [SerializeField]
+    private RoomInfoHandler _roomInfoHandler;
+
     protected Callback<LobbyCreated_t> LobbyCreated;
     protected Callback<GameLobbyJoinRequested_t> JoinRequest;
     protected Callback<LobbyEnter_t> LobbyEntered;
@@ -20,7 +24,6 @@ public class SteamLobby : MonoBehaviour
 
     public ulong CurrentLobbyID;
     private const string HostAddressKey = "CustomHostAddress";
-    private CustomNetworkManager manager;
 
     // UI 관련 변수 (인스펙터에서 할당)
     public GameObject lobbyListContent; // 로비 목록을 담을 부모 GameObject (Vertical Layout Group 등)
@@ -39,8 +42,6 @@ public class SteamLobby : MonoBehaviour
             return;
         }
 
-        manager = GetComponent<CustomNetworkManager>();
-
         LobbyCreated = Callback<LobbyCreated_t>.Create(OnLobbyCreated);
         JoinRequest = Callback<GameLobbyJoinRequested_t>.Create(OnJoinRequest);
         LobbyEntered = Callback<LobbyEnter_t>.Create(OnLobbyEntered);
@@ -51,10 +52,25 @@ public class SteamLobby : MonoBehaviour
         Debug.Log($"현재 게임 Product Name: {Application.productName}");
     }
 
+    public void OnMakeRoomButtonClick()
+    {
+        //Debug.Log($"{_roomInfoHandler.RoomInfo.ShopInfo.ShopName}, " +
+        //    $"{_roomInfoHandler.RoomInfo.ShopInfo.Day}, " +
+        //    $"{_roomInfoHandler.RoomInfo.ShopInfo.Currency}, " +
+        //    $"{_roomInfoHandler.RoomInfo.Visibility}");
+        MirrorNetworkManager.Instance.ShopInfo = _roomInfoHandler.ShopInfoHandler.SelectedShopInfo;
+        HostLobby();
+    }
+
+    public void OnEnerRoonButtonClick()
+    {
+        GetLobbiesList();
+    }
+
     // 버튼 등으로 로비 호스트할 때 실행
     public void HostLobby()
     {
-        SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypePublic, manager.maxConnections);
+        SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypePublic, MirrorNetworkManager.Instance.maxConnections);
     }
 
     // 로비 참가
@@ -75,14 +91,14 @@ public class SteamLobby : MonoBehaviour
 
         Debug.Log("로비 생성 성공. ID: " + callback.m_ulSteamIDLobby);
 
-        manager.StartHost();
+        MirrorNetworkManager.Instance.StartHost();
 
         CSteamID newLobbyID = new CSteamID(callback.m_ulSteamIDLobby);
         SteamMatchmaking.SetLobbyData(newLobbyID, HostAddressKey, SteamUser.GetSteamID().ToString());
         SteamMatchmaking.SetLobbyData(newLobbyID, "name", SteamFriends.GetPersonaName() + "'s Lobby");
         SteamMatchmaking.SetLobbyData(newLobbyID, "game", Application.productName);
         // 로비 인원수 설정 (선택 사항)
-        SteamMatchmaking.SetLobbyData(newLobbyID, "maxPlayers", manager.maxConnections.ToString());
+        SteamMatchmaking.SetLobbyData(newLobbyID, "maxPlayers", MirrorNetworkManager.Instance.maxConnections.ToString());
     }
 
     // 로비 참여 시 콜백
@@ -125,8 +141,8 @@ public class SteamLobby : MonoBehaviour
             return;
         }
 
-        manager.networkAddress = hostAddress;
-        manager.StartClient();
+        MirrorNetworkManager.Instance.networkAddress = hostAddress;
+        MirrorNetworkManager.Instance.StartClient();
         Debug.Log($"[Client] 로비 호스트 주소: {hostAddress}. 클라이언트 연결 시작.");
     }
 
@@ -200,11 +216,11 @@ public class SteamLobby : MonoBehaviour
             // NetworkManager에서 클라이언트/호스트 중지
             if (NetworkClient.isConnected)
             {
-                manager.StopClient();
+                MirrorNetworkManager.Instance.StopClient();
             }
             if (NetworkServer.active)
             {
-                manager.StopHost();
+                MirrorNetworkManager.Instance.StopHost();
             }
         }
     }

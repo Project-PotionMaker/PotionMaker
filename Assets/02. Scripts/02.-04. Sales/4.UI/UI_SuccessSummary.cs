@@ -61,10 +61,6 @@ public class UI_SuccessSummary : MonoBehaviour
 
     private void NextPhase()
     {
-        if(NetworkServer.active == false)
-        {
-            return;
-        }
         _inDoorLight.DayChangeLight();
         _outDoorLight.DayChangeLight();
         HidePanel();

@@ -1,46 +1,47 @@
 using Mirror;
 
-public enum EAudioGroupType
-{
-    Player,
-    Machine,
-    Storage,
-    Customer
-}
-
 public class AudioNetworkManager : NetworkBehaviourSingleton<AudioNetworkManager>
 {
     [Command]
-    public void CmdPlaySFX(EAudioGroupType audioGroupType, int audioSubType)
+    public void CmdPlaySFX(EPlayerAudioType audioType)
     {
-        RpcPlaySFX(audioGroupType, audioSubType);
+        RpcPlaySFX(audioType);
+    }
+    [Command]
+    public void CmdPlaySFX(EMachineAudioType audioType)
+    {
+        RpcPlaySFX(audioType);
+    }
+    [Command]
+    public void CmdPlaySFX(EStorageAudioType audioType)
+    {
+        RpcPlaySFX(audioType);
+    }
+    [Command]
+    public void CmdPlaySFX(ECustomerAudioType audioType)
+    {
+        RpcPlaySFX(audioType);
     }
 
+
     [ClientRpc]
-    private void RpcPlaySFX (EAudioGroupType audioGroupType, int audioSubType)
+    private void RpcPlaySFX (EPlayerAudioType audioType)
     {
-        switch (audioGroupType)
-        {
-            case EAudioGroupType.Player:
-            {
-                AudioManager.Instance.PlaySFX((EPlayerAudioType)audioSubType);
-                break;
-            }
-            case EAudioGroupType.Machine:
-            {
-                AudioManager.Instance.PlaySFX((EMachineAudioType)audioSubType);
-                break;
-            }
-            case EAudioGroupType.Storage:
-            {
-                AudioManager.Instance.PlaySFX((EStorageAudioType)audioSubType);
-                break;
-            }
-            case EAudioGroupType.Customer:
-            {
-                AudioManager.Instance.PlaySFX((ECustomerAudioType)audioSubType);
-                break;
-            }
-        }
+        AudioManager.Instance.PlaySFX(audioType);
+    }
+    [ClientRpc]
+    private void RpcPlaySFX(EMachineAudioType audioType)
+    {
+        AudioManager.Instance.PlaySFX(audioType);
+    }
+    [ClientRpc]
+    private void RpcPlaySFX(EStorageAudioType audioType)
+    {
+        AudioManager.Instance.PlaySFX(audioType);
+    }
+    [ClientRpc]
+    private void RpcPlaySFX(ECustomerAudioType audioType)
+    {
+        AudioManager.Instance.PlaySFX(audioType);
     }
 }

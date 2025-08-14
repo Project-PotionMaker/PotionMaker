@@ -15,6 +15,14 @@ public class PlayerCustomizeAbility : PlayerAbility
         _owner.OnDataChanged += ChangeMaterial;
     }
 
+    private void OnDestroy()
+    {
+        if (_owner != null)
+        {
+            _owner.OnDataChanged -= ChangeMaterial;
+        }
+    }
+
     private void ChangeMaterial()
     {
         if (_characterRenderer == null)

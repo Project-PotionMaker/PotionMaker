@@ -204,11 +204,9 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
 
         if (currentPhase == EPhaseType.PreparingPhase)
         {
-            // 임시 코드
-            Debug.Log("임시 코드");
             if (_data.SpecialStructureType == ESpecialStructureType.Casher)
             {
-                Test_MarketSingleton.Instance.ShowHideMarket();
+                GameSceneUIManager.Instance.OpenMarketPopup();
                 TargetRpcOnInteract(sender, true);
                 return;
             }

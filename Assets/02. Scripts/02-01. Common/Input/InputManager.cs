@@ -11,6 +11,7 @@ public class InputManager : MonoBehaviourSingleton<InputManager>
     public event Action OnPickupEvent;
     public event Action OnPingEvent;
     public event Action OnReadyEvent;
+    public event Action OnOptionEvent;
 
     private void OnMove(InputValue value)
     {
@@ -42,5 +43,10 @@ public class InputManager : MonoBehaviourSingleton<InputManager>
     private void OnReady()
     {
         OnReadyEvent?.Invoke();
+    }
+
+    private void OnOption()
+    {
+        OnOptionEvent?.Invoke();
     }
 }

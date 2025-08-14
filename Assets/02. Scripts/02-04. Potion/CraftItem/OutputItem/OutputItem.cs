@@ -14,6 +14,8 @@ public class ColorOnType
 
 public class OutputItem : NetworkBehaviour, IItem
 {
+    public event Action<List<int>, List<int>> OnOutputTIDUpdated;
+
     [SyncVar(hook = nameof(OnOutputItemTIDUpdated))]
     private int _outputTID;
     public int OutputTID => _outputTID;
@@ -101,6 +103,9 @@ public class OutputItem : NetworkBehaviour, IItem
             ResetModel();
             objectInfo.TypeObject.SetActive(true);
         }
+
+        OnOutputTIDUpdated?.Invoke
+            (_outputData.AvailableMachineTIDList, _outputData.IngredientTIDList);
     }
 
     private void ResetModel()

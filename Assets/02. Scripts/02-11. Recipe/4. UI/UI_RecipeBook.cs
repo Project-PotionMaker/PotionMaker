@@ -32,7 +32,8 @@ public class UI_RecipeBook : MonoBehaviour
 
     private void Start()
     {
-        Initialize();
+        RecipeManager.Instance.OnInitialized += Initialize;
+        gameObject.SetActive(false);
     }
 
     private void Initialize()

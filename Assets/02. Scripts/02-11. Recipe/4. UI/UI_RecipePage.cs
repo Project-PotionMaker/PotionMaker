@@ -45,7 +45,7 @@ public class UI_RecipePage : MonoBehaviour
     public async void Refresh(PotionData data)
     {
         // 포션 정보
-        _potionImage.sprite = await AssetManager.Instance.LoadAsset<Sprite>($"{POTION_PREFIX}{data.TID}");
+        _potionImage.sprite = ImageManager.Instance.GetImage(typeof(PotionData), data.TID);
         _potionName.text = data.Name;
         // _potionDescription.text = data.Feature_LocalizationTID
 
@@ -53,17 +53,23 @@ public class UI_RecipePage : MonoBehaviour
 
         // 재료 1
         IngredientData firstIngredient = RecipeManager.Instance.IngredientDataDict[data.IngredientTIDList[0]];
-        // _firstIngredientImage = ImageManager.Instance.GetImage();
+        
+        Sprite firstIngredientSprite = ImageManager.Instance.GetImage(typeof(IngredientData), firstIngredient.TID);
+        _firstIngredientImage.sprite = firstIngredientSprite;
+        _baseIngredientList[0].sprite = firstIngredientSprite;
+        
         _firstIngredientName.text = firstIngredient.Name;
-        _baseMachineList[0].sprite = await AssetManager.Instance.LoadAsset<Sprite>($"{MACHINE_PREFIX}{firstIngredient.AvailableMachineTID}");
-        // _baseIngredientList[0].sprite = ImageManager.Instance.GetImage();
+        _baseMachineList[0].sprite = ImageManager.Instance.GetImage(typeof(MachineData), firstIngredient.AvailableMachineTID);
 
         // 재료 2
         IngredientData secondIngredient = RecipeManager.Instance.IngredientDataDict[data.IngredientTIDList[1]];
-        // _firstIngredientImage = ImageManager.Instance.GetImage();
+
+        Sprite secondIngredientSprite = ImageManager.Instance.GetImage(typeof(IngredientData), secondIngredient.TID);
+        _secondIngredientImage.sprite = secondIngredientSprite;
+        _baseIngredientList[1].sprite = secondIngredientSprite;
+
         _secondIngredientName.text = secondIngredient.Name;
-        _baseMachineList[1].sprite = await AssetManager.Instance.LoadAsset<Sprite>($"{MACHINE_PREFIX}{secondIngredient.AvailableMachineTID}");
-        // _baseIngredientList[1].sprite = ImageManager.Instance.GetImage();
+        _baseMachineList[1].sprite = ImageManager.Instance.GetImage(typeof(MachineData), secondIngredient.AvailableMachineTID);
 
         RefreshProgress(recipeCode);
     }
@@ -79,7 +85,7 @@ public class UI_RecipePage : MonoBehaviour
             {
                 MachineData machine = RecipeManager.Instance.MachineDataDict[machineCode[i]];
 
-                _progressMachineList[i].sprite = await AssetManager.Instance.LoadAsset<Sprite>($"{MACHINE_PREFIX}{machine.TID}");
+                _progressMachineList[i].sprite = ImageManager.Instance.GetImage(typeof(MachineData), machine.TID);
                 _progressMachineList[i].gameObject.SetActive(true);
                 _arrowList[i].SetActive(true);
             }

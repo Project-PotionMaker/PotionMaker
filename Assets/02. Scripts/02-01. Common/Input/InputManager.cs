@@ -1,4 +1,3 @@
-using Mirror.Examples.BilliardsPredicted;
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -9,6 +8,12 @@ public class InputManager : MonoBehaviourSingleton<InputManager>
     public Vector2 MoveInput => _moveInput;
 
     private UnityEngine.InputSystem.PlayerInput _playerInput;
+
+    private string _actionMapPlayer = "Player";
+    public string ActionMapPlayer => _actionMapPlayer;
+
+    private string _actionMapUI = "UI";
+    public string ActionMapUI => _actionMapUI;
 
     // Player
     public event Action<bool> OnInteractChanged;
@@ -32,12 +37,12 @@ public class InputManager : MonoBehaviourSingleton<InputManager>
 
     public void ChangeToUIInput()
     {
-        _playerInput.SwitchCurrentActionMap("UI");
+        _playerInput.SwitchCurrentActionMap(_actionMapUI);
     }
 
     public void ChangeToPlayerInput()
     {
-        _playerInput.SwitchCurrentActionMap("Player");
+        _playerInput.SwitchCurrentActionMap(_actionMapPlayer);
     }
 
     // Player

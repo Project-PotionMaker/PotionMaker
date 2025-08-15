@@ -114,7 +114,7 @@ public class InputMappingManager : MonoBehaviourSingleton<InputMappingManager>
 
         foreach (InputAction otherAction in _inputActionAsset)
         {
-            if (otherAction.actionMap.name == "UI")
+            if (otherAction.actionMap.name == InputManager.Instance.ActionMapUI)
             {
                 continue;
             }

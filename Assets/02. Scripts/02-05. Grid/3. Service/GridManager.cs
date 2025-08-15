@@ -31,7 +31,6 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
     private float overshoot = 1.2f;
     [SerializeField]
     private float elasticity = 0.5f;
-    private Tween _activeTween;
 
     // Layout은 클라이언트/서버 모두에서 초기화 시 사용됩니다.
     private Layout _layout;
@@ -305,7 +304,7 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
 
         GameObject structureObject = placement.StructureObject;
 
-        _activeTween.Kill();
+        structureObject.transform.DOKill();
         structureObject.transform.localScale = Vector3.one;
 
         // 그리드 데이터와 SyncDictionary에서 객체 정보 삭제
@@ -348,10 +347,11 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
         if (_serverGridData.CanPlaceObjectAt(gridPosition, data.AreaType))
         {
             Vector3 originalScale = Vector3.one;
+            newObject.transform.DOKill();
             newObject.transform.localScale = Vector3.zero;
             newObject.transform.rotation = Quaternion.identity;
             newObject.transform.position = _grid.CellToWorld(gridPosition) + new Vector3(0.5f, 0, 0.5f);
-            _activeTween = newObject.transform.DOScale(originalScale, duration).SetEase(Ease.OutBack, overshoot, elasticity);
+            newObject.transform.DOScale(originalScale, duration).SetEase(Ease.OutBack, overshoot, elasticity);
             _serverGridData.AddObjectAt(gridPosition, new Vector2Int(data.Width, data.Length), data.TID, data.StructureType, newObject);
 
             PlacementData newPlacementData = new PlacementData(newObject.GetComponent<NetworkIdentity>().netId, data.TID, newObject.transform.rotation);

@@ -19,10 +19,10 @@ public class GridData
     private Dictionary<Vector3Int, EAreaType> _availableAreaDict;
     public Dictionary<Vector3Int, EAreaType> AvailableAreaDict => _availableAreaDict;
 
-    private List<Vector3Int> LRUDPositionList = new List<Vector3Int> { new Vector3Int(0,0,1)
+    private List<Vector3Int> LRUDPositionList = new List<Vector3Int> { new Vector3Int(0,0,-1)
                                                                        , new Vector3Int(1,0,0)
                                                                        , new Vector3Int(-1,0,0)
-                                                                       , new Vector3Int(0,0,-1) };
+                                                                       , new Vector3Int(0,0,1) };
 
     public GridData(Dictionary<Vector3Int, EAreaType> availableAreaDict)
     {
@@ -125,5 +125,20 @@ public class GridData
             }
         }
         return false;
+    }
+
+    public Vector3? GetLRUDArea(Vector3Int gridPosition, EAreaType areaType)
+    {
+        for (int i = 0; i < LRUDPositionList.Count; i++)
+        {
+            if (_availableAreaDict.TryGetValue(gridPosition + LRUDPositionList[i], out EAreaType type))
+            {
+                if (type == areaType)
+                {
+                    return gridPosition + LRUDPositionList[i];
+                }
+            }
+        }
+        return null;
     }
 }

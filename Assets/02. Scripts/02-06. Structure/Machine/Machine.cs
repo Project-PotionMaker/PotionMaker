@@ -1,12 +1,8 @@
 using Mirror;
-using Mirror.BouncyCastle.Tls;
-using MoreMountains.Feedbacks;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UI;
 using VInspector;
 
 [Serializable]
@@ -594,15 +590,16 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
         _model.gameObject.SetActive(true);
     }
 
-    public void SetOutline(bool active, float size = 40)
+    private Color emissionColor = new Color(0.25f, 0.25f, 0.25f);
+    public void SetHighlight(bool active)
     {
         if (active)
         {
-            _matPropertyBlock.SetFloat("_OutlineSize", size);
+            _matPropertyBlock.SetColor("_EmissionColor", emissionColor);
         }
         else
         {
-            _matPropertyBlock.SetFloat("_OutlineSize", 0);
+            _matPropertyBlock.SetColor("_EmissionColor", Color.black);
         }
 
         foreach (var renderer in _modelRenderers)

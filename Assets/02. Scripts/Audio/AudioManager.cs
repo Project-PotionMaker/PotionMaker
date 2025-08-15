@@ -19,6 +19,8 @@ public class AudioManager : MonoBehaviourSingleton<AudioManager>
     [SerializeField]
     private AudioMap<EBGMAudioType> _BGMAudio;
     [SerializeField]
+    private AudioMap<EVFXAudioType> _VFXAudio;
+    [SerializeField]
     private AudioMap<EPlayerAudioType> _playerAudio;
     [SerializeField]
     private AudioMap<EMachineAudioType> _machineAudio;
@@ -115,6 +117,7 @@ public class AudioManager : MonoBehaviourSingleton<AudioManager>
         _mixer.SetFloat(exposedParam, to);
     }
 
+    public void PlaySFX(EVFXAudioType audioType) => PlaySFXInternal(_VFXAudio, audioType);
     public void PlaySFX(EPlayerAudioType audioType) => PlaySFXInternal(_playerAudio, audioType);
     public void PlaySFX(EMachineAudioType audioType) => PlaySFXInternal(_machineAudio, audioType);
     public void PlaySFX(EStorageAudioType audioType) => PlaySFXInternal(_storageAudio, audioType);

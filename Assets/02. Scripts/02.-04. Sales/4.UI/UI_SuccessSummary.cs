@@ -1,5 +1,4 @@
 using Mirror;
-using Mirror.BouncyCastle.Crypto.Macs;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -9,8 +8,9 @@ public class UI_SuccessSummary : MonoBehaviour
 {
     private const string POSITIVE_COLOR = "#65BC04";
     private const string NEGATIVE_COLOR = "#CB0000";
-
-    private LightColorByPhase _outDoorLight; 
+    [SerializeField]
+    private LightColorByPhase _outDoorLight;
+    [SerializeField]
     private LightColorByPhase[] _inDoorLight;
 
     [Header("영업기록")]
@@ -32,14 +32,6 @@ public class UI_SuccessSummary : MonoBehaviour
     {
         gameObject.SetActive(false);
         _voteSystem = GetComponent<UI_VoteSystem>();
-        _outDoorLight = GameObject.FindWithTag("OutDoorLight").GetComponent<LightColorByPhase>();
-        GameObject[] inDoorLightGameObject = GameObject.FindGameObjectsWithTag("InDoorLight");
-        _inDoorLight = new LightColorByPhase[inDoorLightGameObject.Length];
-        for(int i =0; i < inDoorLightGameObject.Length; i++)
-        {
-            _inDoorLight[i] = inDoorLightGameObject[i].GetComponent<LightColorByPhase>();
-        }
-
         _voteSystem.enabled = false; 
     }
     public void ShowSummary()

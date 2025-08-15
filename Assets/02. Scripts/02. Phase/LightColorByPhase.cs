@@ -86,28 +86,29 @@ public class LightColorByPhase : MonoBehaviour
 
     public void DayChangeLight()
     {
-        if(LightType == ELightType.OutDoorLight)
+        KillTween();
+        var sequence = DOTween.Sequence()
+            .Append(targetLight.DOColor(darker, DURATION * 0.5f).SetEase(Ease.InSine));
+
+        if (LightType == ELightType.OutDoorLight)
         {
-            _colorTween = DOTween.Sequence()
-                .Append(targetLight.DOColor(darker, DURATION * 0.5f).SetEase(Ease.InSine))
-                .Join(transform.DORotate(dipEuler, DURATION * 0.5f, RotateMode.Fast).SetEase(Ease.InSine))
-                .Append(targetLight.DOColor(noonWhite, DURATION * 0.5f).SetEase(Ease.OutSine))
-                .Join(transform.DORotate(dawnEuler, DURATION * 0.5f, RotateMode.Fast).SetEase(Ease.OutSine))
-                .OnComplete(() =>
-                {
-                    if (NetworkServer.active)
-                    {
-                        PhaseManager.Instance.TransitionPhase(EPhaseType.PreparingPhase);
-                    }
-                });
-        }
-        else
-        {
-            _colorTween = DOTween.Sequence()
-                .Append(targetLight.DOColor(darker, DURATION * 0.5f).SetEase(Ease.InSine))
-                .Append(targetLight.DOColor(noonWhite, DURATION * 0.5f).SetEase(Ease.OutSine));
+            sequence.Join(transform.DORotate(dipEuler, DURATION * 0.5f, RotateMode.Fast).SetEase(Ease.InSine));
         }
 
+        sequence.Append(targetLight.DOColor(noonWhite, DURATION * 0.5f).SetEase(Ease.OutSine));
+
+        if (LightType == ELightType.OutDoorLight)
+        {
+            sequence.Join(transform.DORotate(dawnEuler, DURATION * 0.5f, RotateMode.Fast).SetEase(Ease.OutSine));
+            sequence.OnComplete(() =>
+            {
+                if (NetworkServer.active)
+                {
+                    PhaseManager.Instance.TransitionPhase(EPhaseType.PreparingPhase);
+                }
+            });
+        }
+        _colorTween = sequence;
     }
 
     private void KillTween()
@@ -121,43 +122,30 @@ public class LightColorByPhase : MonoBehaviour
 
     private Color EvaluateServingColor(float t01)
     {
-        if(LightType == ELightType.InDoorLight)
+        if (t01 >= 0.4f)
         {
-            if (t01 < 0.4f && t01 >= 0.2f)
-            {
-                // 0 ~ 0.5 : 새벽(푸른빛) → 화이트
-                float u = (t01 - 0.2f) / 0.2f; // 0~1로 정규화
-                return Color.Lerp(Yellow, noonWhite, u);
-            }
-            else if (t01 < 0.2f)
-            {
-                return Yellow;
-            }
-            else
-            {
-                return Color.white;
-            }
-        }
-        else
-        {
-            if (t01 < 0.4f && t01 >= 0.2f)
-            {
-                // 0 ~ 0.5 : 새벽(푸른빛) → 화이트
-                float u = (t01 - 0.2f) / 0.2f; // 0~1로 정규화
-                return Color.Lerp(duskRed, noonWhite, u);
-            }
-            else if (t01 < 0.2f)
-            {
-                // 0.5 ~ 1 : 화이트 → 저녁(붉은빛)
-                float u = t01 / 0.2f; // 0~1로 정규화
-                return Color.Lerp(dawnBlue, duskRed, u);
-            }
-            else
-            {
-                return Color.white;
-            }
+            return Color.white;
         }
 
+        if (t01 >= 0.2f) // 0.2 <= t01 < 0.4
+        {
+            // 0 ~ 0.5 : 새벽(푸른빛) → 화이트
+            float u = (t01 - 0.2f) / 0.2f; // 0~1로 정규화
+            Color startColor = (LightType == ELightType.InDoorLight) ? Yellow : duskRed;
+            return Color.Lerp(startColor, noonWhite, u);
+        }
+
+        // t01 < 0.2
+        if (LightType == ELightType.InDoorLight)
+        {
+            return Yellow;
+        }
+        else // OutDoorLight
+        {
+            // 0.5 ~ 1 : 화이트 → 저녁(붉은빛)
+            float u = t01 / 0.2f; // 0~1로 정규화
+            return Color.Lerp(dawnBlue, duskRed, u);
+        }
     }
 
     // 현재 페이즈 기준으로 즉시 색 적용

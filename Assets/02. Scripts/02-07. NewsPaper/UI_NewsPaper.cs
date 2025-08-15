@@ -9,19 +9,21 @@ public class UI_NewsPaper : MonoBehaviour
 
     public void Start()
     {
-        PhaseManager.Instance.DailyPotionPicker.OnPickCompleted += Refresh;
+        PhaseManager.Instance.OnPickCompleted += Refresh;
+        Debug.Log("OnPickCompleted에 UI_NewsPaper의 Refresh 등록");
         gameObject.SetActive(false);
     }
 
-    private void Refresh(List<PotionData> dailyPotionDataList)
+    private void Refresh(List<int> dailyPotionTIDList)
     {
-        int dailyPotionListSize = dailyPotionDataList.Count;
+        Debug.Log("UI_NewsPaper의 Refresh");
+        int dailyPotionListSize = dailyPotionTIDList.Count;
         for (int i = 0; i < _slotDailyPotionList.Count; i++)
         {
             if (i < dailyPotionListSize)
             {
                 _slotDailyPotionList[i].gameObject.SetActive(true);
-                _slotDailyPotionList[i].RefreshSlot(dailyPotionDataList[i]);
+                _slotDailyPotionList[i].RefreshSlot(DataTable.Instance.GetPotionData(dailyPotionTIDList[i]));
             }
             else
             {

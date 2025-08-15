@@ -12,6 +12,7 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>, IShopInfoSa
     public event Action OnPhaseChanged;
     public event Action OnTimerRunning;
     public event Action OnDeathCountChanged;
+    public event Action<List<int>> OnPickCompleted;
 
     public static event Action OnInitialized;
 
@@ -95,6 +96,7 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>, IShopInfoSa
 
         ServerPickPotionListFromHouse(); // 재시도
     }
+
     [Server]
     private void ServerPickPotionListFromHouse()
     {
@@ -106,14 +108,32 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>, IShopInfoSa
         }
 
         Debug.Log("서버에서 포션 리스트를 포션 하우스에서 선택합니다.");
-        _potionTIDList.Clear();
         List<PotionData> potionDataList = _dailyPotionPicker.PickDailyPotion(PotionHouse.Instance.PotionHouseTier);
-        for(int i = 0; i < potionDataList.Count; i++)
+
+        _potionTIDList.Clear();
+        for (int i = 0; i < potionDataList.Count; i++)
         {
             PotionData data = potionDataList[i];
             _potionTIDList.Add(data.TID);
-        }   
+        }
+        Debug.Log(OnPickCompleted.GetInvocationList().Length);
+        RpcOnPotionPickCompleted();
+
     }
+
+    [ClientRpc]
+    public void RpcOnPotionPickCompleted()
+    {
+        Debug.Log(nameof(RpcOnPotionPickCompleted));
+        List<int> potionTIDList = new();
+        foreach (int potionTID in _potionTIDList)
+        {
+            potionTIDList.Add(potionTID);
+        }
+
+        OnPickCompleted?.Invoke(potionTIDList);
+    }
+
 
     [Server]
     public void TransitionPhase(EPhaseType nextPhase)

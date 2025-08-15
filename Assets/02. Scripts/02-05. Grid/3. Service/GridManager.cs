@@ -1,3 +1,4 @@
+using DG.Tweening;
 using Mirror;
 using Steamworks;
 using System;
@@ -22,6 +23,14 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
 
     [SerializeField]
     private PreviewSystem _previewSystem;
+
+    [Foldout("Sturcture Create Tween")]
+    [SerializeField]
+    private float duration = 0.5f;
+    [SerializeField]
+    private float overshoot = 1.2f;
+    [SerializeField]
+    private float elasticity = 0.5f;
 
     // Layout은 클라이언트/서버 모두에서 초기화 시 사용됩니다.
     private Layout _layout;
@@ -203,54 +212,6 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
         return false;
     }
 
-    //// --- 서버로 배치를 요청하는 Command ---
-    //[Server]
-    //public void ServerPlaceStructure(Vector3 targetPosition, uint structureNetId, NetworkConnectionToClient sender = null)
-    //{
-    //    if (!isServer) return;
-
-    //    // targetPosition을 gridPosition으로 변환
-    //    Vector3Int gridPosition = GetGridPosition(targetPosition);
-
-    //    if (NetworkServer.spawned.TryGetValue(structureNetId, out NetworkIdentity structureIdentity))
-    //    {
-    //        GameObject structure = structureIdentity.gameObject;
-    //        StructureData data = DataTable.Instance.GetStructureData(structure.GetComponent<IGridItemHandler>().GetStructureTID());
-
-    //        //structure.transform.rotation = Quaternion.identity;
-
-    //        Vector3 position = _grid.CellToWorld(gridPosition) + new Vector3(0.5f, 0, 0.5f);
-    //        structure.transform.position = position;
-    //        _serverGridData.AddObjectAt(gridPosition, new Vector2Int(data.Width, data.Length), data.TID, data.StructureType, structure);
-
-    //        PlacementData newPlacementData = new PlacementData(structureNetId, data.TID, structure.transform.rotation);
-    //        foreach (var pos in _serverGridData.CalculatePositionList(gridPosition, new Vector2Int(data.Width, data.Length)))
-    //        {
-    //            _placedObjectInGridSyncDict[pos] = newPlacementData;
-    //        }
-
-    //        if (data.SpecialStructureType == ESpecialStructureType.PickUpTable)
-    //        {
-    //            HandlePickupTablePlacement(structureIdentity, gridPosition, data);
-    //        }
-
-    //        if (data.SpecialStructureType == ESpecialStructureType.PickUpTable ||
-    //            data.SpecialStructureType == ESpecialStructureType.OldChair ||
-    //            data.SpecialStructureType == ESpecialStructureType.LuxuryChair)
-    //        {
-    //            _hallAreaPathFinder.UpdateGridPathFinder(_serverGridData.PlacedPositionHashSet,
-    //                ToPickupTablePositionHashSet(_pickupTableForCustomerList));
-    //            if (!_hallAreaPathFinder.HasPath())
-    //            {
-    //                Debug.LogWarning("경로 없음!!!");
-    //                // 경로가 없을 때 로직
-    //            }
-    //        }
-
-    //        TargetRpcOnPlaceStructure(sender, true);
-    //    }
-    //}
-
     // --- 서버로 배치를 요청하는 Command ---
     [Server]
     public void ServerPlaceStructure(Vector3 targetPosition, uint structureNetId, NetworkConnectionToClient sender = null, int ingredientTID = 0)
@@ -343,13 +304,15 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
 
         GameObject structureObject = placement.StructureObject;
 
+        structureObject.transform.DOKill();
+        structureObject.transform.localScale = Vector3.one;
+
         // 그리드 데이터와 SyncDictionary에서 객체 정보 삭제
         _serverGridData.RemoveObjectAt(gridPosition);
         foreach (var pos in placement.OccupiedPositionList)
         {
             _placedObjectInGridSyncDict.Remove(pos);
         }
-
         // GameObject는 파괴하지 않고 반환
         return structureObject;
     }
@@ -383,8 +346,12 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
         Vector3Int gridPosition = GetGridPosition(position);
         if (_serverGridData.CanPlaceObjectAt(gridPosition, data.AreaType))
         {
+            Vector3 originalScale = Vector3.one;
+            newObject.transform.DOKill();
+            newObject.transform.localScale = Vector3.zero;
             newObject.transform.rotation = Quaternion.identity;
             newObject.transform.position = _grid.CellToWorld(gridPosition) + new Vector3(0.5f, 0, 0.5f);
+            newObject.transform.DOScale(originalScale, duration).SetEase(Ease.OutBack, overshoot, elasticity);
             _serverGridData.AddObjectAt(gridPosition, new Vector2Int(data.Width, data.Length), data.TID, data.StructureType, newObject);
 
             PlacementData newPlacementData = new PlacementData(newObject.GetComponent<NetworkIdentity>().netId, data.TID, newObject.transform.rotation);
@@ -424,12 +391,18 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
     }
 
     [Server]
-    public void ServerRemoveStructureOnGrid(int structureTID, GameObject refundObject)
+    public void ServerRemoveStructureOnGrid(int structureTID, GameObject removeObject)
     {
-        Debug.Log(refundObject.GetComponent<NetworkIdentity>() == null);
-        _managedStructureDict[structureTID].Remove(refundObject.GetComponent<NetworkIdentity>());
-        StopPlacement();
-        StructureFactory.Instance.ReturnObject(refundObject);
+        if (removeObject.TryGetComponent<NetworkIdentity>(out NetworkIdentity netId))
+        {
+            _managedStructureDict[structureTID].Remove(netId);
+            ESpecialStructureType type = DataTable.Instance.GetStructureData(structureTID).SpecialStructureType;
+            if (type == ESpecialStructureType.PickUpTable)
+            {
+                _pickupTableForCustomerList.Remove(netId);
+            }
+        }
+        StructureFactory.Instance.ReturnObject(removeObject);
     }
 
 

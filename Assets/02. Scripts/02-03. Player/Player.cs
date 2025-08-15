@@ -53,14 +53,14 @@ public class Player : NetworkBehaviour
                     return;
                 }
                 _lastStructureCanvas.HideCanvas();
-                _lastHighlightedStructure.SetOutline(false);
+                _lastHighlightedStructure.SetHighlight(false);
             }
             CanvasAlphaChanger currentStructureCanvas = frontObject.GetComponent<CanvasAlphaChanger>();
             IGridItemHandler currentStructure = frontObject.GetComponent<IGridItemHandler>();
             if (currentStructureCanvas != null)
             {
                 currentStructureCanvas.ShowCanvas();
-                currentStructure.SetOutline(true);
+                currentStructure.SetHighlight(true);
             }
 
             _lastStructureCanvas = currentStructureCanvas;
@@ -71,7 +71,7 @@ public class Player : NetworkBehaviour
             if (_lastStructureCanvas != null)
             {
                 _lastStructureCanvas.HideCanvas();
-                _lastHighlightedStructure.SetOutline(false);
+                _lastHighlightedStructure.SetHighlight(false);
                 _lastStructureCanvas = null;
                 _lastHighlightedStructure = null;
             }

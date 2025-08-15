@@ -37,11 +37,13 @@ public class InputManager : MonoBehaviourSingleton<InputManager>
 
     public void ChangeToUIInput()
     {
+        _playerInput.actions.FindActionMap(_actionMapPlayer, true)?.Disable();
         _playerInput.SwitchCurrentActionMap(_actionMapUI);
     }
 
     public void ChangeToPlayerInput()
     {
+        _playerInput.actions.FindActionMap(_actionMapUI, true)?.Disable();
         _playerInput.SwitchCurrentActionMap(_actionMapPlayer);
     }
 

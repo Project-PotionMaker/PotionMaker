@@ -1,20 +1,23 @@
 using DG.Tweening;
+using Mirror;
+using System;
 using UnityEngine;
 
 public class LightColorByPhase : MonoBehaviour
 {
     private Light targetLight;
 
-    private Color dawnBlue = new Color(0.40f, 0.60f, 1.0f); // 새벽의 푸른빛
-    private Color duskRed = new Color(1.00f, 0.70f, 0.10f); // 저녁의 붉은빛
-    private Color darker = new Color(0.05f, 0.05f, 0.10f); // 저녁의 붉은빛
-    private Color noonWhite = Color.white;                   // 정오(중간값) 흰색
+    private Color dawnBlue = new Color(0.40f, 0.60f, 1.0f); 
+    private Color duskRed = new Color(1.00f, 0.70f, 0.10f); 
+    private Color darker = new Color(0.05f, 0.05f, 0.10f);
+    private Color noonWhite = Color.white;                   
 
-    private Vector3 dawnEuler = new Vector3(40f, -90f, 0f);   // 동쪽에서 비스듬히 비추는 각도
-    private Vector3 duskEuler = new Vector3(40f, 90f, 0f);  // 서쪽
-    private Vector3 dipEuler = new Vector3(-80f, 180f, 0f); // 남쪽으로 기울어지는 각도
-    private Vector3 noonEuler = new Vector3(80f, 0f, 0f); // 정오(중간값) 
+    private Vector3 dawnEuler = new Vector3(40f, -50f, 0f);   
+    private Vector3 duskEuler = new Vector3(40f, 50f, 0f);  
+    private Vector3 dipEuler = new Vector3(-40f, 180f, 0f); 
+    private Vector3 noonEuler = new Vector3(40f, 0f, 0f);
 
+    public event Action OnDayBright;
 
     private Tween _colorTween;
     private const float DURATION = 2f;
@@ -25,7 +28,6 @@ public class LightColorByPhase : MonoBehaviour
             targetLight = GetComponent<Light>();
         }
         PhaseManager.Instance.OnTimerRunning += OnTimerRunning;
-        PhaseManager.Instance.OnDayPassed += DayChangeLight;
 
         // 처음 진입 시 현재 페이즈에 맞춰 즉시 적용
         ApplyPhaseImmediate();
@@ -36,7 +38,6 @@ public class LightColorByPhase : MonoBehaviour
         if (PhaseManager.Instance != null)
         {
             PhaseManager.Instance.OnTimerRunning -= OnTimerRunning;
-            PhaseManager.Instance.OnDayPassed -= DayChangeLight;
         }
         KillTween();
     }
@@ -71,14 +72,21 @@ public class LightColorByPhase : MonoBehaviour
         }
     }
 
-    private void DayChangeLight()
+    public void DayChangeLight()
     {
         KillTween();
         _colorTween = DOTween.Sequence()
             .Append(targetLight.DOColor(darker, DURATION * 0.5f).SetEase(Ease.InSine))
             .Join(transform.DORotate(dipEuler, DURATION * 0.5f, RotateMode.Fast).SetEase(Ease.InSine))
-            .Append(targetLight.DOColor(dawnBlue, DURATION * 0.5f).SetEase(Ease.OutSine))
-            .Join(transform.DORotate(dawnEuler, DURATION * 0.5f, RotateMode.Fast).SetEase(Ease.OutSine));
+            .Append(targetLight.DOColor(noonWhite, DURATION * 0.5f).SetEase(Ease.OutSine))
+            .Join(transform.DORotate(dawnEuler, DURATION * 0.5f, RotateMode.Fast).SetEase(Ease.OutSine))
+            .OnComplete(() =>
+            {
+                if(NetworkServer.active)
+                {
+                    PhaseManager.Instance.TransitionPhase(EPhaseType.PreparingPhase);
+                }
+            });
     }
 
     private void KillTween()
@@ -92,17 +100,17 @@ public class LightColorByPhase : MonoBehaviour
 
     private Color EvaluateServingColor(float t01)
     {
-        if (t01 > 0.7f)
+        if (t01 < 0.4f && t01 >=0.2f)
         {
             // 0 ~ 0.5 : 새벽(푸른빛) → 화이트
-            float u = (t01-0.7f) / 0.3f; // 0~1로 정규화
-            return Color.Lerp(noonWhite, dawnBlue, u);
+            float u = (t01-0.2f) / 0.2f; // 0~1로 정규화
+            return Color.Lerp(duskRed, noonWhite, u);
         }
-        else if(t01<0.3f)
+        else if(t01<0.2f)
         {
             // 0.5 ~ 1 : 화이트 → 저녁(붉은빛)
-            float u = t01 / 0.3f; // 0~1로 정규화
-            return Color.Lerp(duskRed, noonWhite, u);
+            float u = t01 / 0.2f; // 0~1로 정규화
+            return Color.Lerp(dawnBlue, duskRed, u);
         }
         else
         {
@@ -116,11 +124,11 @@ public class LightColorByPhase : MonoBehaviour
         switch (PhaseManager.Instance.CurrentPhase.PhaseType)
         {
             case EPhaseType.PreparingPhase:
-                targetLight.color = dawnBlue;
+                targetLight.color = noonWhite;
                 targetLight.transform.rotation = Quaternion.Euler(dawnEuler);
                 break;
             case EPhaseType.EndingPhase:
-                targetLight.color = duskRed;
+                targetLight.color = dawnBlue;
                 targetLight.transform.rotation = Quaternion.Euler(duskEuler);
                 break;
         }

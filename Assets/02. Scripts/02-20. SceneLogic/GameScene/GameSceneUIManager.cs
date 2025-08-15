@@ -26,7 +26,7 @@ public class GameSceneUIManager : MonoBehaviourSingleton<GameSceneUIManager>
     {
         InputManager.Instance.OnOptionEvent += OpenRecipeBookPopup;
         InputManager.Instance.OnSettingEvent += OpenSettingsIngamePopup;
-        InputManager.Instance.OnCloseEvent += CloseLatestPopup;
+        InputManager.Instance.OnCancelEvent += CloseLatestPopup;
     }
 
     public void OpenPopup(GameObject popup)

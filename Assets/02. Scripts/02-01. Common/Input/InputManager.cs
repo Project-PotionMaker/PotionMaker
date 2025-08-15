@@ -19,9 +19,10 @@ public class InputManager : MonoBehaviourSingleton<InputManager>
     public event Action OnSettingEvent;
 
     // UI
-    public event Action<Vector2> OnNavigateEvent;
-    public event Action OnSelectEvent;
-    public event Action OnCloseEvent;
+    public event Action OnPointEvent;
+    public event Action OnNavigateEvent;
+    public event Action OnSubmitEvent;
+    public event Action OnCancelEvent;
 
     protected override void Awake()
     {
@@ -83,20 +84,23 @@ public class InputManager : MonoBehaviourSingleton<InputManager>
     }
 
     // UI
-
-    private void OnNavigate(InputValue value)
+    private void OnPoint()
     {
-        Vector2 inputVector = value.Get<Vector2>();
-        OnNavigateEvent?.Invoke(inputVector);
+        OnPointEvent?.Invoke();
     }
 
-    private void OnSelect()
+    private void OnNavigate()
     {
-        OnSelectEvent?.Invoke();
+        OnNavigateEvent?.Invoke();
     }
 
-    private void OnClose()
+    private void OnSubmit()
     {
-        OnCloseEvent?.Invoke();
+        OnSubmitEvent?.Invoke();
+    }
+
+    private void OnCancel()
+    {
+        OnCancelEvent?.Invoke();
     }
 }

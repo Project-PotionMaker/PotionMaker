@@ -4,11 +4,16 @@ public enum EBGMAudioType
     IngamePreparePhase,
     IngameServingPhase
 }
+
+public enum EEffectAudioType
+{
+    Ping,
+}
 public enum EPlayerAudioType
 {
     Move,
     Hold,
-    Drop
+    Drop,
 }
 
 public enum EMachineAudioType

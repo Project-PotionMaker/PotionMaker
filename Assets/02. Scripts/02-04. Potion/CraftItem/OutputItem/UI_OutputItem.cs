@@ -1,4 +1,5 @@
 using DG.Tweening;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -33,42 +34,25 @@ public class UI_OutputItem : MonoBehaviour
 
     private void RefreshAvailableMachineImages(List<int> availableMachineTIDList)
     {
-        for (int i = 0; i < _availableMachineImageList.Count; i++)
-        {
-            if (availableMachineTIDList.Count <= i)
-            {
-                break;
-            }
-
-            if (availableMachineTIDList[i] == 0)
-            {
-                _availableMachineImageList[i].transform.parent.gameObject.SetActive(false);
-            }
-            else
-            {
-                _availableMachineImageList[i].transform.parent.gameObject.SetActive(true);
-                _availableMachineImageList[i].sprite = ImageManager.Instance.GetImage<MachineData>(availableMachineTIDList[i]);
-            }
-        }
+        RefreshImages(_availableMachineImageList, availableMachineTIDList, tid => ImageManager.Instance.GetImage<MachineData>(tid));
     }
 
     private void RefreshUsedIngredientImages(List<int> usedIngredientTIDList)
     {
-        for (int i = 0; i < _usedIngredientImageList.Count; i++)
-        {
-            if (usedIngredientTIDList.Count <= i)
-            {
-                break;
-            }
+        RefreshImages(_usedIngredientImageList, usedIngredientTIDList, tid => ImageManager.Instance.GetImage<IngredientData>(tid));
+    }
 
-            if (usedIngredientTIDList[i] == 0)
+    private void RefreshImages(IReadOnlyList<Image> imageList, IReadOnlyList<int> tidList, Func<int, Sprite> getSprite)
+    {
+        for (int i = 0; i < imageList.Count; i++)
+        {
+            bool shouldShow = i < tidList.Count && tidList[i] != 0;
+            GameObject parentObject = imageList[i].transform.parent.gameObject;
+            parentObject.SetActive(shouldShow);
+
+            if (shouldShow)
             {
-                _usedIngredientImageList[i].transform.parent.gameObject.SetActive(false);
-            }
-            else
-            {
-                _usedIngredientImageList[i].transform.parent.gameObject.SetActive(true);
-                _usedIngredientImageList[i].sprite = ImageManager.Instance.GetImage<IngredientData>(usedIngredientTIDList[i]);
+                imageList[i].sprite = getSprite(tidList[i]);
             }
         }
     }

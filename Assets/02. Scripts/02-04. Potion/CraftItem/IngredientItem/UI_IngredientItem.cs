@@ -1,8 +1,9 @@
 using UnityEngine.UI;
 using UnityEngine;
 using DG.Tweening;
+using Mirror;
 
-public class UI_IngredientItem : MonoBehaviour
+public class UI_IngredientItem : NetworkBehaviour
 {
     [SerializeField]
     private CanvasGroup _canvasGroup;

@@ -1,10 +1,11 @@
 using DG.Tweening;
+using Mirror;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UI_OutputItem : MonoBehaviour
+public class UI_OutputItem : NetworkBehaviour
 {
     [SerializeField]
     private CanvasGroup _canvasGroup;

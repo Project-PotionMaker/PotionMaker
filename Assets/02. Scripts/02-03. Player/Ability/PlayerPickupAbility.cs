@@ -136,6 +136,7 @@ public class PlayerPickupAbility : PlayerAbility
             return;
         }
 
+        AudioNetworkManager.Instance.CmdPlaySFX(EPlayerAudioType.Hold);
         CmdPickUpItem(itemNetId);
     }
 
@@ -146,6 +147,7 @@ public class PlayerPickupAbility : PlayerAbility
         {
             return;
         }
+        AudioNetworkManager.Instance.CmdPlaySFX(EPlayerAudioType.Drop);
         CmdDropItem();
     }
 

@@ -2,22 +2,22 @@ using Mirror;
 
 public class AudioNetworkManager : NetworkBehaviourSingleton<AudioNetworkManager>
 {
-    [Command]
+    [Command(requiresAuthority = false)]
     public void CmdPlaySFX(EPlayerAudioType audioType)
     {
         RpcPlaySFX(audioType);
     }
-    [Command]
+    [Command(requiresAuthority = false)]
     public void CmdPlaySFX(EMachineAudioType audioType)
     {
         RpcPlaySFX(audioType);
     }
-    [Command]
+    [Command(requiresAuthority = false)]
     public void CmdPlaySFX(EStorageAudioType audioType)
     {
         RpcPlaySFX(audioType);
     }
-    [Command]
+    [Command(requiresAuthority = false)]
     public void CmdPlaySFX(ECustomerAudioType audioType)
     {
         RpcPlaySFX(audioType);

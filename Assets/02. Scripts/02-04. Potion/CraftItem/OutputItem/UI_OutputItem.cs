@@ -20,6 +20,7 @@ public class UI_OutputItem : MonoBehaviour
     private void Awake()
     {
         GetComponent<OutputItem>().OnOutputTIDUpdated += Refresh;
+        GetComponent<OutputItem>().OnItemHighlighted += HandleUIFade;
         _canvasGroup.alpha = 0f;
     }
 
@@ -69,6 +70,18 @@ public class UI_OutputItem : MonoBehaviour
                 _usedIngredientImageList[i].transform.parent.gameObject.SetActive(true);
                 _usedIngredientImageList[i].sprite = ImageManager.Instance.GetImage<IngredientData>(usedIngredientTIDList[i]);
             }
+        }
+    }
+
+    private void HandleUIFade(bool isActive)
+    {
+        if (isActive)
+        {
+            FadeIn();
+        }
+        else
+        {
+            FadeOut();
         }
     }
 

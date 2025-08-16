@@ -16,6 +16,7 @@ public class UI_IngredientItem : MonoBehaviour
     private void Awake()
     {
         GetComponent<IngredientItem>().OnItemTIDUpdated += Refresh;
+        GetComponent<IngredientItem>().OnItemHighlighted += HandleUIFade;
         _canvasGroup.alpha = 0f;
     }
 
@@ -23,6 +24,18 @@ public class UI_IngredientItem : MonoBehaviour
     {
         _availableMachineImage.sprite = ImageManager.Instance.GetImage<MachineData>(availableMachineTID);
         _canvasGroup.alpha = 0f;
+    }
+
+    private void HandleUIFade(bool isActive)
+    {
+        if (isActive)
+        {
+            FadeIn();
+        }
+        else
+        {
+            FadeOut();
+        }
     }
 
     private void FadeIn()

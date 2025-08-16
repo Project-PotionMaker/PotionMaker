@@ -15,6 +15,7 @@ public class ColorOnType
 public class OutputItem : NetworkBehaviour, IItem
 {
     public event Action<List<int>, List<int>> OnOutputTIDUpdated;
+    public event Action<bool> OnItemHighlighted;
 
     [SyncVar(hook = nameof(OnOutputItemTIDUpdated))]
     private int _outputTID;
@@ -131,5 +132,10 @@ public class OutputItem : NetworkBehaviour, IItem
     {
         yield return new WaitForSeconds(.05f);
         _models.gameObject.SetActive(true);
+    }
+
+    public void HandleOutputHighlighted(bool isActive)
+    {
+        OnItemHighlighted?.Invoke(isActive);
     }
 }

@@ -7,6 +7,7 @@ using UnityEngine;
 public class IngredientItem : NetworkBehaviour, IItem
 {
     public event Action<int> OnItemTIDUpdated;
+    public event Action<bool> OnItemHighlighted;
 
     [SyncVar(hook = nameof(OnIngredientItemTIDUpdated))]
     private int _ingredientTID;
@@ -98,5 +99,10 @@ public class IngredientItem : NetworkBehaviour, IItem
     {
         yield return new WaitForSeconds(.05f);
         _models.gameObject.SetActive(true);
+    }
+
+    public void HandleIngredientHighlighted(bool isActive)
+    {
+        OnItemHighlighted?.Invoke(isActive);
     }
 }

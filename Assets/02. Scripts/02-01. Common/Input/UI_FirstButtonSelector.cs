@@ -1,0 +1,75 @@
+using System.Collections;
+using UnityEngine;
+using UnityEngine.EventSystems;
+
+public class UI_FirstButtonSelector : MonoBehaviour
+{
+    [SerializeField]
+    private GameObject _firstSelectedButton;
+    private GameObject _lastSelectedButton;
+
+    private void OnEnable()
+    {
+        StartCoroutine(SubscribeNextFrame());
+    }
+
+    private IEnumerator SubscribeNextFrame()
+    {
+        yield return null;
+
+        _lastSelectedButton = null;
+        InputManager.Instance.OnNavigateEvent += ChangeNavigationMode;
+        InputManager.Instance.OnPointEvent += ChangePointerMode;
+    }
+
+    private void OnDisable()
+    {
+        _lastSelectedButton = null;
+        if (EventSystem.current != null)
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+        }
+        
+        if (InputManager.Instance != null)
+        {
+            InputManager.Instance.OnNavigateEvent -= ChangeNavigationMode;
+            InputManager.Instance.OnPointEvent -= ChangePointerMode;
+        }
+    }
+
+    private void ChangeNavigationMode()
+    {
+        if (EventSystem.current == null)
+        {
+            return;
+        }
+
+        if (EventSystem.current.currentSelectedGameObject != null)
+        {
+            return;
+        }
+
+        if (_lastSelectedButton == null)
+        {
+            EventSystem.current.SetSelectedGameObject(_firstSelectedButton);
+            _lastSelectedButton = _firstSelectedButton;
+            return;
+        }
+
+        EventSystem.current.SetSelectedGameObject(_lastSelectedButton);
+    }
+
+    private void ChangePointerMode()
+    {
+        if (EventSystem.current == null)
+        {
+            return;
+        }
+
+        if (EventSystem.current.currentSelectedGameObject != null)
+        {
+            _lastSelectedButton = EventSystem.current.currentSelectedGameObject;
+        }
+        EventSystem.current.SetSelectedGameObject(null);
+    }
+}

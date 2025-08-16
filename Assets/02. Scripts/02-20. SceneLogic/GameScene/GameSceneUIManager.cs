@@ -22,11 +22,13 @@ public class GameSceneUIManager : MonoBehaviourSingleton<GameSceneUIManager>
         base.Awake();
     }
 
-    private void Update()
+    private void Start()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (InputManager.Instance != null)
         {
-            CloseLatestPopup();
+            InputManager.Instance.OnOptionEvent += OpenRecipeBookPopup;
+            InputManager.Instance.OnSettingEvent += OpenSettingsIngamePopup;
+            InputManager.Instance.OnCancelEvent += CloseLatestPopup;
         }
     }
 
@@ -38,6 +40,7 @@ public class GameSceneUIManager : MonoBehaviourSingleton<GameSceneUIManager>
         }
         _popupStack.Push(popup);
         popup.SetActive(true);
+        InputManager.Instance.ChangeToUIInput();
     }
 
     public void OpenNewspaperPopup()
@@ -64,8 +67,7 @@ public class GameSceneUIManager : MonoBehaviourSingleton<GameSceneUIManager>
     {
         if (_popupStack.TryPeek(out GameObject latestPopup) && ReferenceEquals(latestPopup, popup))
         {
-            _popupStack.Pop();
-            popup.SetActive(false);
+            CloseLatestPopup();
         }
     }
 
@@ -74,6 +76,10 @@ public class GameSceneUIManager : MonoBehaviourSingleton<GameSceneUIManager>
         if (_popupStack.TryPop(out GameObject latestPopup))
         {
             latestPopup.SetActive(false);
+            if (_popupStack.Count <= 0)
+            {
+                InputManager.Instance.ChangeToPlayerInput();
+            }
         }
     }
 }

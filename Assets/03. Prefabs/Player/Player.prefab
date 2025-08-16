@@ -971,7 +971,7 @@ SkinnedMeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_RenderingLayerMask: 1
+  m_RenderingLayerMask: 3
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 8c144c48420951b4c9b68d2891a2274d, type: 2}
@@ -1175,6 +1175,7 @@ GameObject:
   - component: {fileID: 430845456778201364}
   - component: {fileID: 3065087835171649989}
   - component: {fileID: 4334057170734337105}
+  - component: {fileID: 5167538326310644573}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -1191,7 +1192,7 @@ Transform:
   m_GameObject: {fileID: 8140463900008843363}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.16, z: 0}
+  m_LocalPosition: {x: 0.31, y: 1.16, z: 0}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1368,6 +1369,18 @@ MonoBehaviour:
   _heldPosition: {fileID: 4065086494702664508}
   PlayerOrderIndex: -1
   playerName: "\uD50C\uB808\uC774\uC5B4"
+--- !u!114 &5167538326310644573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8140463900008843363}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d00afcd3a9ef934c9f8006d3f67a330, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8663434274911540220
 GameObject:
   m_ObjectHideFlags: 0

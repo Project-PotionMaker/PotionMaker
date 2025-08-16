@@ -5,7 +5,7 @@ public enum EBGMAudioType
     IngameServingPhase
 }
 
-public enum EVFXAudioType
+public enum EEffectAudioType
 {
     Ping,
 }

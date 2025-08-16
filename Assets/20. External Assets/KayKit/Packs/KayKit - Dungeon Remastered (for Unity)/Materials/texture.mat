@@ -27,13 +27,15 @@ Material:
   m_ValidKeywords:
   - _MK_ALBEDO_MAP
   - _MK_ARTISTIC_DRAWN
-  - _MK_ENVIRONMENT_REFLECTIONS_AMBIENT
+  - _MK_ENVIRONMENT_REFLECTIONS_ADVANCED
   - _MK_LIGHT_BANDED
   - _MK_RECEIVE_SHADOWS
   - _MK_SPECULAR_ISOTROPIC
   m_InvalidKeywords:
+  - _FRESNELHIGHLIGHTS_ON
   - _MK_ARTISTIC_ANIMATION_STUTTER
   - _MK_DETAIL_BLEND_MIX
+  - _MK_FRESNEL_HIGHLIGHTS
   - _MK_WRAPPED_DIFFUSE
   - _OUTLINECONSTANTSIZE_ON
   - _RECEIVESHADOWS_ON
@@ -267,9 +269,9 @@ Material:
     - _DrawnMapScale: 1
     - _DstBlend: 0
     - _DstBlendAlpha: 0
-    - _EnvironmentReflections: 1
+    - _EnvironmentReflections: 2
     - _Flipbook: 0
-    - _FresnelHighlights: 0
+    - _FresnelHighlights: 1
     - _GlossMapScale: 1
     - _Glossiness: 0.55
     - _GlossyReflections: 1

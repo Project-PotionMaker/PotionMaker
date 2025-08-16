@@ -28,6 +28,7 @@ public class UI_Furniture : MonoBehaviour
 
     public void ChangeState()
     {
+        _nameTextUI.text = _furniture.Data.Name;
         if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
         {
             _interactPanel.SetActive(true);
@@ -37,20 +38,11 @@ public class UI_Furniture : MonoBehaviour
         {
             _interactPanel.SetActive(false);
         }
-
-        if(_furniture.Data.SpecialStructureType == ESpecialStructureType.Casher)
-        {
-            _nameTextUI.text = "상점";
-        }
-        else
-        {
-            _interactPanel.SetActive(false);
-        }
     }
 
     public void Refresh()
     {
-        //Debug.Log($"refundslider: {_refundSlider.gameObject.activeInHierarchy}");
+        _nameTextUI.text = _furniture.Data.Name;
         _refundSlider.gameObject.SetActive(_furniture.RefundProgress > 0);
         _refundSlider.value = _furniture.RefundProgress;
     }

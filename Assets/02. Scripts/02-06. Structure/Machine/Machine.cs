@@ -425,6 +425,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
         if (pickedUpItem != null)
         {
             TargetRpcOnPickUp(sender, pickedUpItem.GetComponent<NetworkIdentity>());
+            pickedUpItem.GetComponent<OutputItem>()?.HandleOutputHighlighted(true);
         }
     }
 

@@ -189,6 +189,7 @@ public class Storage : NetworkBehaviour, IGridItemHandler
         if (pickedUpItem != null)
         {
             TargetRpcOnPickUp(sender, pickedUpItem.GetComponent<NetworkIdentity>());
+            pickedUpItem.GetComponent<IngredientItem>()?.HandleIngredientHighlighted(true);
         }
     }
 

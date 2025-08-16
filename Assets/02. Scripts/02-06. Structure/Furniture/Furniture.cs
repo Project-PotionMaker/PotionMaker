@@ -511,5 +511,27 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
         {
             renderer?.SetPropertyBlock(_matPropertyBlock);
         }
+
+        TryHandleInputUIOnType(active);
+    }
+
+    private void TryHandleInputUIOnType(bool isActive)
+    {
+        if (ReferenceEquals(_inputObject, null))
+        {
+            return;
+        }
+
+        if (_inputObject.TryGetComponent<IngredientItem>(out IngredientItem ingredientItem))
+        {
+            ingredientItem.HandleIngredientHighlighted(isActive);
+            return;
+        }
+
+        if (_inputObject.TryGetComponent<OutputItem>(out OutputItem outputItem))
+        {
+            outputItem.HandleOutputHighlighted(isActive);
+            return;
+        }
     }
 }

@@ -53,7 +53,7 @@ public class AudioManager : MonoBehaviourSingleton<AudioManager>
             audioSourceList.Add(source);
         }
         WarmUpBGM();
-        BGMAudioSource.resource = _BGMAudio[EBGMAudioType.Loby];
+        BGMAudioSource.resource = _BGMAudio[EBGMAudioType.Lobby];
         BGMAudioSource.Play();
     }
 

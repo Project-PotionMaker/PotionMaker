@@ -54,19 +54,24 @@ public class UI_DaySummary : MonoBehaviour
         SalesManager.Instance.OnSummaryReady += ShowSummary;
         gameObject.SetActive(false);
     }
-    private void Update()
+    private void OnEnable()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        InputManager.Instance.OnReadyEvent += ReadyToSummary;
+    }
+    private void OnDisable()
+    {
+        InputManager.Instance.OnReadyEvent -= ReadyToSummary;
+    }
+    private void ReadyToSummary()
+    {
+        gameObject.SetActive(false);
+        if(PhaseManager.Instance.IsGameOver)
         {
-            gameObject.SetActive(false);
-            if(PhaseManager.Instance.IsGameOver)
-            {
-                _gameOverPanel.ShowSummary();
-            }
-            else
-            {
-                _successPanel.ShowSummary();
-            }
+            _gameOverPanel.ShowSummary();
+        }
+        else
+        {
+            _successPanel.ShowSummary();
         }
     }
     public void OnEndingPhaseStarted()

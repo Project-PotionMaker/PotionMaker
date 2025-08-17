@@ -28,6 +28,7 @@ public class UI_NewsPaper : MonoBehaviour
                 _slotDailyPotionList[i].gameObject.SetActive(false);
             }
         }
+        AudioManager.Instance.PlaySFX(EPhaseAudioType.EnterPreparingPhase);
         GameSceneUIManager.Instance?.OpenNewspaperPopup();
     }
 }

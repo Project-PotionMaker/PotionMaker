@@ -18,6 +18,7 @@ public class ServingPhase : BasePhase
         base.EnterPhase();
         _currentTime = INIT_TIMER;
         _timesUp = false;
+        AudioManager.Instance.PlaySFX(EPhaseAudioType.EnterServingPhase);
     }
 
     public override void Update(float deltaTime)

@@ -32,7 +32,7 @@ public enum ECustomerAudioType
 {
     OrderReceived,
     PickupPotion,
-    RunOutOfPatience
+    EnduranceZero
 }
 
 public enum EPhaseAudioType

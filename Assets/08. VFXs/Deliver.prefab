@@ -11,13 +11,15 @@ GameObject:
   - component: {fileID: 443696}
   - component: {fileID: 19855650}
   - component: {fileID: 19948540}
+  - component: {fileID: 5676705131017402864}
+  - component: {fileID: 2972248327387371686}
   m_Layer: 0
   m_Name: Deliver
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &443696
 Transform:
   m_ObjectHideFlags: 0
@@ -4814,6 +4816,32 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!114 &5676705131017402864
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 153256}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6f3a114bc1640488361a1527906c3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _returnTime: 2
+--- !u!114 &2972248327387371686
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 153256}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4864e5de83272384db93f66bd3110be0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioType: 1
 --- !u!1 &160968
 GameObject:
   m_ObjectHideFlags: 0

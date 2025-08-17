@@ -61,13 +61,12 @@ public class UI_DaySummary : MonoBehaviour
             if (PhaseManager.Instance.IsGameOver)
             {
                 _gameOverPanel.ShowSummary();
-                AudioManager.Instance.PlaySFX(EPhaseAudioType.EndingPhaseSuccess);
-                
+                AudioManager.Instance.PlaySFX(EPhaseAudioType.EndingPhaseFailure);
             }
             else
             {
                 _successPanel.ShowSummary();
-                AudioManager.Instance.PlaySFX(EPhaseAudioType.EndingPhaseFailure);
+                AudioManager.Instance.PlaySFX(EPhaseAudioType.EndingPhaseSuccess);
             }
             gameObject.SetActive(false);
         }

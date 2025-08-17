@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.UI;
 
-public class UI_InteractKey : MonoBehaviour
+public class UI_ReadyKey : MonoBehaviour
 {
     [Header("Binding")]
     [SerializeField]

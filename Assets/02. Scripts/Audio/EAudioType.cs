@@ -1,7 +1,7 @@
 public enum EBGMAudioType
 {
-    Loby,
-    IngamePreparePhase,
+    Lobby,
+    IngamePreparingPhase,
     IngameServingPhase
 }
 

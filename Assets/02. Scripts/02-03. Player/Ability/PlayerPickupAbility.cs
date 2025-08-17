@@ -11,6 +11,8 @@ public class PlayerPickupAbility : PlayerAbility
     // 영상 임시
     private CanvasGroup _lastHighlightedStructureCanvas;
 
+    [SerializeField]
+    private GameObject _pickupVFX;
     private void Start()
     {
         if (!_owner.isLocalPlayer)
@@ -176,6 +178,11 @@ public class PlayerPickupAbility : PlayerAbility
             {
                 collider.enabled = false;
             }
+            _pickupVFX.SetActive(true);
+        }
+        else
+        {
+            _pickupVFX.SetActive(false);
         }
     }
 

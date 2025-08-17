@@ -11,7 +11,7 @@ public class PreparingPhase : BasePhase
     public override void EnterPhase()
     {
         base.EnterPhase();
-        if(NetworkServer.active)
+        if (NetworkServer.active)
         {
             PhaseManager.Instance.ResetDeathCount();
         }

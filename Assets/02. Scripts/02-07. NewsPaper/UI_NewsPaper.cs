@@ -18,6 +18,7 @@ public class UI_NewsPaper : MonoBehaviour
     {
         int dailyPotionListSize = dailyPotionDataList.Count;
         GameSceneUIManager.Instance?.OpenNewspaperPopup();
+        AudioManager.Instance.PlaySFX(EPhaseAudioType.EnterPreparingPhase);
 
         for (int i = 0; i < _slotDailyPotionList.Count; i++)
         {

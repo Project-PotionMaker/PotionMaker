@@ -1,7 +1,7 @@
 public enum EBGMAudioType
 {
-    Loby,
-    IngamePreparePhase,
+    Lobby,
+    IngamePreparingPhase,
     IngameServingPhase
 }
 
@@ -32,7 +32,7 @@ public enum ECustomerAudioType
 {
     OrderReceived,
     PickupPotion,
-    RunOutOfPatience
+    EnduranceZero
 }
 
 public enum EPhaseAudioType

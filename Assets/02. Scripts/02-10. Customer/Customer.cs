@@ -110,12 +110,14 @@ public class Customer : NetworkBehaviour
             potion.transform.SetParent(_potionHandler.transform);
             Debug.Log("Potion parent set to: " + _potionHandler.name);
             potion.transform.localPosition = Vector3.zero;
+            AudioManager.Instance.PlaySFX(ECustomerAudioType.PickupPotion);
         }
         else
         {
             Debug.LogWarning($"Potion with netId {potionNetId} not found on client.");
         }
     }
+
     [ClientRpc]
     public void ChairSetting(Vector3 position, float rotate)
     {

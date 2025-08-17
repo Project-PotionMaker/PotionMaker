@@ -20,16 +20,6 @@ public class UI_ReadyKey : MonoBehaviour
 
     private void OnEnable()
     {
-        Initialize();
-    }
-
-    public void Initialize()
-    {
-        if (_actionRef == null || _actionRef.action == null)
-        {
-            Debug.LogWarning("[UI_InteractKey] InputActionReference가 비었어요.");
-            return;
-        }
         InputManager.Instance.OnAnyKey += UpdateCurrentKeyDisplay;
     }
     private void OnDisable()
@@ -55,6 +45,9 @@ public class UI_ReadyKey : MonoBehaviour
 
         if (icon != null)
         {
+            Debug.Log($"[UI_ReadyKey] {name} (id={GetInstanceID()}) " +
+              $"active={gameObject.activeInHierarchy}, enabled={enabled}, " +
+              $"bindImageNull={_bindImage == null}");
             _bindImage.sprite = icon;
             _bindImage.gameObject.SetActive(true);
         }

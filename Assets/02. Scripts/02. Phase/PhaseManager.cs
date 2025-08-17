@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using VInspector;
 using Mirror;
 using System.Collections;
+using System.Linq;
 
 public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>, IShopInfoSaveable
 {
@@ -43,14 +44,20 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>, IShopInfoSa
     private bool _isGameOver = false;
     public bool IsGameOver { get => _isGameOver; set => _isGameOver = value; }
 
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+    }
+
     public override void OnStartClient()
     {
         base.OnStartClient();
         _deathCount = _maxDeathCount;
         InitPhase();
+        _potionTIDList.Callback += OnPotionTIDListUpdated;
         if (isServer)
         {
-            if(DataTable.Instance.GetPotionDataList() == null)
+            if (DataTable.Instance.GetPotionDataList() == null)
             {
                 Global.Instance.OnDataLoaded += ServerInitializePotionDataList;
             }
@@ -89,6 +96,7 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>, IShopInfoSa
 
         ServerPickPotionListFromHouse();
     }
+
     private IEnumerator WaitPotionHouse()
     {
         while (PotionHouse.Instance == null)
@@ -100,7 +108,7 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>, IShopInfoSa
     [Server]
     private void ServerPickPotionListFromHouse()
     {
-        if(PotionHouse.Instance == null)
+        if (PotionHouse.Instance == null)
         {
             Debug.LogWarning("PotionHouse가 아직 초기화되지 않았습니다. 잠시 기다립니다.");
             StartCoroutine(WaitPotionHouse());
@@ -109,31 +117,27 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>, IShopInfoSa
 
         Debug.Log("서버에서 포션 리스트를 포션 하우스에서 선택합니다.");
         List<PotionData> potionDataList = _dailyPotionPicker.PickDailyPotion(PotionHouse.Instance.PotionHouseTier);
-
+        List<int> potionTIDList = potionDataList.Select(data => data.TID).ToList();
         _potionTIDList.Clear();
-        for (int i = 0; i < potionDataList.Count; i++)
-        {
-            PotionData data = potionDataList[i];
-            _potionTIDList.Add(data.TID);
-        }
-        Debug.Log(OnPickCompleted.GetInvocationList().Length);
-        RpcOnPotionPickCompleted();
+        _potionTIDList.AddRange(potionTIDList);
+    }
 
+    private void OnPotionTIDListUpdated(SyncList<int>.Operation op, int index, int oldItem, int newItem)
+    {
+        Debug.Log("OnPotionTIDListUpdated");
+        if (op == SyncList<int>.Operation.OP_CLEAR)
+        {
+            return;
+        }
+        OnPickCompleted?.Invoke(new List<int>(_potionTIDList));
     }
 
     [ClientRpc]
     public void RpcOnPotionPickCompleted()
     {
-        Debug.Log(nameof(RpcOnPotionPickCompleted));
-        List<int> potionTIDList = new();
-        foreach (int potionTID in _potionTIDList)
-        {
-            potionTIDList.Add(potionTID);
-        }
-
-        OnPickCompleted?.Invoke(potionTIDList);
+        Debug.Log("RpcOnPotionPickCompleted");
+        OnPickCompleted?.Invoke(new List<int>(_potionTIDList));
     }
-
 
     [Server]
     public void TransitionPhase(EPhaseType nextPhase)

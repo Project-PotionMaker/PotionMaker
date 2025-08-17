@@ -10,7 +10,6 @@ public class UI_NewsPaper : MonoBehaviour
     public void Start()
     {
         PhaseManager.Instance.OnPickCompleted += Refresh;
-        Debug.Log("OnPickCompleted에 UI_NewsPaper의 Refresh 등록");
         gameObject.SetActive(false);
     }
 

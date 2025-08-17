@@ -19,6 +19,8 @@ public class AudioManager : MonoBehaviourSingleton<AudioManager>
     [SerializeField]
     private AudioMap<EBGMAudioType> _BGMAudio;
     [SerializeField]
+    private AudioMap<EEffectAudioType> _EffectAudio;
+    [SerializeField]
     private AudioMap<EPlayerAudioType> _playerAudio;
     [SerializeField]
     private AudioMap<EMachineAudioType> _machineAudio;
@@ -51,7 +53,7 @@ public class AudioManager : MonoBehaviourSingleton<AudioManager>
             audioSourceList.Add(source);
         }
         WarmUpBGM();
-        BGMAudioSource.resource = _BGMAudio[EBGMAudioType.Loby];
+        BGMAudioSource.resource = _BGMAudio[EBGMAudioType.Lobby];
         BGMAudioSource.Play();
     }
 
@@ -64,6 +66,7 @@ public class AudioManager : MonoBehaviourSingleton<AudioManager>
             BGMAudioSource.Stop();
         }
     }
+
     public void SetBGMVolume(float sliderValue)
     {
         float volume = Mathf.Log10(sliderValue <= 0.001f ? 0.001f : sliderValue) * 20;
@@ -75,7 +78,6 @@ public class AudioManager : MonoBehaviourSingleton<AudioManager>
         float volume = Mathf.Log10(sliderValue <= 0.001f ? 0.001f : sliderValue) * 20;
         _mixer.SetFloat(SFX_KEY, volume);
     }
-
 
     public void PlayBGM(EBGMAudioType BGMAudioType, float fadeTime = 2f)
     {
@@ -115,6 +117,7 @@ public class AudioManager : MonoBehaviourSingleton<AudioManager>
         _mixer.SetFloat(exposedParam, to);
     }
 
+    public void PlaySFX(EEffectAudioType audioType) => PlaySFXInternal(_EffectAudio, audioType);
     public void PlaySFX(EPlayerAudioType audioType) => PlaySFXInternal(_playerAudio, audioType);
     public void PlaySFX(EMachineAudioType audioType) => PlaySFXInternal(_machineAudio, audioType);
     public void PlaySFX(EStorageAudioType audioType) => PlaySFXInternal(_storageAudio, audioType);
@@ -122,6 +125,7 @@ public class AudioManager : MonoBehaviourSingleton<AudioManager>
     public void PlaySFX(EPhaseAudioType audioType) => PlaySFXInternal(_phaseAudio, audioType);
     public void PlaySFX(EUIAudioType audioType) => PlaySFXInternal(_UIAudio, audioType);
     public void PlaySFX(EPopupAudioType audioType) => PlaySFXInternal(_popupAudio, audioType);
+
     private void PlaySFXInternal<T>(AudioMap<T> audioMap, T audioType) where T:Enum
     {
         AudioSource audioSource = GetAvailableAudioSource();

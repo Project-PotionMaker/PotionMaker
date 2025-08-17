@@ -1,14 +1,19 @@
 public enum EBGMAudioType
 {
-    Loby,
-    IngamePreparePhase,
+    Lobby,
+    IngamePreparingPhase,
     IngameServingPhase
+}
+
+public enum EEffectAudioType
+{
+    Ping,
 }
 public enum EPlayerAudioType
 {
     Move,
     Hold,
-    Drop
+    Drop,
 }
 
 public enum EMachineAudioType
@@ -27,7 +32,7 @@ public enum ECustomerAudioType
 {
     OrderReceived,
     PickupPotion,
-    RunOutOfPatience
+    EnduranceZero
 }
 
 public enum EPhaseAudioType

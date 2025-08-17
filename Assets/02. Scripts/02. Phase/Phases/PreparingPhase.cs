@@ -15,6 +15,7 @@ public class PreparingPhase : BasePhase
         {
             PhaseManager.Instance.ResetDeathCount();
         }
+        AudioManager.Instance.PlaySFX(EPhaseAudioType.EnterPreparingPhase);
     }
 
     public override void ExitPhase()

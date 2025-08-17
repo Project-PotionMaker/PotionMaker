@@ -58,15 +58,18 @@ public class UI_DaySummary : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            gameObject.SetActive(false);
-            if(PhaseManager.Instance.IsGameOver)
+            if (PhaseManager.Instance.IsGameOver)
             {
                 _gameOverPanel.ShowSummary();
+                AudioManager.Instance.PlaySFX(EPhaseAudioType.EndingPhaseSuccess);
+                
             }
             else
             {
                 _successPanel.ShowSummary();
+                AudioManager.Instance.PlaySFX(EPhaseAudioType.EndingPhaseFailure);
             }
+            gameObject.SetActive(false);
         }
     }
     public void OnEndingPhaseStarted()

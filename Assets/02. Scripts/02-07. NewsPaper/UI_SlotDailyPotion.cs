@@ -14,9 +14,8 @@ public class UI_SlotDailyPotion : MonoBehaviour
 
     public void RefreshSlot(PotionData potionData)
     {
-        // 포션에 대응하는 이미지를 어디서, 어떻게 관리해줄 것인가?
-        //_imagePotionIcon.sprite = 포션에 대응하는 이미지;
+        _imagePotionIcon.sprite = ImageManager.Instance.GetImage<PotionData>(potionData.TID);
         _textPotionName.text = potionData.Name;
-        _textPotionArticle.text = $"{potionData.Name}이 등장합니다.";
+        _textPotionArticle.text = potionData.NewsText;
     }
 }

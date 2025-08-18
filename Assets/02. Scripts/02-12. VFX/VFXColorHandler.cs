@@ -19,7 +19,7 @@ public class VFXColorHandler : NetworkBehaviour
     [ClientRpc]
     public void RpcChangeVFXColor(int playerIndex)
     {
-        if (playerIndex < 0 || playerIndex >= _particleSystems.Length)
+        if (playerIndex < 0 || playerIndex >= _pingColor.Count)
         {
             return;
         }

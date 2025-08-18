@@ -29,6 +29,11 @@ public class PlayerPingAbility : PlayerAbility
         Vector3 position = _owner.GetFrontPosition();
 
         GameObject pingObject = VFXFactory.Instance.CreateObject(EVFXType.Ping, position, Quaternion.identity);
+        if (pingObject == null)
+        {
+            return;
+        }
+
         if (pingObject.TryGetComponent<VFXColorHandler>(out VFXColorHandler ping))
         {
             ping.RpcChangeVFXColor(_owner.PlayerOrderIndex);

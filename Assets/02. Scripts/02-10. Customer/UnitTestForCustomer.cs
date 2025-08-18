@@ -12,19 +12,19 @@ public class UnitTestForCustomer : MonoBehaviour
     }
     public void ServiceStart()
     {
-        PhaseManager.Instance.TransitionPhase(EPhaseType.ServingPhase);
+        PhaseManager.Instance.ServerTransitionPhase(EPhaseType.ServingPhase);
     }
     public void PracticeStart()
     {
-        PhaseManager.Instance.TransitionPhase(EPhaseType.PracticingPhase);
+        PhaseManager.Instance.ServerTransitionPhase(EPhaseType.PracticingPhase);
     }
     public void PracticeEnd()
     {
-        PhaseManager.Instance.TransitionPhase(EPhaseType.PreparingPhase);
+        PhaseManager.Instance.ServerTransitionPhase(EPhaseType.PreparingPhase);
     }
     public void NextDay()
     {
-        PhaseManager.Instance.TransitionPhase(EPhaseType.PreparingPhase);
+        PhaseManager.Instance.ServerTransitionPhase(EPhaseType.PreparingPhase);
     }
     public void TestRegisterOrder()
     {

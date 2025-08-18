@@ -146,7 +146,7 @@ public class UI_Phase : MonoBehaviour
         {
             return;
         }
-        PhaseManager.Instance.TransitionPhase(EPhaseType.ServingPhase);
+        PhaseManager.Instance.ServerTransitionPhase(EPhaseType.ServingPhase);
     }
 
     private void ResetPlayerPanel()

@@ -524,13 +524,13 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
 
         if (_inputObject.TryGetComponent<IngredientItem>(out IngredientItem ingredientItem))
         {
-            ingredientItem.HandleIngredientHighlighted(isActive);
+            ingredientItem.SetFocus(isActive);
             return;
         }
 
         if (_inputObject.TryGetComponent<OutputItem>(out OutputItem outputItem))
         {
-            outputItem.HandleOutputHighlighted(isActive);
+            outputItem.SetFocus(isActive);
             return;
         }
     }

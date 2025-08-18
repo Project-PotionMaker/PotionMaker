@@ -17,7 +17,7 @@ public class UI_IngredientItem : NetworkBehaviour
     private void Awake()
     {
         GetComponent<IngredientItem>().OnItemTIDUpdated += Refresh;
-        GetComponent<IngredientItem>().OnItemHighlighted += HandleUIFade;
+        GetComponent<IngredientItem>().OnItemFocusChanged += HandleUIFade;
         _canvasGroup.alpha = 0f;
     }
 
@@ -29,6 +29,7 @@ public class UI_IngredientItem : NetworkBehaviour
 
     private void HandleUIFade(bool isActive)
     {
+        Debug.Log(nameof(HandleUIFade));
         if (isActive)
         {
             FadeIn();

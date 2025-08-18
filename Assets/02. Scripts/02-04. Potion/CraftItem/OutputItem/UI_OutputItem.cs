@@ -22,7 +22,7 @@ public class UI_OutputItem : NetworkBehaviour
     private void Awake()
     {
         GetComponent<OutputItem>().OnOutputTIDUpdated += Refresh;
-        GetComponent<OutputItem>().OnItemHighlighted += HandleUIFade;
+        GetComponent<OutputItem>().OnItemFocusChanged += HandleUIFade;
         _canvasGroup.alpha = 0f;
     }
 
@@ -60,6 +60,7 @@ public class UI_OutputItem : NetworkBehaviour
 
     private void HandleUIFade(bool isActive)
     {
+
         if (isActive)
         {
             FadeIn();

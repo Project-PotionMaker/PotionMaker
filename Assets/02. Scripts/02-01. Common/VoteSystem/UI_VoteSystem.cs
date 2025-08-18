@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Mirror;
 using System.Collections.Generic;
+using UnityEngine.InputSystem;
 
 public class UI_VoteSystem : MonoBehaviour
 {
@@ -30,21 +31,40 @@ public class UI_VoteSystem : MonoBehaviour
         Debug.Log($"{gameObject} OnEnable");
         VoteManager.Instance.OnVoteUpdated += Refresh;
         PlayerListManager.Instance.OnPlayerListUpdated += Refresh;
+        InputManager.Instance.OnReadyEvent += Vote;
         VoteManager.Instance.SetVoteTime(true);
         Refresh();
     }
-
-    private void Update()
+    private void OnDisable()
     {
-        if(Input.GetKeyDown(KeyCode.Space))
+        Debug.Log($"{gameObject} OnDisable");
+        foreach (GameObject background in _voteBackgroundList)
         {
-            if(index == -1)
-            {
-                index = NetworkClient.localPlayer.GetComponent<Player>().PlayerOrderIndex;
-            }
-            VoteManager.Instance.CmdVoting(index);
-            Debug.Log(gameObject);
+            background.SetActive(false);
         }
+        foreach (Image checkIcon in _checkIconList)
+        {
+            checkIcon.enabled = false;
+        }
+
+        VoteManager.Instance.OnVoteUpdated -= Refresh;
+        PlayerListManager.Instance.OnPlayerListUpdated -= Refresh;
+        InputManager.Instance.OnReadyEvent -= Vote;
+        VoteManager.Instance.SetVoteTime(false);
+    }
+
+    private void OnDestroy()
+    {
+        VoteManager.Instance.OnRefreshed -= Refresh;
+    }
+    private void Vote()
+    {
+        if(index == -1)
+        {
+            index = NetworkClient.localPlayer.GetComponent<Player>().PlayerOrderIndex;
+        }
+        VoteManager.Instance.CmdVoting(index);
+        Debug.Log(gameObject);
     }
 
     private void Refresh()
@@ -73,25 +93,4 @@ public class UI_VoteSystem : MonoBehaviour
         }
     }
 
-    private void OnDisable()
-    {
-        Debug.Log($"{gameObject} OnDisable");
-        foreach (GameObject background in _voteBackgroundList)
-        {
-            background.SetActive(false);
-        }
-        foreach (Image checkIcon in _checkIconList)
-        {
-            checkIcon.enabled = false;
-        }
-
-        VoteManager.Instance.OnVoteUpdated -= Refresh;
-        PlayerListManager.Instance.OnPlayerListUpdated -= Refresh;
-        VoteManager.Instance.SetVoteTime(false);
-    }
-
-    private void OnDestroy()
-    {
-        VoteManager.Instance.OnRefreshed -= Refresh;
-    }
 }

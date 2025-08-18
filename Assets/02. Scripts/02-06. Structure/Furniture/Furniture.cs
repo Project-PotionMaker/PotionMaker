@@ -404,6 +404,10 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
         //transform.position = _grid.CellToWorld(gridPosition) + new Vector3(0.5f, 0, 0.5f);
         if (NetworkClient.connection.identity.TryGetComponent<Player>(out Player player))
         {
+            if (success)
+            {
+                StartCoroutine(InputUIShow_Coroutine());
+            }
             player.GetAbility<PlayerPickupAbility>().ReceiveDroppedItem(success);
         }
     }
@@ -513,6 +517,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
             _currentEmissionColor = Color.black;
         }
 
+        TryHandleInputUIOnType(active);
         ApplyPropertyBlock();
     }
 
@@ -565,5 +570,15 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
             outputItem.SetFocus(isActive);
             return;
         }
+    }
+
+    private IEnumerator InputUIShow_Coroutine()
+    {
+        while(_inputObject == null)
+        {
+            yield return null;
+        }
+
+        TryHandleInputUIOnType(true);
     }
 }

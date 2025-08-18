@@ -53,6 +53,17 @@ public class VoteManager : NetworkBehaviourSingleton<VoteManager>
         _isVoted[playerOrderIndex] = !_isVoted[playerOrderIndex];
         OnVoteUpdated?.Invoke();
     }
+    [Command (requiresAuthority = false)]
+    public void CmdCancleVote(int playerOrderIndex)
+    {
+        RpcCancelVoting(playerOrderIndex);
+    }
+    [ClientRpc]
+    public void RpcCancelVoting(int playerOrderIndex)
+    {
+        _isVoted[playerOrderIndex] = false;
+        OnVoteUpdated?.Invoke();
+    }
 
     [Server]
     private void CheckDone()

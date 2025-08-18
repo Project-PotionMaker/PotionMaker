@@ -61,6 +61,7 @@ public class PlayerPickupAbility : PlayerAbility
             IGridItemHandler itemHandler = item.GetComponent<IGridItemHandler>();
             if (ReferenceEquals(itemHandler, null) == false)
             {
+                VoteManager.Instance.CmdCancleVote(_owner.PlayerOrderIndex);
                 itemHandler.TryPickUp(_owner.connectionToClient);
             }
         }
@@ -118,6 +119,7 @@ public class PlayerPickupAbility : PlayerAbility
     {
         if (!ReferenceEquals(_heldItemIdentity, null))
         {
+            CraftItemFactory.Instance.ReturnObject(_heldItemIdentity.gameObject);
             _heldItemIdentity = null;
         }
     }

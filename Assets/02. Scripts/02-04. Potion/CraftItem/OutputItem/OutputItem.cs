@@ -14,6 +14,9 @@ public class ColorOnType
 
 public class OutputItem : NetworkBehaviour, IItem
 {
+    public event Action<List<int>, List<int>> OnOutputTIDUpdated;
+    public event Action<bool> OnItemFocusChanged;
+
     [SyncVar(hook = nameof(OnOutputItemTIDUpdated))]
     private int _outputTID;
     public int OutputTID => _outputTID;
@@ -59,7 +62,7 @@ public class OutputItem : NetworkBehaviour, IItem
         {
             StopCoroutine(_visibleRoutine);
         }
-        _visibleRoutine = StartCoroutine(VisibleRoutine());
+        _visibleRoutine = StartCoroutine(Coroutine_VisibleRoutine());
     }
 
     private void OnOutputItemTIDUpdated(int oldValue, int newValue)
@@ -101,6 +104,9 @@ public class OutputItem : NetworkBehaviour, IItem
             ResetModel();
             objectInfo.TypeObject.SetActive(true);
         }
+
+        OnOutputTIDUpdated?.Invoke
+            (_outputData.AvailableMachineTIDList, _outputData.IngredientTIDList);
     }
 
     private void ResetModel()
@@ -122,9 +128,21 @@ public class OutputItem : NetworkBehaviour, IItem
         return _outputTID;
     }
 
-    private IEnumerator VisibleRoutine()
+    private IEnumerator Coroutine_VisibleRoutine()
     {
         yield return new WaitForSeconds(.05f);
         _models.gameObject.SetActive(true);
+    }
+
+    [TargetRpc]
+    public void TargetRpcSetFocus(NetworkConnection target, bool isActive)
+    {
+        Debug.Log(nameof(TargetRpcSetFocus));
+        SetFocus(isActive);
+    }
+
+    public void SetFocus(bool isActive)
+    {
+        OnItemFocusChanged?.Invoke(isActive);
     }
 }

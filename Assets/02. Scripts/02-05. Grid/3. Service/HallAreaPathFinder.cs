@@ -71,6 +71,12 @@ public class HallAreaPathFinder
 
     public bool HasPath()
     {
+        if (_placedPositionHashSet.Contains(_entrancePosition) 
+            || _placedPositionHashSet.Contains(_exitPosition))
+        {
+            return false;
+        }
+
         // 입구 -> 계산대
         if (!BFS(_entrancePosition, _cashierPosition))
         {

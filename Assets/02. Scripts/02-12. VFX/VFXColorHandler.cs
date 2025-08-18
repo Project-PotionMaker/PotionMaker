@@ -1,7 +1,8 @@
+using Mirror;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class VFXColorHandler : MonoBehaviour
+public class VFXColorHandler : NetworkBehaviour
 {
     [Header("플레이어 별 핑 색깔")]
     [SerializeField]
@@ -15,7 +16,8 @@ public class VFXColorHandler : MonoBehaviour
         _particleSystems = GetComponentsInChildren<ParticleSystem>();
     }
 
-    public void ChangeVFXColor(int playerIndex)
+    [ClientRpc]
+    public void RpcChangeVFXColor(int playerIndex)
     {
         if (playerIndex < 0 || playerIndex >= _particleSystems.Length)
         {

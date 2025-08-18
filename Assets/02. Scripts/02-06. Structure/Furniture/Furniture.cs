@@ -1,3 +1,4 @@
+using DG.Tweening;
 using Mirror;
 using System;
 using System.Collections;
@@ -278,6 +279,10 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
         {
             TargetRpcOnPickUp(sender, pickedUpItem.GetComponent<NetworkIdentity>());
         }
+        else
+        {
+            TargetRpcOnPickUp(sender, null);
+        }
     }
 
     [Command(requiresAuthority = false)]
@@ -327,10 +332,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
             }
         }
 
-        if (success)
-        {
-            TargetRpcOnDrop(sender, success, transform.position);
-        }
+        TargetRpcOnDrop(sender, success, transform.position);
     }
 
     [Command(requiresAuthority = false)]
@@ -402,6 +404,10 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
         //transform.position = _grid.CellToWorld(gridPosition) + new Vector3(0.5f, 0, 0.5f);
         if (NetworkClient.connection.identity.TryGetComponent<Player>(out Player player))
         {
+            if (success)
+            {
+                StartCoroutine(InputUIShow_Coroutine());
+            }
             player.GetAbility<PlayerPickupAbility>().ReceiveDroppedItem(success);
         }
     }
@@ -495,24 +501,55 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
         _model.gameObject.SetActive(true);
     }
 
-    private Color emissionColor = new Color(0.25f, 0.25f, 0.25f);
+    private Color _emissionColor = new Color(0.25f, 0.25f, 0.25f);
+    private Color _incorrectColor = new Color(0.5f, 0f, 0f, 0.25f);
+    private Color _currentEmissionColor;
     public void SetHighlight(bool active)
     {
+        DOTween.Kill(this);
+
         if (active)
         {
-            _matPropertyBlock.SetColor("_EmissionColor", emissionColor);
+            _currentEmissionColor = _emissionColor;
         }
         else
         {
-            _matPropertyBlock.SetColor("_EmissionColor", Color.black);
+            _currentEmissionColor = Color.black;
         }
 
+        TryHandleInputUIOnType(active);
+        ApplyPropertyBlock();
+    }
+
+
+    public void OnIncorrectAction()
+    {
+        DOTween.Kill(this);
+        Color beforeColor = _emissionColor;
+
+        Sequence mySequence = DOTween.Sequence()
+            .SetId(this)
+            .Append(DOTween.To(
+                () => _currentEmissionColor,
+                x => _currentEmissionColor = x,
+                _incorrectColor,
+                0.2f))
+            .Append(DOTween.To(
+                () => _currentEmissionColor,
+                x => _currentEmissionColor = x,
+                beforeColor,
+                0.2f));
+
+        mySequence.OnUpdate(ApplyPropertyBlock);
+    }
+
+    private void ApplyPropertyBlock()
+    {
+        _matPropertyBlock.SetColor("_EmissionColor", _currentEmissionColor);
         foreach (var renderer in _modelRenderers)
         {
             renderer?.SetPropertyBlock(_matPropertyBlock);
         }
-
-        TryHandleInputUIOnType(active);
     }
 
     private void TryHandleInputUIOnType(bool isActive)
@@ -533,5 +570,15 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
             outputItem.SetFocus(isActive);
             return;
         }
+    }
+
+    private IEnumerator InputUIShow_Coroutine()
+    {
+        while(_inputObject == null)
+        {
+            yield return null;
+        }
+
+        TryHandleInputUIOnType(true);
     }
 }

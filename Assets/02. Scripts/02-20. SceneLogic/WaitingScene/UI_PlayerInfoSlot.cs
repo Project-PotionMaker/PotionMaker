@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine;
 using DG.Tweening;
 using Mirror;
+using UnityEngine.UI;
 
 public enum ERoomPlayerState
 {
@@ -31,6 +32,8 @@ public class UI_PlayerInfoSlot : MonoBehaviour
     private GameObject _readyPanel;
     [SerializeField]
     private GameObject _offlinePanel;
+    [SerializeField]
+    private RawImage _playerImage;
 
     [SerializeField]
     private string _hostWaitingForPlayerDescription;
@@ -47,6 +50,8 @@ public class UI_PlayerInfoSlot : MonoBehaviour
     public RoomPlayer CurrentRoomPlayer => _currentRoomPlayer;
 
     private RectTransform _slotRectTransform;
+
+
 
     public void Awake()
     {
@@ -195,18 +200,24 @@ public class UI_PlayerInfoSlot : MonoBehaviour
             _onlinePanel.SetActive(false);
             _readyPanel.SetActive(false);
             _offlinePanel.SetActive(true);
+            _playerImage.DOKill();
+            _playerImage.DOColor(new Color(1f, 1f, 1f, 0f), 0.3f);
         }
         else if(state == ERoomPlayerState.Online)
         {
             _onlinePanel.SetActive(true);
             _readyPanel.SetActive(false);
             _offlinePanel.SetActive(false);
+            _playerImage.DOKill();
+            _playerImage.DOColor(Color.white, 0.3f);
         }
         else
         {
             _onlinePanel.SetActive(false);
             _readyPanel.SetActive(true);
             _offlinePanel.SetActive(false);
+            _playerImage.DOKill();
+            _playerImage.DOColor(Color.white, 0.3f);
         }
 
         _slotRectTransform.DOKill();

@@ -133,6 +133,10 @@ public class PlayerPickupAbility : PlayerAbility
     {
         if (itemNetId == null)
         {
+            if (_owner.LastHighlightedStructure != null)
+            {
+                _owner.LastHighlightedStructure.OnIncorrectAction();
+            }
             return;
         }
         AudioNetworkManager.Instance.CmdPlaySFX(EPlayerAudioType.Hold);
@@ -145,6 +149,10 @@ public class PlayerPickupAbility : PlayerAbility
     {
         if (success == false || _heldItemIdentity == null)
         {
+            if (_owner.LastHighlightedStructure != null)
+            {
+                _owner.LastHighlightedStructure.OnIncorrectAction();
+            }
             return;
         }
         AudioNetworkManager.Instance.CmdPlaySFX(EPlayerAudioType.Drop);

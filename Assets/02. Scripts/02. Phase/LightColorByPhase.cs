@@ -104,7 +104,7 @@ public class LightColorByPhase : MonoBehaviour
             {
                 if (NetworkServer.active)
                 {
-                    PhaseManager.Instance.TransitionPhase(EPhaseType.PreparingPhase);
+                    PhaseManager.Instance.ServerTransitionPhase(EPhaseType.PreparingPhase);
                 }
             });
         }

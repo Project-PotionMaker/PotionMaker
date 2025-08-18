@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using VInspector;
 using Mirror;
 using System.Collections;
+using System.Linq;
 
 public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>, IShopInfoSaveable
 {
@@ -12,6 +11,7 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>, IShopInfoSa
     public event Action OnPhaseChanged;
     public event Action OnTimerRunning;
     public event Action OnDeathCountChanged;
+    public event Action<List<PotionData>> OnPickCompleted;
 
     public static event Action OnInitialized;
 
@@ -42,22 +42,23 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>, IShopInfoSa
     private bool _isGameOver = false;
     public bool IsGameOver { get => _isGameOver; set => _isGameOver = value; }
 
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+        if (DataTable.Instance.GetPotionDataList() == null)
+        {
+            Global.Instance.OnDataLoaded += ServerInitialize;
+        }
+        else
+        {
+            ServerInitialize();
+        }
+    }
+
     public override void OnStartClient()
     {
         base.OnStartClient();
-        _deathCount = _maxDeathCount;
         InitPhase();
-        if (isServer)
-        {
-            if(DataTable.Instance.GetPotionDataList() == null)
-            {
-                Global.Instance.OnDataLoaded += ServerInitializePotionDataList;
-            }
-            else
-            {
-                ServerInitializePotionDataList();
-            }
-        }
     }
 
     private void Update()
@@ -67,6 +68,8 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>, IShopInfoSa
 
     public void InitPhase()
     {
+        // _potionTIDList.Callback += OnPotionTIDListUpdated;
+        _deathCount = _maxDeathCount;
         _day = ShopInfoManager.Instance.ShopInfo.Day;
         _phaseDictionary = new Dictionary<EPhaseType, BasePhase>
         {
@@ -81,42 +84,37 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>, IShopInfoSa
     }
 
     [Server]
-    private void ServerInitializePotionDataList()
+    public void ServerInitialize()
     {
-        Debug.Log("서버에서 포션 데이터 리스트 초기화 시작");
         _dailyPotionPicker = new DailyPotionPicker();
-
-        ServerPickPotionListFromHouse();
+        StartCoroutine(Coroutine_ServerPickPotionListFromHouse());
     }
-    private IEnumerator WaitPotionHouse()
-    {
-        while (PotionHouse.Instance == null)
-            yield return null;
 
-        ServerPickPotionListFromHouse(); // 재시도
-    }
     [Server]
-    private void ServerPickPotionListFromHouse()
+    public IEnumerator Coroutine_ServerPickPotionListFromHouse()
     {
-        if(PotionHouse.Instance == null)
+        yield return new WaitUntil(() => PotionHouse.Instance != null);
+        yield return new WaitUntil(() => NetworkServer.connections.Values.All(conn => conn.isReady));
+
+        List<PotionData> potionDataList = 
+            _dailyPotionPicker.PickDailyPotion(PotionHouse.Instance.PotionHouseTier);
+        _potionTIDList.Clear();
+        foreach (PotionData potionData in potionDataList)
         {
-            Debug.LogWarning("PotionHouse가 아직 초기화되지 않았습니다. 잠시 기다립니다.");
-            StartCoroutine(WaitPotionHouse());
-            return;
+            _potionTIDList.Add(potionData.TID);
         }
 
-        Debug.Log("서버에서 포션 리스트를 포션 하우스에서 선택합니다.");
-        _potionTIDList.Clear();
-        List<PotionData> potionDataList = _dailyPotionPicker.PickDailyPotion(PotionHouse.Instance.PotionHouseTier);
-        for(int i = 0; i < potionDataList.Count; i++)
-        {
-            PotionData data = potionDataList[i];
-            _potionTIDList.Add(data.TID);
-        }   
+        RpcOnPotionPickCompleted(potionDataList);
+    }
+
+    [ClientRpc]
+    public void RpcOnPotionPickCompleted(List<PotionData> potionDataList)
+    {
+        OnPickCompleted?.Invoke(potionDataList);
     }
 
     [Server]
-    public void TransitionPhase(EPhaseType nextPhase)
+    public void ServerTransitionPhase(EPhaseType nextPhase)
     {
         RpcTransitionPhase(nextPhase);
     }
@@ -124,6 +122,7 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>, IShopInfoSa
     [ClientRpc]
     public void RpcTransitionPhase(EPhaseType nextPhase)
     {
+        Debug.Log("RpcTransitionPhase");
         _currentPhase?.ExitPhase();
         if (_currentPhase is EndingPhase && _phaseDictionary[nextPhase] is PreparingPhase)
         {
@@ -131,7 +130,7 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>, IShopInfoSa
             OnDayPassed?.Invoke();
             if (isServer)
             {
-                ServerPickPotionListFromHouse(); 
+                StartCoroutine(Coroutine_ServerPickPotionListFromHouse()); 
             }
         }
         _currentPhase = _phaseDictionary[nextPhase];
@@ -148,6 +147,7 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>, IShopInfoSa
     {
         OnTimerRunning?.Invoke();
     }
+
     private void SyncDeathCount(int oldValue, int newValue)
     {
         if(newValue <= 0)
@@ -156,6 +156,7 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>, IShopInfoSa
         }
         OnDeathCountChanged?.Invoke();
     }
+
     [Server]
     public void ResetDeathCount()
     {

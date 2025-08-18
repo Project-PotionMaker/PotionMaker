@@ -37,7 +37,7 @@ public class AssetManager : MonoBehaviourSingleton<AssetManager>
             {
                 _prefabCacheDict[key] = asset as GameObject;
             }
-            Debug.Log($"로드된 에셋명 : {asset.name}");
+            // Debug.Log($"로드된 에셋명 : {asset.name}");
             return asset;
         }
         else

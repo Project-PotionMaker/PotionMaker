@@ -606,7 +606,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
     }
 
 
-    public void OnIncorrectInput()
+    public void OnIncorrectAction()
     {
         DOTween.Kill(this);
         Color beforeColor = _emissionColor;

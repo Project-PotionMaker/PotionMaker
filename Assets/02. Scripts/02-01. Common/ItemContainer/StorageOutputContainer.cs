@@ -15,7 +15,6 @@ public class StorageOutputContainer : IOutputContainer<Storage>
         }
         else
         {
-            storage.OnIncorrectOutput();
             return null;
         }
     }

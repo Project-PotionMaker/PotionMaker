@@ -39,7 +39,6 @@ public class MachineInputContainer : IInputContainer<Machine>
 
         if(success == false)
         {
-            machine.OnIncorrectInput();
             return false;
         }
 

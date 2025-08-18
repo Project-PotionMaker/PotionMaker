@@ -340,7 +340,7 @@ public class Storage : NetworkBehaviour, IGridItemHandler
     }
 
 
-    public void OnIncorrectOutput()
+    public void OnIncorrectAction()
     {
         DOTween.Kill(this);
         Color beforeColor = _emissionColor;

@@ -7,40 +7,45 @@ public class AudioNetworkManager : NetworkBehaviourSingleton<AudioNetworkManager
     {
         RpcPlaySFX(audioType);
     }
+
     [Command(requiresAuthority = false)]
     public void CmdPlaySFX(EMachineAudioType audioType)
     {
         RpcPlaySFX(audioType);
     }
+
     [Command(requiresAuthority = false)]
     public void CmdPlaySFX(EStorageAudioType audioType)
     {
         RpcPlaySFX(audioType);
     }
+
     [Command(requiresAuthority = false)]
     public void CmdPlaySFX(ECustomerAudioType audioType)
     {
         RpcPlaySFX(audioType);
     }
 
+    [ClientRpc]
+    public void RpcPlaySFX(EPlayerAudioType audioType)
+    {
+        AudioManager.Instance.PlaySFX(audioType);
+    }
 
     [ClientRpc]
-    private void RpcPlaySFX (EPlayerAudioType audioType)
+    public void RpcPlaySFX(EMachineAudioType audioType)
     {
         AudioManager.Instance.PlaySFX(audioType);
     }
+
     [ClientRpc]
-    private void RpcPlaySFX(EMachineAudioType audioType)
+    public void RpcPlaySFX(EStorageAudioType audioType)
     {
         AudioManager.Instance.PlaySFX(audioType);
     }
+
     [ClientRpc]
-    private void RpcPlaySFX(EStorageAudioType audioType)
-    {
-        AudioManager.Instance.PlaySFX(audioType);
-    }
-    [ClientRpc]
-    private void RpcPlaySFX(ECustomerAudioType audioType)
+    public void RpcPlaySFX(ECustomerAudioType audioType)
     {
         AudioManager.Instance.PlaySFX(audioType);
     }

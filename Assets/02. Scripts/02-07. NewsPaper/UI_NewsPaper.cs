@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 
 public class UI_NewsPaper : MonoBehaviour
@@ -15,6 +16,10 @@ public class UI_NewsPaper : MonoBehaviour
 
     private void Refresh(List<int> dailyPotionTIDList)
     {
+        int dailyPotionListSize = dailyPotionDataList.Count;
+        GameSceneUIManager.Instance?.OpenNewspaperPopup();
+        AudioManager.Instance.PlaySFX(EPhaseAudioType.EnterPreparingPhase);
+
         Debug.Log("UI_NewsPaper의 Refresh");
         int dailyPotionListSize = dailyPotionTIDList.Count;
         for (int i = 0; i < _slotDailyPotionList.Count; i++)
@@ -22,6 +27,10 @@ public class UI_NewsPaper : MonoBehaviour
             if (i < dailyPotionListSize)
             {
                 _slotDailyPotionList[i].gameObject.SetActive(true);
+                _slotDailyPotionList[i].RefreshSlot(dailyPotionDataList[i]);
+                _slotDailyPotionList[i].transform.DOScale(Vector3.one, 0.5f).From(Vector3.one * 1.2f)
+                    .SetEase(Ease.InOutQuad)
+                    .SetRelative(true);
                 _slotDailyPotionList[i].RefreshSlot(DataTable.Instance.GetPotionData(dailyPotionTIDList[i]));
             }
             else
@@ -29,6 +38,5 @@ public class UI_NewsPaper : MonoBehaviour
                 _slotDailyPotionList[i].gameObject.SetActive(false);
             }
         }
-        GameSceneUIManager.Instance?.OpenNewspaperPopup();
     }
 }

@@ -6,6 +6,9 @@ using UnityEngine;
 
 public class IngredientItem : NetworkBehaviour, IItem
 {
+    public event Action<int> OnItemTIDUpdated;
+    public event Action<bool> OnItemFocusChanged;
+
     [SyncVar(hook = nameof(OnIngredientItemTIDUpdated))]
     private int _ingredientTID;
     public int IngredientTID => _ingredientTID;
@@ -44,7 +47,7 @@ public class IngredientItem : NetworkBehaviour, IItem
         {
             StopCoroutine(_visibleRoutine);
         }
-        _visibleRoutine = StartCoroutine(VisibleRoutine());
+        _visibleRoutine = StartCoroutine(Coroutine_VisibleRoutine());
     }
 
     private void OnIngredientItemTIDUpdated(int oldValue, int newValue)
@@ -56,17 +59,18 @@ public class IngredientItem : NetworkBehaviour, IItem
     [Server]
     public void ServerUpdateIngredientData(int TID)
     {
+        Debug.Log(nameof(ServerUpdateIngredientData));
         _ingredientTID = TID;
         _ingredientData = DataTable.Instance.GetIngredientData(TID);
     }
 
     private void ClientUpdateIngredientData()
     {
+        Debug.Log(nameof(ClientUpdateIngredientData));
         // 클라이언트에서 초기화 시 SyncVar로 받은 TID를 사용해 데이터 로드 및 모델 활성화
         _ingredientData = DataTable.Instance.GetIngredientData(_ingredientTID);
-
-
         ActivateModelForTID(_ingredientData.TID);
+        OnItemTIDUpdated?.Invoke(_ingredientData.AvailableMachineTID);
     }
 
     private void ActivateModelForTID(int tid)
@@ -93,9 +97,28 @@ public class IngredientItem : NetworkBehaviour, IItem
         return _ingredientTID;
     }
 
-    private IEnumerator VisibleRoutine()
+    private IEnumerator Coroutine_VisibleRoutine()
     {
         yield return new WaitForSeconds(.05f);
         _models.gameObject.SetActive(true);
+    }
+
+    [TargetRpc]
+    public void TargetRpcSetFocus(NetworkConnection target, bool isActive)
+    {
+        Debug.Log(nameof(TargetRpcSetFocus));
+        SetFocus(isActive);
+    }
+
+    public void SetFocus(bool isActive)
+    {
+        Debug.Log(nameof(SetFocus));
+
+        int tidUpdatedSubscriberCount = OnItemTIDUpdated?.GetInvocationList().Length ?? 0;
+        Debug.Log($"OnItemTIDUpdated 구독자 수: {tidUpdatedSubscriberCount}");
+        int highlightedSubscriberCount = OnItemFocusChanged?.GetInvocationList().Length ?? 0;
+        Debug.Log($"OnItemHighlighted 구독자 수: {highlightedSubscriberCount}");
+
+        OnItemFocusChanged?.Invoke(isActive);
     }
 }

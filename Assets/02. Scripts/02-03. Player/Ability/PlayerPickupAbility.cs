@@ -120,6 +120,7 @@ public class PlayerPickupAbility : PlayerAbility
         {
             CraftItemFactory.Instance.ReturnObject(_heldItemIdentity.gameObject);
             _heldItemIdentity = null;
+            _holdingVFX.SetActive(false);
         }
     }
 

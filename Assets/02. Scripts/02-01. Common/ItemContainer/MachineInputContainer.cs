@@ -40,12 +40,11 @@ public class MachineInputContainer : IInputContainer<Machine>
         if(success == false)
         {
             machine.OnIncorrectInput();
+            return false;
         }
-        else
-        {
-            machine.ServerSetInputType(inputType);
-            machine.ServerAddInputTID(tid);
-        }
-        return success;
+
+        machine.ServerSetInputType(inputType);
+        machine.ServerAddInputTID(tid);
+        return true;
     }
 }

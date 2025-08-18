@@ -24,24 +24,24 @@ public class UI_UniversalAudioHandler : MonoBehaviour, ISelectHandler, IPointerE
         }
     }
 
-    private void PlayClickAudio()
+    private void PlaySFX(EUIAudioType audioType)
     {
         if (AudioManager.Instance == null)
         {
             return;
         }
 
-        AudioManager.Instance.PlaySFX(EUIAudioType.ButtonClicked);
+        AudioManager.Instance.PlaySFX(audioType);
+    }
+
+    private void PlayClickAudio()
+    {
+        PlaySFX(EUIAudioType.ButtonClicked);
     }
 
     private void PlaySelectedAudio()
     {
-        if (AudioManager.Instance == null)
-        {
-            return;
-        }
-
-        AudioManager.Instance.PlaySFX(EUIAudioType.ButtonSelected);
+        PlaySFX(EUIAudioType.ButtonSelected);
     }
 
     public void OnSelect(BaseEventData eventData)

@@ -50,9 +50,6 @@ public class PlayerPickupAbility : PlayerAbility
         {
             TryPutDown();
         }
-
-        bool hasHeldItem = _heldItemIdentity != null;
-        _animationAbility.SetBool(EPlayerAnimationParameter.HasHeldItem, hasHeldItem);
     }
 
     private void TryPickup()
@@ -139,6 +136,7 @@ public class PlayerPickupAbility : PlayerAbility
             return;
         }
         AudioNetworkManager.Instance.CmdPlaySFX(EPlayerAudioType.Hold);
+        _animationAbility.SetBool(EPlayerAnimationParameter.HasHeldItem, true);
         CmdPickUpItem(itemNetId);
     }
 
@@ -150,6 +148,7 @@ public class PlayerPickupAbility : PlayerAbility
             return;
         }
         AudioNetworkManager.Instance.CmdPlaySFX(EPlayerAudioType.Drop);
+        _animationAbility.SetBool(EPlayerAnimationParameter.HasHeldItem, false);
         CmdDropItem();
     }
 

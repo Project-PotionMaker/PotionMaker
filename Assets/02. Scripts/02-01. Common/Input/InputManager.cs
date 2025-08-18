@@ -31,6 +31,8 @@ public class InputManager : MonoBehaviourSingleton<InputManager>
 
     public event Action<PlayerInput> OnAnyKey;
 
+    public event Action OnChangeInputMode;
+
     protected override void Awake()
     {
         base.Awake();
@@ -51,6 +53,7 @@ public class InputManager : MonoBehaviourSingleton<InputManager>
     {
         _playerInput.actions.FindActionMap(mapToDisable, true)?.Disable();
         _playerInput.SwitchCurrentActionMap(mapToEnable);
+        OnChangeInputMode?.Invoke();
     }
 
     // Player

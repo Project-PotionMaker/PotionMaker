@@ -143,6 +143,20 @@ public class ProductManager : NetworkBehaviourSingleton<ProductManager>
     {
         // Todo: 팝업매니저를 통한 구매 성공 여부 팝업?
         Debug.Log($"구매 결과: {result}");
+
+        if (AudioManager.Instance == null)
+        {
+            return;
+        }
+
+        if (result)
+        {
+            AudioManager.Instance.PlaySFX(EUIAudioType.BuyProductSucess);
+        }
+        else
+        {
+            AudioManager.Instance.PlaySFX(EUIAudioType.BuyProductFailure);
+        }
     }
 
     private void Unlock(int productTID)

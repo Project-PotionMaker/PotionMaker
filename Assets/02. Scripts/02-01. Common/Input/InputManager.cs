@@ -29,6 +29,8 @@ public class InputManager : MonoBehaviourSingleton<InputManager>
     public event Action OnSubmitEvent;
     public event Action OnCancelEvent;
 
+    public event Action<PlayerInput> OnAnyKey;
+
     protected override void Awake()
     {
         base.Awake();
@@ -55,6 +57,7 @@ public class InputManager : MonoBehaviourSingleton<InputManager>
     private void OnMove(InputValue value)
     {
         _moveInput = value.Get<Vector2>();
+        OnAnyKey?.Invoke(_playerInput);
     }
 
     private void OnInteract(InputValue value)
@@ -62,6 +65,7 @@ public class InputManager : MonoBehaviourSingleton<InputManager>
         if (value.isPressed)
         {
             OnInteractChanged?.Invoke(true);
+            OnAnyKey?.Invoke(_playerInput);
         }
         else
         {
@@ -72,46 +76,55 @@ public class InputManager : MonoBehaviourSingleton<InputManager>
     private void OnPickup()
     {
         OnPickupEvent?.Invoke();
+        OnAnyKey?.Invoke(_playerInput);
     }
 
     private void OnPing()
     {
         OnPingEvent?.Invoke();
+        OnAnyKey?.Invoke(_playerInput);
     }
 
     private void OnReady()
     {
         OnReadyEvent?.Invoke();
+        OnAnyKey?.Invoke(_playerInput);
     }
 
     private void OnOption()
     {
         OnOptionEvent?.Invoke();
+        OnAnyKey?.Invoke(_playerInput);
     }
 
     private void OnSetting()
     {
         OnSettingEvent?.Invoke();
+        OnAnyKey?.Invoke(_playerInput);
     }
 
     // UI
     private void OnPoint()
     {
         OnPointEvent?.Invoke();
+        OnAnyKey?.Invoke(_playerInput);
     }
 
     private void OnNavigate()
     {
         OnNavigateEvent?.Invoke();
+        OnAnyKey?.Invoke(_playerInput);
     }
 
     private void OnSubmit()
     {
         OnSubmitEvent?.Invoke();
+        OnAnyKey?.Invoke(_playerInput);
     }
 
     private void OnCancel()
     {
         OnCancelEvent?.Invoke();
+        OnAnyKey?.Invoke(_playerInput);
     }
 }

@@ -10,22 +10,24 @@ public class UI_NewsPaper : MonoBehaviour
 
     public void Start()
     {
-        PhaseManager.Instance.DailyPotionPicker.OnPickCompleted += Refresh;
+        PhaseManager.Instance.OnPickCompleted += Refresh;
         gameObject.SetActive(false);
     }
 
-    private void Refresh(List<PotionData> dailyPotionDataList)
+    private void Refresh(List<PotionData> dailyPotionTIDList)
     {
-        int dailyPotionListSize = dailyPotionDataList.Count;
         GameSceneUIManager.Instance?.OpenNewspaperPopup();
         AudioManager.Instance.PlaySFX(EPhaseAudioType.EnterPreparingPhase);
 
+        Debug.Log("UI_NewsPaper의 Refresh");
+        int dailyPotionListSize = dailyPotionTIDList.Count;
         for (int i = 0; i < _slotDailyPotionList.Count; i++)
         {
             if (i < dailyPotionListSize)
             {
                 _slotDailyPotionList[i].gameObject.SetActive(true);
-                _slotDailyPotionList[i].RefreshSlot(dailyPotionDataList[i]);
+                _slotDailyPotionList[i].RefreshSlot(dailyPotionTIDList[i]);
+                //_slotDailyPotionList[i].RefreshSlot(DataTable.Instance.GetPotionData(dailyPotionTIDList[i]));
                 _slotDailyPotionList[i].transform.DOScale(Vector3.one, 0.5f).From(Vector3.one * 1.2f)
                     .SetEase(Ease.InOutQuad)
                     .SetRelative(true);

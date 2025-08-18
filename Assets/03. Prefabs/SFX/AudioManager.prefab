@@ -55,14 +55,15 @@ MonoBehaviour:
     - {fileID: 0}
     - {fileID: 0}
     - {fileID: 0}
-  _VFXAudio:
+  _EffectAudio:
     _clips:
-    - {fileID: 0}
+    - {fileID: 8300000, guid: cee48bd02c36384419ae118924eb08da, type: 3}
+    - {fileID: 8300000, guid: ffeec9e85a73a1a43983e7efbc7129cb, type: 3}
   _playerAudio:
     _clips:
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
+    - {fileID: 8300000, guid: 97a3ee39d1bb25f4383a4c2ab1308837, type: 3}
+    - {fileID: 8300000, guid: 8e6292e76fc2b5e47991604472948000, type: 3}
+    - {fileID: 8300000, guid: 3db41b571bd134a49b107010bb84d701, type: 3}
   _machineAudio:
     _clips:
     - {fileID: 0}
@@ -70,7 +71,7 @@ MonoBehaviour:
     - {fileID: 0}
   _storageAudio:
     _clips:
-    - {fileID: 0}
+    - {fileID: 8300000, guid: 0025a4bc7f64d4045bc1a14b2e6366c8, type: 3}
   _customerAudio:
     _clips:
     - {fileID: 0}
@@ -86,6 +87,7 @@ MonoBehaviour:
   _UIAudio:
     _clips:
     - {fileID: 0}
+    - {fileID: 8300000, guid: bcb81e2b34775934f92e2d04f43546d2, type: 3}
     - {fileID: 0}
     - {fileID: 0}
     - {fileID: 0}
@@ -106,6 +108,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8873166597742980953}
     m_Modifications:
+    - target: {fileID: 300829630482983458, guid: 334a1ee317993be44bc8dba58e916568, type: 3}
+      propertyPath: Loop
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 300829630482983458, guid: 334a1ee317993be44bc8dba58e916568, type: 3}
+      propertyPath: m_PlayOnAwake
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 300829630482983458, guid: 334a1ee317993be44bc8dba58e916568, type: 3}
       propertyPath: OutputAudioMixerGroup
       value: 

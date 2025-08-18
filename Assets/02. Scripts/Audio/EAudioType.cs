@@ -8,6 +8,7 @@ public enum EBGMAudioType
 public enum EEffectAudioType
 {
     Ping,
+    Deliver
 }
 public enum EPlayerAudioType
 {
@@ -47,6 +48,7 @@ public enum EPhaseAudioType
 public enum EUIAudioType
 {
     ButtonClicked,
+    ButtonSelected,
     ClientReady,
     HostReady,
     BuyProductSucess,

@@ -128,6 +128,7 @@ public class PlayerPickupAbility : PlayerAbility
     public void ReceiveRefundCompleted()
     {
         ResetItem();
+        GridManager.Instance.StopPlacement();
     }
 
     [Client]

@@ -40,7 +40,7 @@ public class ServingPhase : BasePhase
             }
             if (CustomerManager.Instance.RemainCustomers == 0) 
             {
-                PhaseManager.Instance.TransitionPhase(EPhaseType.EndingPhase);
+                PhaseManager.Instance.ServerTransitionPhase(EPhaseType.EndingPhase);
                 return;
             }
         }

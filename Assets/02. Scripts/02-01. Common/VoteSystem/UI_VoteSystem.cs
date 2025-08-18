@@ -3,7 +3,6 @@ using UnityEngine.UI;
 using Mirror;
 using System.Collections.Generic;
 using UnityEngine.InputSystem;
-using System;
 
 public class UI_VoteSystem : MonoBehaviour
 {
@@ -13,7 +12,7 @@ public class UI_VoteSystem : MonoBehaviour
     private List<Image> _checkIconList;
 
     private int index = -1;
-    public event Action<string> OnAlert;
+
     private void Awake()
     {
         foreach(GameObject background in _voteBackgroundList)
@@ -60,25 +59,9 @@ public class UI_VoteSystem : MonoBehaviour
     }
     private void Vote()
     {
-        Player player = NetworkClient.localPlayer.GetComponent<Player>();
-        if (index == -1)
+        if(index == -1)
         {
-            index = player.PlayerOrderIndex;
-        }
-        if(PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase && player.GetAbility<PlayerPickupAbility>().HeldItemIdentity != null)
-        {
-            OnAlert?.Invoke("우선 배치를 끝내세요");
-            return;
-        }
-        if(GridManager.Instance.HasPath == false)
-        {
-            OnAlert?.Invoke("가구를 다시 배치하세요");
-            return;
-        }
-        if(GridManager.Instance.IsEmptyArea(EAreaType.FrontYard) == false)
-        {
-            OnAlert?.Invoke("확인하지 않은 택배가 있습니다");
-            return;
+            index = NetworkClient.localPlayer.GetComponent<Player>().PlayerOrderIndex;
         }
         VoteManager.Instance.CmdVoting(index);
         Debug.Log(gameObject);

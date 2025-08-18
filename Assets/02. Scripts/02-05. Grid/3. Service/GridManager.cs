@@ -58,13 +58,6 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
     private List<GridSaveData> _gridSaveDataList = new();
     public List<GridSaveDataDTO> GridSaveDataList => _gridSaveDataList.Select(gridSaveData => gridSaveData.ToDTO()).ToList();
 
-    [SyncVar]
-    private bool _hasPath = true;
-    public bool HasPath => _hasPath;
-
-    public event Action<string> OnNotFoundPath;
-    public event Action OnPathFound;
-
     public override void OnStartClient()
     {
 
@@ -247,30 +240,13 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
                     ToPickupTablePositionHashSet(_pickupTableForCustomerList));
                 if (!_hallAreaPathFinder.HasPath())
                 {
-                    Debug.Log("경로 없음");
-                    BroadCastOnNotFoundPath();
-                    _hasPath = false;
-                }
-                else
-                {
-                    OnPathFound?.Invoke();
-                    _hasPath = true;
+                    Debug.LogWarning("경로 없음!!!");
+                    // 경로가 없을 때 로직
                 }
             }
 
             TargetRpcOnPlaceStructure(sender, true);
         }
-    }
-
-    [ClientRpc]
-    private void BroadCastOnNotFoundPath()
-    {
-        OnNotFoundPath?.Invoke("손님이 이동할 수 있는 경로가 없습니다");
-    }
-    [ClientRpc]
-    private void BroadCastOnPathFound()
-    {
-        OnPathFound?.Invoke();
     }
 
     private void HandlePickupTablePlacement(NetworkIdentity structureIdentity, Vector3Int gridPosition, StructureData data)
@@ -553,33 +529,6 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
         MakeGridSaveDataList();
         shopInfo.GridSaveDataList = _gridSaveDataList;
     }
-
-    public bool IsFullArea(EAreaType areaType)
-    {
-        ReadOnlyList<Vector3Int> area = GetPositionByAreaType(areaType);
-        foreach (Vector3Int position in area)
-        {
-            if (!_placedObjectInGridSyncDict.ContainsKey(position))
-            {
-                return false; // 해당 영역에 오브젝트가 존재하지 않음
-            }
-        }
-        return true;
-    }
-
-    public bool IsEmptyArea(EAreaType areaType)
-    {
-        ReadOnlyList<Vector3Int> area = GetPositionByAreaType(areaType);
-        foreach(Vector3Int pos in area)
-        {
-            if (_placedObjectInGridSyncDict.ContainsKey(pos))
-            {
-                return false; // 해당 영역에 오브젝트가 존재함
-            }
-        }
-        return true;
-    }
-
 }
 
 

@@ -17,6 +17,7 @@ public class PlayerInteractAbility : PlayerAbility
         }
 
         InputManager.Instance.OnInteractChanged += ChangeInteractState;
+        InputManager.Instance.OnChangeInputMode += StopAnimation;
         _animationAbility = _owner.GetAbility<PlayerAnimationAbility>();
     }
 
@@ -31,6 +32,9 @@ public class PlayerInteractAbility : PlayerAbility
     private void ChangeInteractState(bool isInteract)
     {
         _isInteract = isInteract;
+
+        _animationAbility.SetBool(EPlayerAnimationParameter.IsInteract, isInteract);
+
         if (isInteract)
         {
             StartInteract();
@@ -49,8 +53,6 @@ public class PlayerInteractAbility : PlayerAbility
                 return;
             }
         }
-        _animationAbility.SetBool(EPlayerAnimationParameter.IsInteract, isInteract);
-
     }
 
     private void StartInteract()
@@ -108,11 +110,17 @@ public class PlayerInteractAbility : PlayerAbility
         
     }
 
+    private void StopAnimation()
+    {
+        _animationAbility.SetBool(EPlayerAnimationParameter.IsInteract, false);
+    }
+
     private void OnDestroy()
     {
         if(InputManager.Instance != null)
         {
             InputManager.Instance.OnInteractChanged -= ChangeInteractState;
+            InputManager.Instance.OnChangeInputMode -= StopAnimation;
         }
     }
 }

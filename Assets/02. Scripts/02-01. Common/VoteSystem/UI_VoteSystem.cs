@@ -60,8 +60,7 @@ public class UI_VoteSystem : MonoBehaviour
     }
     private void Vote()
     {
-        Player player;
-        player = NetworkClient.localPlayer.GetComponent<Player>();
+        Player player = NetworkClient.localPlayer.GetComponent<Player>();
         if (index == -1)
         {
             index = player.PlayerOrderIndex;

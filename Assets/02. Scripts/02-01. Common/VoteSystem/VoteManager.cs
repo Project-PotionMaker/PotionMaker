@@ -54,7 +54,7 @@ public class VoteManager : NetworkBehaviourSingleton<VoteManager>
         OnVoteUpdated?.Invoke();
     }
     [Command (requiresAuthority = false)]
-    public void CmdCancleVote(int playerOrderIndex)
+    public void CmdCancelVote(int playerOrderIndex)
     {
         RpcCancelVoting(playerOrderIndex);
     }

@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 public class ProductManager : NetworkBehaviourSingleton<ProductManager>
 {
-    public event Action OnBuyResultReceived;
+    public event Action<ResultMessage> OnBuyResultReceived;
     private Dictionary<EProductType, List<Product>> _productListDict;
     public Dictionary<EProductType, List<ProductDTO>> ProductListDict =>
         _productListDict.ToDictionary
@@ -96,25 +96,26 @@ public class ProductManager : NetworkBehaviourSingleton<ProductManager>
     {
         Product product = _productListDict[productType].Find(product => product.Data.TID == productID);
 
-        bool result = TryBuy(product);
-        TargetShowResultUI(sender, result);
+        ResultMessage resultMessage = TryBuy(product);
+        TargetShowResultUI(sender, resultMessage);
     }
 
     [Server]
-    private bool TryBuy(Product product)
+    private ResultMessage TryBuy(Product product)
     {
         if (!isServer)
         {
             throw new InvalidOperationException($"{nameof(TryBuy)}() is server-only. Use {nameof(CmdRequestBuy)}() from client.");
         }
-        if (!CurrencyManager.Instance.TrySubtractCurrency(product.Data.Price))
-        {
-            return false;
-        }
         if (GridManager.Instance.IsFullArea(EAreaType.FrontYard))
         {
-            return false;
+            return new ResultMessage(false, "배달 공간이 부족합니다");
         }
+        if (!CurrencyManager.Instance.TrySubtractCurrency(product.Data.Price))
+        {
+            return new ResultMessage(false, "보유한 코인이 부족합니다");
+        }
+
         switch (product.Data.ProductType)
         {
             case EProductType.Machine:
@@ -140,27 +141,28 @@ public class ProductManager : NetworkBehaviourSingleton<ProductManager>
                 break;
             }
         }
-        return true;
+        return new ResultMessage(true,"구매 완료");
     }
 
     [TargetRpc]
-    public void TargetShowResultUI(NetworkConnection taraget, bool result)
+    public void TargetShowResultUI(NetworkConnection taraget, ResultMessage resultMessage)
     {
         // Todo: 팝업매니저를 통한 구매 성공 여부 팝업?
-        Debug.Log($"구매 결과: {result}");
+        Debug.Log($"구매 결과: {resultMessage.Result}");
 
         if (AudioManager.Instance == null)
         {
             return;
         }
 
-        if (result)
+        if (resultMessage.Result)
         {
             AudioManager.Instance.PlaySFX(EUIAudioType.BuyProductSucess);
         }
         else
         {
             AudioManager.Instance.PlaySFX(EUIAudioType.BuyProductFailure);
+            OnBuyResultReceived?.Invoke(resultMessage);
         }
     }
 

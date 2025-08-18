@@ -54,22 +54,30 @@ public class UI_DaySummary : MonoBehaviour
         SalesManager.Instance.OnSummaryReady += ShowSummary;
         gameObject.SetActive(false);
     }
-    private void Update()
+
+    private void OnEnable()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        InputManager.Instance.OnReadyEvent += PopUpVotePanel;
+    }
+    private void OnDisable()
+    {
+
+        InputManager.Instance.OnReadyEvent -= PopUpVotePanel;
+    }
+
+    private void PopUpVotePanel()
+    {
+        if (PhaseManager.Instance.IsGameOver)
         {
-            if (PhaseManager.Instance.IsGameOver)
-            {
-                _gameOverPanel.ShowSummary();
-                AudioManager.Instance.PlaySFX(EPhaseAudioType.EndingPhaseFailure);
-            }
-            else
-            {
-                _successPanel.ShowSummary();
-                AudioManager.Instance.PlaySFX(EPhaseAudioType.EndingPhaseSuccess);
-            }
-            gameObject.SetActive(false);
+            _gameOverPanel.ShowSummary();
+            AudioManager.Instance.PlaySFX(EPhaseAudioType.EndingPhaseFailure);
         }
+        else
+        {
+            _successPanel.ShowSummary();
+            AudioManager.Instance.PlaySFX(EPhaseAudioType.EndingPhaseSuccess);
+        }
+        gameObject.SetActive(false);
     }
     public void OnEndingPhaseStarted()
     {

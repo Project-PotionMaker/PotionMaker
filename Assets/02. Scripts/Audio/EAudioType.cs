@@ -8,6 +8,7 @@ public enum EBGMAudioType
 public enum EEffectAudioType
 {
     Ping,
+    Deliver
 }
 public enum EPlayerAudioType
 {

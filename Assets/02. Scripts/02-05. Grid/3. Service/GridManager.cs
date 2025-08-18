@@ -58,6 +58,7 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
     private List<GridSaveData> _gridSaveDataList = new();
     public List<GridSaveDataDTO> GridSaveDataList => _gridSaveDataList.Select(gridSaveData => gridSaveData.ToDTO()).ToList();
 
+    [SyncVar]
     private bool _hasPath = true;
     public bool HasPath => _hasPath;
 
@@ -247,7 +248,7 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
                 if (!_hallAreaPathFinder.HasPath())
                 {
                     Debug.Log("경로 없음");
-                    OnNotFoundPath?.Invoke("손님이 이동할 수 있는 경로가 없습니다");
+                    BroadCastOnNotFoundPath();
                     _hasPath = false;
                 }
                 else
@@ -259,6 +260,17 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
 
             TargetRpcOnPlaceStructure(sender, true);
         }
+    }
+
+    [ClientRpc]
+    private void BroadCastOnNotFoundPath()
+    {
+        OnNotFoundPath?.Invoke("손님이 이동할 수 있는 경로가 없습니다");
+    }
+    [ClientRpc]
+    private void BroadCastOnPathFound()
+    {
+        OnPathFound?.Invoke();
     }
 
     private void HandlePickupTablePlacement(NetworkIdentity structureIdentity, Vector3Int gridPosition, StructureData data)

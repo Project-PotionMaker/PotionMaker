@@ -47,7 +47,7 @@ public class UI_RecipePage : MonoBehaviour
         // 포션 정보
         _potionImage.sprite = ImageManager.Instance.GetImage(typeof(PotionData), data.TID);
         _potionName.text = data.Name;
-        // _potionDescription.text = data.Feature_LocalizationTID
+        _potionDescription.text = data.TestDescription;
 
         string recipeCode = data.RecipeCode;
 

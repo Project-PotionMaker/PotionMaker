@@ -183,7 +183,6 @@ public class Storage : NetworkBehaviour, IGridItemHandler
                 if (_outputComponent.ServerCanTake(this))
                 {
                     pickedUpItem = _outputComponent.ServerTakeItem(this);
-                    AudioNetworkManager.Instance.CmdPlaySFX(EStorageAudioType.Buy);
                 }
             }
         }

@@ -9,6 +9,7 @@ public class StorageOutputContainer : IOutputContainer<Storage>
         int price = DataTable.Instance.GetIngredientData(storage.IngredientTID).Price;
         if (CurrencyManager.Instance.TrySubtractCurrency(price))
         {
+            AudioNetworkManager.Instance.CmdPlaySFX(EStorageAudioType.Buy);
             return CraftItemManager.Instance.TryCreateIngredientItem
                 (storage.IngredientTID, storage.transform.position);
         }

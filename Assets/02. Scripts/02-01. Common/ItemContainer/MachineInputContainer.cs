@@ -36,14 +36,16 @@ public class MachineInputContainer : IInputContainer<Machine>
             success = false;
         }
 
-        machine.ServerSetInputType(inputType);
-        machine.ServerAddInputTID(tid);
 
         if(success == false)
         {
             machine.OnIncorrectInput();
         }
-
+        else
+        {
+            machine.ServerSetInputType(inputType);
+            machine.ServerAddInputTID(tid);
+        }
         return success;
     }
 }

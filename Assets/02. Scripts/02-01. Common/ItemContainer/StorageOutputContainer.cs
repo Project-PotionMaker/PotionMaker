@@ -6,8 +6,17 @@ public class StorageOutputContainer : IOutputContainer<Storage>
 
     public GameObject ServerTakeItem(Storage storage)
     {
-        return CraftItemManager.Instance.TryCreateIngredientItem
-            (storage.IngredientTID, storage.transform.position);
+        int price = DataTable.Instance.GetIngredientData(storage.IngredientTID).Price;
+        if (CurrencyManager.Instance.TrySubtractCurrency(price))
+        {
+            return CraftItemManager.Instance.TryCreateIngredientItem
+                (storage.IngredientTID, storage.transform.position);
+        }
+        else
+        {
+            storage.OnIncorrectOutput();
+            return null;
+        }
     }
 
     public bool ServerCanTake(Storage storage)

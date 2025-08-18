@@ -414,7 +414,10 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
         {
             if (ReferenceEquals(_outputComponent, null) == false)
             {
-                pickedUpItem = _outputComponent.ServerTakeItem(this);
+                if (_outputComponent.ServerCanTake(this))
+                {
+                    pickedUpItem = _outputComponent.ServerTakeItem(this);
+                }
             }
         }
 

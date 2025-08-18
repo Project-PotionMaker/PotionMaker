@@ -1,3 +1,4 @@
+using Mirror;
 using UnityEngine;
 
 public class PlayerPingAbility : PlayerAbility
@@ -19,7 +20,24 @@ public class PlayerPingAbility : PlayerAbility
     {
         _animationAbility.SetTrigger(EPlayerAnimationParameter.Ping);
 
-        _owner.CmdRequestPing();
+        CmdRequestPing();
+    }
+
+    [Command]
+    private void CmdRequestPing()
+    {
+        Vector3 position = _owner.GetFrontPosition();
+
+        GameObject pingObject = VFXFactory.Instance.CreateObject(EVFXType.Ping, position, Quaternion.identity);
+        if (pingObject == null)
+        {
+            return;
+        }
+
+        if (pingObject.TryGetComponent<VFXColorHandler>(out VFXColorHandler ping))
+        {
+            ping.RpcChangeVFXColor(_owner.PlayerOrderIndex);
+        }
     }
 
     private void OnDestroy()

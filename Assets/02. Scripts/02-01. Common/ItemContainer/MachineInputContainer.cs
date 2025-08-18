@@ -1,3 +1,4 @@
+using DG.Tweening;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -5,38 +6,44 @@ public class MachineInputContainer : IInputContainer<Machine>
 {
     public bool ServerTryInput(Machine machine, int tid, EInputType inputType, GameObject inputObject)
     {
+        bool success = true;
+
         switch (inputType)
         {
             case EInputType.Ingredient:
                 IngredientData ingredientData = DataTable.Instance.GetIngredientData(tid);
                 if(ingredientData.AvailableMachineTID != machine.Data.TID)
                 {
-                    return false;
+                    success = false;
                 }
                 break;
             case EInputType.Output:
                 OutputData outputData = DataTable.Instance.GetOutputData(tid);
                 if(outputData.AvailableMachineTIDList.Contains(machine.Data.TID) == false)
                 {
-                    return false;
+                    success = false;
                 }
                 break;
-            case EInputType.Potion:
-                return false;
             default:
-                return false;
+                success = false;
+                break;
         }
 
         if (machine.InputTIDList.Count + 1 > machine.Data.MaxInputCount ||
             machine.IsProcessFinished ||
             machine.InputTIDList.Contains(tid))
         {
-            return false;
+            success = false;
         }
 
         machine.ServerSetInputType(inputType);
         machine.ServerAddInputTID(tid);
 
-        return true;
+        if(success == false)
+        {
+            machine.OnIncorrectInput();
+        }
+
+        return success;
     }
 }

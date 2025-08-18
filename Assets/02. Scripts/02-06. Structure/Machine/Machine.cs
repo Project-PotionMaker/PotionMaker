@@ -1,3 +1,4 @@
+using DG.Tweening;
 using Mirror;
 using System;
 using System.Collections;
@@ -590,18 +591,50 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
         _model.gameObject.SetActive(true);
     }
 
-    private Color emissionColor = new Color(0.25f, 0.25f, 0.25f);
+    private Color _emissionColor = new Color(0.25f, 0.25f, 0.25f);
+    private Color _incorrectColor = new Color(0.5f, 0f, 0f, 0.25f);
+    private Color _currentEmissionColor;
     public void SetHighlight(bool active)
     {
+        DOTween.Kill(this);
+
         if (active)
         {
-            _matPropertyBlock.SetColor("_EmissionColor", emissionColor);
+            _currentEmissionColor = _emissionColor;
         }
         else
         {
-            _matPropertyBlock.SetColor("_EmissionColor", Color.black);
+            _currentEmissionColor = Color.black;
         }
 
+        ApplyPropertyBlock();
+    }
+
+
+    public void OnIncorrectInput()
+    {
+        DOTween.Kill(this);
+        Color beforeColor = _emissionColor;
+
+        Sequence mySequence = DOTween.Sequence()
+            .SetId(this)
+            .Append(DOTween.To(
+                () => _currentEmissionColor,
+                x => _currentEmissionColor = x,
+                _incorrectColor,
+                0.2f))
+            .Append(DOTween.To(
+                () => _currentEmissionColor,
+                x => _currentEmissionColor = x,
+                beforeColor,
+                0.2f));
+
+        mySequence.OnUpdate(ApplyPropertyBlock);
+    }
+
+    private void ApplyPropertyBlock()
+    {
+        _matPropertyBlock.SetColor("_EmissionColor", _currentEmissionColor);
         foreach (var renderer in _modelRenderers)
         {
             renderer?.SetPropertyBlock(_matPropertyBlock);

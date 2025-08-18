@@ -48,7 +48,7 @@ public class Player : NetworkBehaviour
         {
             if (_lastStructureCanvas != null)
             {
-                if (_lastStructureCanvas.GetInstanceID() == frontObject.GetInstanceID())
+                if (_lastStructureCanvas.gameObject.GetInstanceID() == frontObject.GetInstanceID())
                 {
                     return;
                 }

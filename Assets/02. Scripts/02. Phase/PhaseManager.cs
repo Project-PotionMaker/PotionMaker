@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using VInspector;
 using Mirror;
 using System.Collections;
 using System.Linq;

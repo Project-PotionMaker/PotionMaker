@@ -85,11 +85,13 @@ public class PlayerInteractAbility : PlayerAbility
     {
         if (success)
         {
-            Debug.Log("Interact 성공");
         }
         else
         {
-            Debug.Log("Interact 실패");
+            if (_owner.LastHighlightedStructure != null)
+            {
+                _owner.LastHighlightedStructure.OnIncorrectAction();
+            }
         }
     }
 

@@ -471,10 +471,6 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
             else
             {
                 success = _inputComponent.ServerTryInput(this, tid, inputType, inputObject);
-                if (success)
-                {
-                    CraftItemFactory.Instance.ReturnObject(inputObject);
-                }
             }
 
         }
@@ -483,7 +479,6 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
         {
             TargetRpcOnDrop(sender, success);
         }
-
     }
 
     [TargetRpc]

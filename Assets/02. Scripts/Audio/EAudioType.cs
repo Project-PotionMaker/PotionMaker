@@ -47,6 +47,7 @@ public enum EPhaseAudioType
 public enum EUIAudioType
 {
     ButtonClicked,
+    ButtonSelected,
     ClientReady,
     HostReady,
     BuyProductSucess,

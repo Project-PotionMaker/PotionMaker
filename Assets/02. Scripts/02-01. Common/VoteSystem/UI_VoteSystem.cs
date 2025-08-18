@@ -68,12 +68,17 @@ public class UI_VoteSystem : MonoBehaviour
         }
         if(PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase && player.GetAbility<PlayerPickupAbility>().HeldItemIdentity != null)
         {
-            OnAlert?.Invoke("우선 가구를 배치하세요");
+            OnAlert?.Invoke("우선 배치를 끝내세요");
             return;
         }
         if(GridManager.Instance.HasPath == false)
         {
             OnAlert?.Invoke("가구를 다시 배치하세요");
+            return;
+        }
+        if(GridManager.Instance.IsEmptyArea(EAreaType.FrontYard) == false)
+        {
+            OnAlert?.Invoke("확인하지 않은 택배가 있습니다");
             return;
         }
         VoteManager.Instance.CmdVoting(index);

@@ -87,6 +87,8 @@ public class UI_Phase : MonoBehaviour
 
         EndingPhase endingPhase = (EndingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.EndingPhase];
         endingPhase.OnPhaseExited += ShowReady; // 준비 단계가 시작되면 시작 패널 표시
+
+        FindGridManager();
     }
 
     private void UpdateDayText()
@@ -118,7 +120,24 @@ public class UI_Phase : MonoBehaviour
     private void ShowReady()
     {
         _readyPanel.DOAnchorPosY(-READY_HIDE_OFFSET, DURATION).SetRelative().SetEase(Ease.OutSine);
-        
+
+    }
+    private void FindGridManager()
+    {
+        if (GridManager.Instance == null)
+        {
+            Debug.LogWarning("GridManager not ready yet. Delaying StartVote.");
+            StartCoroutine(WaitForPathEvent());
+            return;
+        }
+        GridManager.Instance.OnNotFoundPath += ShowAlert;
+    }
+    private IEnumerator WaitForPathEvent()
+    {
+        while (GridManager.Instance == null)
+            yield return null;
+
+        FindGridManager(); // 재시도
     }
     private void StartVote()
     {
@@ -139,6 +158,7 @@ public class UI_Phase : MonoBehaviour
 
         StartVote(); // 재시도
     }
+
     private void StopVote()
     {
         _voteSystem.enabled = false;

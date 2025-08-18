@@ -541,6 +541,33 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
         MakeGridSaveDataList();
         shopInfo.GridSaveDataList = _gridSaveDataList;
     }
+
+    public bool IsFullArea(EAreaType areaType)
+    {
+        ReadOnlyList<Vector3Int> area = GetPositionByAreaType(areaType);
+        foreach (Vector3Int position in area)
+        {
+            if (!_placedObjectInGridSyncDict.ContainsKey(position))
+            {
+                return false; // 해당 영역에 오브젝트가 존재하지 않음
+            }
+        }
+        return true;
+    }
+
+    public bool IsEmptyArea(EAreaType areaType)
+    {
+        ReadOnlyList<Vector3Int> area = GetPositionByAreaType(areaType);
+        foreach(Vector3Int pos in area)
+        {
+            if (_placedObjectInGridSyncDict.ContainsKey(pos))
+            {
+                return false; // 해당 영역에 오브젝트가 존재함
+            }
+        }
+        return true;
+    }
+
 }
 
 

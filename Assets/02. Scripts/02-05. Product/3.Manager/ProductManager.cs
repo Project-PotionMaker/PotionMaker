@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 
 public class ProductManager : NetworkBehaviourSingleton<ProductManager>
 {
+    public event Action OnBuyResultReceived;
     private Dictionary<EProductType, List<Product>> _productListDict;
     public Dictionary<EProductType, List<ProductDTO>> ProductListDict =>
         _productListDict.ToDictionary
@@ -107,6 +108,10 @@ public class ProductManager : NetworkBehaviourSingleton<ProductManager>
             throw new InvalidOperationException($"{nameof(TryBuy)}() is server-only. Use {nameof(CmdRequestBuy)}() from client.");
         }
         if (!CurrencyManager.Instance.TrySubtractCurrency(product.Data.Price))
+        {
+            return false;
+        }
+        if (GridManager.Instance.IsFullArea(EAreaType.FrontYard))
         {
             return false;
         }

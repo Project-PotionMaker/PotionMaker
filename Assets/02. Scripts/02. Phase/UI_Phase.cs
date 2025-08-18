@@ -29,7 +29,11 @@ public class UI_Phase : MonoBehaviour
     [SerializeField]
     private RectTransform _alertPanel;
     [SerializeField]
-    private TextMeshProUGUI _alertText;
+    private TextMeshProUGUI _alertText; 
+    [SerializeField] 
+    private CanvasGroup _readyPanelGroup; 
+    [SerializeField] 
+    private CanvasGroup _alertPanelGroup;
 
     private const float READY_HIDE_OFFSET = 200f;
     private const float PLAYER_HIDE_OFFSET = 60f;
@@ -37,14 +41,14 @@ public class UI_Phase : MonoBehaviour
     private const float WINDOW_WIDTH = 1920f;
     private const float WINDOW_HEIGHT = 1080f;
     private const float DURATION = 1f;
-
+    private Sequence _alertSeq;
     private UI_VoteSystem _voteSystem;
 
     private void Start()
     {
         _voteSystem = GetComponent<UI_VoteSystem>();
         _voteSystem.enabled = false;
-
+        _voteSystem.OnAlert += ShowAlert;
         _serviceTimer.maxValue = 1f;
 
         OnPhaseManagerInitialized();
@@ -62,6 +66,8 @@ public class UI_Phase : MonoBehaviour
         PhaseManager.Instance.OnDayPassed += UpdateDayText;
         PhaseManager.Instance.OnTimerRunning += UpdateServiceTimer;
         PhaseManager.Instance.OnDeathCountChanged += RefreshDeathCount;
+
+        //GridManager.Instance.OnNotFoundPath += ShowAlert;
 
         UpdateDayText();
         RefreshDeathCount();
@@ -183,31 +189,32 @@ public class UI_Phase : MonoBehaviour
             _deathCountHeart[i].color = i < PhaseManager.Instance.DeathCount ? Color.white : Color.black;
         }
     }
+
     public void ShowAlert(string text)
     {
-        const float showOffsetY = -ALERT_HIDE_OFFSET;
-        const float hideOffsetY = ALERT_HIDE_OFFSET;
-        const float stayDuration = 2f;
+        const float fadeDur = 0.35f; // 패널 페이드 인/아웃 시간
+        const float blinkDur = 0.3f;  // 한 번 깜빡임의 반 주기(투명 또는 불투명 전환 시간)
 
-        // 텍스트 세팅
         _alertText.text = text;
+        
 
-        _alertPanel.DOAnchorPosY(showOffsetY, DURATION)
-            .SetRelative()
-            .SetEase(Ease.OutSine)
-            .OnComplete(() =>
-            {
-                // 2초 후 사라지기
-                DOVirtual.DelayedCall(stayDuration, () =>
-                {
-                    _alertPanel.DOAnchorPosY(hideOffsetY, DURATION)
-                        .SetRelative()
-                        .SetEase(Ease.OutSine);
-                });
-            });
+        // 진행 중 트윈 정리
+        _alertPanelGroup.DOKill();
+        _alertText.DOKill();
+        _alertSeq?.Kill();
+
+        _alertPanelGroup.alpha = 0f;      // 패널은 보이지 않는 상태에서 시작
+
+        _alertText.alpha = 0f;            // 텍스트는 보이는 상태에서 시작
+
+        _alertSeq = DOTween.Sequence()
+            .Append(_alertPanelGroup.DOFade(1f, fadeDur).SetEase(Ease.OutSine))
+            .Append(_alertText.DOFade(1f, blinkDur))
+            .Append(_alertText.DOFade(0f, blinkDur))
+            .Append(_alertText.DOFade(1f, blinkDur))
+            .Append(_alertText.DOFade(0f, blinkDur))
+            .Append(_alertPanelGroup.DOFade(0f, fadeDur).SetEase(Ease.OutSine));
     }
-
-
 
     public void OptionPanelShow()
     {

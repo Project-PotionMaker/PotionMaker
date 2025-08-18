@@ -58,6 +58,12 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
     private List<GridSaveData> _gridSaveDataList = new();
     public List<GridSaveDataDTO> GridSaveDataList => _gridSaveDataList.Select(gridSaveData => gridSaveData.ToDTO()).ToList();
 
+    private bool _hasPath = true;
+    public bool HasPath => _hasPath;
+
+    public event Action<string> OnNotFoundPath;
+    public event Action OnPathFound;
+
     public override void OnStartClient()
     {
 
@@ -240,8 +246,14 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
                     ToPickupTablePositionHashSet(_pickupTableForCustomerList));
                 if (!_hallAreaPathFinder.HasPath())
                 {
-                    Debug.LogWarning("경로 없음!!!");
-                    // 경로가 없을 때 로직
+                    Debug.Log("경로 없음");
+                    OnNotFoundPath?.Invoke("손님이 이동할 수 있는 경로가 없습니다");
+                    _hasPath = false;
+                }
+                else
+                {
+                    OnPathFound?.Invoke();
+                    _hasPath = true;
                 }
             }
 

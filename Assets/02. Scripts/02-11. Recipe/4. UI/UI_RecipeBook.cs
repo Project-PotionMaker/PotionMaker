@@ -30,6 +30,14 @@ public class UI_RecipeBook : MonoBehaviour
     private Button _nextButton;
     private int _currentLeftPage = 0;
 
+    private void OnEnable()
+    {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX(EPopupAudioType.Guide);
+        }
+    }
+
     private void Start()
     {
         RecipeManager.Instance.OnInitialized += Initialize;
@@ -52,6 +60,9 @@ public class UI_RecipeBook : MonoBehaviour
                 _tierButtonList[i].interactable = false;
             }
         }
+
+        _prevButton.onClick.AddListener(OnClickPrevPageButton);
+        _nextButton.onClick.AddListener(OnClickNextPageButton);
 
         _currentTier = ETierType.Tier1;
         ChangeTier(1);
@@ -86,6 +97,11 @@ public class UI_RecipeBook : MonoBehaviour
         PotionData leftPotionData = RecipeManager.Instance.PotionDataDict[potionTID];
         _leftRecipePage.Refresh(leftPotionData);
 
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX(EPopupAudioType.Guide);
+        }
+
         int rightPage = _currentLeftPage + 1;
         if (rightPage >= _currentPotionTIDList.Count)
         {
@@ -98,9 +114,11 @@ public class UI_RecipeBook : MonoBehaviour
         potionTID = _currentPotionTIDList[rightPage];
         PotionData rightPotionData = RecipeManager.Instance.PotionDataDict[potionTID];
         _rightRecipePage.Refresh(rightPotionData);
+
+        
     }
 
-    public void OnClickNextPageButton()
+    private void OnClickNextPageButton()
     {
         if (_currentLeftPage + 2 >= _currentPotionTIDList.Count)
         {
@@ -112,7 +130,7 @@ public class UI_RecipeBook : MonoBehaviour
         RefreshPage();
     }
 
-    public void OnClickPrevPageButton()
+    private void OnClickPrevPageButton()
     {
         if (_currentLeftPage - 2 < 0)
         {

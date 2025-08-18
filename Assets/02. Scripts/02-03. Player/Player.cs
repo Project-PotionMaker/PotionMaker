@@ -138,11 +138,4 @@ public class Player : NetworkBehaviour
     {
         OnDataChanged?.Invoke();
     }
-
-    [Command]
-    public void CmdRequestPing()
-    {
-        Vector3 position = GetFrontPosition();
-        VFXFactory.Instance.CreateObject(EVFXType.Ping, position, Quaternion.identity);
-    }
 }

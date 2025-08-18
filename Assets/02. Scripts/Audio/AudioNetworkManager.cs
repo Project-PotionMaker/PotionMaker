@@ -26,6 +26,12 @@ public class AudioNetworkManager : NetworkBehaviourSingleton<AudioNetworkManager
         RpcPlaySFX(audioType);
     }
 
+    [Command(requiresAuthority = false)]
+    public void CmdPlaySFX(EUIAudioType audioType)
+    {
+        RpcPlaySFX(audioType);
+    }
+
     [ClientRpc]
     public void RpcPlaySFX(EPlayerAudioType audioType)
     {
@@ -46,6 +52,12 @@ public class AudioNetworkManager : NetworkBehaviourSingleton<AudioNetworkManager
 
     [ClientRpc]
     public void RpcPlaySFX(ECustomerAudioType audioType)
+    {
+        AudioManager.Instance.PlaySFX(audioType);
+    }
+
+    [ClientRpc]
+    public void RpcPlaySFX(EUIAudioType audioType)
     {
         AudioManager.Instance.PlaySFX(audioType);
     }

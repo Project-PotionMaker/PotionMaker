@@ -144,9 +144,14 @@ public class RoomPlayer : NetworkRoomPlayer
                 if (CheckPlayersReadyForHost())
                 {
                     CmdChangeReadyState(true);
+                    AudioNetworkManager.Instance.CmdPlaySFX(EUIAudioType.HostReady);
                 }
             }
-            else CmdChangeReadyState(!readyToBegin);
+            else
+            {
+                CmdChangeReadyState(!readyToBegin);
+                AudioNetworkManager.Instance.CmdPlaySFX(EUIAudioType.ClientReady);
+            }
         }
     }
 

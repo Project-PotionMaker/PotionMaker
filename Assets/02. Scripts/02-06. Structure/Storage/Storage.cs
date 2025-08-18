@@ -193,6 +193,10 @@ public class Storage : NetworkBehaviour, IGridItemHandler
             TargetRpcOnPickUp(sender, pickedUpItem.GetComponent<NetworkIdentity>());
             pickedUpItem.GetComponent<IngredientItem>()?.TargetRpcSetFocus(sender, true);
         }
+        else
+        {
+            TargetRpcOnPickUp(sender, null);
+        }
     }
 
     [Command(requiresAuthority = false)]

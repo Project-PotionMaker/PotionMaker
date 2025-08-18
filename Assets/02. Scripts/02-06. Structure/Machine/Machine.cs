@@ -427,6 +427,10 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
             TargetRpcOnPickUp(sender, pickedUpItem.GetComponent<NetworkIdentity>());
             pickedUpItem.GetComponent<OutputItem>()?.TargetRpcSetFocus(sender, true);
         }
+        else
+        {
+            TargetRpcOnPickUp(sender, null);
+        }
     }
 
     [TargetRpc]
@@ -475,10 +479,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
 
         }
 
-        if (success)
-        {
-            TargetRpcOnDrop(sender, success);
-        }
+        TargetRpcOnDrop(sender, success);
     }
 
     [TargetRpc]

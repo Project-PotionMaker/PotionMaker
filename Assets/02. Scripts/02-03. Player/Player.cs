@@ -28,7 +28,7 @@ public class Player : NetworkBehaviour
     public string playerName = "플레이어";
 
     private CanvasAlphaChanger _lastStructureCanvas;
-    private IGridItemHandler _lastHighlightedStructure;
+    public IGridItemHandler LastHighlightedStructure;
 
     public Action OnDataChanged;
 
@@ -53,7 +53,7 @@ public class Player : NetworkBehaviour
                     return;
                 }
                 _lastStructureCanvas.HideCanvas();
-                _lastHighlightedStructure.SetHighlight(false);
+                LastHighlightedStructure.SetHighlight(false);
             }
             CanvasAlphaChanger currentStructureCanvas = frontObject.GetComponent<CanvasAlphaChanger>();
             IGridItemHandler currentStructure = frontObject.GetComponent<IGridItemHandler>();
@@ -64,16 +64,16 @@ public class Player : NetworkBehaviour
             }
 
             _lastStructureCanvas = currentStructureCanvas;
-            _lastHighlightedStructure = currentStructure;
+            LastHighlightedStructure = currentStructure;
         }
         else
         {
             if (_lastStructureCanvas != null)
             {
                 _lastStructureCanvas.HideCanvas();
-                _lastHighlightedStructure.SetHighlight(false);
+                LastHighlightedStructure.SetHighlight(false);
                 _lastStructureCanvas = null;
-                _lastHighlightedStructure = null;
+                LastHighlightedStructure = null;
             }
         }
     }

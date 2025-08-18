@@ -279,6 +279,10 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
         {
             TargetRpcOnPickUp(sender, pickedUpItem.GetComponent<NetworkIdentity>());
         }
+        else
+        {
+            TargetRpcOnPickUp(sender, null);
+        }
     }
 
     [Command(requiresAuthority = false)]
@@ -328,10 +332,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
             }
         }
 
-        if (success)
-        {
-            TargetRpcOnDrop(sender, success, transform.position);
-        }
+        TargetRpcOnDrop(sender, success, transform.position);
     }
 
     [Command(requiresAuthority = false)]

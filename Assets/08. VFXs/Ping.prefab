@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: -7795486686578686773}
   - component: {fileID: 9200216072525535770}
   - component: {fileID: 7554864114021324426}
+  - component: {fileID: 4244602512030873649}
   m_Layer: 0
   m_Name: Ping
   m_TagString: Untagged
@@ -345,8 +346,8 @@ ParticleSystem:
     startSizeY:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 5
-      minScalar: 5
+      scalar: 2
+      minScalar: 2
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -4951,6 +4952,23 @@ MonoBehaviour:
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
+--- !u!114 &4244602512030873649
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2049986798525259846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa6cd7a63d125174a9425c3792c31a60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _pingColor:
+  - {r: 1, g: 0, b: 0, a: 1}
+  - {r: 1, g: 0.67145586, b: 0, a: 1}
+  - {r: 0, g: 1, b: 0.076129675, a: 1}
+  - {r: 0, g: 0.23359418, b: 1, a: 1}
 --- !u!1 &2619259426849314803
 GameObject:
   m_ObjectHideFlags: 0

@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using VInspector;
 
 /// <summary>
@@ -11,6 +12,8 @@ using VInspector;
 /// </summary>
 public class Storage : NetworkBehaviour, IGridItemHandler
 {
+    public Action OnDataChanged;
+
     [SyncVar(hook = nameof(OnDataTIDChanged))]
     private int _dataTID;
     public int DataTID { get => _dataTID; private set => _dataTID = value; }
@@ -36,7 +39,8 @@ public class Storage : NetworkBehaviour, IGridItemHandler
 
     private IOutputContainer<Storage> _outputComponent;
 
-    public Action OnDataChanged;
+    [SerializeField]
+    private SpriteRenderer _ingredientImage;
 
     [Foldout("Project")]
     [SerializeField]
@@ -80,6 +84,7 @@ public class Storage : NetworkBehaviour, IGridItemHandler
     private void OnIngredientTIDChanged(int oldTID, int newTID)
     {
         // UI 업데이트 등 추가 로직 구현
+        ActivateImageForTID(newTID);
         OnDataChanged?.Invoke();
         Debug.Log($"Client: Ingredient (TID: {newTID}) changed.");
     }
@@ -185,11 +190,8 @@ public class Storage : NetworkBehaviour, IGridItemHandler
         if (pickedUpItem != null && sender != null)
         {
             NetworkServer.spawned[pickedUpItem.GetComponent<NetworkIdentity>().netId].AssignClientAuthority(sender);
-        }
-
-        if (pickedUpItem != null)
-        {
             TargetRpcOnPickUp(sender, pickedUpItem.GetComponent<NetworkIdentity>());
+            pickedUpItem.GetComponent<IngredientItem>()?.TargetRpcSetFocus(sender, true);
         }
     }
 
@@ -277,6 +279,11 @@ public class Storage : NetworkBehaviour, IGridItemHandler
             modelToActivate.SetActive(true);
             _modelRenderers = GetComponentsInChildren<Renderer>();
         }
+    }
+
+    private void ActivateImageForTID(int tid)
+    {
+        _ingredientImage.sprite = ImageManager.Instance.GetImage<IngredientData>(tid);
     }
 
     public void TryInteract(NetworkConnectionToClient conn)

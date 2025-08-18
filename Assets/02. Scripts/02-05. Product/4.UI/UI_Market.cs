@@ -29,6 +29,11 @@ public class UI_Market : MonoBehaviour
         RefreshCoin();
         OnProductTypeButtonClicked(EProductType.Machine);
         //RefreshDetailPage(_productSlotList[0])
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX(EPopupAudioType.Market);
+        }
     }
 
     private void Start()

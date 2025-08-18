@@ -14,7 +14,7 @@ public class UI_NewsPaper : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    private void Refresh(List<int> dailyPotionTIDList)
+    private void Refresh(List<PotionData> dailyPotionTIDList)
     {
         GameSceneUIManager.Instance?.OpenNewspaperPopup();
         AudioManager.Instance.PlaySFX(EPhaseAudioType.EnterPreparingPhase);
@@ -26,7 +26,8 @@ public class UI_NewsPaper : MonoBehaviour
             if (i < dailyPotionListSize)
             {
                 _slotDailyPotionList[i].gameObject.SetActive(true);
-                _slotDailyPotionList[i].RefreshSlot(DataTable.Instance.GetPotionData(dailyPotionTIDList[i]));
+                _slotDailyPotionList[i].RefreshSlot(dailyPotionTIDList[i]);
+                //_slotDailyPotionList[i].RefreshSlot(DataTable.Instance.GetPotionData(dailyPotionTIDList[i]));
                 _slotDailyPotionList[i].transform.DOScale(Vector3.one, 0.5f).From(Vector3.one * 1.2f)
                     .SetEase(Ease.InOutQuad)
                     .SetRelative(true);

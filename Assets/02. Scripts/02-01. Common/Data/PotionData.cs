@@ -38,6 +38,9 @@ public class PotionData
     ///<summary>가격</summary>
     public readonly int Price;
 
+    ///<summary>뉴스 구문</summary>
+    public readonly string NewsText;
+
     ///<summary>IngredientTID 리스트</summary>
     public readonly List<int> IngredientTIDList = new List<int>();
     public PotionData(BinaryReader reader)
@@ -55,6 +58,8 @@ public class PotionData
         int recipecode = reader.ReadInt32();
         RecipeCode = Encoding.UTF8.GetString(reader.ReadBytes(recipecode));
         Price = reader.ReadInt32();
+        int newstext = reader.ReadInt32();
+        NewsText = Encoding.UTF8.GetString(reader.ReadBytes(newstext));
 
         LinkTable();
     }

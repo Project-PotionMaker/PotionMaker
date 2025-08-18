@@ -42,6 +42,7 @@ public class CustomerEndurance : NetworkBehaviour
         if (_currentEndurance <= 0f && _owner.CurrentState != ECustomerStateType.Leaving)
         {
             CustomerManager.Instance.LostCustomer(_owner);
+            AudioNetworkManager.Instance.RpcPlaySFX(ECustomerAudioType.EnduranceZero);
         }
         
     }
@@ -74,4 +75,6 @@ public class CustomerEndurance : NetworkBehaviour
     {
         OnEnduranceChanged?.Invoke(); // 인내심 변경 이벤트 호출
     }
+
+
 }

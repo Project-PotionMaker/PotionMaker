@@ -30,15 +30,7 @@ public class UI_Storage : MonoBehaviour
 
     public void ChangeState()
     {
-        if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
-        {
-            _interactPanel.SetActive(true);
-            _sliderPanel.SetActive(false);
-        }
-        else
-        {
-            _interactPanel.SetActive(false);
-        }
+        _interactPanel.SetActive(true);
 
         IngredientData ingredientData = DataTable.Instance.GetIngredientData(_storage.IngredientTID);
         if(ingredientData == null)
@@ -51,6 +43,9 @@ public class UI_Storage : MonoBehaviour
 
     public void Refresh()
     {
+        IngredientData ingredientData = DataTable.Instance.GetIngredientData(_storage.IngredientTID);
+        _nameTextUI.text = ingredientData.Name;
+        _PriceTextUI.text = ingredientData.Price.ToString();
     }
 
     private void OnDisable()

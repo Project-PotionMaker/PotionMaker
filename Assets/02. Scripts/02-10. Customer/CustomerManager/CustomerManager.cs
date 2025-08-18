@@ -106,6 +106,7 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
             Debug.Log("No available chair found for the customer.");
             return; // 사용 가능한 의자가 없으면 주문을 받지 않음
         }
+
         _canOrdered = false; // 주문을 받은 후에는 다시 주문을 받을 수 없도록 설정
         Customer customer = _orderHandler.PotionOrderLine.Dequeue();
         int potionTID = customer.GetComponent<Customer>().RequestedPotionTID;
@@ -115,6 +116,8 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
         customer.CustomerEndurance.ResetEndurance();
         _lineHandler.ReLining(); // 줄 다시 세우기
         ServePotionOnTakeOrder();
+
+        AudioNetworkManager.Instance.RpcPlaySFX(ECustomerAudioType.OrderReceived);
     }
     [Server]
     public void LostCustomer(Customer customer) // 인내심이 바닥나면 호출

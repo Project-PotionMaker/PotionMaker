@@ -11,6 +11,8 @@ public class PlayerPickupAbility : PlayerAbility
     // 영상 임시
     private CanvasGroup _lastHighlightedStructureCanvas;
 
+    [SerializeField]
+    private GameObject _holdingVFX;
     private void Start()
     {
         if (!_owner.isLocalPlayer)
@@ -136,7 +138,6 @@ public class PlayerPickupAbility : PlayerAbility
         {
             return;
         }
-
         AudioNetworkManager.Instance.CmdPlaySFX(EPlayerAudioType.Hold);
         CmdPickUpItem(itemNetId);
     }
@@ -168,6 +169,7 @@ public class PlayerPickupAbility : PlayerAbility
         // 2. 새롭게 들게 된 가구가 있다면 부모-자식 관계를 설정합니다.
         if (newIdentity != null)
         {
+            _holdingVFX.SetActive(true);
             // 부모를 _heldPosition으로 설정
             newIdentity.transform.SetParent(_owner.HeldPosition, true);
             newIdentity.transform.localPosition = Vector3.zero;
@@ -177,6 +179,10 @@ public class PlayerPickupAbility : PlayerAbility
             {
                 collider.enabled = false;
             }
+        }
+        else
+        {
+            _holdingVFX.SetActive(false);
         }
     }
 

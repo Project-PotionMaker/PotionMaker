@@ -282,4 +282,5 @@ public enum EAddressableKeys
     VFX_GrinderClick = 255,
     VFX_MixerClick = 256,
     VFX_MortarClick = 257,
+    VFX_Deliver = 258,
 }

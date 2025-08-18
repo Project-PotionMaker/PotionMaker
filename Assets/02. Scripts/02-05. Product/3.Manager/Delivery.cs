@@ -21,6 +21,7 @@ public class Delivery
             if (GridManager.Instance.ServerGetObjectOnGrid(positionList[i]) == null)
             {
                 GridManager.Instance.ServerCreateStructure(structureTID, positionList[i]);
+                VFXFactory.Instance.CreateObject(EVFXType.Deliver, positionList[i], Quaternion.identity);
                 return;
             }
         }

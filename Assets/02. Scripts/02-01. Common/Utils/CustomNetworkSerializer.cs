@@ -23,13 +23,17 @@ public static class CustomNetworkSerializer
         Writer<Sales>.write = WriteSales;
         Reader<Sales>.read = ReadSales;
 
-        // Rent 추가
+        // Rent
         Writer<Rent>.write = WriteRent;
         Reader<Rent>.read = ReadRent;
 
         // ShopInfo
         Writer<ShopInfo>.write = WriteShopInfo;
         Reader<ShopInfo>.read = ReadShopInfo;
+
+        // PotionData
+        Writer<PotionData>.write = WritePotionData;
+        Reader<PotionData>.read = ReadPotionData;
     }
 
     public static void WriteGridSaveData(this NetworkWriter writer, GridSaveData data)
@@ -159,5 +163,16 @@ public static class CustomNetworkSerializer
         List<GridSaveData> gridSaveDataList = reader.ReadList<GridSaveData>();
 
         return new ShopInfo(shopName, slotIndex, day, potionHouseTier, currency, reputation, sales, rent, gridSaveDataList);
+    }
+
+    public static void WritePotionData(this NetworkWriter writer, PotionData data)
+    {
+        writer.WriteInt(data.TID);
+    }
+
+    public static PotionData ReadPotionData(this NetworkReader reader)
+    {
+        int tid = reader.ReadInt();
+        return DataTable.Instance.GetPotionData(tid);
     }
 }

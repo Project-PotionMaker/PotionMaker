@@ -16,8 +16,6 @@ public class PotionPickInfo
 
 public class DailyPotionPicker
 {
-    public event Action<List<PotionData>> OnPickCompleted;
-
     private Dictionary<ETierType, List<PotionPickInfo>> _potionDataDict;
 
     private Dictionary<EReputationGrade, List<List<int>>> _dailyPotionsInfoByReputation;
@@ -108,7 +106,6 @@ public class DailyPotionPicker
             }
             dailyPotionDataList.Add(PickPotion((ETierType)potionTier - 1));
         }
-        OnPickCompleted?.Invoke(dailyPotionDataList);
         return dailyPotionDataList;
     }
 

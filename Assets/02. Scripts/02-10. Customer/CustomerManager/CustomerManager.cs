@@ -134,7 +134,7 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
             PhaseManager.Instance.DeathCount--;
             if (PhaseManager.Instance.IsGameOver)
             {
-                PhaseManager.Instance.TransitionPhase(EPhaseType.EndingPhase); // 영업 종료로 전환
+                PhaseManager.Instance.ServerTransitionPhase(EPhaseType.EndingPhase); // 영업 종료로 전환
             }
         }
     }

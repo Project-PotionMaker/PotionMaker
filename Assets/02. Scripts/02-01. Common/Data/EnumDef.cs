@@ -195,5 +195,7 @@ public enum EVFXType
     GrinderClick = 3,
     ///<summary>혼합기</summary>
     MixerClick = 4,
+    ///<summary>배달</summary>
+    Deliver = 5,
 }
 

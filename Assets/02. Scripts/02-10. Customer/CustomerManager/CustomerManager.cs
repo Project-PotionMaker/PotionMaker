@@ -79,10 +79,7 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
         //TODO : Layout에서 최대 줄 길이 가져와서 적용하기
         _inviteTimer = _inviteCoolTime;
         Debug.Log("손님 초대");
-        GameObject customer = CustomerFactory.Instance.CreateObject(ENPCType.Customer,Vector3.zero,Quaternion.identity); // TODO : PoolManager완성 후 수정
-        //OnCustomerIn(customer.GetComponent<PhotonView>().ViewID); //TODO : PoolManager완성 후 수정
-        //CustomerPool.Instance.GetObjectAsync(0);
-        customer.transform.position = _customerSpawnPosition; // 손님을 상점 입구에 생성
+        GameObject customer = CustomerFactory.Instance.CreateObject(ENPCType.Customer,_customerSpawnPosition,Quaternion.identity); // TODO : PoolManager완성 후 수정
         _orderHandler.PotionOrderLine.Enqueue(customer.GetComponent<Customer>());
         RemainCustomers++;
         _inviteIndex++;

@@ -190,11 +190,8 @@ public class Storage : NetworkBehaviour, IGridItemHandler
         if (pickedUpItem != null && sender != null)
         {
             NetworkServer.spawned[pickedUpItem.GetComponent<NetworkIdentity>().netId].AssignClientAuthority(sender);
-        }
-
-        if (pickedUpItem != null)
-        {
             TargetRpcOnPickUp(sender, pickedUpItem.GetComponent<NetworkIdentity>());
+            pickedUpItem.GetComponent<IngredientItem>()?.TargetRpcSetFocus(sender, true);
         }
     }
 

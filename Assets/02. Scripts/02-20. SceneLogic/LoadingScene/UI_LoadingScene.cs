@@ -13,29 +13,26 @@ public class UI_LoadingScene : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI _textTip;
 
-    private void Start()
+    private void Awake()
     {
         _loadingScene.OnTipChanged += RefreshTip;
+        _loadingScene.OnProgressChanged += RefreshProgressPercentage;
+    }
+
+    private void Start()
+    {
         Global.Instance.OnDataLoaded += () =>
         {
             RefreshTip(DataTable.Instance.GetTipData(10000).Description);
         };
     }
-
-    public void RefreshProgressPercentage(float progress)
-    {
-        if (1f <= progress)
-        {
-            _textProgressPercentage.text = $"{(int)progress}%";
-        }
-        else
-        {
-            _textProgressPercentage.text = $"{(int)(progress * 100)}%";
-        }
-    }
-
     public void RefreshTip(string tip)
     {
         _textTip.text = tip;
+    }
+
+    public void RefreshProgressPercentage(float progress)
+    {
+        _textProgressPercentage.text = $"{Mathf.FloorToInt(progress * 100)}%";
     }
 }

@@ -83,6 +83,10 @@ public class UI_ButtonAutoNavigator : MonoBehaviour
             {
                 isAllEnabled = false;
                 lastEnableButton = i - 1;
+                if (lastEnableButton < 0)
+                {
+                    break;
+                }
                 Navigation lastButtonNavigation = _itemButtonList[lastEnableButton].navigation;
                 lastButtonNavigation.selectOnRight = _rightButton;
                 _itemButtonList[lastEnableButton].navigation = lastButtonNavigation;
@@ -148,7 +152,7 @@ public class UI_ButtonAutoNavigator : MonoBehaviour
             {
                 navigation.selectOnLeft = _itemButtonList[_itemButtonList.Count - 1];
             }
-            else
+            else if (lastEnableButton >= 0)
             {
                 navigation.selectOnLeft = _itemButtonList[lastEnableButton];
             }

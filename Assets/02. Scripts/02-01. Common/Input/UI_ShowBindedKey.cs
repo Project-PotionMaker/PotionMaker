@@ -15,6 +15,7 @@ public class UI_ShowBindedKey : MonoBehaviour
 
     private void OnEnable()
     {
+        UpdateCurrentKeyDisplay(InputManager.Instance.PlayerInput);
         InputManager.Instance.OnAnyKey += UpdateCurrentKeyDisplay;
     }
     private void OnDisable()
@@ -23,6 +24,7 @@ public class UI_ShowBindedKey : MonoBehaviour
     }
     private void UpdateCurrentKeyDisplay(PlayerInput playerInput)
     {
+        Debug.Log(nameof(UpdateCurrentKeyDisplay));
         int bindingIndex = (int)EBindingType.KeyboardMain;
         bool isGamePad = string.Equals(playerInput.currentControlScheme, "Gamepad", StringComparison.OrdinalIgnoreCase);
 

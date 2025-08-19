@@ -7,7 +7,8 @@ public class InputManager : MonoBehaviourSingleton<InputManager>
     private Vector2 _moveInput;
     public Vector2 MoveInput => _moveInput;
 
-    private UnityEngine.InputSystem.PlayerInput _playerInput;
+    private PlayerInput _playerInput;
+    public PlayerInput PlayerInput => _playerInput;
 
     private string _actionMapPlayer = "Player";
     public string ActionMapPlayer => _actionMapPlayer;
@@ -36,7 +37,7 @@ public class InputManager : MonoBehaviourSingleton<InputManager>
     protected override void Awake()
     {
         base.Awake();
-        _playerInput = GetComponent<UnityEngine.InputSystem.PlayerInput>();
+        _playerInput = GetComponent<PlayerInput>();
     }
 
     public void ChangeToUIInput()
@@ -110,7 +111,6 @@ public class InputManager : MonoBehaviourSingleton<InputManager>
     private void OnPoint()
     {
         OnPointEvent?.Invoke();
-        OnAnyKey?.Invoke(_playerInput);
     }
 
     private void OnNavigate()

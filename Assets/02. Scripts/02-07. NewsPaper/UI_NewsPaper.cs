@@ -8,14 +8,6 @@ public class UI_NewsPaper : MonoBehaviour
     [SerializeField]
     private List<UI_SlotDailyPotion> _slotDailyPotionList = new();
 
-    private void OnEnable()
-    {
-        if (AudioManager.Instance != null)
-        {
-            AudioManager.Instance.PlaySFX(EPopupAudioType.NewsPaper);
-        }
-    }
-
     public void Start()
     {
         PhaseManager.Instance.OnPickCompleted += Refresh;

@@ -8,6 +8,11 @@ public class LobbyScene : MonoBehaviour
     [SerializeField]
     private RoomInfoHandler _roomInfoHandler;
 
+    private void Start()
+    {
+        AudioManager.Instance.PlayBGM(EBGMAudioType.Lobby);
+    }
+
     public void ExitGame()
     {
         Application.Quit();

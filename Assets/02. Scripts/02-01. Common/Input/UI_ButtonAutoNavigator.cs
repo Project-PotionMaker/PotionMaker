@@ -46,9 +46,9 @@ public class UI_ButtonAutoNavigator : MonoBehaviour
         }
     }
 
-    public void AddButton(Button itemButton)
+    public void RefreshButtonList(List<Button> buttonList)
     {
-        _itemButtonList.Add(itemButton);
+        _itemButtonList = buttonList;
         RefreshButtonNavigation();
     }
 

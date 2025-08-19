@@ -77,7 +77,8 @@ public class UI_NavigationLinker : MonoBehaviour
     {
         foreach (Selectable target in targetSelectableList)
         {
-            if (target != null && target.gameObject.activeInHierarchy)
+            if (target != null && target.gameObject.activeInHierarchy
+                && target.interactable)
             {
                 return target;
             }

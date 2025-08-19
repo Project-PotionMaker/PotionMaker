@@ -1,3 +1,4 @@
+using Mirror.Discovery;
 using TMPro;
 using UnityEngine;
 

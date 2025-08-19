@@ -93,11 +93,11 @@ public class OutputItem : NetworkBehaviour, IItem
         {
             if (ColorUtility.TryParseHtmlString(_outputData.ColorCode, out Color parsedColor))
             {
-                _mpb.SetColor("_BaseColor", parsedColor);
+                _mpb.SetColor("_AlbedoColor", parsedColor);
             }
             else
             {
-                _mpb.SetColor("_BaseColor", Color.white);
+                _mpb.SetColor("_AlbedoColor", Color.white);
             }
 
             objectInfo.ColorChangeRenderer.SetPropertyBlock(_mpb);

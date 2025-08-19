@@ -30,8 +30,14 @@ public class LobbyScene : MonoBehaviour
     //    MirrorNetworkManager.Instance.StartClient();
     //}
 
+    public void StartDiscovery()
+    {
+        RoomDiscovery.Instance.StartDiscovery();
+    }
+
     public void OnCreateRoom()
     {
+        MirrorNetworkManager.Instance.ShopInfo = _roomInfoHandler.ShopInfoHandler.SelectedShopInfo;
         // 1. Host 시작
         MirrorNetworkManager.Instance.StartHost();
 

@@ -145,7 +145,7 @@ public class ProductManager : NetworkBehaviourSingleton<ProductManager>
     }
 
     [TargetRpc]
-    public void TargetShowResultUI(NetworkConnection taraget, ResultMessage resultMessage)
+    public void TargetShowResultUI(NetworkConnection target, ResultMessage resultMessage)
     {
         // Todo: 팝업매니저를 통한 구매 성공 여부 팝업?
         Debug.Log($"구매 결과: {resultMessage.Result}");

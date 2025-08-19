@@ -51,6 +51,15 @@ public class UI_Market : MonoBehaviour
         gameObject.SetActive(false);
     }
 
+    private void OnDestroy()
+    {
+        CurrencyManager.OnDataChanged -= RefreshCoin;
+        if (ProductManager.Instance != null)
+        {
+            ProductManager.Instance.OnBuyResultReceived -= AlertBuyResult;
+        }
+    }
+
     public void OnProductTypeButtonClicked(EProductType productType)
     {
         bool isDetailPageRefreshed = false;

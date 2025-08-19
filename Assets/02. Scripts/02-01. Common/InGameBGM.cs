@@ -11,13 +11,19 @@ public class InGameBGM : MonoBehaviour
     private void ChangeBGM()
     {
         EPhaseType currentPhase = PhaseManager.Instance.CurrentPhase.PhaseType;
-        if(currentPhase == EPhaseType.PreparingPhase)
+        switch (currentPhase)
         {
-            AudioManager.Instance.PlayBGM(EBGMAudioType.IngamePreparingPhase);
+            case EPhaseType.PreparingPhase:
+                AudioManager.Instance.PlayBGM(EBGMAudioType.IngamePreparingPhase);
+                break;
+            case EPhaseType.ServingPhase:
+                AudioManager.Instance.PlayBGM(EBGMAudioType.IngameServingPhase);
+                break;
         }
-        else if(currentPhase == EPhaseType.ServingPhase)
-        {
-            AudioManager.Instance.PlayBGM(EBGMAudioType.IngameServingPhase);
-        }
+    }
+
+    private void OnDestroy()
+    {
+        PhaseManager.Instance.OnPhaseChanged -= ChangeBGM;
     }
 }

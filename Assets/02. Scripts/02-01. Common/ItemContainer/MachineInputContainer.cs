@@ -44,6 +44,7 @@ public class MachineInputContainer : IInputContainer<Machine>
 
         machine.ServerSetInputType(inputType);
         machine.ServerAddInputTID(tid);
+        AudioNetworkManager.Instance.RpcPlaySFX(EMachineAudioType.In);
         return true;
     }
 }

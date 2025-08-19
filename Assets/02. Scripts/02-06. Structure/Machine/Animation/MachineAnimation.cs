@@ -29,6 +29,9 @@ public class MachineAnimation : MonoBehaviour, IMachineAnimation
     private GameObject _baseObject;
     private MaterialPropertyBlock _mpb;
 
+    [SerializeField]
+    private EMachineAudioType _audioType;
+
     private Machine _owner;
     private bool _lastProcessStarted = false;
     private bool _lastProcessFinished = false;
@@ -170,10 +173,20 @@ public class MachineAnimation : MonoBehaviour, IMachineAnimation
             if (anime.tween == null)
             {
                 anime.CreateTween();
+                AudioManager.Instance.PlaySFX(EMachineAudioType.Activate);
+                if (_audioType != EMachineAudioType.None)
+                {
+                    AudioManager.Instance.PlaySFX(_audioType);
+                }
             }
             if (!anime.tween.IsPlaying())
             {
                 anime.tween.Restart();
+                AudioManager.Instance.PlaySFX(EMachineAudioType.Activate);
+                if (_audioType != EMachineAudioType.None)
+                {
+                    AudioManager.Instance.PlaySFX(_audioType);
+                }
             }
         }
         foreach (DOTweenAnimation anime in _dotweenOnceAnimationList)
@@ -183,7 +196,10 @@ public class MachineAnimation : MonoBehaviour, IMachineAnimation
                 anime.CreateTween();
             }
             anime.tween.Restart();
-            
+            if(_audioType != EMachineAudioType.None)
+            {
+                AudioManager.Instance.PlaySFX(_audioType);
+            }
         }
         foreach (ParticleSystem particle in _loopParticleList)
         {
@@ -220,6 +236,7 @@ public class MachineAnimation : MonoBehaviour, IMachineAnimation
                     particle.Play();
                 }
             }
+            AudioManager.Instance.PlaySFX(EMachineAudioType.Done);
         }
     }
 

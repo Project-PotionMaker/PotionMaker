@@ -102,6 +102,13 @@ public class UI_ButtonAutoNavigator : MonoBehaviour
             _itemButtonList[i].navigation = navigation;
         }
 
+        for (int i = 0; i < _categoryButtonList.Count; i++)
+        {
+            Navigation navigation = _categoryButtonList[i].navigation;
+            navigation.selectOnDown = _itemButtonList[Mathf.Min(i, _itemButtonList.Count)];
+            _categoryButtonList[i].navigation = navigation;
+        }
+
         if (_rightButton != null)
         {
             Navigation navigation = _rightButton.navigation;

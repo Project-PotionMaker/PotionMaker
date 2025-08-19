@@ -81,6 +81,11 @@ public class AudioManager : MonoBehaviourSingleton<AudioManager>
 
     public void PlayBGM(EBGMAudioType BGMAudioType, float fadeTime = 2f)
     {
+        if(BGMAudioSource.resource == _BGMAudio[BGMAudioType])
+        {
+            return;
+        }
+
         if (fadeCoroutine != null)
             StopCoroutine(fadeCoroutine);
 

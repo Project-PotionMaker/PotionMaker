@@ -25,6 +25,7 @@ public class WaitingScene : MonoBehaviour
 
     public void Start()
     {
+        AudioManager.Instance.PlayBGM(EBGMAudioType.Lobby);
         StartCoroutine(Refresh_Coroutine());
     }
 

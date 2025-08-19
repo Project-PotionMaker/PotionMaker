@@ -17,6 +17,9 @@ public class UI_ProductSlot:MonoBehaviour
     [SerializeField]
     private Button _slotButton;
 
+    [SerializeField]
+    private CanvasGroup _lockPanel;
+
     public void Refresh(ProductDTO productDTO)
     {
         gameObject.SetActive(false);
@@ -26,6 +29,10 @@ public class UI_ProductSlot:MonoBehaviour
         _productPriceTextUI.text = productDTO.Data.Price.ToString("N0");
         _slotButton.onClick.RemoveAllListeners();
         _slotButton.onClick.AddListener(() => OnSlotClicked?.Invoke(productDTO));
+
+        _lockPanel.alpha = productDTO.IsUnlocked ? 0 : 1;
+        _slotButton.enabled = productDTO.IsUnlocked;
+
         gameObject.SetActive(true);
     }
 }

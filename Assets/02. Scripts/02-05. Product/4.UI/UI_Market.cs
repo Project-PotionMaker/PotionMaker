@@ -1,5 +1,6 @@
 using DG.Tweening;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -64,12 +65,10 @@ public class UI_Market : MonoBehaviour
     {
         bool isDetailPageRefreshed = false;
         int slotIndex = 0;
-        foreach(ProductDTO productDTO in ProductManager.Instance.ProductListDict[productType])
+
+        List<ProductDTO> sortedProductList = ProductManager.Instance.ProductListDict[productType].OrderByDescending(product => product.IsUnlocked).ToList();
+        foreach (ProductDTO productDTO in sortedProductList)
         {
-            if (!productDTO.IsUnlocked)
-            {
-                continue;
-            }
             if(slotIndex >= _productSlotList.Count)
             {
                 UI_ProductSlot newSlot = Instantiate(_productSlotPrefab, _slotContainer);

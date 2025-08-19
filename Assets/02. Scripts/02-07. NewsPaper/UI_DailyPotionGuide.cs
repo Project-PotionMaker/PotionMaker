@@ -13,6 +13,7 @@ public class UI_DailyPotionGuide : MonoBehaviour
     private void Awake()
     {
         _canvasGroup = GetComponent<CanvasGroup>();
+        _dailyPotionGuideSlotList = new List<UI_DailyPotionGuideSlot>();
     }
     private void Start()
     {

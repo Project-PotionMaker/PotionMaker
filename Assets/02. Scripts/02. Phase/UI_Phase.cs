@@ -63,6 +63,8 @@ public class UI_Phase : MonoBehaviour
 
     private void OnPhaseManagerInitialized()
     {
+        PhaseManager.OnInitialized += UpdateDayText;
+
         PhaseManager.Instance.OnDayPassed += UpdateDayText;
         PhaseManager.Instance.OnTimerRunning += UpdateServiceTimer;
         PhaseManager.Instance.OnDeathCountChanged += RefreshDeathCount;

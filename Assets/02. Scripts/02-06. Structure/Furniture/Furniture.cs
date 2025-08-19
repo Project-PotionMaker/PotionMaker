@@ -207,7 +207,6 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
         {
             if (_data.SpecialStructureType == ESpecialStructureType.Casher)
             {
-                GameSceneUIManager.Instance?.OpenMarketPopup();
                 TargetRpcOnInteract(sender, true);
                 return;
             }
@@ -386,6 +385,10 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
         if (NetworkClient.connection.identity.TryGetComponent<Player>(out Player player))
         {
             player.GetAbility<PlayerInteractAbility>().ReceiveInteractResult(success);
+            if (success && Data.SpecialStructureType == ESpecialStructureType.Casher)
+            {
+                GameSceneUIManager.Instance?.OpenMarketPopup();
+            }
         }
     }
 
@@ -404,7 +407,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
         //transform.position = _grid.CellToWorld(gridPosition) + new Vector3(0.5f, 0, 0.5f);
         if (NetworkClient.connection.identity.TryGetComponent<Player>(out Player player))
         {
-            if (success)
+            if (success && PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.ServingPhase)
             {
                 StartCoroutine(InputUIShow_Coroutine());
             }

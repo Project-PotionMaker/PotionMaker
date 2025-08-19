@@ -88,7 +88,7 @@ public class UI_Phase : MonoBehaviour
         EndingPhase endingPhase = (EndingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.EndingPhase];
         endingPhase.OnPhaseExited += ShowReady; // 준비 단계가 시작되면 시작 패널 표시
 
-        FindGridManager();
+        StartCoroutine(SubscribeToGridManagerEvents());
     }
 
     private void UpdateDayText()
@@ -122,22 +122,13 @@ public class UI_Phase : MonoBehaviour
         _readyPanel.DOAnchorPosY(-READY_HIDE_OFFSET, DURATION).SetRelative().SetEase(Ease.OutSine);
 
     }
-    private void FindGridManager()
-    {
-        if (GridManager.Instance == null)
-        {
-            Debug.LogWarning("GridManager not ready yet. Delaying StartVote.");
-            StartCoroutine(WaitForPathEvent());
-            return;
-        }
-        GridManager.Instance.OnNotFoundPath += ShowAlert;
-    }
-    private IEnumerator WaitForPathEvent()
+    private IEnumerator SubscribeToGridManagerEvents()
     {
         while (GridManager.Instance == null)
+        {
             yield return null;
-
-        FindGridManager(); // 재시도
+        }
+        GridManager.Instance.OnNotFoundPath += ShowAlert;
     }
     private void StartVote()
     {
@@ -212,8 +203,8 @@ public class UI_Phase : MonoBehaviour
 
     public void ShowAlert(string text)
     {
-        const float fadeDur = 0.35f; // 패널 페이드 인/아웃 시간
-        const float blinkDur = 0.3f;  // 한 번 깜빡임의 반 주기(투명 또는 불투명 전환 시간)
+        const float fadeDur = 0.35f;
+        const float blinkDur = 0.3f;  
 
         _alertText.text = text;
         
@@ -223,9 +214,9 @@ public class UI_Phase : MonoBehaviour
         _alertText.DOKill();
         _alertSeq?.Kill();
 
-        _alertPanelGroup.alpha = 0f;      // 패널은 보이지 않는 상태에서 시작
+        _alertPanelGroup.alpha = 0f;      
 
-        _alertText.alpha = 0f;            // 텍스트는 보이는 상태에서 시작
+        _alertText.alpha = 0f;            
 
         _alertSeq = DOTween.Sequence()
             .Append(_alertPanelGroup.DOFade(1f, fadeDur).SetEase(Ease.OutSine))
@@ -235,16 +226,4 @@ public class UI_Phase : MonoBehaviour
             .Append(_alertText.DOFade(0f, blinkDur))
             .Append(_alertPanelGroup.DOFade(0f, fadeDur).SetEase(Ease.OutSine));
     }
-
-    public void OptionPanelShow()
-    {
-        //OptionPanel.SerActive();
-    }
-
-    public void aaa()//도감 팝업
-    {
-    }//TODO : 도감 팝업 띄우기
-
-
-    //TODO : 준비 키 키세팅 따라가기
 }

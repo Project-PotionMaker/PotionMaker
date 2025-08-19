@@ -36,7 +36,7 @@ public class PickUpTableInputContainer : IInputContainer<Furniture>
                         CustomerManager.Instance.CmdPlaceOnTable(tid, furniture.netId);
                         CustomerManager.Instance.CmdServePotion(tid, furniture.netId);
                     }
-                        break;
+                    break;
                 }
             }
             return true;

@@ -25,7 +25,7 @@ public enum EMachineAudioType
     Out,
     Done,
     None,
-    Motar,
+    Mortar,
     Grinder,
     Mixer,
     HeatingPot,

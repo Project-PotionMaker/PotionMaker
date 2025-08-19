@@ -30,6 +30,7 @@ public class LobbyScene : MonoBehaviour
 
     public void OnEnerRoonButtonClick()
     {
+        MirrorNetworkManager.Instance.networkAddress = "10.20.0.3";
         MirrorNetworkManager.Instance.StartClient();
     }
 }

@@ -26,6 +26,14 @@ public class CraftItemManager : NetworkBehaviourSingleton<CraftItemManager>
         InitCraftItemManager();
     }
 
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+
+        _recipeCodeHandler = new RecipeCodeHandler();
+        _recipeCodeVerifier = new RecipeCodeVerifier(DataTable.Instance.GetPotionDataList());
+    }
+
     [Server]
     private void InitCraftItemManager()
     {

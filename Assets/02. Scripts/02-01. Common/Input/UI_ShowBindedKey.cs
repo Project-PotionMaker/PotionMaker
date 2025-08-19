@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-public class UI_ReadyKey : MonoBehaviour
+public class UI_ShowBindedKey : MonoBehaviour
 {
     [Header("Binding")]
     [SerializeField]

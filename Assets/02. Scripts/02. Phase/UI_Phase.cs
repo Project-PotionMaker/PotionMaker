@@ -218,6 +218,8 @@ public class UI_Phase : MonoBehaviour
 
         _alertText.alpha = 0f;            
 
+        AudioManager.Instance.PlaySFX(EUIAudioType.Error);
+
         _alertSeq = DOTween.Sequence()
             .Append(_alertPanelGroup.DOFade(1f, fadeDur).SetEase(Ease.OutSine))
             .Append(_alertText.DOFade(1f, blinkDur))

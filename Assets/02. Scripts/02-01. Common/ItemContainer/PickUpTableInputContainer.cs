@@ -6,11 +6,6 @@ public class PickUpTableInputContainer : IInputContainer<Furniture>
     {
         if (furniture.InputObject == null)
         {
-            if (GridManager.Instance.PickupTableForCustomerList.Contains(furniture.netIdentity))
-            {
-                CustomerManager.Instance.CmdPlaceOnTable(tid, furniture.netId);
-                CustomerManager.Instance.CmdServePotion(tid, furniture.netId);
-            }
 
             switch (inputType)
             {
@@ -36,7 +31,12 @@ public class PickUpTableInputContainer : IInputContainer<Furniture>
                 {
                     furniture.InputObject = CraftItemFactory.Instance.CreateObject(inputType, furniture.InputPosition.position, Quaternion.identity);
                     furniture.InputObject.GetComponent<PotionItem>().ServerUpdatePotionData(tid);
-                    break;
+                    if (GridManager.Instance.PickupTableForCustomerList.Contains(furniture.netIdentity))
+                    {
+                        CustomerManager.Instance.CmdPlaceOnTable(tid, furniture.netId);
+                        CustomerManager.Instance.CmdServePotion(tid, furniture.netId);
+                    }
+                        break;
                 }
             }
             return true;

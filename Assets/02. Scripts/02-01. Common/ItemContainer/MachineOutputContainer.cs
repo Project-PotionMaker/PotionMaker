@@ -23,7 +23,7 @@ public class MachineOutputContainer : IOutputContainer<Machine>
             {
                 machine.ResetData();
             }
-
+            AudioNetworkManager.Instance.RpcPlaySFX(EMachineAudioType.Out);
             return _output;
         }
         return null;

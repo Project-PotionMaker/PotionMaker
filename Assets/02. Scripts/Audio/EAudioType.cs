@@ -21,7 +21,14 @@ public enum EMachineAudioType
 {
     Activate,
     Deactivate,
-    InOut
+    In,
+    Out,
+    Done,
+    None,
+    Motar,
+    Grinder,
+    Mixer,
+    HeatingPot,
 }
 
 public enum EStorageAudioType
@@ -52,7 +59,8 @@ public enum EUIAudioType
     ClientReady,
     HostReady,
     BuyProductSucess,
-    BuyProductFailure
+    BuyProductFailure,
+    Error,
 }
 
 public enum EPopupAudioType

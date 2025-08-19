@@ -83,19 +83,21 @@ public class UI_ButtonAutoNavigator : MonoBehaviour
             }
             else
             {
-                navigation.selectOnUp = _itemButtonList[(line - 1) + columnIndex];
+                navigation.selectOnUp = _itemButtonList[(line - 1) * _maxButtonsPerRow + columnIndex];
             }
 
-            int lastLine = maxButtonCount / _maxButtonsPerRow;
-            if (line != lastLine)
+            int downIndex = i + _maxButtonsPerRow;
+            if (downIndex < maxButtonCount)
             {
-                if (line == lastLine - 1)
+                navigation.selectOnDown = _itemButtonList[downIndex];
+            }
+            else
+            {
+                int lastLineIndex = (maxButtonCount - 1) / _maxButtonsPerRow;
+                if (line < lastLineIndex)
                 {
-                    navigation.selectOnDown = _itemButtonList[(line + 1) + Mathf.Min(columnIndex,(maxButtonCount % _maxButtonsPerRow))];
-                }
-                else
-                {
-                    navigation.selectOnDown = _itemButtonList[(line + 1) + columnIndex];
+                    int targetIndex = lastLineIndex * _maxButtonsPerRow + columnIndex;
+                    navigation.selectOnDown = _itemButtonList[Mathf.Min(targetIndex, maxButtonCount - 1)];
                 }
             }
 
@@ -109,7 +111,7 @@ public class UI_ButtonAutoNavigator : MonoBehaviour
             _categoryButtonList[i].navigation = navigation;
         }
 
-        if (_rightButton != null)
+        if (_rightButton != null && _itemButtonList.Count > 0)
         {
             Navigation navigation = _rightButton.navigation;
             navigation.mode = Navigation.Mode.Explicit;

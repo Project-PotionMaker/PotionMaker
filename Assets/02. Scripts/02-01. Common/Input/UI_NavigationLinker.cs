@@ -17,15 +17,15 @@ public class UI_NavigationLinker : MonoBehaviour
     [SerializeField]
     private List<Selectable> _rightSelectableList;
 
-    private Button _button;
+    private Selectable _selectable;
 
     private void Awake()
     {
-        _button = GetComponent<Button>();
-        Navigation navigation = _button.navigation;
+        _selectable = GetComponent<Selectable>();
+        Navigation navigation = _selectable.navigation;
         navigation.mode = Navigation.Mode.Explicit;
 
-        _button.navigation = navigation;
+        _selectable.navigation = navigation;
     }
 
     private void OnEnable()
@@ -36,24 +36,24 @@ public class UI_NavigationLinker : MonoBehaviour
 
     public void RefreshNavigation()
     {
-        if (_button == null)
+        if (_selectable == null)
         {
             return;
         }
 
-        Navigation navigation = _button.navigation;
+        Navigation navigation = _selectable.navigation;
 
         navigation.selectOnUp = FindFirstActiveSelectable(_upSelectableList);
         navigation.selectOnDown = FindFirstActiveSelectable(_downSelectableList);
         navigation.selectOnLeft = FindFirstActiveSelectable(_leftSelectableList);
         navigation.selectOnRight = FindFirstActiveSelectable(_rightSelectableList);
 
-        _button.navigation = navigation;
+        _selectable.navigation = navigation;
     }
 
     private void RefreshLinkButtons()
     {
-        Navigation navigation = _button.navigation;
+        Navigation navigation = _selectable.navigation;
         NotifyNeighbor(navigation.selectOnUp);
         NotifyNeighbor(navigation.selectOnDown);
         NotifyNeighbor(navigation.selectOnLeft);

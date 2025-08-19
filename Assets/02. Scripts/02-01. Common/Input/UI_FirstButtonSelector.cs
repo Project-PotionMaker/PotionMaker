@@ -49,7 +49,7 @@ public class UI_FirstButtonSelector : MonoBehaviour
             return;
         }
 
-        if (_lastSelectedButton == null)
+        if (_lastSelectedButton == null || !_lastSelectedButton.gameObject.activeInHierarchy)
         {
             EventSystem.current.SetSelectedGameObject(_firstSelectedButton);
             _lastSelectedButton = _firstSelectedButton;

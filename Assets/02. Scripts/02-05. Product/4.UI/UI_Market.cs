@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UI_Market : MonoBehaviour
 {
@@ -23,6 +24,7 @@ public class UI_Market : MonoBehaviour
     private CanvasGroup _alertPanelGroup;
     private Sequence _alertSeq;
 
+    private UI_ButtonAutoNavigator _autoNavigator;
 
     public void OnMachineButtonClicked() => OnProductTypeButtonClicked(EProductType.Machine);
     public void OnFurnitureButtonClicked() => OnProductTypeButtonClicked(EProductType.Furniture);
@@ -31,6 +33,7 @@ public class UI_Market : MonoBehaviour
     private void Awake()
     {
         _productSlotList = new List<UI_ProductSlot>();
+        _autoNavigator = GetComponent<UI_ButtonAutoNavigator>();
     }
 
     private void OnEnable()
@@ -92,6 +95,9 @@ public class UI_Market : MonoBehaviour
             _productSlotList.RemoveAt(deleteIndex);
             Destroy(deleteSlot.gameObject);
         }
+
+        List<Button> buttonList = _productSlotList.Select(slot => slot.GetComponent<Button>()).ToList();
+        _autoNavigator.RefreshButtonList(buttonList);
     }
 
     public void RefreshDetailPage(ProductDTO productDTO)

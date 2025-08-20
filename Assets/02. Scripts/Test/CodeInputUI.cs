@@ -14,14 +14,7 @@ public class CodeInputUI : MonoBehaviour
         string text = _inputField.text.Trim();
         _warningField.gameObject.SetActive(false);
 
-        if (string.IsNullOrEmpty(text))
-        {
-            _warningField.text = "방 코드는 5글자의 숫자 또는 영어가 포함된 글자입니다.";
-            _warningField.gameObject.SetActive(true);
-            return;
-        }
-
-        if(string.IsNullOrEmpty(text) || text.Length < 5 || text.Length > 5)
+        if (string.IsNullOrEmpty(text) || text.Length != 5)
         {
             _warningField.text = "방 코드는 5글자의 숫자 또는 영어가 포함된 글자입니다.";
             _warningField.gameObject.SetActive(true);

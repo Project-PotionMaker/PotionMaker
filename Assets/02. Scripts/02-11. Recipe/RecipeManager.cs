@@ -17,7 +17,7 @@ public class RecipeManager : MonoBehaviourSingleton<RecipeManager>
 
     private void Start()
     {
-        PotionHouse.Instance.OnInitialized += InitRecipe;
+        InitRecipe();
     }
 
     private void InitRecipe()

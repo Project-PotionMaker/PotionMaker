@@ -30,8 +30,8 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
     [SerializeField]
     private Vector3Int _customerSpawnPosition;
     public Vector3Int EnterDoor { get => _customerSpawnPosition; set => _customerSpawnPosition = value; }
-    private Vector3Int _casherPosition; // 접수대 위치
-    public Vector3Int CasherPosition { get => _casherPosition; set => _casherPosition = value; }
+    private Vector3 _casherPosition; // 접수대 위치
+    public Vector3 CasherPosition { get => _casherPosition; set => _casherPosition = value; }
     [SerializeField]
     private Vector3Int _customerUnspawnPosition; // 손님이 나가는 문 위치
     public Vector3Int CustomerUnspawnPosition { get => _customerUnspawnPosition; set => _customerUnspawnPosition = value; }
@@ -60,7 +60,7 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
     public void PreService()
     {
         _orderHandler.SetLists();
-        _casherPosition = PotionHouse.Instance.Layout.CashierSpawnPosition;
+        _casherPosition = NetworkServer.spawned[GridManager.Instance.ManagedStructureDict[10014][0].netId].transform.position;// PotionHouse.Instance.Layout.CashierSpawnPosition;
         _customerSpawnPosition = PotionHouse.Instance.Layout.CustomerSpawnPosition;
         _customerUnspawnPosition = PotionHouse.Instance.Layout.CustomerUnspawnPosition;
         _inviteTimer = _inviteCoolTime;
@@ -156,9 +156,9 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
         }
 
         //CmdPlaceOnTable(potionTID, pickupTableNetId);
-        Vector3 position = (Vector3)GridManager.Instance.GetPickupPoint(NetworkServer.spawned[pickupTableNetId].transform.position); // 판매대 위치 찾기
+        List<Vector3> positionList = GridManager.Instance.GetHallPoint(NetworkServer.spawned[pickupTableNetId].transform.position); // 판매대 위치 찾기
         customer.TransitionState(ECustomerStateType.PickingUp);
-        customer.CustomerMove.MoveTo(position); // 손님을 판매대 위치로 이동
+        customer.CustomerMove.MoveTo(positionList); // 손님을 판매대 위치로 이동
         customer.PickupTableId = pickupTableNetId;
         _orderHandler.PickupTableDict[pickupTableNetId].UsingCustomer = customer; // 손님과 판매대 매핑 저장
         _orderHandler.PotionOrderMap[potionTID].Remove(customer);
@@ -249,7 +249,8 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
         }
         GameObject chair = NetworkServer.spawned[chairNetId].gameObject;
         //customer.CustomerMove.MoveTo(chair.transform.position);
-        customer.CustomerMove.MoveTo(chair.GetComponent<Furniture>().InputPosition.position);
+        List<Vector3> positionList = GridManager.Instance.GetHallPoint(chair.transform.position); 
+        customer.CustomerMove.MoveTo(positionList);
 
         // Mirror 임시
         chair.GetComponent<Furniture>().TryCustomerEffect(customer.netId); // 의자 효과 적용

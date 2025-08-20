@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using Mirror;
 using System;
+using System.Collections.Generic;
 public class CustomerMove : NetworkBehaviour
 {
     private NavMeshAgent _agent;
@@ -16,7 +17,7 @@ public class CustomerMove : NetworkBehaviour
     private Vector3 _lastTarget;
 
     private bool _hasArrived = true;
-    private const float GRID_OFFSET = 0.5f;
+    private const float GRID_OFFSET = 0f;
 
     public event Action<ECustomerEmojiType> OnSuccess;
 
@@ -81,6 +82,38 @@ public class CustomerMove : NetworkBehaviour
         _lastTarget = target; // 마지막 목적지 저장
         _agent.SetDestination(target);
     }
+    [Server]
+    public void MoveTo(List<Vector3> target)
+    {
+        if(target.Count == 0)
+        {
+            Debug.LogWarning("Target list is empty. Cannot move to an empty list.");
+            return;
+        }
+        float minDistance = float.MaxValue;
+        Vector3? dest = null;
+        foreach (Vector3 pos in target)
+        {
+            Vector3 newPos = new Vector3(pos.x + GRID_OFFSET, 0, pos.z + GRID_OFFSET); // Y축은 현재 위치 유지
+            if (NavMesh.SamplePosition(newPos, out NavMeshHit hit, 0.4f, NavMesh.AllAreas))
+            {
+                float distance = Vector3.Distance(transform.position, hit.position);
+                if (minDistance > distance)
+                {
+                    minDistance = distance;
+                    dest = hit.position;
+                }
+            }
+        }
+        if (dest == null)
+        {
+            Debug.LogWarning("No valid destination found in the target list.");
+            return;
+        }
+        MoveTo((Vector3)dest);
+        return;
+    }
+
 
     private void StartMoving()
     {

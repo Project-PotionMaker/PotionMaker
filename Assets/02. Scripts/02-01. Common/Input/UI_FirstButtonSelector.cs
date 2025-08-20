@@ -42,6 +42,11 @@ public class UI_FirstButtonSelector : MonoBehaviour
         }
     }
 
+    public void ChangeSelected(GameObject target)
+    {
+        EventSystem.current.SetSelectedGameObject(target);
+    }
+
     private void ChangeNavigationMode()
     {
         if (EventSystem.current == null)

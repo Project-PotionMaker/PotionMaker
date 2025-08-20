@@ -20,6 +20,11 @@ public class UI_FirstButtonSelector : MonoBehaviour
         _lastSelectedButton = null;
         InputManager.Instance.OnNavigateEvent += ChangeNavigationMode;
         InputManager.Instance.OnPointEvent += ChangePointerMode;
+
+        if (_firstSelectedButton != null && _firstSelectedButton.activeInHierarchy)
+        {
+            EventSystem.current.SetSelectedGameObject(_firstSelectedButton);
+        }
     }
 
     private void OnDisable()

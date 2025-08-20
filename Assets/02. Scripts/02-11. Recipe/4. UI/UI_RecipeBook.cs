@@ -38,9 +38,9 @@ public class UI_RecipeBook : MonoBehaviour
         }
     }
 
-    private void Start()
+    private void Awake()
     {
-        RecipeManager.Instance.OnInitialized += Initialize;
+        PotionHouse.Instance.OnInitialized += Initialize;
         gameObject.SetActive(false);
     }
 

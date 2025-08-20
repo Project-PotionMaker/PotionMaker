@@ -21,6 +21,7 @@ public class UI_DailyPotionGuideSlot : MonoBehaviour
     {
         while(RecipeManager.Instance.IngredientDataDict.Count == 0)
         {
+            Debug.Log("ZZ");
             yield return new WaitForSeconds(0.05f);
         }
 
@@ -29,11 +30,13 @@ public class UI_DailyPotionGuideSlot : MonoBehaviour
 
         // 재료1 이미지
         IngredientData firstIngredient = RecipeManager.Instance.IngredientDataDict[potionData.IngredientTIDList[0]];
+        Debug.Log($"재료1: {firstIngredient.TID}");
         Sprite firstIngredientSprite = ImageManager.Instance.GetImage(typeof(IngredientData), firstIngredient.TID);
         _firstIngredientImage.sprite = firstIngredientSprite;
 
         // 재료2 이미지
         IngredientData secondIngredient = RecipeManager.Instance.IngredientDataDict[potionData.IngredientTIDList[1]];
+        Debug.Log($"재료2: {secondIngredient.TID}");
         Sprite secondIngredientSprite = ImageManager.Instance.GetImage(typeof(IngredientData), secondIngredient.TID);
         _secondIngredientImage.sprite = secondIngredientSprite;
     }

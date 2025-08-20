@@ -38,9 +38,17 @@ public class UI_RecipeBook : MonoBehaviour
         }
     }
 
-    private void Awake()
+    private void Start()
     {
-        PotionHouse.Instance.OnInitialized += Initialize;
+        if (PotionHouse.Instance.UnlockedPotionTierDict == null)
+        {
+            PotionHouse.Instance.OnInitialized += Initialize;
+        }
+        else
+        {
+            Initialize();
+        }
+
         gameObject.SetActive(false);
     }
 

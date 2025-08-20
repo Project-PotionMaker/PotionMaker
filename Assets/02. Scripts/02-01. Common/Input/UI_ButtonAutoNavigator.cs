@@ -34,7 +34,7 @@ public class UI_ButtonAutoNavigator : MonoBehaviour
             }
             else
             {
-                navigation.selectOnRight = _exitButton;
+                navigation.selectOnRight = _categoryButtonList[0];
             }
 
             if (i > 0)

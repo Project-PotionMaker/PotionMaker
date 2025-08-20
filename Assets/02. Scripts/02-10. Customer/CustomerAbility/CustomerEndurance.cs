@@ -17,6 +17,7 @@ public class CustomerEndurance : NetworkBehaviour
     public float LoseEnduranceSpeed { get => _loseEnduranceSpeed; set => _loseEnduranceSpeed = value; } // 인내심 감소 속도
 
     public event Action OnEnduranceChanged; // 인내심 변경 이벤트
+    public event Action<ECustomerEmojiType> OnEnduranceZero; 
 
     private void Awake()
     {
@@ -41,6 +42,7 @@ public class CustomerEndurance : NetworkBehaviour
         LosingEndurance(); // 인내심 감소
         if (_currentEndurance <= 0f && _owner.CurrentState != ECustomerStateType.Leaving)
         {
+            BroadcastEmoji();
             CustomerManager.Instance.LostCustomer(_owner);
             AudioNetworkManager.Instance.RpcPlaySFX(ECustomerAudioType.EnduranceZero);
         }
@@ -76,5 +78,10 @@ public class CustomerEndurance : NetworkBehaviour
         OnEnduranceChanged?.Invoke(); // 인내심 변경 이벤트 호출
     }
 
-
+    [ClientRpc]
+    private void BroadcastEmoji()
+    {
+        Debug.Log("Broadcasting emoji for customer: " + _owner.netId);
+        OnEnduranceZero?.Invoke(ECustomerEmojiType.Angry);
+    }
 }

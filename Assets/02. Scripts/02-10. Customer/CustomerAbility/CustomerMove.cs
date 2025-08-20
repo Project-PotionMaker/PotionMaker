@@ -2,6 +2,7 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.AI;
 using Mirror;
+using System;
 public class CustomerMove : NetworkBehaviour
 {
     private NavMeshAgent _agent;
@@ -16,6 +17,8 @@ public class CustomerMove : NetworkBehaviour
 
     private bool _hasArrived = true;
     private const float GRID_OFFSET = 0.5f;
+
+    public event Action<ECustomerEmojiType> OnSuccess;
 
     private void OnEnable()
     {
@@ -100,6 +103,8 @@ public class CustomerMove : NetworkBehaviour
         }
         else if (_owner.CurrentState == ECustomerStateType.PickingUp)
         {
+            Debug.Log("집었음");
+            BroadcastEmoji(); // 이모지 브로드캐스트
             CustomerManager.Instance.OnServedSuccess(_owner, _owner.PickupTableId);
         }
         else if (_owner.CurrentState == ECustomerStateType.Leaving)
@@ -131,5 +136,12 @@ public class CustomerMove : NetworkBehaviour
     {
         _agent.enabled = true;
         _collider.enabled = true; // 충돌체 활성화
+    }
+
+    [ClientRpc]
+    private void BroadcastEmoji()
+    {
+        Debug.Log("Broadcasting emoji for customer: " + _owner.netId);
+        OnSuccess?.Invoke(ECustomerEmojiType.Happy);
     }
 }

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1275710603090039211}
   - component: {fileID: 2921525081391383250}
   - component: {fileID: 531546102357613570}
+  - component: {fileID: 62950678470903154}
   m_Layer: 5
   m_Name: Popup_Market
   m_TagString: Untagged
@@ -76,6 +77,19 @@ MonoBehaviour:
   _exitButton: {fileID: 5742319590835072610}
   _maxButtonsPerRow: 4
   _rightButton: {fileID: 5207856864581143049}
+--- !u!114 &62950678470903154
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 927326437662299139}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c7984f5f6f902b41961e8c3cd4255c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _firstSelectedButton: {fileID: 3885927047544211267}
 --- !u!1 &3275304551757619459
 GameObject:
   m_ObjectHideFlags: 0
@@ -349,7 +363,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2265981214159055166, guid: eac6f823dbe6ae94e9897e6e6bd9506c, type: 3}
       propertyPath: m_Value
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2287010019470606148, guid: eac6f823dbe6ae94e9897e6e6bd9506c, type: 3}
       propertyPath: m_AnchorMax.y

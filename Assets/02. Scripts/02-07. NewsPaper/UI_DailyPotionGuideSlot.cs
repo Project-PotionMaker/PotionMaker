@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,6 +14,16 @@ public class UI_DailyPotionGuideSlot : MonoBehaviour
 
     public void Refresh(PotionData potionData)
     {
+        StartCoroutine(Refresh_Coroutine(potionData));
+    }
+
+    private IEnumerator Refresh_Coroutine(PotionData potionData)
+    {
+        while(RecipeManager.Instance.IngredientDataDict.Count == 0)
+        {
+            yield return new WaitForSeconds(0.05f);
+        }
+
         // 포션 이미지
         _potionImage.sprite = ImageManager.Instance.GetImage<PotionData>(potionData.TID);
 

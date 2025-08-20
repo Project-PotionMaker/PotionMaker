@@ -27,6 +27,7 @@ public class PlayerPingAbility : PlayerAbility
     private void CmdRequestPing()
     {
         Vector3 position = _owner.GetFrontPosition();
+        position.y += 0.15f;
 
         GameObject pingObject = VFXFactory.Instance.CreateObject(EVFXType.Ping, position, Quaternion.identity);
         if (pingObject == null)

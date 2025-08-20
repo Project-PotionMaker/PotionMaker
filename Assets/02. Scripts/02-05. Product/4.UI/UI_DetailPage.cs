@@ -1,6 +1,6 @@
-using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class UI_DetailPage : MonoBehaviour
@@ -23,24 +23,30 @@ public class UI_DetailPage : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI _rentIncrementTextUI;
 
-    public void Refresh(ProductDTO productDTO)
+    private ProductData _productData;
+
+    private void Start()
     {
-        Sprite productSprite = ProductImageHelper.GetProductSprite(productDTO);
+        _buyButton.onClick.AddListener(OnClickBuyButton);
+    }
+
+    public void Refresh(ProductData productData)
+    {
+        _productData = productData;
+
+        Sprite productSprite = ProductImageHelper.GetProductSprite(productData);
         _productImage.sprite = productSprite;
-        _productNameTextUI.text = productDTO.Data.Name;
+        _productNameTextUI.text = productData.Name;
 
         // TODO: 로컬라이제이션 연결로 수정
-        _productDescriptionTextUI.text = productDTO.Data.Description;
-        _productPriceTextUI.text = productDTO.Data.Price.ToString("N0");
+        _productDescriptionTextUI.text = productData.Description;
+        _productPriceTextUI.text = productData.Price.ToString("N0");
 
-        _buyButton.onClick.RemoveAllListeners();
-        _buyButton.onClick.AddListener(() => { ProductManager.Instance.CmdRequestBuy(productDTO.Data.ProductType, productDTO.Data.TID); });
-
-        if(productDTO.Data.ProductType == EProductType.HouseMoving)
+        if(productData.ProductType == EProductType.HouseMoving)
         {
             _layoutDescription.SetActive(true);
 
-            LayoutData layout = DataTable.Instance.GetLayoutData(productDTO.Data.TargetTID);
+            LayoutData layout = DataTable.Instance.GetLayoutData(productData.TargetTID);
             _InitialRentCostTextUI.text = layout.InitialRentCost.ToString("N0");
             _rentIncrementTextUI.text = layout.RentIncrement.ToString("N0");
         }
@@ -48,5 +54,15 @@ public class UI_DetailPage : MonoBehaviour
         {
             _layoutDescription.SetActive(false);
         }
+    }
+
+    private void OnClickBuyButton()
+    {
+        if (_productData == null)
+        {
+            return;
+        }
+
+        ProductManager.Instance.CmdRequestBuy(_productData.ProductType, _productData.TID);
     }
 }

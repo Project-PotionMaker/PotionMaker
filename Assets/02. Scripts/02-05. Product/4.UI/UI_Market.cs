@@ -84,7 +84,7 @@ public class UI_Market : MonoBehaviour
             if (!isDetailPageRefreshed)
             {
                 isDetailPageRefreshed = true;
-                _detailPage.Refresh(productDTO);
+                _detailPage.Refresh(productDTO.Data);
             }
         }
 
@@ -100,9 +100,9 @@ public class UI_Market : MonoBehaviour
         _autoNavigator.RefreshButtonList(buttonList);
     }
 
-    public void RefreshDetailPage(ProductDTO productDTO)
+    public void RefreshDetailPage(ProductData productData)
     {
-        _detailPage.Refresh(productDTO);
+        _detailPage.Refresh(productData);
     }
 
     public void RefreshCoin()

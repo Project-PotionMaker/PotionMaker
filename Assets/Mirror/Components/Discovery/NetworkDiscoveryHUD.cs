@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -130,7 +130,8 @@ namespace Mirror.Discovery
         void Connect(ServerResponse info)
         {
             networkDiscovery.StopDiscovery();
-            NetworkManager.singleton.StartClient(info.uri);
+            NetworkManager.singleton.networkAddress = info.uri.Host;
+            NetworkManager.singleton.StartClient();
         }
 
         public void OnDiscoveredServer(ServerResponse info)

@@ -47,23 +47,10 @@ public class UI_Machine : MonoBehaviour
     {
         _nameTextUI.text = _machine.Data.Name;
 
-        if(_machine.CurrentProgress > 0 && _machine.IsProcessFinished == false)
-        {
-            ProgressSlider.gameObject.SetActive(true);
-        }
-        else if(_machine.CurrentProgress == 0 || _machine.IsProcessFinished)
-        {
-            ProgressSlider.gameObject.SetActive(false);
-        }
-        
-        if (_machine.IsProcessFinished)
-        {
-            _successPanel.SetActive(true);
-        }
-        else
-        {
-            _successPanel.SetActive(false);
-        }
+        bool isInProgress = _machine.CurrentProgress > 0 && !_machine.IsProcessFinished;
+
+        ProgressSlider.gameObject.SetActive(isInProgress);
+        _successPanel.SetActive(_machine.IsProcessFinished);
 
         ProgressSlider.value = _machine.CurrentProgress / _machine.Data.MaxProgress;
         _refundSlider.gameObject.SetActive(_machine.RefundProgress > 0);

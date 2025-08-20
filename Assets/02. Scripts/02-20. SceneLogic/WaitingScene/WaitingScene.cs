@@ -15,8 +15,8 @@ public class WaitingScene : MonoBehaviour
     private TextMeshProUGUI _nextRentMoney;
     [SerializeField]
     private Image _layoutImage;
-
-    private string _roomCode;
+    [SerializeField]
+    private TextMeshProUGUI _roomCode;
 
     public void OnClickExitButton()
     {
@@ -45,5 +45,6 @@ public class WaitingScene : MonoBehaviour
         _money.text = $"{info.Currency.Value.ToString("N0")} $";
         _nextRentDay.text = $"다음 방세 지불일까지 D-{info.Rent.RentPeriod - info.Rent.RentDayCounter}";
         _nextRentMoney.text = $"지불 예정 방세 : {info.Rent.CurrentRentCost.ToString("N0")} $";
+        _roomCode.text = MirrorNetworkManager.Instance.RoomCode;
     }
 }

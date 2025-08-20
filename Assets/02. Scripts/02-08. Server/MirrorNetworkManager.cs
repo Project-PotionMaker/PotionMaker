@@ -18,6 +18,9 @@ public class MirrorNetworkManager : NetworkRoomManager
     private ShopInfo _shopInfo;
     public ShopInfo ShopInfo { get => _shopInfo; set => _shopInfo = value; }
 
+    private string _roomCode;
+    public string RoomCode => _roomCode;
+
     [Scene]
     public string LoadingScene;
 
@@ -26,6 +29,11 @@ public class MirrorNetworkManager : NetworkRoomManager
 
     //[Tooltip("서버 시작 시 GamePlayScene에서 생성할 팩토리 프리팹들")]
     //public List<GameObject> FactoryPrefabList = new List<GameObject>();
+
+    public void SetRoomCode(string code)
+    {
+        _roomCode = code;
+    }
 
     public int GetSlotForNetId(uint netId)
     {

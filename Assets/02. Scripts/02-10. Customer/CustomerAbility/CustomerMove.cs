@@ -103,7 +103,6 @@ public class CustomerMove : NetworkBehaviour
         }
         else if (_owner.CurrentState == ECustomerStateType.PickingUp)
         {
-            Debug.Log("집었음");
             BroadcastEmoji(); // 이모지 브로드캐스트
             CustomerManager.Instance.OnServedSuccess(_owner, _owner.PickupTableId);
         }
@@ -141,7 +140,6 @@ public class CustomerMove : NetworkBehaviour
     [ClientRpc]
     private void BroadcastEmoji()
     {
-        Debug.Log("Broadcasting emoji for customer: " + _owner.netId);
         OnSuccess?.Invoke(ECustomerEmojiType.Happy);
     }
 }

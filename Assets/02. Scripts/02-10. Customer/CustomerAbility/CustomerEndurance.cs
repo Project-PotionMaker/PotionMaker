@@ -81,7 +81,6 @@ public class CustomerEndurance : NetworkBehaviour
     [ClientRpc]
     private void BroadcastEmoji()
     {
-        Debug.Log("Broadcasting emoji for customer: " + _owner.netId);
         OnEnduranceZero?.Invoke(ECustomerEmojiType.Angry);
     }
 }

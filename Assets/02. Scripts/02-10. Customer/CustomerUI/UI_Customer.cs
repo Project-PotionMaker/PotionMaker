@@ -137,19 +137,18 @@ public class UI_Customer : MonoBehaviour
 
     private void ShowEmoji(ECustomerEmojiType emoji)
     {
-        if(emoji == ECustomerEmojiType.Happy)
+        switch (emoji)
         {
-            _happy.Play();
-        }
-        else if (emoji == ECustomerEmojiType.Sleepy)
-        {
-            _sleepy.Play();
-        }
-        else if (emoji == ECustomerEmojiType.Angry)
-        {
-            _angry.Play();
+            case ECustomerEmojiType.Happy:
+                _happy.Play();
+                break;
+            case ECustomerEmojiType.Sleepy:
+                _sleepy.Play();
+                break;
+            case ECustomerEmojiType.Angry:
+                _angry.Play();
+                break;
         }
     }
-
 
 }

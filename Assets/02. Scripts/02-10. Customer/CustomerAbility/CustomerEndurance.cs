@@ -4,8 +4,8 @@ using Mirror;
 public class CustomerEndurance : NetworkBehaviour
 {
     Customer _owner; // Customer 컴포넌트
-    private const float LINE_ENDURANCE = 30f;
-    private const float HALL_ENDURANCE = 30f;
+    private const float LINE_ENDURANCE = 40f;
+    private const float HALL_ENDURANCE = 40f;
     private float _currentEndurance; // 현재 인내심
     public float CurrentEndurance    {get => _currentEndurance; set => _currentEndurance = value; } // 현재 인내심
     [SyncVar (hook = nameof(SyncEndurance))]
@@ -17,6 +17,7 @@ public class CustomerEndurance : NetworkBehaviour
     public float LoseEnduranceSpeed { get => _loseEnduranceSpeed; set => _loseEnduranceSpeed = value; } // 인내심 감소 속도
 
     public event Action OnEnduranceChanged; // 인내심 변경 이벤트
+    public event Action<ECustomerEmojiType> OnEnduranceZero; 
 
     private void Awake()
     {
@@ -41,6 +42,7 @@ public class CustomerEndurance : NetworkBehaviour
         LosingEndurance(); // 인내심 감소
         if (_currentEndurance <= 0f && _owner.CurrentState != ECustomerStateType.Leaving)
         {
+            BroadcastEmoji();
             CustomerManager.Instance.LostCustomer(_owner);
             AudioNetworkManager.Instance.RpcPlaySFX(ECustomerAudioType.EnduranceZero);
         }
@@ -76,5 +78,9 @@ public class CustomerEndurance : NetworkBehaviour
         OnEnduranceChanged?.Invoke(); // 인내심 변경 이벤트 호출
     }
 
-
+    [ClientRpc]
+    private void BroadcastEmoji()
+    {
+        OnEnduranceZero?.Invoke(ECustomerEmojiType.Angry);
+    }
 }

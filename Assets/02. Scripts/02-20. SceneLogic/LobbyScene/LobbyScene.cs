@@ -1,3 +1,4 @@
+using Mirror.Discovery;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -18,18 +19,33 @@ public class LobbyScene : MonoBehaviour
         Application.Quit();
     }
 
-    public void OnMakeRoomButtonClick()
+    //public void OnMakeRoomButtonClick()
+    //{
+    //    MirrorNetworkManager.Instance.ShopInfo = _roomInfoHandler.ShopInfoHandler.SelectedShopInfo;
+    //    MirrorNetworkManager.Instance.StartHost();
+    //}
+
+    //public void OnEnerRoonButtonClick()
+    //{
+    //    MirrorNetworkManager.Instance.StartClient();
+    //}
+
+    public void StartDiscovery()
     {
-        //Debug.Log($"{_roomInfoHandler.RoomInfo.ShopInfo.ShopName}, " +
-        //    $"{_roomInfoHandler.RoomInfo.ShopInfo.Day}, " +
-        //    $"{_roomInfoHandler.RoomInfo.ShopInfo.Currency}, " +
-        //    $"{_roomInfoHandler.RoomInfo.Visibility}");
-        MirrorNetworkManager.Instance.ShopInfo = _roomInfoHandler.ShopInfoHandler.SelectedShopInfo;
-        MirrorNetworkManager.Instance.StartHost();
+        RoomDiscovery.Instance.StartDiscovery();
     }
 
-    public void OnEnerRoonButtonClick()
+    public void OnCreateRoom()
     {
-        MirrorNetworkManager.Instance.StartClient();
+        MirrorNetworkManager.Instance.ShopInfo = _roomInfoHandler.ShopInfoHandler.SelectedShopInfo;
+        // 1. Host 시작
+        MirrorNetworkManager.Instance.StartHost();
+
+        // 2. Discovery 광고 시작
+        RoomDiscovery.Instance.AdvertiseServer();
+
+        // 3. 코드 생성
+        string roomCode = ServerCodeGenerator.ToRoomCode(RoomDiscovery.Instance.ServerId);
+        MirrorNetworkManager.Instance.SetRoomCode(roomCode);
     }
 }

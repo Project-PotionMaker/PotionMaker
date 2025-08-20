@@ -34,6 +34,10 @@ public class UI_PlayerInfoSlot : MonoBehaviour
     private GameObject _offlinePanel;
     [SerializeField]
     private RawImage _playerImage;
+    [SerializeField]
+    private Image _backgroundImage;
+
+    private Color _originColor;
 
     [SerializeField]
     private string _hostWaitingForPlayerDescription;
@@ -56,6 +60,8 @@ public class UI_PlayerInfoSlot : MonoBehaviour
     public void Awake()
     {
         _slotRectTransform = GetComponent<RectTransform>();
+        _originColor = _backgroundImage.color;
+
         _stateHeightDict = new Dictionary<ERoomPlayerState, float>
         {
             { ERoomPlayerState.Offline, 400 },
@@ -202,6 +208,7 @@ public class UI_PlayerInfoSlot : MonoBehaviour
             _offlinePanel.SetActive(true);
             _playerImage.DOKill();
             _playerImage.DOColor(new Color(1f, 1f, 1f, 0f), 0.3f);
+            _backgroundImage.DOColor(Color.grey, 0.3f);
         }
         else if(state == ERoomPlayerState.Online)
         {
@@ -210,6 +217,7 @@ public class UI_PlayerInfoSlot : MonoBehaviour
             _offlinePanel.SetActive(false);
             _playerImage.DOKill();
             _playerImage.DOColor(Color.white, 0.3f);
+            _backgroundImage.DOColor(_originColor, 0.3f);
         }
         else
         {
@@ -218,6 +226,7 @@ public class UI_PlayerInfoSlot : MonoBehaviour
             _offlinePanel.SetActive(false);
             _playerImage.DOKill();
             _playerImage.DOColor(Color.white, 0.3f);
+            _backgroundImage.DOColor(_originColor, 0.3f);
         }
 
         _slotRectTransform.DOKill();

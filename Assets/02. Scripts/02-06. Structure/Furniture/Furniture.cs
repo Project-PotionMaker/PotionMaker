@@ -385,7 +385,8 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
         if (NetworkClient.connection.identity.TryGetComponent<Player>(out Player player))
         {
             player.GetAbility<PlayerInteractAbility>().ReceiveInteractResult(success);
-            if (success && Data.SpecialStructureType == ESpecialStructureType.Casher)
+            if (success && Data.SpecialStructureType == ESpecialStructureType.Casher
+                && PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
             {
                 GameSceneUIManager.Instance?.OpenMarketPopup();
             }

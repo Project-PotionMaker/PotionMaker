@@ -11,6 +11,11 @@ public class UI_KeyGuide : MonoBehaviour
         _canvasGroup = GetComponent<CanvasGroup>();
     }
 
+    private void Start()
+    {
+        FadeInGuide();
+    }
+
     private void FadeInGuide()
     {
         _canvasGroup.DOFade(1f, _fadeDuration);

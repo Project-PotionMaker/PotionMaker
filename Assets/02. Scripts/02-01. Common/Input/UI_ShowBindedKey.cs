@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class UI_ShowBindedKey : MonoBehaviour
 {
+
     [Header("Binding")]
     [SerializeField]
     private InputActionReference _actionRef;
@@ -18,10 +19,12 @@ public class UI_ShowBindedKey : MonoBehaviour
         UpdateCurrentKeyDisplay(InputManager.Instance.PlayerInput);
         InputManager.Instance.OnAnyKey += UpdateCurrentKeyDisplay;
     }
+
     private void OnDisable()
     {
         InputManager.Instance.OnAnyKey -= UpdateCurrentKeyDisplay;
     }
+
     private void UpdateCurrentKeyDisplay(PlayerInput playerInput)
     {
         Debug.Log(nameof(UpdateCurrentKeyDisplay));

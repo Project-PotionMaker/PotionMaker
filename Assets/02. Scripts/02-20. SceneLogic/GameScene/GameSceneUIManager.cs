@@ -38,9 +38,23 @@ public class GameSceneUIManager : MonoBehaviourSingleton<GameSceneUIManager>
         {
             return;
         }
+
+        if (_popupStack.TryPeek(out GameObject currentTopPopup))
+        {
+            if (currentTopPopup.TryGetComponent<UI_FirstButtonSelector>(out var selector))
+            {
+                selector.enabled = false;
+            }
+        }
+
         _popupStack.Push(popup);
         popup.SetActive(true);
         InputManager.Instance.ChangeToUIInput();
+
+        if (popup.TryGetComponent<UI_FirstButtonSelector>(out var newSelector))
+        {
+            newSelector.enabled = true;
+        }
     }
 
     public void OpenNewspaperPopup()
@@ -79,6 +93,15 @@ public class GameSceneUIManager : MonoBehaviourSingleton<GameSceneUIManager>
             if (_popupStack.Count <= 0)
             {
                 InputManager.Instance.ChangeToPlayerInput();
+                return;
+            }
+
+            if (_popupStack.TryPeek(out GameObject newTopPopup))
+            {
+                if (newTopPopup.TryGetComponent<UI_FirstButtonSelector>(out var selector))
+                {
+                    selector.enabled = true;
+                }
             }
         }
     }

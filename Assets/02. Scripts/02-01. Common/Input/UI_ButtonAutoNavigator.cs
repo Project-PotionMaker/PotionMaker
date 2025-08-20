@@ -34,7 +34,7 @@ public class UI_ButtonAutoNavigator : MonoBehaviour
             }
             else
             {
-                navigation.selectOnRight = _exitButton;
+                navigation.selectOnRight = _categoryButtonList[0];
             }
 
             if (i > 0)
@@ -43,6 +43,23 @@ public class UI_ButtonAutoNavigator : MonoBehaviour
             }
 
             _categoryButtonList[i].navigation = navigation;
+        }
+
+        if (_exitButton != null)
+        {
+            Navigation navigation = _exitButton.navigation;
+            navigation.mode = Navigation.Mode.Explicit;
+            navigation.selectOnDown = _rightButton;
+            navigation.selectOnLeft = _categoryButtonList[_categoryButtonList.Count - 1];
+            _exitButton.navigation = navigation;
+        }
+
+        if (_rightButton != null)
+        {
+            Navigation navigation = _rightButton.navigation;
+            navigation.mode = Navigation.Mode.Explicit;
+            navigation.selectOnUp = _exitButton;
+            _rightButton.navigation = navigation;
         }
     }
 
@@ -55,10 +72,26 @@ public class UI_ButtonAutoNavigator : MonoBehaviour
     private void RefreshButtonNavigation()
     {
         int maxButtonCount = _itemButtonList.Count;
+        int lastEnableButton = 0;
+        bool isAllEnabled = true;
         for (int i = 0; i < maxButtonCount; i++)
         {
             Navigation navigation = _itemButtonList[i].navigation;
             navigation.mode = Navigation.Mode.Explicit;
+
+            if (isAllEnabled && !_itemButtonList[i].enabled)
+            {
+                isAllEnabled = false;
+                lastEnableButton = i - 1;
+                if (lastEnableButton < 0)
+                {
+                    break;
+                }
+                Navigation lastButtonNavigation = _itemButtonList[lastEnableButton].navigation;
+                lastButtonNavigation.selectOnRight = _rightButton;
+                _itemButtonList[lastEnableButton].navigation = lastButtonNavigation;
+                break;
+            }
 
             if (i < maxButtonCount - 1)
             {
@@ -104,6 +137,7 @@ public class UI_ButtonAutoNavigator : MonoBehaviour
             _itemButtonList[i].navigation = navigation;
         }
 
+
         for (int i = 0; i < _categoryButtonList.Count; i++)
         {
             Navigation navigation = _categoryButtonList[i].navigation;
@@ -114,8 +148,15 @@ public class UI_ButtonAutoNavigator : MonoBehaviour
         if (_rightButton != null && _itemButtonList.Count > 0)
         {
             Navigation navigation = _rightButton.navigation;
-            navigation.mode = Navigation.Mode.Explicit;
-            navigation.selectOnLeft = _itemButtonList[_itemButtonList.Count - 1];
+            if (isAllEnabled)
+            {
+                navigation.selectOnLeft = _itemButtonList[_itemButtonList.Count - 1];
+            }
+            else if (lastEnableButton >= 0)
+            {
+                navigation.selectOnLeft = _itemButtonList[lastEnableButton];
+            }
+
             _rightButton.navigation = navigation;
         }
     }

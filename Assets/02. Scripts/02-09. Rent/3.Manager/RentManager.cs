@@ -6,7 +6,7 @@ public class RentManager : NetworkBehaviourSingleton<RentManager>, IShopInfoSave
 {
     private Rent _rent;
     public RentDTO Rent => _rent.ToDTO();
-  
+
     public override void OnStartClient()
     {
         base.OnStartClient();
@@ -48,7 +48,7 @@ public class RentManager : NetworkBehaviourSingleton<RentManager>, IShopInfoSave
     public void UpdateRent(string rentJson)
     {
         RentRPCData rentRPCData = JsonUtility.FromJson<RentRPCData>(rentJson);
-        _rent.SetRent(rentRPCData.RentDayCounter, rentRPCData.CurrentRentCost, rentRPCData.RentIncrement);
+        _rent.SetRent(rentRPCData.RentDayCounter, rentRPCData.CurrentRentCost, rentRPCData.LastRentCost, rentRPCData.RentIncrement);
     }
 
     [Command(requiresAuthority = false)]
@@ -67,6 +67,9 @@ public class RentManager : NetworkBehaviourSingleton<RentManager>, IShopInfoSave
         if(!_rent.IsRentDay)
         {
             Debug.Log("아직 임대료를 지불할 때가 아닙니다.");
+            RentRPCData rentRPCDataNotPaid = new RentRPCData(Rent);
+            string rentJsonNotPaid = JsonUtility.ToJson(rentRPCDataNotPaid);
+            UpdateRent(rentJsonNotPaid);
             return;
         }
 
@@ -86,6 +89,9 @@ public class RentManager : NetworkBehaviourSingleton<RentManager>, IShopInfoSave
     private void IncreaseRentCount()
     {
         _rent.IncreaseRentDayCounter();
+        RentRPCData rentRPCData = new RentRPCData(Rent);
+        string rentJson = JsonUtility.ToJson(rentRPCData);
+        UpdateRent(rentJson);
     }
 
     public void ApplyLoadedData(ShopInfo shopInfo)

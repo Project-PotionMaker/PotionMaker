@@ -13,6 +13,9 @@ public class Rent
     private int _currentRentCost;
     public int CurrentRentCost => _currentRentCost;
 
+    private int _lastRentCost;
+    public int LastRentCost => _lastRentCost;
+
     private int _rentIncrement;
     public int RentIncrement => _rentIncrement;
 
@@ -22,6 +25,7 @@ public class Rent
     {
         _rentDayCounter = 0;
         _currentRentCost = 0;
+        _lastRentCost = 0;
         _rentIncrement = 0;
     }
 
@@ -45,6 +49,7 @@ public class Rent
                 $"{nameof(currentRentCost)} must be zero or greater"
             );
         }
+
         if (rentIncrement < 0)
         {
             throw new ArgumentOutOfRangeException
@@ -63,10 +68,11 @@ public class Rent
     {
         _rentDayCounter = rentDto.RentDayCounter;
         _currentRentCost = rentDto.CurrentRentCost;
+        _lastRentCost = rentDto.LastRentCost;
         _rentIncrement = rentDto.RentIncrement;
     }
 
-    public void SetRent(int rentDayCounter, int currentRentCost, int rentIncrement)
+    public void SetRent(int rentDayCounter, int currentRentCost, int lastRentCost, int rentIncrement)
     {
         if (rentDayCounter < 1 || rentDayCounter > RENT_PERIOD)
         {
@@ -86,6 +92,15 @@ public class Rent
                 $"{nameof(currentRentCost)} must be zero or greater"
             );
         }
+        if (lastRentCost < 0)
+        {
+            throw new ArgumentOutOfRangeException
+            (
+                nameof(lastRentCost),
+                lastRentCost,
+                $"{nameof(lastRentCost)} must be zero or greater"
+            );
+        }
         if (rentIncrement < 0)
         {
             throw new ArgumentOutOfRangeException
@@ -97,19 +112,20 @@ public class Rent
         }
         _rentDayCounter = rentDayCounter;
         _currentRentCost = currentRentCost;
+        _lastRentCost = lastRentCost;
         _rentIncrement = rentIncrement;
     }
     public void OnRentPaid()
     {
-        _rentDayCounter = 1;
+        _lastRentCost = _currentRentCost;
         _currentRentCost += _rentIncrement;
     }
 
     public void IncreaseRentDayCounter()
     {
-        if (_rentDayCounter < RENT_PERIOD)
+        if (_rentDayCounter <= RENT_PERIOD)
         {
-            _rentDayCounter++;
+            _rentDayCounter = (_rentDayCounter % RENT_PERIOD) + 1;
         }
         else
         {

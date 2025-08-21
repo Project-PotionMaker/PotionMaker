@@ -465,7 +465,6 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
                     GridManager.Instance.ServerPlaceStructure(targetPosition, dropItemNetId, sender);
                     dropItemIdentity.RemoveClientAuthority();
                     success = true;
-                    RpcOnDrop();
                 }
                 else
                 {
@@ -489,12 +488,6 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
         {
             player.GetAbility<PlayerPickupAbility>().ReceiveDroppedItem(success);
         }
-    }
-
-    [ClientRpc]
-    private void RpcOnDrop()
-    {
-        gameObject.SetActive(false);
     }
 
     [Command(requiresAuthority = false)]

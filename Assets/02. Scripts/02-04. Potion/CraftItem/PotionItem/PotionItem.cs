@@ -1,4 +1,5 @@
 using Mirror;
+using MoreMountains.Feedbacks;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -52,10 +53,9 @@ public class PotionItem : NetworkBehaviour, IItem
         {
             StopCoroutine(_visibleRoutine);
         }
-        if (gameObject.activeInHierarchy)
-        {
-            _visibleRoutine = StartCoroutine(VisibleRoutine());
-        }
+
+        gameObject.SetActive(true);
+        _visibleRoutine = StartCoroutine(VisibleRoutine());
     }
 
     private void OnPotionItemTIDUpdated(int oldValue, int newValue)

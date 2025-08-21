@@ -48,7 +48,7 @@ public class UI_SuccessSummary : MonoBehaviour
         _totalSalesTextUI.text = totalSales.ToString("N0");
         _totalDay.text = $"{PhaseManager.Instance.Day} 일";
 
-        _nextRentDay.text = $"{RentManager.Instance.Rent.RentPeriod-RentManager.Instance.Rent.RentDayCounter} 일";
+        _nextRentDay.text = $"{RentManager.Instance.Rent.RentPeriod-(RentManager.Instance.Rent.RentDayCounter%RentManager.Instance.Rent.RentPeriod)} 일";
         _nextRentCost.text = RentManager.Instance.Rent.CurrentRentCost.ToString("N0");
 
         gameObject.SetActive(true);

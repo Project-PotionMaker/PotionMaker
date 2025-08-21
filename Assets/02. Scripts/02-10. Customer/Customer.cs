@@ -26,8 +26,8 @@ public class Customer : NetworkBehaviour
     public event Action OnCreated;
 
     private Vector3 _chairPosition;
-    public  Vector3 ChairPosition { get => _chairPosition; set => _chairPosition = value; } // 의자 위치
-    private  float _chairRotate;
+    public Vector3 ChairPosition { get => _chairPosition; set => _chairPosition = value; } // 의자 위치
+    private float _chairRotate;
     public float ChairRotate { get => _chairRotate; set => _chairRotate = value; } // 의자 회전
     [SyncVar]
     private uint _pickupTableId;
@@ -79,13 +79,28 @@ public class Customer : NetworkBehaviour
     {
         if (_potionHandler.transform.childCount == 0)
         {
-            return; 
+            return;
         }
         GameObject potion = _potionHandler.transform.GetChild(0).gameObject;
-        if(ReferenceEquals(potion, null) == false)
+        if (ReferenceEquals(potion, null) == false)
         {
-            potion.transform.SetParent(null); 
-            CraftItemFactory.Instance.ReturnObject(potion); 
+            potion.transform.SetParent(null);
+            RpcReturnPotion();
+            CraftItemFactory.Instance.ReturnObject(potion);
+        }
+
+    }
+    [ClientRpc]
+    public void RpcReturnPotion()
+    {
+        if (_potionHandler.transform.childCount == 0)
+        {
+            return;
+        }
+        GameObject potion = _potionHandler.transform.GetChild(0).gameObject;
+        if (ReferenceEquals(potion, null) == false)
+        {
+            potion.transform.SetParent(null);
         }
     }
 

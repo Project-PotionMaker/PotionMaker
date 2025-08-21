@@ -113,8 +113,9 @@ public class UI_DaySummary : MonoBehaviour
         _dailySalesTextUI.text = SalesManager.Instance.Sales.DailySales.ToString("N0");
 
         // 방세
+        Debug.Log($"방세내는날: {RentManager.Instance.Rent.IsRentDay}, {RentManager.Instance.Rent.RentDayCounter}");
         _rentPanel.SetActive(RentManager.Instance.Rent.IsRentDay);
-        _rentTextUI.text = $"-{RentManager.Instance.Rent.CurrentRentCost.ToString("N0")}";
+        _rentTextUI.text = $"-{RentManager.Instance.Rent.LastRentCost.ToString("N0")}";
 
         // 평판
         // max value도 받아오도록 수정

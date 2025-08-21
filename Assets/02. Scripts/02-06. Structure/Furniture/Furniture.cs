@@ -514,6 +514,46 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
 
         TryHandleInputUIOnType(active);
         ApplyPropertyBlock();
+
+        // 툴팁 변경 부분(추후 이동)
+        EPhaseType currentPhase = PhaseManager.Instance.CurrentPhase.PhaseType;
+
+        if (active)
+        {
+            if (currentPhase == EPhaseType.PreparingPhase)
+            {
+                if (Data.SpecialStructureType == ESpecialStructureType.Casher)
+                {
+                    TooltipManager.Instance.ShowTooltip(ETooltipPanel.MarketPreparing);
+                }
+                else
+                {
+                    TooltipManager.Instance.ShowTooltip(ETooltipPanel.CommonPreparing);
+                }
+            }
+            if (currentPhase == EPhaseType.ServingPhase)
+            {
+                if (Data.SpecialStructureType == ESpecialStructureType.Casher)
+                {
+                    TooltipManager.Instance.ShowTooltip(ETooltipPanel.MarketServing);
+                }
+                else
+                {
+                    TooltipManager.Instance.ShowTooltip(ETooltipPanel.CommonServing);
+                }
+            }
+        }
+        else
+        {
+            if (currentPhase == EPhaseType.PreparingPhase)
+            {
+                TooltipManager.Instance.ShowTooltip(ETooltipPanel.CommonPreparing);
+            }
+            if (currentPhase == EPhaseType.ServingPhase)
+            {
+                TooltipManager.Instance.ShowTooltip(ETooltipPanel.CommonServing);
+            }
+        }
     }
 
 

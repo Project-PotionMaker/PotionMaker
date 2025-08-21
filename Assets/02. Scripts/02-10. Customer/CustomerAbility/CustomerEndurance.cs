@@ -4,8 +4,8 @@ using Mirror;
 public class CustomerEndurance : NetworkBehaviour
 {
     Customer _owner; // Customer 컴포넌트
-    private const float LINE_ENDURANCE = 40f;
-    private const float HALL_ENDURANCE = 40f;
+    private const float LINE_ENDURANCE = 60f;
+    private const float HALL_ENDURANCE = 60f;
     private float _currentEndurance; // 현재 인내심
     public float CurrentEndurance    {get => _currentEndurance; set => _currentEndurance = value; } // 현재 인내심
     [SyncVar (hook = nameof(SyncEndurance))]

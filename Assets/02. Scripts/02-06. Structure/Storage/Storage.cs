@@ -333,8 +333,19 @@ public class Storage : NetworkBehaviour, IGridItemHandler
         }
 
         ApplyPropertyBlock();
-    }
 
+        // 툴팁 변경 부분(추후 이동)
+        EPhaseType currentPhase = PhaseManager.Instance.CurrentPhase.PhaseType;
+
+        if (currentPhase == EPhaseType.PreparingPhase)
+        {
+            TooltipManager.Instance.ShowTooltip(ETooltipPanel.CommonPreparing);
+        }
+        if (currentPhase == EPhaseType.ServingPhase)
+        {
+            TooltipManager.Instance.ShowTooltip(ETooltipPanel.CommonServing);
+        }
+    }
 
     public void OnIncorrectAction()
     {

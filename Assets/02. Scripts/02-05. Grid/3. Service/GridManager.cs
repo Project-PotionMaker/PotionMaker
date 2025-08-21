@@ -431,12 +431,18 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
 
 
     [Server]
-    public Vector3? GetPickupPoint(Vector3 position)
+    public List<Vector3> GetHallPoint(Vector3 position)
     {
         Vector3Int gridPosition = GetGridPosition(position);
 
-        Vector3? hallVector =  _serverGridData.GetLRUDArea(gridPosition, EAreaType.Hall);
-        return (hallVector + position) / 2;
+        List<Vector3> hallList =  _serverGridData.GetLRUDArea(gridPosition, EAreaType.Hall);
+        List<Vector3> returnList = new List<Vector3>();
+        foreach (Vector3 point in hallList)
+        {
+            returnList.Add((point + position)/2);
+        }
+
+        return returnList;
     }
 
 
@@ -472,7 +478,7 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
         ServerCreateStructure(StructureManager.Instance.SpecialStructureTIDDict[ESpecialStructureType.Practice], PotionHouse.Instance.Layout.PracticeSpawnPosition); // 연습모드 스폰
 
         _hallAreaPathFinder.InitGridPathFinder
-            (GetPositionByAreaType(EAreaType.Hall).ToHashSet(),
+            (GetPositionByAreaType(EAreaType.Hall).ToHashSet().Concat(GetPositionByAreaType(EAreaType.Line)).ToHashSet(),
             _serverGridData.PlacedPositionHashSet,
             PotionHouse.Instance.Layout.CashierSpawnPosition,
             PotionHouse.Instance.Layout.EnterDoorPosition,
@@ -481,7 +487,7 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
     }
 
     [Command(requiresAuthority = false)]
-    public void CmdRemoveStructure(int structureTID, GameObject removeObject)
+    public void CmdRemoveStructure(int structureTID, GameObject removeObject) 
     {
         ServerRemoveStructureOnGrid(structureTID, removeObject);
     }

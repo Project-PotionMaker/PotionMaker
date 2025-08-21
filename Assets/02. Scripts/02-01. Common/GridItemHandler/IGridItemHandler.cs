@@ -13,8 +13,6 @@ public interface IGridItemHandler
 
     public int GetStructureTID();
 
-    public void SetCollider(bool active);
-
     public void SetHighlight(bool active);
 
     public void OnIncorrectAction();

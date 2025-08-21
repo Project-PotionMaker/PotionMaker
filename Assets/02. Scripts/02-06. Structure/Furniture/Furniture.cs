@@ -3,9 +3,7 @@ using Mirror;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.UI;
 using VInspector;
 
 /// <summary>
@@ -46,8 +44,6 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
     private FurnitureData _data;
     public FurnitureData Data => _data;
 
-    [SerializeField]
-    private Collider _collider;
     [SerializeField]
     private Transform _model;
 
@@ -306,7 +302,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
                 if (_data.SpecialStructureType == ESpecialStructureType.Casher ||
                     _data.SpecialStructureType == ESpecialStructureType.Practice)
                 {
-                    TargetRpcOnDrop(sender, false, transform.position);
+                    TargetRpcOnDrop(sender, false);
                     return;
                 }
                 if (GridManager.Instance.ServerCanPlaceObjectAt(targetPosition, _data.AreaType))
@@ -331,7 +327,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
             }
         }
 
-        TargetRpcOnDrop(sender, success, transform.position);
+        TargetRpcOnDrop(sender, success);
     }
 
     [Command(requiresAuthority = false)]
@@ -403,7 +399,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
     }
 
     [TargetRpc]
-    private void TargetRpcOnDrop(NetworkConnectionToClient target, bool success, Vector3 position)
+    private void TargetRpcOnDrop(NetworkConnectionToClient target, bool success)
     {
         //transform.position = _grid.CellToWorld(gridPosition) + new Vector3(0.5f, 0, 0.5f);
         if (NetworkClient.connection.identity.TryGetComponent<Player>(out Player player))
@@ -481,11 +477,6 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
     public int GetStructureTID()
     {
         return _data.StructureTID;
-    }
-
-    public void SetCollider(bool active)
-    {
-        _collider.enabled = active;
     }
 
     public void StartRefund()

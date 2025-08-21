@@ -16,8 +16,6 @@ public class ModelOnTID
 public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
 {
     [SerializeField]
-    private Collider _collider;
-    [SerializeField]
     private Transform _model;
     [SerializeField]
     private Transform _putItemPosition;
@@ -564,11 +562,6 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
     public int GetStructureTID()
     {
         return _data.StructureTID;
-    }
-
-    public void SetCollider(bool active)
-    {
-        _collider.enabled = active;
     }
 
     public void StartRefund()

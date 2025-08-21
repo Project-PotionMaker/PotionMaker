@@ -22,6 +22,10 @@ public class UI_RebindAction : MonoBehaviour
     [SerializeField]
     private GameObject _activeOverlay;
 
+    [Header("Overlay")]
+    [SerializeField]
+    private GameObject _rebindOverlay;
+
     private void Start()
     {
         InputMappingManager.Instance.OnBindingReset += UpdateBindingDisplay;
@@ -57,6 +61,7 @@ public class UI_RebindAction : MonoBehaviour
     {
         _rebindButton.interactable = false;
         _activeOverlay.SetActive(true);
+        _rebindOverlay.SetActive(true);
 
         InputMappingManager.Instance.OnRebindComplete += HandleRebindComplete;
         InputMappingManager.Instance.OnRebindCanceled += HandleRebindCanceled;
@@ -109,8 +114,6 @@ public class UI_RebindAction : MonoBehaviour
             _bindKeyText.gameObject.SetActive(true);
             _bindImage.gameObject.SetActive(false);
         }
-
-            
     }
 
     private void CleanUp()
@@ -119,6 +122,7 @@ public class UI_RebindAction : MonoBehaviour
         InputMappingManager.Instance.OnRebindCanceled -= HandleRebindCanceled;
 
         _activeOverlay.SetActive(false);
+        _rebindOverlay.SetActive(false);
         _rebindButton.interactable = true;
     }
 }

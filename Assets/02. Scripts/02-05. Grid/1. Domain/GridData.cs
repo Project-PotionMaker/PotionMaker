@@ -127,18 +127,19 @@ public class GridData
         return false;
     }
 
-    public Vector3? GetLRUDArea(Vector3Int gridPosition, EAreaType areaType)
+    public List<Vector3> GetLRUDArea(Vector3Int gridPosition, EAreaType areaType)
     {
+        List<Vector3> returnValList = new List<Vector3>();
         for (int i = 0; i < LRUDPositionList.Count; i++)
         {
             if (_availableAreaDict.TryGetValue(gridPosition + LRUDPositionList[i], out EAreaType type))
             {
                 if (type == areaType)
                 {
-                    return gridPosition + LRUDPositionList[i];
+                    returnValList.Add(gridPosition + LRUDPositionList[i]);
                 }
             }
         }
-        return null;
+        return returnValList;
     }
 }

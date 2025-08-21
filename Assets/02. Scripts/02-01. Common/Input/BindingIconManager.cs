@@ -17,14 +17,7 @@ public class BindingIconManager : MonoBehaviourSingleton<BindingIconManager>
 
     private void Start()
     {
-        if (DataTable.Instance.GetKeyboardMouseDataList() == null)
-        {
-            Global.Instance.OnDataLoaded += Initialize;
-        }
-        else
-        {
-            Initialize();
-        }
+        ImageManager.Instance.OnInitialized += Initialize;
 
         InputManager.Instance.OnAnyKey += ChangeCurrentControl;
 

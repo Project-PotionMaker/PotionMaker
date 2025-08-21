@@ -11,6 +11,8 @@ public class ImageManager : MonoBehaviourSingleton<ImageManager>
     private Dictionary<Type, string> _prefixDict = new();
     private Dictionary<Type, Dictionary<int, Sprite>> _imageDict = new();
 
+    public event Action OnInitialized;
+
     protected override void Awake()
     {
         base.Awake();
@@ -48,6 +50,8 @@ public class ImageManager : MonoBehaviourSingleton<ImageManager>
         QueueImageLoading<PlayStation5Data>(DataTable.Instance.GetPlayStation5DataList());
         QueueImageLoading<XboxData>(DataTable.Instance.GetXboxDataList());
         await Task.WhenAll(imageLoadTasks);
+
+        OnInitialized?.Invoke();
     }
 
     private async Task InitImageDict<T>(ReadOnlyList<T> dataList)

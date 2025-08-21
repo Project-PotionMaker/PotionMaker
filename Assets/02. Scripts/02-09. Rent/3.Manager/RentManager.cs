@@ -89,6 +89,9 @@ public class RentManager : NetworkBehaviourSingleton<RentManager>, IShopInfoSave
     private void IncreaseRentCount()
     {
         _rent.IncreaseRentDayCounter();
+        RentRPCData rentRPCData = new RentRPCData(Rent);
+        string rentJson = JsonUtility.ToJson(rentRPCData);
+        UpdateRent(rentJson);
     }
 
     public void ApplyLoadedData(ShopInfo shopInfo)

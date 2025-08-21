@@ -4,7 +4,7 @@ using Mirror;
 
 public class ServingPhase : BasePhase
 {
-    private float _initTimer = 120f;
+    private float _initTimer = 5f;
     public float InitTimer => _initTimer;
 
     private float _currentTime;
@@ -49,7 +49,7 @@ public class ServingPhase : BasePhase
         else
         {
             PhaseManager.Instance.SetCurrnetTime(_currentTime / _initTimer); // 타이머 비율 계산
-            CustomerManager.Instance.InviteCustomer(deltaTime); // 손님 초대
+            //CustomerManager.Instance.InviteCustomer(deltaTime); // 손님 초대
         }
 
     }

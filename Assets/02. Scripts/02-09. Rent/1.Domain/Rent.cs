@@ -101,7 +101,6 @@ public class Rent
     }
     public void OnRentPaid()
     {
-        _rentDayCounter = 1;
         _currentRentCost += _rentIncrement;
     }
 
@@ -109,7 +108,7 @@ public class Rent
     {
         if (_rentDayCounter < RENT_PERIOD)
         {
-            _rentDayCounter++;
+            _rentDayCounter = (_rentDayCounter % RENT_PERIOD) + 1;
         }
         else
         {

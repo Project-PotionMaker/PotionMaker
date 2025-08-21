@@ -312,7 +312,6 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
                     transform.position = targetPosition;
                     GridManager.Instance.ServerPlaceStructure(targetPosition, dropItemNetId, sender);
                     dropItemIdentity.RemoveClientAuthority();
-                    RpcOnDrop();
                     success = true;
                 }
                 else
@@ -414,12 +413,6 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
         }
     }
     #endregion
-
-    [ClientRpc]
-    private void RpcOnDrop()
-    {
-        gameObject.SetActive(false);
-    }
 
     #region Public Interface (IGridItemHandler)
     private void ActivateModelForTID(int tid)

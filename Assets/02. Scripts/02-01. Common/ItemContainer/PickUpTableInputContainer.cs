@@ -39,6 +39,7 @@ public class PickUpTableInputContainer : IInputContainer<Furniture>
                     break;
                 }
             }
+            furniture.InputObject.transform.position = furniture.InputPosition.position;
             return true;
         }
         return false;

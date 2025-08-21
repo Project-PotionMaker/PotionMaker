@@ -217,7 +217,6 @@ public class Storage : NetworkBehaviour, IGridItemHandler
             {
                 transform.position = targetPosition;
                 GridManager.Instance.ServerPlaceStructure(targetPosition, dropItemNetId, sender, _ingredientTID);
-                RpcOnDrop();
                 success = true;
             }
             else
@@ -263,12 +262,6 @@ public class Storage : NetworkBehaviour, IGridItemHandler
         }
     }
     #endregion
-
-    [ClientRpc]
-    private void RpcOnDrop()
-    {
-        gameObject.SetActive(false);
-    }
 
     private void ActivateModelForTID(int tid)
     {

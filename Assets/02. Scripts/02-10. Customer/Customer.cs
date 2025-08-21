@@ -85,11 +85,10 @@ public class Customer : NetworkBehaviour
         if (ReferenceEquals(potion, null) == false)
         {
             potion.transform.SetParent(null);
-
+            RpcReturnPotion();
             CraftItemFactory.Instance.ReturnObject(potion);
         }
 
-        RpcReturnPotion();
     }
     [ClientRpc]
     public void RpcReturnPotion()

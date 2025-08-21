@@ -111,7 +111,6 @@ public class CustomerMove : NetworkBehaviour
             return;
         }
         MoveTo((Vector3)dest);
-        return;
     }
 
 

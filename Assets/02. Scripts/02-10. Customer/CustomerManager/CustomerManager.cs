@@ -60,7 +60,7 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
     public void PreService()
     {
         _orderHandler.SetLists();
-        _casherPosition = NetworkServer.spawned[GridManager.Instance.ManagedStructureDict[10014][0].netId].transform.position;// PotionHouse.Instance.Layout.CashierSpawnPosition;
+        _casherPosition = NetworkServer.spawned[GridManager.Instance.ManagedStructureDict[StructureManager.Instance.SpecialStructureTIDDict[ESpecialStructureType.Casher]][0].netId].transform.position;// PotionHouse.Instance.Layout.CashierSpawnPosition;
         _customerSpawnPosition = PotionHouse.Instance.Layout.CustomerSpawnPosition;
         _customerUnspawnPosition = PotionHouse.Instance.Layout.CustomerUnspawnPosition;
         _inviteTimer = _inviteCoolTime;

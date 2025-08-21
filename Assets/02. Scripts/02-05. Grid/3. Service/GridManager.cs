@@ -478,7 +478,7 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
         ServerCreateStructure(StructureManager.Instance.SpecialStructureTIDDict[ESpecialStructureType.Practice], PotionHouse.Instance.Layout.PracticeSpawnPosition); // 연습모드 스폰
 
         _hallAreaPathFinder.InitGridPathFinder
-            (GetPositionByAreaType(EAreaType.Hall).ToHashSet(),
+            (GetPositionByAreaType(EAreaType.Hall).ToHashSet().Concat(GetPositionByAreaType(EAreaType.Line)).ToHashSet(),
             _serverGridData.PlacedPositionHashSet,
             PotionHouse.Instance.Layout.CashierSpawnPosition,
             PotionHouse.Instance.Layout.EnterDoorPosition,
@@ -487,7 +487,7 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
     }
 
     [Command(requiresAuthority = false)]
-    public void CmdRemoveStructure(int structureTID, GameObject removeObject)
+    public void CmdRemoveStructure(int structureTID, GameObject removeObject) 
     {
         ServerRemoveStructureOnGrid(structureTID, removeObject);
     }

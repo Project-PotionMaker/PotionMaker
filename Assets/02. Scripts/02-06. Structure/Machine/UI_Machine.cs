@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -21,6 +22,11 @@ public class UI_Machine : MonoBehaviour
     private GameObject _successPanel;
     [SerializeField]
     private GameObject _sliderPanel;
+
+    [SerializeField]
+    private List<CanvasGroup> InputCanvasGroupList;
+    [SerializeField]
+    private List<Image> InputIngredientImageList;
 
     private void Start()
     {

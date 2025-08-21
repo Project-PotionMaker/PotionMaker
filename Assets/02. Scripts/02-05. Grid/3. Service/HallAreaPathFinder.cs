@@ -166,12 +166,7 @@ public class HallAreaPathFinder
                 }
             }
         }
-
-        if (destinationHashSet.Count == reachableDestinationHashSet.Count)
-        {
-            return true;
-        }
-        return false;
+        return destinationHashSet.Count == reachableDestinationHashSet.Count;
     }
 
     private void InitQueueAndVisited(Vector3Int start)

@@ -390,7 +390,8 @@ GameObject:
   - component: {fileID: 6338694260253553282}
   - component: {fileID: 808214737679472741}
   - component: {fileID: 1934041794849441540}
-  - component: {fileID: 2931462427622319607}
+  - component: {fileID: 2606565989511110701}
+  - component: {fileID: 9103887883006826117}
   m_Layer: 5
   m_Name: Slot_DailyPotion
   m_TagString: Untagged
@@ -488,7 +489,7 @@ MonoBehaviour:
   _imagePotionIcon: {fileID: 9085323313838915324}
   _textPotionName: {fileID: 4000338297189381774}
   _textPotionArticle: {fileID: 3136308260984481668}
---- !u!114 &2931462427622319607
+--- !u!114 &2606565989511110701
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -535,7 +536,7 @@ MonoBehaviour:
   tweenTargetIsTargetGO: 1
   delay: 0
   duration: 0.5
-  easeType: 7
+  easeType: 6
   easeCurve:
     serializedVersion: 2
     m_Curve:
@@ -570,10 +571,10 @@ MonoBehaviour:
   autoGenerate: 1
   isActive: 1
   isValid: 1
-  target: {fileID: 6439067411130878558}
-  animationType: 21
-  targetType: 5
-  forcedTargetType: 0
+  target: {fileID: 9103887883006826117}
+  animationType: 7
+  targetType: 3
+  forcedTargetType: 2
   autoPlay: 1
   useTargetAsV3: 0
   endValueFloat: 0
@@ -588,7 +589,7 @@ MonoBehaviour:
     width: 0
     height: 0
   endValueTransform: {fileID: 0}
-  optionalBool0: 1
+  optionalBool0: 0
   optionalBool1: 0
   optionalFloat0: 0
   optionalInt0: 0
@@ -596,6 +597,18 @@ MonoBehaviour:
   optionalScrambleMode: 0
   optionalShakeRandomnessMode: 0
   optionalString: 
+--- !u!225 &9103887883006826117
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6925989764922953621}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &6936580450724744613
 GameObject:
   m_ObjectHideFlags: 0

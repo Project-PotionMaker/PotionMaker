@@ -4,7 +4,9 @@ using Mirror;
 
 public class ServingPhase : BasePhase
 {
-    private const float INIT_TIMER = 120f;
+    private float _initTimer = 120f;
+    public float InitTimer => _initTimer;
+
     private float _currentTime;
     public float CurrentTime { get => _currentTime; set => _currentTime = value; }
 
@@ -16,7 +18,7 @@ public class ServingPhase : BasePhase
     public override void EnterPhase()
     {
         base.EnterPhase();
-        _currentTime = INIT_TIMER;
+        _currentTime = _initTimer;
         _timesUp = false;
         AudioManager.Instance.PlaySFX(EPhaseAudioType.EnterServingPhase);
     }
@@ -36,7 +38,7 @@ public class ServingPhase : BasePhase
             {
                 Debug.Log("타임업! 손님들을 모두 반환합니다.");
                 _timesUp = true;
-                CustomerManager.Instance.OnLastOrderTime(); // 대기열에 있는 손님들을 모두 반환
+                //CustomerManager.Instance.OnLastOrderTime(); // 대기열에 있는 손님들을 모두 반환
             }
             if (CustomerManager.Instance.RemainCustomers == 0) 
             {
@@ -46,7 +48,7 @@ public class ServingPhase : BasePhase
         }
         else
         {
-            PhaseManager.Instance.SetCurrnetTime(_currentTime / INIT_TIMER); // 타이머 비율 계산
+            PhaseManager.Instance.SetCurrnetTime(_currentTime / _initTimer); // 타이머 비율 계산
             CustomerManager.Instance.InviteCustomer(deltaTime); // 손님 초대
         }
 

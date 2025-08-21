@@ -61,12 +61,14 @@ public class Storage : NetworkBehaviour, IGridItemHandler
     public override void OnStartClient()
     {
         base.OnStartClient();
-        _model.gameObject.SetActive(false);
         if (!ReferenceEquals(_visibleRoutine, null))
         {
             StopCoroutine(_visibleRoutine);
         }
-        _visibleRoutine = StartCoroutine(VisibleRoutine());
+        if (gameObject.activeInHierarchy)
+        {
+            _visibleRoutine = StartCoroutine(VisibleRoutine());
+        }
     }
 
     #region SyncVar Hook Functions
@@ -312,6 +314,7 @@ public class Storage : NetworkBehaviour, IGridItemHandler
 
     private IEnumerator VisibleRoutine()
     {
+        _model.gameObject.SetActive(false);
         yield return new WaitForSeconds(0.05f);
         _model.gameObject.SetActive(true);
     }

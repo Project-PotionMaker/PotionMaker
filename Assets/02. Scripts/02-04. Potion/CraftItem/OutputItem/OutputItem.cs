@@ -57,12 +57,14 @@ public class OutputItem : NetworkBehaviour, IItem
     public override void OnStartClient()
     {
         base.OnStartClient();
-        _models.SetActive(false);
         if (!ReferenceEquals(_visibleRoutine, null))
         {
             StopCoroutine(_visibleRoutine);
         }
-        _visibleRoutine = StartCoroutine(Coroutine_VisibleRoutine());
+        if (gameObject.activeInHierarchy)
+        {
+            _visibleRoutine = StartCoroutine(Coroutine_VisibleRoutine());
+        }
     }
 
     private void OnOutputItemTIDUpdated(int oldValue, int newValue)
@@ -130,8 +132,9 @@ public class OutputItem : NetworkBehaviour, IItem
 
     private IEnumerator Coroutine_VisibleRoutine()
     {
+        _models.SetActive(false);
         yield return new WaitForSeconds(.05f);
-        _models.gameObject.SetActive(true);
+        _models.SetActive(true);
     }
 
     [TargetRpc]

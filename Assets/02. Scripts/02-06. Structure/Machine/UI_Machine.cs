@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
@@ -31,7 +32,10 @@ public class UI_Machine : MonoBehaviour
     private void Start()
     {
         _machine.OnDataChanged += Refresh;
-        PhaseManager.Instance.OnPhaseChanged += ChangeState;
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.PreparingPhase].OnPhaseEntered += ChangeState;
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseEntered += ChangeState;
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase].OnPhaseEntered += ChangeState;
+
         ChangeState();
         Refresh();
     }
@@ -65,6 +69,8 @@ public class UI_Machine : MonoBehaviour
 
     private void OnDisable()
     {
-        PhaseManager.Instance.OnPhaseChanged -= ChangeState;
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.PreparingPhase].OnPhaseEntered -= ChangeState;
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseEntered -= ChangeState;
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase].OnPhaseEntered -= ChangeState;
     }
 }

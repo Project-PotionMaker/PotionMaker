@@ -48,7 +48,7 @@ public class RentManager : NetworkBehaviourSingleton<RentManager>, IShopInfoSave
     public void UpdateRent(string rentJson)
     {
         RentRPCData rentRPCData = JsonUtility.FromJson<RentRPCData>(rentJson);
-        _rent.SetRent(rentRPCData.RentDayCounter, rentRPCData.CurrentRentCost, rentRPCData.RentIncrement);
+        _rent.SetRent(rentRPCData.RentDayCounter, rentRPCData.CurrentRentCost, rentRPCData.LastRentCost, rentRPCData.RentIncrement);
     }
 
     [Command(requiresAuthority = false)]

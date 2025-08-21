@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,7 +23,9 @@ public class UI_Furniture : MonoBehaviour
     private void Start()
     {
         _furniture.OnDataChanged += Refresh;
-        PhaseManager.Instance.OnPhaseChanged += ChangeState;
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.PreparingPhase].OnPhaseEntered += ChangeState;
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseEntered += ChangeState;
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase].OnPhaseEntered += ChangeState;
         ChangeState();
     }
 
@@ -38,6 +41,7 @@ public class UI_Furniture : MonoBehaviour
         {
             _interactPanel.SetActive(false);
         }
+
     }
 
     public void Refresh()
@@ -49,6 +53,8 @@ public class UI_Furniture : MonoBehaviour
 
     private void OnDisable()
     {
-        PhaseManager.Instance.OnPhaseChanged -= ChangeState;
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.PreparingPhase].OnPhaseEntered -= ChangeState;
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseEntered -= ChangeState;
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase].OnPhaseEntered -= ChangeState;
     }
 }

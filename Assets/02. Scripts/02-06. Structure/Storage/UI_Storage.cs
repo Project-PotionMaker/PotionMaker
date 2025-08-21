@@ -1,5 +1,3 @@
-using System;
-using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -24,7 +22,9 @@ public class UI_Storage : MonoBehaviour
     private void Start()
     {
         _storage.OnDataChanged += Refresh;
-        PhaseManager.Instance.OnPhaseChanged += ChangeState;
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.PreparingPhase].OnPhaseEntered += ChangeState;
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseEntered += ChangeState;
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase].OnPhaseEntered += ChangeState;
         ChangeState();
     }
 
@@ -50,6 +50,8 @@ public class UI_Storage : MonoBehaviour
 
     private void OnDisable()
     {
-        PhaseManager.Instance.OnPhaseChanged -= ChangeState;
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.PreparingPhase].OnPhaseEntered -= ChangeState;
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseEntered -= ChangeState;
+        PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase].OnPhaseEntered -= ChangeState;
     }
 }

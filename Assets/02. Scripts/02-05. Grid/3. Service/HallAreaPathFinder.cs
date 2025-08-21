@@ -77,6 +77,11 @@ public class HallAreaPathFinder
             return false;
         }
 
+        if(_pickupTablePositionHashSet.Count < 1)
+        {
+            return false;
+        }
+
         // 입구 -> 계산대
         if (!BFS(_entrancePosition, _cashierPosition))
         {

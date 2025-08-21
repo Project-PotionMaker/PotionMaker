@@ -1,5 +1,6 @@
 using DG.Tweening;
 using Mirror;
+using MK.Toon.Examples;
 using Steamworks;
 using System;
 using System.Collections.Generic;
@@ -336,6 +337,18 @@ public class GridManager : NetworkBehaviourSingleton<GridManager>, IShopInfoSave
         foreach (var pos in placement.OccupiedPositionList)
         {
             _placedObjectInGridSyncDict.Remove(pos);
+        }
+
+        if (structureObject.TryGetComponent<NetworkIdentity>(out NetworkIdentity netId))
+        {
+            if(structureObject.TryGetComponent<Furniture>(out Furniture furniture))
+            {
+                ESpecialStructureType type = DataTable.Instance.GetStructureData(furniture.Data.StructureTID).SpecialStructureType;
+                if (type == ESpecialStructureType.PickUpTable)
+                {
+                    _pickupTableForCustomerList.Remove(netId);
+                }
+            }
         }
         // GameObject는 파괴하지 않고 반환
         return structureObject;

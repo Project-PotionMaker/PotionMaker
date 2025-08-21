@@ -16,25 +16,27 @@ public class UI_ShowBindedKey : MonoBehaviour
 
     private void OnEnable()
     {
-        UpdateCurrentKeyDisplay(InputManager.Instance.PlayerInput);
-        InputManager.Instance.OnAnyKey += UpdateCurrentKeyDisplay;
+        BindingIconManager.Instance.OnBindingInfoChanged += UpdateKeyDisplay;
+
+        UpdateKeyDisplay();
     }
 
     private void OnDisable()
     {
-        InputManager.Instance.OnAnyKey -= UpdateCurrentKeyDisplay;
+        if (BindingIconManager.Instance != null)
+        {
+            BindingIconManager.Instance.OnBindingInfoChanged -= UpdateKeyDisplay;
+        }
     }
 
-    private void UpdateCurrentKeyDisplay(PlayerInput playerInput)
+    private void UpdateKeyDisplay()
     {
-        int bindingIndex = (int)EBindingType.KeyboardMain;
-        bool isGamePad = string.Equals(playerInput.currentControlScheme, "Gamepad", StringComparison.OrdinalIgnoreCase);
+        if (_actionRef == null || _actionRef.action == null)
+        {
+            return;
+        }
 
-        bindingIndex = isGamePad ? (int)EBindingType.GamepadMain : (int)EBindingType.KeyboardMain;
-
-        string path = _actionRef.action.bindings[bindingIndex].effectivePath;
-
-        Sprite icon = BindingIconManager.Instance.GetSpriteForPath(path);
+        Sprite icon = BindingIconManager.Instance.GetCurrentInputSprite(_actionRef);
 
         if (icon != null)
         {

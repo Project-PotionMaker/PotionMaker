@@ -86,13 +86,15 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
     public override void OnStartClient()
     {
         base.OnStartClient();
-        _model.gameObject.SetActive(false);
         
         if(!ReferenceEquals(_visibleRoutine, null))
         {
             StopCoroutine(_visibleRoutine);
         }
-        _visibleRoutine = StartCoroutine(VisibleRoutine());
+        if (gameObject.activeInHierarchy)
+        {
+            _visibleRoutine = StartCoroutine(VisibleRoutine());
+        }
         if (isServer)
         {
             PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseExited += ResetData;
@@ -492,6 +494,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
 
     private IEnumerator VisibleRoutine()
     {
+        _model.gameObject.SetActive(false);
         yield return new WaitForSeconds(0.05f);
         _model.gameObject.SetActive(true);
     }

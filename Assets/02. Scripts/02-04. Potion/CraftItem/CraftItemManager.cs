@@ -133,13 +133,15 @@ public class CraftItemManager : NetworkBehaviourSingleton<CraftItemManager>
                     return FailureOutputTID;
                 }
             }
+            else
+            {
+                return FailureOutputTID;
+            }
         }
         else
         {
             recipeCode = DataTable.Instance.GetIngredientData(TIDList[0]).RecipeCode;
             return _outputDataTIDDict[recipeCode];
         }
-
-        return -1;
     }
 }

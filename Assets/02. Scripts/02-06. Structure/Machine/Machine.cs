@@ -120,12 +120,14 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
     public override void OnStartClient()
     {
         base.OnStartClient();
-        _model.gameObject.SetActive(false);
         if (!ReferenceEquals(_visibleRoutine, null))
         {
             StopCoroutine(_visibleRoutine);
         }
-        _visibleRoutine = StartCoroutine(VisibleRoutine());
+        if (gameObject.activeInHierarchy)
+        {
+            _visibleRoutine = StartCoroutine(VisibleRoutine());
+        }
         if (!isServer)
         {
             InputTIDList.Callback += OnInputTIDListChanged;
@@ -576,6 +578,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
 
     private IEnumerator VisibleRoutine()
     {
+        _model.gameObject.SetActive(false);
         yield return new WaitForSeconds(0.05f);
         _model.gameObject.SetActive(true);
     }

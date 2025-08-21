@@ -48,12 +48,14 @@ public class PotionItem : NetworkBehaviour, IItem
     public override void OnStartClient()
     {
         base.OnStartClient();
-        _models.SetActive(false);
         if (!ReferenceEquals(_visibleRoutine, null))
         {
             StopCoroutine(_visibleRoutine);
         }
-        _visibleRoutine = StartCoroutine(VisibleRoutine());
+        if (gameObject.activeInHierarchy)
+        {
+            _visibleRoutine = StartCoroutine(VisibleRoutine());
+        }
     }
 
     private void OnPotionItemTIDUpdated(int oldValue, int newValue)
@@ -162,7 +164,8 @@ public class PotionItem : NetworkBehaviour, IItem
 
     private IEnumerator VisibleRoutine()
     {
+        _models.SetActive(false);
         yield return new WaitForSeconds(0.05f);
-        _models.gameObject.SetActive(true);
+        _models.SetActive(true);
     }
 }

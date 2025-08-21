@@ -24,6 +24,9 @@ public class InGameBGM : MonoBehaviour
 
     private void OnDestroy()
     {
-        PhaseManager.Instance.OnPhaseChanged -= ChangeBGM;
+        if (PhaseManager.Instance != null)
+        {
+            PhaseManager.Instance.OnPhaseChanged -= ChangeBGM;
+        }
     }
 }

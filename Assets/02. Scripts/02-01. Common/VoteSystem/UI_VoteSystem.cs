@@ -48,16 +48,29 @@ public class UI_VoteSystem : MonoBehaviour
             checkIcon.enabled = false;
         }
 
-        VoteManager.Instance.OnVoteUpdated -= Refresh;
-        PlayerListManager.Instance.OnPlayerListUpdated -= Refresh;
-        InputManager.Instance.OnReadyEvent -= Vote;
-        VoteManager.Instance.SetVoteTime(false);
+        if (VoteManager.Instance != null)
+        {
+            VoteManager.Instance.OnVoteUpdated -= Refresh;
+            VoteManager.Instance.SetVoteTime(false);
+        }
+        if (PlayerListManager.Instance != null)
+        {
+            PlayerListManager.Instance.OnPlayerListUpdated -= Refresh;
+        }
+        if (InputManager.Instance != null)
+        {
+            InputManager.Instance.OnReadyEvent -= Vote;
+        }
     }
 
     private void OnDestroy()
     {
-        VoteManager.Instance.OnRefreshed -= Refresh;
+        if (VoteManager.Instance != null)
+        {
+            VoteManager.Instance.OnRefreshed -= Refresh;
+        }
     }
+
     private void Vote()
     {
         Player player = NetworkClient.localPlayer.GetComponent<Player>();

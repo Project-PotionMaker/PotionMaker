@@ -8,9 +8,6 @@ public class InputMappingManager : MonoBehaviourSingleton<InputMappingManager>
     [SerializeField]
     private InputActionAsset _inputActionAsset;
     public InputActionAsset InputActions => _inputActionAsset;
-    
-    [SerializeField]
-    private GameObject _rebindOverlay;
 
     public event Action<InputAction, EBindingType> OnRebindComplete;
     public event Action OnRebindCanceled;
@@ -30,12 +27,6 @@ public class InputMappingManager : MonoBehaviourSingleton<InputMappingManager>
         {
             Debug.LogError($"Action을 못 찾았습니다.");
             return;
-        }
-        
-
-        if (_rebindOverlay != null)
-        {
-            _rebindOverlay.SetActive(true);
         }
 
         _currentRebindOperation?.Dispose();
@@ -82,11 +73,6 @@ public class InputMappingManager : MonoBehaviourSingleton<InputMappingManager>
         OnRebindComplete?.Invoke(action, bindingType);
         SaveBindingOverrides();
 
-        if (_rebindOverlay != null)
-        {
-            _rebindOverlay.SetActive(false);
-        }
-
         operation.Dispose();
         _currentRebindOperation = null;
     }
@@ -95,11 +81,6 @@ public class InputMappingManager : MonoBehaviourSingleton<InputMappingManager>
     {
         _inputActionAsset.Enable();
         OnRebindCanceled?.Invoke();
-
-        if (_rebindOverlay != null)
-        {
-            _rebindOverlay.SetActive(false);
-        }
 
         operation.Dispose();
         _currentRebindOperation = null;

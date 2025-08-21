@@ -49,6 +49,7 @@ public class PotionItem : NetworkBehaviour, IItem
     {
         base.OnStartClient();
         _models.SetActive(false);
+        Debug.Log($"코루틴오류확인 액티브상태: {gameObject.activeSelf}");
         if (!ReferenceEquals(_visibleRoutine, null))
         {
             StopCoroutine(_visibleRoutine);
@@ -163,6 +164,6 @@ public class PotionItem : NetworkBehaviour, IItem
     private IEnumerator VisibleRoutine()
     {
         yield return new WaitForSeconds(0.05f);
-        _models.gameObject.SetActive(true);
+        _models.SetActive(true);
     }
 }

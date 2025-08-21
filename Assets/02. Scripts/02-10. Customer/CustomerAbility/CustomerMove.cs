@@ -147,16 +147,23 @@ public class CustomerMove : NetworkBehaviour
     public bool IsStayOn()
     {
         float distance = Vector3.Distance(transform.position, _lastTarget);
-        if (distance < 2 * _agent.stoppingDistance)
+        if (_owner.CurrentState == ECustomerStateType.Sitting)
         {
-            return true;    
+            if(distance < _agent.stoppingDistance)
+            {
+                return true;
+            }
+        }
+        else if (distance < 2 * _agent.stoppingDistance)
+        {
+            return true;
         }
         return false;
     }
     private void SittingAction()
     {
         _agent.enabled = false;
-        _collider.enabled = false; // 충돌체 비활성화
+        //_collider.enabled = false; // 충돌체 비활성화
 
         Sequence sitSeq = DOTween.Sequence();
         Vector3 sit = new Vector3(_owner.ChairPosition.x, _owner.ChairPosition.y, _owner.ChairPosition.z);

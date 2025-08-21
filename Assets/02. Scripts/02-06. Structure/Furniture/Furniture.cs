@@ -594,6 +594,11 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
             return;
         }
 
+        if(_inputObject.TryGetComponent<PotionItem>(out PotionItem potionItem))
+        {
+            return;
+        }
+
         if (_inputObject.TryGetComponent<IngredientItem>(out IngredientItem ingredientItem))
         {
             ingredientItem.SetFocus(isActive);

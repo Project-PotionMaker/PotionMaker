@@ -65,7 +65,7 @@ public class CustomerManager : NetworkBehaviourSingleton<CustomerManager>
         _customerUnspawnPosition = PotionHouse.Instance.Layout.CustomerUnspawnPosition;
         _inviteTimer = _inviteCoolTime;
         _remainCustomers = 0;
-        _inviteIndex = 0;
+        _inviteIndex = 0; _inviteCoolTime = (PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase] as ServingPhase).InitTimer / (PhaseManager.Instance.Day + 4);
     }
     
     [Server]

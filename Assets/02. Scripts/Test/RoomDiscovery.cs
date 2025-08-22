@@ -35,7 +35,5 @@ public class RoomDiscovery : NetworkDiscoveryBase<DiscoveryRequest, DiscoveryRes
     {
         string ip = endpoint.Address.ToString();
         RoomDirectory.Instance.Register(response.roomCode, ip);
-
-        Debug.Log($"서버 발견! Code={response.roomCode}, IP={ip}");
     }
 }

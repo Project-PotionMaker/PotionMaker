@@ -122,7 +122,6 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>, IShopInfoSa
     [ClientRpc]
     public void RpcTransitionPhase(EPhaseType nextPhase)
     {
-        Debug.Log("RpcTransitionPhase");
         _currentPhase?.ExitPhase();
         if (_currentPhase is EndingPhase && _phaseDictionary[nextPhase] is PreparingPhase)
         {

@@ -20,7 +20,7 @@ public class UI_Furniture : MonoBehaviour
     [SerializeField]
     private GameObject _sliderPanel;
 
-    private void Start()
+    private void OnEnable()
     {
         _furniture.OnDataChanged += Refresh;
         PhaseManager.Instance.PhaseDictionary[EPhaseType.PreparingPhase].OnPhaseEntered += ChangeState;

@@ -29,7 +29,7 @@ public class UI_Machine : MonoBehaviour
     [SerializeField]
     private List<Image> InputIngredientImageList;
 
-    private void Start()
+    private void OnEnable()
     {
         _machine.OnDataChanged += Refresh;
         PhaseManager.Instance.PhaseDictionary[EPhaseType.PreparingPhase].OnPhaseEntered += ChangeState;

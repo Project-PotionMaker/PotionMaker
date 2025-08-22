@@ -1,4 +1,5 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -76,10 +77,20 @@ public class UI_FirstButtonSelector : MonoBehaviour
             return;
         }
 
-        if (EventSystem.current.currentSelectedGameObject != null)
+        GameObject currentSelected = EventSystem.current.currentSelectedGameObject;
+
+        if (currentSelected == null)
         {
-            _lastSelectedButton = EventSystem.current.currentSelectedGameObject;
+            return;
         }
+
+        _lastSelectedButton = currentSelected;
+
+        if (currentSelected.GetComponent<TMP_InputField>() != null)
+        {
+            return;
+        }
+
         EventSystem.current.SetSelectedGameObject(null);
     }
 }

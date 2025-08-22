@@ -20,7 +20,7 @@ public class UI_Furniture : MonoBehaviour
     [SerializeField]
     private GameObject _sliderPanel;
 
-    private void OnEnable()
+    private void Start()
     {
         _furniture.OnDataChanged += Refresh;
         PhaseManager.Instance.PhaseDictionary[EPhaseType.PreparingPhase].OnPhaseEntered += ChangeState;
@@ -51,7 +51,7 @@ public class UI_Furniture : MonoBehaviour
         _refundSlider.value = _furniture.RefundProgress;
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         PhaseManager.Instance.PhaseDictionary[EPhaseType.PreparingPhase].OnPhaseEntered -= ChangeState;
         PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseEntered -= ChangeState;

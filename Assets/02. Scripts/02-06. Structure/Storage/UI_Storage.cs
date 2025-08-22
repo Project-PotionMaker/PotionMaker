@@ -19,7 +19,7 @@ public class UI_Storage : MonoBehaviour
     [SerializeField]
     private GameObject _sliderPanel;
 
-    private void OnEnable()
+    private void Start()
     {
         _storage.OnDataChanged += Refresh;
         PhaseManager.Instance.PhaseDictionary[EPhaseType.PreparingPhase].OnPhaseEntered += ChangeState;
@@ -48,7 +48,7 @@ public class UI_Storage : MonoBehaviour
         _PriceTextUI.text = ingredientData.Price.ToString();
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         PhaseManager.Instance.PhaseDictionary[EPhaseType.PreparingPhase].OnPhaseEntered -= ChangeState;
         PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseEntered -= ChangeState;

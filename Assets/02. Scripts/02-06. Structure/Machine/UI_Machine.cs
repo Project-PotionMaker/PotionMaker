@@ -29,7 +29,7 @@ public class UI_Machine : MonoBehaviour
     [SerializeField]
     private List<Image> InputIngredientImageList;
 
-    private void OnEnable()
+    private void Start()
     {
         _machine.OnDataChanged += Refresh;
         PhaseManager.Instance.PhaseDictionary[EPhaseType.PreparingPhase].OnPhaseEntered += ChangeState;
@@ -67,7 +67,7 @@ public class UI_Machine : MonoBehaviour
         _refundSlider.value = _machine.RefundProgress;
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         PhaseManager.Instance.PhaseDictionary[EPhaseType.PreparingPhase].OnPhaseEntered -= ChangeState;
         PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseEntered -= ChangeState;

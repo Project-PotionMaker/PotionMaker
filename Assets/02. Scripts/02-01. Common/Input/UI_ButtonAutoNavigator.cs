@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class UI_ButtonAutoNavigator : MonoBehaviour
@@ -19,6 +20,10 @@ public class UI_ButtonAutoNavigator : MonoBehaviour
     [Header("버튼들 오른쪽 버튼")]
     [SerializeField]
     private Button _rightButton;
+
+    [Header("자동 이동 버튼")]
+    [SerializeField]
+    private Button _onclickSelectedButton;
 
     private void Start()
     {
@@ -78,6 +83,8 @@ public class UI_ButtonAutoNavigator : MonoBehaviour
         {
             Navigation navigation = _itemButtonList[i].navigation;
             navigation.mode = Navigation.Mode.Explicit;
+
+            _itemButtonList[i].onClick.AddListener(OnclickChangeSelectedButton);
 
             if (isAllEnabled && !_itemButtonList[i].enabled)
             {
@@ -159,5 +166,10 @@ public class UI_ButtonAutoNavigator : MonoBehaviour
 
             _rightButton.navigation = navigation;
         }
+    }
+
+    private void OnclickChangeSelectedButton()
+    {
+        EventSystem.current.SetSelectedGameObject(_onclickSelectedButton.gameObject);
     }
 }

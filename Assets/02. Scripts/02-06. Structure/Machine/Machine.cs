@@ -73,6 +73,7 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
     public GameObject RefundObject { get => gameObject; }
 
     // 투입된 아이템 TID 리스트 (SyncList 사용 권장)
+    [SyncVar(hook = nameof(OnInputTIDListChanged))]
     public readonly SyncList<int> InputTIDList = new SyncList<int>();
 
     // 투입 타입 (예: 한 번에 여러 개 넣는지 등)

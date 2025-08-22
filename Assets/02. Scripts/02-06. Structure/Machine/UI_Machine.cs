@@ -25,9 +25,9 @@ public class UI_Machine : MonoBehaviour
     private GameObject _sliderPanel;
 
     [SerializeField]
-    private List<CanvasGroup> InputCanvasGroupList;
+    private List<GameObject> _inputIngredientPanelList;
     [SerializeField]
-    private List<Image> InputIngredientImageList;
+    private List<Image> _inputIngredientImageList;
 
     private void Start()
     {
@@ -65,6 +65,44 @@ public class UI_Machine : MonoBehaviour
         ProgressSlider.value = _machine.CurrentProgress / _machine.Data.MaxProgress;
         _refundSlider.gameObject.SetActive(_machine.RefundProgress > 0);
         _refundSlider.value = _machine.RefundProgress;
+
+        int imageListIndex = 0;
+        Sprite sprite;
+        foreach(int inputTID in _machine.InputTIDList)
+        {
+            switch (_machine.InputType)
+            {
+                case EInputType.Ingredient:
+                {
+                    sprite = ImageManager.Instance.GetImage<IngredientData>(inputTID);
+                    _inputIngredientImageList[imageListIndex].sprite = sprite;
+                    _inputIngredientPanelList[imageListIndex++].gameObject.SetActive(true);
+
+                    break;
+                }
+                case EInputType.Output:
+                {
+                    foreach(int ingredientTID in DataTable.Instance.GetOutputData(inputTID).IngredientTIDList)
+                    {
+                        if(ingredientTID == 0)
+                        {
+                            continue;
+                        }
+                        sprite = ImageManager.Instance.GetImage<IngredientData>(ingredientTID);
+                        _inputIngredientImageList[imageListIndex].sprite = sprite;
+                        _inputIngredientPanelList[imageListIndex++].gameObject.SetActive(true);
+                    }
+
+                    break;
+                }
+            }
+        }
+
+        for(int inactiveImageIndex = imageListIndex; inactiveImageIndex<_inputIngredientImageList.Count; inactiveImageIndex++)
+        {
+            Debug.Log(inactiveImageIndex);
+            _inputIngredientPanelList[inactiveImageIndex].gameObject.SetActive(false);
+        }
     }
 
     private void OnDisable()

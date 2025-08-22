@@ -120,7 +120,6 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
         ActivateModelForTID(newTID);
         _refundSystem.InitRefundSyStem(DataTable.Instance.GetFurnitureData(newTID).StructureTID, this);
         OnDataChanged?.Invoke();
-        Debug.Log($"Client: Furniture Data (TID: {newTID}) loaded.");
     }
 
     private void OnCurrentRotationChanged(float oldVal, float newVal)
@@ -174,7 +173,6 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
 
         _refundSystem.InitRefundSyStem(DataTable.Instance.GetFurnitureData(furnitureTID).StructureTID, this);
         OnDataChanged?.Invoke();
-        Debug.Log($"Server: Furniture (TID: {furnitureTID}) initialized.");
     }
 
     [Server]

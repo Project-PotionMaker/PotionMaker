@@ -67,7 +67,7 @@ public class UI_Machine : MonoBehaviour
         _refundSlider.value = _machine.RefundProgress;
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         PhaseManager.Instance.PhaseDictionary[EPhaseType.PreparingPhase].OnPhaseEntered -= ChangeState;
         PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseEntered -= ChangeState;

@@ -70,7 +70,7 @@ public class CraftItemManager : NetworkBehaviourSingleton<CraftItemManager>
         GameObject output = null;
         if (type != EInputType.Ingredient)
         {
-            recipeCode = _recipeCodeHandler.MakeNewRecipeCode(TIDList, machineTID);
+            recipeCode = _recipeCodeHandler.MakeNewOutputRecipeCode(TIDList, machineTID);
             if (_recipeCodeVerifier.IsValidProcess(recipeCode))
             {
                 output = CraftItemFactory.Instance.CreateObject(EInputType.Output, machinePosition, Quaternion.identity);
@@ -93,7 +93,7 @@ public class CraftItemManager : NetworkBehaviourSingleton<CraftItemManager>
     public GameObject TryCreatePotionItem(int[] TIDList, int bottlerTID, Vector3 machinePosition)
     {
 
-        string recipeCode = _recipeCodeHandler.MakeNewRecipeCode(TIDList, bottlerTID);
+        string recipeCode = _recipeCodeHandler.MakeNewOutputRecipeCode(TIDList, bottlerTID);
         if (_recipeCodeVerifier.IsValidPotion(recipeCode))
         {
             GameObject potion = CraftItemFactory.Instance.CreateObject(EInputType.Potion, machinePosition, Quaternion.identity);
@@ -117,7 +117,7 @@ public class CraftItemManager : NetworkBehaviourSingleton<CraftItemManager>
         string recipeCode;
         if (type != EInputType.Ingredient)
         {
-            recipeCode = _recipeCodeHandler.MakeNewRecipeCode(TIDList, machineTID);
+            recipeCode = _recipeCodeHandler.MakeNewOutputRecipeCode(TIDList, machineTID);
             if (_recipeCodeVerifier.IsValidProcess(recipeCode))
             {
                 if(_outputDataTIDDict.TryGetValue(recipeCode, out int outputTID))

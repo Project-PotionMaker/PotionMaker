@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class RecipeCodeHandler
 {
-    public string MakeNewRecipeCode(int[] TIDList, int machineTID)
+    public string MakeNewOutputRecipeCode(int[] TIDList, int machineTID)
     {
         string outputRecipeCode;
         string input1RecipeCode
@@ -12,7 +12,7 @@ public class RecipeCodeHandler
         if (TIDList.Length == 2)
         {
             input2RecipeCode = DataTable.Instance.GetOutputData(TIDList[1]).RecipeCode;
-            string recipeCodeNumberPart = GenerateNumberPartCode(input1RecipeCode, input2RecipeCode);
+            string recipeCodeNumberPart = GenerateNumberPart(input1RecipeCode, input2RecipeCode);
             outputRecipeCode = AddMachineCode(recipeCodeNumberPart, machineTID);
         }
         else
@@ -22,7 +22,7 @@ public class RecipeCodeHandler
         return outputRecipeCode;
     }
 
-    private string GenerateNumberPartCode(string a, string b)
+    private string GenerateNumberPart(string a, string b)
     {
         if (!int.TryParse(a, out int idA))
         {
@@ -40,7 +40,6 @@ public class RecipeCodeHandler
         }
 
         int code = idA * 100 + idB;
-
         return code.ToString("D4");
     }
 

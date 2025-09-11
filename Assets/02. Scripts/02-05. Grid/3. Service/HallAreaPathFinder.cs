@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class HallAreaPathFinder
@@ -25,11 +24,8 @@ public class HallAreaPathFinder
     private Queue<Vector3Int> _queue = new();
     private HashSet<Vector3Int> _visited = new();
 
-    public HallAreaPathFinder()
-    {
-    }
+    public HallAreaPathFinder() {}
 
-    // InitGridManager가 호출되는, 레이아웃이 변경되었을 때 최초 1회 호출
     public void InitGridPathFinder(
         HashSet<Vector3Int> gridPositionHashSet,
         HashSet<Vector3Int> placedPositionHashSet,
@@ -47,10 +43,7 @@ public class HallAreaPathFinder
         MakeChairPositionHashSet();
     }
 
-    // 가구 배치가 바뀔 때마다 호출
-    public void UpdateGridPathFinder
-        (HashSet<Vector3Int> placedPositionHashSet,
-        HashSet<Vector3Int> pickupTablePositionHashSet)
+    public void UpdateGridPathFinder(HashSet<Vector3Int> placedPositionHashSet, HashSet<Vector3Int> pickupTablePositionHashSet)
     {
         _placedPositionHashSet = placedPositionHashSet;
         _pickupTablePositionHashSet = pickupTablePositionHashSet;
@@ -72,111 +65,43 @@ public class HallAreaPathFinder
     public bool HasPath()
     {
         if (_placedPositionHashSet.Contains(_entrancePosition) 
-            || _placedPositionHashSet.Contains(_exitPosition))
+            || _placedPositionHashSet.Contains(_exitPosition)
+            || _pickupTablePositionHashSet.Count < 1)
         {
             return false;
         }
 
-        if(_pickupTablePositionHashSet.Count < 1)
-        {
-            return false;
-        }
-
-        // 입구 -> 계산대
-        if (!BFS(_entrancePosition, _cashierPosition))
-        {
-            return false;
-        }
-
-        // 계산대 -> 출구
-        if (!BFS(_cashierPosition, _exitPosition))
-        {
-            return false;
-        }
-
-        // 계산대 -> 모든 의자
-        if (!BFSToSeveralDestinations(_cashierPosition, _chairPositionHashSet))
-        {
-            return false;
-        }
-
-        // 출구 -> 모든 의자
-        if (!BFSToSeveralDestinations(_exitPosition, _chairPositionHashSet))
-        {
-            return false;
-        }
-
-        // 출구 -> 모든 픽업 테이블
-        if (!BFSToSeveralDestinations(_exitPosition, _pickupTablePositionHashSet))
-        {
-            return false;
-        }
-
-        // 모든 의자 -> 모든 픽업 테이블
-        foreach (var chairPosition in _chairPositionHashSet)
-        {
-            if (!BFSToSeveralDestinations(chairPosition, _pickupTablePositionHashSet))
-            {
-                return false;
-            }
-        }
-
-        Debug.Log("경로 존재");
-        return true;
+        HashSet<Vector3Int> reachablePositionHashSet = GetReachablePositionsFrom(_entrancePosition);
+        return reachablePositionHashSet.Contains(_cashierPosition) 
+            && reachablePositionHashSet.Contains(_exitPosition) 
+            && reachablePositionHashSet.IsSupersetOf(_chairPositionHashSet) 
+            && reachablePositionHashSet.IsSupersetOf(_pickupTablePositionHashSet);
     }
 
-    private bool BFS(Vector3Int start, Vector3Int destination)
+    private HashSet<Vector3Int> GetReachablePositionsFrom(Vector3Int start)
     {
         InitQueueAndVisited(start);
-
+        HashSet<Vector3Int> reachablePositionHashSet = new();
         while (_queue.TryDequeue(out Vector3Int currentPosition))
         {
-            Vector3Int nextPosition;
             for (int i = 0; i < 4; i++)
             {
-                nextPosition = currentPosition + _directions[i];
-                if (nextPosition == destination)
-                {
-                    return true;
-                }
+                Vector3Int nextPosition = currentPosition + _directions[i];  
                 if (IsPositionValid(nextPosition))
                 {
-                    _visited.Add(nextPosition);
                     _queue.Enqueue(nextPosition);
+                    _visited.Add(nextPosition);
+                    reachablePositionHashSet.Add(nextPosition);
+                }
+                else if (_pickupTablePositionHashSet.Contains(nextPosition) ||
+                    _chairPositionHashSet.Contains(nextPosition) ||
+                    nextPosition == _cashierPosition)
+                {
+                    reachablePositionHashSet.Add(nextPosition);
                 }
             }
         }
-        return false;
-    }
-
-    private bool BFSToSeveralDestinations(Vector3Int start, HashSet<Vector3Int> destinationHashSet)
-    {
-        InitQueueAndVisited(start);
-        HashSet<Vector3Int> reachableDestinationHashSet = new();
-        while (_queue.TryDequeue(out Vector3Int currentPosition))
-        {
-            Vector3Int nextPosition;
-            for (int i = 0; i < 4; i++)
-            {
-                nextPosition = currentPosition + _directions[i];
-                if (destinationHashSet.Contains(nextPosition) 
-                    && !reachableDestinationHashSet.Contains(nextPosition))
-                {
-                    reachableDestinationHashSet.Add(nextPosition);
-                }
-                if (IsPositionValid(nextPosition))
-                {
-                    _visited.Add(nextPosition);
-                    _queue.Enqueue(nextPosition);
-                }
-            }
-        }
-
-        if (destinationHashSet.Count == reachableDestinationHashSet.Count)
-        {
-            return true;
-        }
-        return false;
+        return reachablePositionHashSet;
     }
 
     private void InitQueueAndVisited(Vector3Int start)

@@ -93,9 +93,9 @@ public class HallAreaPathFinder
                     _visited.Add(nextPosition);
                     reachablePositionHashSet.Add(nextPosition);
                 }
-                else if (_pickupTablePositionHashSet.Contains(nextPosition) ||
-                    _chairPositionHashSet.Contains(nextPosition) ||
-                    nextPosition == _cashierPosition)
+                else if (_pickupTablePositionHashSet.Contains(nextPosition) 
+                    || _chairPositionHashSet.Contains(nextPosition) 
+                    || nextPosition == _cashierPosition)
                 {
                     reachablePositionHashSet.Add(nextPosition);
                 }

@@ -81,7 +81,7 @@ public class HallAreaPathFinder
     private HashSet<Vector3Int> GetReachablePositionsFrom(Vector3Int start)
     {
         InitQueueAndVisited(start);
-        HashSet<Vector3Int> reachablePositionHashSet = new();
+        HashSet<Vector3Int> reachablePositionHashSet = new() { start };
         while (_queue.TryDequeue(out Vector3Int currentPosition))
         {
             for (int i = 0; i < 4; i++)

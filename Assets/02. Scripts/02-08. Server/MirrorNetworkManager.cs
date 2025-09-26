@@ -1,5 +1,6 @@
 using Mirror;
 using Mirror.Examples.MultipleMatch;
+using MoreMountains.Tools;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -123,9 +124,39 @@ public class MirrorNetworkManager : NetworkRoomManager
             Debug.Log("서버: LoadingScene으로 전환되었습니다. 매니저 프리팹들을 스폰합니다.");
             StartCoroutine(LoadGameplaySceneWithDelay());
         }
+        else if (newSceneName != RoomScene)
+        {
+            foreach (NetworkConnectionToClient conn in NetworkServer.connections.Values)
+            {
+                if (conn.identity != null)
+                {
+                    GameObject gamePlayer = conn.identity.gameObject;
+
+                    // 1. DDOL 상태의 GamePlayer를 새 씬으로 이동시킵니다.
+                    // 이 작업을 통해 DDOL 상태가 해제되고 새 씬에 소속됩니다.
+                    SceneManager.MoveGameObjectToScene(gamePlayer, SceneManager.GetActiveScene());
+
+                    // 2. 새로운 스폰 위치 설정 (필수)
+                    Transform startPos = GetStartPosition();
+                    if (startPos != null)
+                    {
+                        gamePlayer.transform.position = startPos.position;
+                        gamePlayer.transform.rotation = startPos.rotation;
+
+                        // 클라이언트의 움직임 동기화 문제를 해결하기 위해,
+                        // NetworkTransform 등을 가진 경우 명시적으로 동기화를 호출할 수 있습니다.
+                        // NetworkIdentity의 RebuildObservers 호출 등으로 클라이언트들에게 새 위치를 강제할 수도 있습니다.
+                    }
+                    else
+                    {
+                        Debug.LogWarning("서버: Start Position을 찾을 수 없습니다. 플레이어 위치 조정이 불가능합니다.");
+                    }
+                }
+            }
+        }
     }
 
-    private IEnumerator LoadLoadingSceneWithDelay()
+    public IEnumerator LoadLoadingSceneWithDelay()
     {
         yield return new WaitForSeconds(1.0f);
 
@@ -170,6 +201,23 @@ public class MirrorNetworkManager : NetworkRoomManager
         }
 
         return true;
+    }
+
+    public override void ServerChangeScene(string newSceneName)
+    {
+        if (newSceneName != RoomScene)
+        {
+            foreach (NetworkConnectionToClient conn in NetworkServer.connections.Values)
+            {
+                // RoomManager 기본 로직에 의해 GamePlayer가 conn.identity에 연결되어 있습니다.
+                if (conn.identity != null)
+                {
+                    GameObject gamePlayer = conn.identity.gameObject;
+                    DontDestroyOnLoad(gamePlayer);
+                }
+            }
+        }
+        base.ServerChangeScene(newSceneName);
     }
 
     // 클라이언트에서 씬이 변경될 때 호출

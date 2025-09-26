@@ -23,7 +23,10 @@ public class MovingHouse
         UnlockManager.Instance.SaveUnlockedData();
 
         UnlockManager.Instance.OnListUpdated += OnHouseMoved;
-        MirrorNetworkManager.Instance.ServerChangeScene(sceneName);
+
+        //MirrorNetworkManager.Instance.ServerChangeScene(sceneName);
+        Debug.Log("테스트 코드");
+        MirrorNetworkManager.Instance.StartCoroutine(MirrorNetworkManager.Instance.LoadLoadingSceneWithDelay());
     }
 
     private void OnHouseMoved()

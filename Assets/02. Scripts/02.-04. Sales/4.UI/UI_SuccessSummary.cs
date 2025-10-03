@@ -38,10 +38,6 @@ public class UI_SuccessSummary : MonoBehaviour
     {
         // 미리 방세 빼는 로직이 들어가있어야함? 아니면 표시만?
         int currentCurrency = CurrencyManager.Instance.Coin.Value;
-        if (RentManager.Instance.Rent.IsRentDay)
-        {
-            currentCurrency -= RentManager.Instance.Rent.CurrentRentCost;
-        }
         _currentCurrencyTextUI.text = currentCurrency.ToString("N0");
 
         int totalSales = SalesManager.Instance.Sales.TotalSales;

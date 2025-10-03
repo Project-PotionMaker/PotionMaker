@@ -169,31 +169,26 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
         _outputComponent = new MachineOutputContainer();
 
         OnDataChanged?.Invoke(); // UI 업데이트를 위한 액션 호출
-        Debug.Log($"Client: Machine Data (TID: {newTID}) loaded.");
     }
 
     private void OnCurrentProgressChanged(float oldVal, float newVal)
     {
         OnDataChanged?.Invoke(); // UI 게이지 업데이트
-        Debug.Log($"Client: Progress updated to {newVal:F2}");
     }
 
     private void OnLeftOutputAmountChanged(int oldVal, int newVal)
     {
         OnDataChanged?.Invoke(); // UI 숫자 업데이트
-        Debug.Log($"Client: LeftOutputAmount updated to {newVal}");
     }
 
     private void OnIsProcessFinishedChanged(bool oldVal, bool newVal)
     {
         OnDataChanged?.Invoke(); // UI 상태 업데이트
-        Debug.Log($"Client: IsProcessFinished updated to {newVal}");
     }
 
     private void OnIsProcessStartedChanged(bool oldVal, bool newVal)
     {
         OnDataChanged?.Invoke(); // UI 상태 업데이트 (애니메이션 시작/중지 등)
-        Debug.Log($"Client: IsProcessStarted updated to {newVal}");
     }
 
     private void OnCurrentRotationChanged(float oldVal, float newVal)
@@ -205,13 +200,11 @@ public class Machine : NetworkBehaviour, IGridItemHandler, IRefundable
     private void OnInputTIDListChanged(SyncList<int>.Operation op, int itemIndex, int oldItem, int newItem)
     {
         OnDataChanged?.Invoke(); // UI (인풋 슬롯) 업데이트
-        Debug.Log($"InputTIDList changed: {op}, Index: {itemIndex}, Old: {oldItem}, New: {newItem}");
     }
 
     private void OnInputTypeChanged(EInputType oldVal, EInputType newVal)
     {
         OnDataChanged?.Invoke();
-        Debug.Log($"Client: InputType updated to {newVal}");
     }
 
     public void OnRefundProgressChanged(float oldValue, float newValue)

@@ -29,6 +29,9 @@ public class SteamLobby : MonoBehaviour
     public GameObject lobbyListContent; // 로비 목록을 담을 부모 GameObject (Vertical Layout Group 등)
     public GameObject lobbyItemPrefab; // 각 로비를 표시할 UI 프리팹 (버튼, 텍스트 포함)
 
+    private Action<bool> _roomCodeCallback; // 검색 결과 콜백 저장
+    private string _pendingRoomCode; // 검색 중인 코드 저장
+
     private void Start()
     {
         if (!SteamManager.Initialized)
@@ -70,7 +73,26 @@ public class SteamLobby : MonoBehaviour
     // 버튼 등으로 로비 호스트할 때 실행
     public void HostLobby()
     {
-        SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypePublic, MirrorNetworkManager.Instance.maxConnections);
+        ELobbyType lobbyType = GetSelectedLobbyType();
+
+        SteamMatchmaking.CreateLobby(lobbyType, MirrorNetworkManager.Instance.maxConnections);
+    }
+
+    public ELobbyType GetSelectedLobbyType()
+    {
+        Visibility visibility = _roomInfoHandler.RoomInfo.Visibility;
+
+        switch (visibility)
+        {
+            case Visibility.Public:
+                return ELobbyType.k_ELobbyTypePublic;        // 전체 공개
+            case Visibility.FriendOnly:
+                return ELobbyType.k_ELobbyTypeFriendsOnly;   // 친구만 공개
+            case Visibility.Private:
+                return ELobbyType.k_ELobbyTypePrivate;       // 비공개
+            default:
+                return ELobbyType.k_ELobbyTypePublic;       // 기본
+        }
     }
 
     // 로비 참가
@@ -94,6 +116,11 @@ public class SteamLobby : MonoBehaviour
         MirrorNetworkManager.Instance.StartHost();
 
         CSteamID newLobbyID = new CSteamID(callback.m_ulSteamIDLobby);
+        string roomCode = ServerCodeGenerator.ToRoomCode((long)newLobbyID.m_SteamID);
+
+        SteamMatchmaking.SetLobbyData(newLobbyID, "roomCode", roomCode);
+        MirrorNetworkManager.Instance.SetRoomCode(roomCode);
+
         SteamMatchmaking.SetLobbyData(newLobbyID, HostAddressKey, SteamUser.GetSteamID().ToString());
         SteamMatchmaking.SetLobbyData(newLobbyID, "name", SteamFriends.GetPersonaName() + "'s Lobby");
         SteamMatchmaking.SetLobbyData(newLobbyID, "game", Application.productName);
@@ -163,11 +190,48 @@ public class SteamLobby : MonoBehaviour
         Debug.Log("로비 목록을 요청합니다...");
     }
 
+    public void RequestLobbyByRoomCode(string code, Action<bool> callback)
+    {
+        _roomCodeCallback = callback;
+        _pendingRoomCode = code;
+
+        foreach (Transform child in lobbyListContent.transform)
+        {
+            Destroy(child.gameObject);
+        }
+
+        SteamMatchmaking.AddRequestLobbyListResultCountFilter(100);
+        SteamMatchmaking.AddRequestLobbyListStringFilter("roomCode", code, ELobbyComparison.k_ELobbyComparisonEqual);
+        SteamMatchmaking.AddRequestLobbyListDistanceFilter(ELobbyDistanceFilter.k_ELobbyDistanceFilterClose);
+        SteamMatchmaking.RequestLobbyList();
+        Debug.Log("로비 목록을 요청합니다...");
+    }
+
     // 로비 검색 결과 콜백
     private void OnGetLobbyList(LobbyMatchList_t callback)
     {
         Debug.Log($"로비 검색 결과: {callback.m_nLobbiesMatching}개 로비 발견.");
 
+        // 코드 검색 모드라면 RoomCode 결과 처리
+        if (!string.IsNullOrEmpty(_pendingRoomCode))
+        {
+            if (callback.m_nLobbiesMatching > 0)
+            {
+                CSteamID lobbyID = SteamMatchmaking.GetLobbyByIndex(0);
+                JoinLobby(lobbyID);
+
+                _roomCodeCallback?.Invoke(true);
+            }
+            else
+            {
+                _roomCodeCallback?.Invoke(false);
+            }
+            _pendingRoomCode = null;
+            _roomCodeCallback = null;
+            return;
+        }
+
+        // 기존 구조
         for (int i = 0; i < callback.m_nLobbiesMatching; i++)
         {
             CSteamID lobbyID = SteamMatchmaking.GetLobbyByIndex(i);

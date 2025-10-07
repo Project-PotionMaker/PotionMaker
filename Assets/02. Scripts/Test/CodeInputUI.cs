@@ -9,6 +9,8 @@ public class CodeInputUI : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI _warningField;
 
+    private string _pendingRoomCode;
+
     public void OnJoinByCode()
     {
         string text = _inputField.text.Trim();
@@ -21,8 +23,13 @@ public class CodeInputUI : MonoBehaviour
             return;
         }
 
-        string code = text.ToUpper();
-        string address = RoomDirectory.Instance.GetAddress(code);
+        _pendingRoomCode = text.ToUpper();
+        if (SteamLobby.Instance != null)
+        {
+            SteamLobby.Instance.RequestLobbyByRoomCode(_pendingRoomCode, OnLobbySearchResult);
+            return;
+        }
+        string address = RoomDirectory.Instance.GetAddress(_pendingRoomCode);
 
         if (string.IsNullOrEmpty(address))
         {
@@ -33,5 +40,15 @@ public class CodeInputUI : MonoBehaviour
 
         MirrorNetworkManager.Instance.networkAddress = address;
         MirrorNetworkManager.Instance.StartClient();
+    }
+
+    // 콜백: 로비가 검색되었을 때 처리
+    private void OnLobbySearchResult(bool found)
+    {
+        if (!found)
+        {
+            _warningField.text = "존재하지 않는 방입니다.";
+            _warningField.gameObject.SetActive(true);
+        }
     }
 }

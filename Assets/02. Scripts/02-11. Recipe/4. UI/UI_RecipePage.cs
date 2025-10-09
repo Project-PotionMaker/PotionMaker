@@ -42,39 +42,37 @@ public class UI_RecipePage : MonoBehaviour
     [SerializeField]
     private List<GameObject> _arrowList;
 
-    public async void Refresh(PotionData data)
+    public void Refresh(PotionData data)
     {
-        // 포션 정보
+        RefreshPotionBasicInfo(data);
+        RefreshPotionIngredientInfo(data, 0);
+        RefreshPotionIngredientInfo(data, 1);
+        RefreshProgressInfo(data.RecipeCode);
+    }
+
+    // 포션 이미지, 이름, 설명
+    private void RefreshPotionBasicInfo(PotionData data)
+    {
         _potionImage.sprite = ImageManager.Instance.GetImage(typeof(PotionData), data.TID);
         _potionName.text = data.Name;
         _potionDescription.text = data.TestDescription;
-
-        string recipeCode = data.RecipeCode;
-
-        // 재료 1
-        IngredientData firstIngredient = RecipeManager.Instance.IngredientDataDict[data.IngredientTIDList[0]];
-        
-        Sprite firstIngredientSprite = ImageManager.Instance.GetImage(typeof(IngredientData), firstIngredient.TID);
-        _firstIngredientImage.sprite = firstIngredientSprite;
-        _baseIngredientList[0].sprite = firstIngredientSprite;
-        
-        _firstIngredientName.text = firstIngredient.Name;
-        _baseMachineList[0].sprite = ImageManager.Instance.GetImage(typeof(MachineData), firstIngredient.AvailableMachineTID);
-
-        // 재료 2
-        IngredientData secondIngredient = RecipeManager.Instance.IngredientDataDict[data.IngredientTIDList[1]];
-
-        Sprite secondIngredientSprite = ImageManager.Instance.GetImage(typeof(IngredientData), secondIngredient.TID);
-        _secondIngredientImage.sprite = secondIngredientSprite;
-        _baseIngredientList[1].sprite = secondIngredientSprite;
-
-        _secondIngredientName.text = secondIngredient.Name;
-        _baseMachineList[1].sprite = ImageManager.Instance.GetImage(typeof(MachineData), secondIngredient.AvailableMachineTID);
-
-        RefreshProgress(recipeCode);
     }
 
-    private async void RefreshProgress(string recipeCode)
+    // 재료 이미지, 이름, 사용 가능한 머신 이미지
+    private void RefreshPotionIngredientInfo(PotionData data, int ingredientIndex)
+    {
+        IngredientData ingredientData = RecipeManager.Instance.IngredientDataDict[data.IngredientTIDList[ingredientIndex]];
+
+        Sprite firstIngredientSprite = ImageManager.Instance.GetImage(typeof(IngredientData), ingredientData.TID);
+        _firstIngredientImage.sprite = firstIngredientSprite;
+        _baseIngredientList[ingredientIndex].sprite = firstIngredientSprite;
+
+        _firstIngredientName.text = ingredientData.Name;
+        _baseMachineList[ingredientIndex].sprite = ImageManager.Instance.GetImage(typeof(MachineData), ingredientData.AvailableMachineTID);
+    }
+
+    // 제작 프로세스
+    private void RefreshProgressInfo(string recipeCode)
     {
         string machineCode = recipeCode.Substring(4);
         int progressCount = machineCode.Length - 1;

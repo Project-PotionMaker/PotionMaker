@@ -5,7 +5,7 @@ public class CustomerFactory : NetworkFactoryBase<ENPCType, CustomerFactoryInfo,
 {
     private void Start()
     {
-        _factoryLogic.Initialize(_factoryInfoList, _poolParentObject);
+        _factoryLogic.Initialize(_factoryInfoList, _poolParentObject).SafeFireAndForget();
     }
 
     [Server]

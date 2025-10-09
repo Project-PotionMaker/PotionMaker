@@ -66,6 +66,14 @@ public class PhaseManager : NetworkBehaviourSingleton<PhaseManager>, IShopInfoSa
         _currentPhase?.Update(Time.deltaTime);
     }
 
+    private void OnDestroy()
+    {
+        _phaseDictionary[EPhaseType.PreparingPhase].OnPhaseEntered = null;
+        _phaseDictionary[EPhaseType.ServingPhase].OnPhaseEntered = null;
+        _phaseDictionary[EPhaseType.EndingPhase].OnPhaseEntered = null;
+        _phaseDictionary[EPhaseType.PracticingPhase].OnPhaseEntered = null;
+    }
+
     public void InitPhase()
     {
         // _potionTIDList.Callback += OnPotionTIDListUpdated;

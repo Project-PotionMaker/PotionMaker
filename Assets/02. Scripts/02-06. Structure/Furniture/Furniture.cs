@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using VInspector;
 
 /// <summary>
@@ -82,6 +83,10 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
         _matPropertyBlock = new MaterialPropertyBlock();
     }
 
+    public override void OnStartServer()
+    {
+        MirrorNetworkManager.Instance.OnBeforeSceneChange += OnBeforeSceneChanged;
+    }
     
     public override void OnStartClient()
     {
@@ -614,5 +619,13 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
         }
 
         TryHandleInputUIOnType(true);
+    }
+
+    public void OnBeforeSceneChanged()
+    {
+        if (gameObject.activeSelf)
+        {
+            StructureFactory.Instance.ReturnObject(gameObject);
+        }
     }
 }

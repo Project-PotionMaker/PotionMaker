@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.SceneManagement;
 
 public class Player : NetworkBehaviour
 {
@@ -34,6 +35,7 @@ public class Player : NetworkBehaviour
 
     private void Awake()
     {
+        SceneManager.sceneLoaded += OnSceneChanged;
     }
 
     private void Update()
@@ -75,6 +77,21 @@ public class Player : NetworkBehaviour
                 _lastStructureCanvas = null;
                 LastHighlightedStructure = null;
             }
+        }
+    }
+
+    public void OnSceneChanged(Scene scene, LoadSceneMode mode)
+    {
+        LastHighlightedStructure = null;
+        _lastStructureCanvas = null;
+
+        if (PotionHouse.Instance != null && PlayerOrderIndex != -1)
+        {
+            gameObject.transform.position = PotionHouse.Instance.Layout.PlayerSpawnPositions[PlayerOrderIndex];
+        }
+        else
+        {
+            gameObject.transform.position = new Vector3(0, -30, 0);
         }
     }
 

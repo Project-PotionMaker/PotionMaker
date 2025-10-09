@@ -23,9 +23,13 @@ public class SalesManager : NetworkBehaviourSingleton<SalesManager>, IShopInfoSa
     public override void OnStartClient()
     {
         base.OnStartClient();
-        PhaseManager.Instance.OnDayPassed += OnDayChanged;
 
         InitSalesManager();
+    }
+
+    public void Start()
+    {
+        PhaseManager.Instance.OnDayPassed += OnDayChanged;
     }
 
     public void RequestSell(int TID)

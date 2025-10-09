@@ -19,12 +19,16 @@ public class UI_Storage : MonoBehaviour
     [SerializeField]
     private GameObject _sliderPanel;
 
-    private void Start()
+    private void OnEnable()
     {
         _storage.OnDataChanged += Refresh;
         PhaseManager.Instance.PhaseDictionary[EPhaseType.PreparingPhase].OnPhaseEntered += ChangeState;
         PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseEntered += ChangeState;
         PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase].OnPhaseEntered += ChangeState;
+    }
+
+    private void Start()
+    {
         ChangeState();
     }
 
@@ -43,12 +47,17 @@ public class UI_Storage : MonoBehaviour
 
     public void Refresh()
     {
+        if(_storage.IngredientTID == 0)
+        {
+            return;
+        }
+
         IngredientData ingredientData = DataTable.Instance.GetIngredientData(_storage.IngredientTID);
         _nameTextUI.text = ingredientData.Name;
         _PriceTextUI.text = ingredientData.Price.ToString();
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         PhaseManager.Instance.PhaseDictionary[EPhaseType.PreparingPhase].OnPhaseEntered -= ChangeState;
         PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseEntered -= ChangeState;

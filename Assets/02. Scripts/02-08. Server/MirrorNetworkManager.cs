@@ -9,6 +9,8 @@ using UnityEngine.SceneManagement;
 
 public class MirrorNetworkManager : NetworkRoomManager
 {
+    public Action OnBeforeSceneChange;
+
     public static MirrorNetworkManager Instance => (MirrorNetworkManager)singleton;
 
     // netId -> UI 슬롯 번호 매핑 (0~3번만 사용)
@@ -24,6 +26,12 @@ public class MirrorNetworkManager : NetworkRoomManager
 
     [Scene]
     public string LoadingScene;
+
+    [Scene]
+    public string LoadingSceneLobby;
+
+    [Scene]
+    public string LoadingSceneGame;
 
     //[Tooltip("서버 시작 시 LoadingScene에서 생성할 매니저 프리팹들")]
     //public List<GameObject> ManagerPrefabList = new List<GameObject>();
@@ -121,43 +129,14 @@ public class MirrorNetworkManager : NetworkRoomManager
 
         if (newSceneName == LoadingScene)
         {
-            Debug.Log("서버: LoadingScene으로 전환되었습니다. 매니저 프리팹들을 스폰합니다.");
             StartCoroutine(LoadGameplaySceneWithDelay());
-        }
-        else if (newSceneName != RoomScene)
-        {
-            foreach (NetworkConnectionToClient conn in NetworkServer.connections.Values)
-            {
-                if (conn.identity != null)
-                {
-                    GameObject gamePlayer = conn.identity.gameObject;
-
-                    // 1. DDOL 상태의 GamePlayer를 새 씬으로 이동시킵니다.
-                    // 이 작업을 통해 DDOL 상태가 해제되고 새 씬에 소속됩니다.
-                    SceneManager.MoveGameObjectToScene(gamePlayer, SceneManager.GetActiveScene());
-
-                    // 2. 새로운 스폰 위치 설정 (필수)
-                    Transform startPos = GetStartPosition();
-                    if (startPos != null)
-                    {
-                        gamePlayer.transform.position = startPos.position;
-                        gamePlayer.transform.rotation = startPos.rotation;
-
-                        // 클라이언트의 움직임 동기화 문제를 해결하기 위해,
-                        // NetworkTransform 등을 가진 경우 명시적으로 동기화를 호출할 수 있습니다.
-                        // NetworkIdentity의 RebuildObservers 호출 등으로 클라이언트들에게 새 위치를 강제할 수도 있습니다.
-                    }
-                    else
-                    {
-                        Debug.LogWarning("서버: Start Position을 찾을 수 없습니다. 플레이어 위치 조정이 불가능합니다.");
-                    }
-                }
-            }
         }
     }
 
     public IEnumerator LoadLoadingSceneWithDelay()
     {
+        OnBeforeSceneChange?.Invoke();
+
         yield return new WaitForSeconds(1.0f);
 
         ServerChangeScene(LoadingScene);
@@ -171,6 +150,9 @@ public class MirrorNetworkManager : NetworkRoomManager
 
         Debug.Log("서버: GameplayScene으로 전환 명령을 보냅니다.");
         ServerChangeScene(GameplayScene);
+
+
+        LoadingScene = LoadingSceneGame;
     }
 
     // 이 함수는 서버에서 GameplayScene 로드가 완료된 후, 각 플레이어마다 호출
@@ -225,6 +207,20 @@ public class MirrorNetworkManager : NetworkRoomManager
     {
         base.OnClientSceneChanged();
         Debug.Log("클라이언트: 씬 변경됨 - " + SceneManager.GetActiveScene().name);
+
+        // 새 씬 로드 후 로컬 플레이어의 입력을 재활성화 시도
+        // InputManager (DDOL 객체)가 PlayerInput을 가지고 있으므로, 
+        // DDOL 씬에 있는 InputManager 객체에 접근해야 합니다.
+        if (InputManager.Instance.PlayerInput != null)
+        {
+            // PlayerInput의 액션 맵을 한 번 비활성화 후 재활성화
+            // 이는 입력 시스템의 내부 연결을 리프레시하는 효과를 줍니다.
+            InputManager.Instance.PlayerInput.actions.Disable();
+            InputManager.Instance.PlayerInput.actions.Enable();
+
+            // 현재 플레이어 액션 맵으로 다시 전환
+            InputManager.Instance.ChangeToPlayerInput();
+        }
     }
 
     public override void OnRoomServerConnect(NetworkConnectionToClient conn)

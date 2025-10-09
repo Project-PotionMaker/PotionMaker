@@ -1,5 +1,6 @@
 using Mirror;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public interface IGridItemHandler
 {
@@ -16,4 +17,6 @@ public interface IGridItemHandler
     public void SetHighlight(bool active);
 
     public void OnIncorrectAction();
+
+    public void OnBeforeSceneChanged();
 }

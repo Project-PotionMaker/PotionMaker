@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using VInspector;
 
 /// <summary>
@@ -56,6 +57,11 @@ public class Storage : NetworkBehaviour, IGridItemHandler
             _modelObjectDic.Add(modelInfo.TID, modelInfo.Model);
         }
         _matPropertyBlock = new MaterialPropertyBlock();
+    }
+
+    public override void OnStartServer()
+    {
+        MirrorNetworkManager.Instance.OnBeforeSceneChange += OnBeforeSceneChanged;
     }
 
     public override void OnStartClient()
@@ -370,6 +376,14 @@ public class Storage : NetworkBehaviour, IGridItemHandler
         foreach (var renderer in _modelRenderers)
         {
             renderer?.SetPropertyBlock(_matPropertyBlock);
+        }
+    }
+
+    public void OnBeforeSceneChanged()
+    {
+        if (gameObject.activeSelf)
+        {
+            StructureFactory.Instance.ReturnObject(gameObject);
         }
     }
 }

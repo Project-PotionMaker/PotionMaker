@@ -12,10 +12,10 @@ public class LoadingSceneManager : MonoBehaviour
     private void Start()
     {
         // 로딩 씬이 로드되면 게임 씬 로딩 코루틴을 시작합니다.
-        StartCoroutine(LoadGameSceneAsync());
+        StartCoroutine(Coroutine_LoadGameScene());
     }
 
-    private IEnumerator LoadGameSceneAsync()
+    private IEnumerator Coroutine_LoadGameScene()
     {
         // NetworkRoomManager의 GameplayScene 이름을 가져옵니다.
         string gameplayScene = MirrorNetworkManager.Instance.GameplayScene;

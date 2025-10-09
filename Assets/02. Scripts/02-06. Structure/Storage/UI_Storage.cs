@@ -47,11 +47,4 @@ public class UI_Storage : MonoBehaviour
         _nameTextUI.text = ingredientData.Name;
         _PriceTextUI.text = ingredientData.Price.ToString();
     }
-
-    private void OnDestroy()
-    {
-        PhaseManager.Instance.PhaseDictionary[EPhaseType.PreparingPhase].OnPhaseEntered -= ChangeState;
-        PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseEntered -= ChangeState;
-        PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase].OnPhaseEntered -= ChangeState;
-    }
 }

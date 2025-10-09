@@ -20,24 +20,29 @@ public class ImageManager : MonoBehaviourSingleton<ImageManager>
 
     private void Start()
     {
-        Global.Instance.OnDataLoaded += InitImageManager;
+        Global.Instance.OnDataLoaded += OnDataLoaded;
     }
 
     private void OnDestroy()
     {
         if (Global.Instance != null)
         {
-            Global.Instance.OnDataLoaded -= InitImageManager;
+            Global.Instance.OnDataLoaded -= OnDataLoaded;
         }
     }
 
-    private async void InitImageManager()
+    private void OnDataLoaded()
+    {
+        InitImageManagerAsync().SafeFireAndForget();
+    }
+
+    private async Task InitImageManagerAsync()
     {
         var imageLoadTasks = new List<Task>();
         void QueueImageLoading<T>(ReadOnlyList<T> dataList)
         {
             _prefixDict[typeof(T)] = $"Image_{typeof(T).Name.Replace("Data", "")}_";
-            imageLoadTasks.Add(InitImageDict<T>(dataList));
+            imageLoadTasks.Add(InitImageDictAsync<T>(dataList));
         }
 
         QueueImageLoading<IngredientData>(DataTable.Instance.GetIngredientDataList());
@@ -54,7 +59,7 @@ public class ImageManager : MonoBehaviourSingleton<ImageManager>
         OnInitialized?.Invoke();
     }
 
-    private async Task InitImageDict<T>(ReadOnlyList<T> dataList)
+    private async Task InitImageDictAsync<T>(ReadOnlyList<T> dataList)
     {
         var type = typeof(T);
         if (!_prefixDict.TryGetValue(type, out string prefix))
@@ -73,7 +78,7 @@ public class ImageManager : MonoBehaviourSingleton<ImageManager>
         Dictionary<int, Sprite> dict = new();
 
 
-        var loadTasks = dataList.Select(item => LoadImageForItem(item, prefix, tidField));
+        var loadTasks = dataList.Select(item => LoadImageForItemAsync(item, prefix, tidField));
         var results = await Task.WhenAll(loadTasks);
         foreach (var result in results)
         {
@@ -85,7 +90,7 @@ public class ImageManager : MonoBehaviourSingleton<ImageManager>
         _imageDict[type] = dict;
     }
 
-    private async Task<(int tid, Sprite sprite)?> LoadImageForItem<T>(T item, string prefix, FieldInfo tidField)
+    private async Task<(int tid, Sprite sprite)?> LoadImageForItemAsync<T>(T item, string prefix, FieldInfo tidField)
     {
         int tid = (int)tidField.GetValue(item);
         string addressableKey = prefix + tid;

@@ -50,11 +50,4 @@ public class UI_Furniture : MonoBehaviour
         _refundSlider.gameObject.SetActive(_furniture.RefundProgress > 0);
         _refundSlider.value = _furniture.RefundProgress;
     }
-
-    private void OnDestroy()
-    {
-        PhaseManager.Instance.PhaseDictionary[EPhaseType.PreparingPhase].OnPhaseEntered -= ChangeState;
-        PhaseManager.Instance.PhaseDictionary[EPhaseType.ServingPhase].OnPhaseEntered -= ChangeState;
-        PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase].OnPhaseEntered -= ChangeState;
-    }
 }

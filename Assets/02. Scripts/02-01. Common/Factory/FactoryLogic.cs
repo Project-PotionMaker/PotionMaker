@@ -1,5 +1,6 @@
 using Mirror;
 using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,7 +14,7 @@ public class FactoryLogic<TEnum, TFactoryInfo>
 
     private Dictionary<GameObject, TEnum> _objectToTypeDict = new Dictionary<GameObject, TEnum>();
 
-    public async void Initialize(List<TFactoryInfo> factoryInfoList, Transform parent)
+    public async Task Initialize(List<TFactoryInfo> factoryInfoList, Transform parent)
     {
         foreach (TFactoryInfo info in factoryInfoList)
         {

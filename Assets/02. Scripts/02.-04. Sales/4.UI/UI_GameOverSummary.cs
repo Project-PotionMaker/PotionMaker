@@ -45,7 +45,7 @@ public class UI_GameOverSummary : MonoBehaviour
                 UI_GameOverVolumeSlot newSlot = GameObject.Instantiate(_salesVolumeSlotPrefab, _slotContainer[slotIndex%2]);
                 _salesVolumeSlotList.Add(newSlot);
             }
-            _salesVolumeSlotList[slotIndex].Refresh(potionTID, false);
+            _salesVolumeSlotList[slotIndex].InitializeGameOverVolumeSlot(potionTID, false);
             ++slotIndex;
         }
         int currentCurrency = CurrencyManager.Instance.Coin.Value;

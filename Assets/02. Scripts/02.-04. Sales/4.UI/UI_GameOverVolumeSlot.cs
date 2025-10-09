@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Threading.Tasks;
 
 public class UI_GameOverVolumeSlot : MonoBehaviour
 {
@@ -13,23 +14,28 @@ public class UI_GameOverVolumeSlot : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI _salesVolumeTextUI;
 
-    public async void Refresh(int potionTID, bool isTotal)
+    [SerializeField]
+    private Sprite _placeholderSprite;
+
+    public void InitializeGameOverVolumeSlot(int potionTID, bool isTotal)
     {
-        gameObject.SetActive(false);
-        // Todo: 포션 이미지
-
-
-        // total 새로 만들어야 될 것 같던데 추후에 없앨듯
+        gameObject.SetActive(true);
+        _potionNameTextUI.text = DataTable.Instance.GetPotionData(potionTID).Name;
         if (isTotal)
         {
             //_salesVolumeTextUI.text = SalesManager.Instance.Sales.TotalSalesVolumeDict[potionTID].ToString("N0");
         }
-        else
+        _potionImage.sprite = _placeholderSprite;
+        LoadSpriteAsync(potionTID).SafeFireAndForget();
+    }
+
+    private async Task LoadSpriteAsync(int potionTID)
+    {
+        Sprite loadedSprite = await AssetManager.Instance.LoadAsset<Sprite>($"{ASSET_PREFIX}{potionTID}");
+
+        if (this != null && loadedSprite != null)
         {
-            _potionImage.sprite = await AssetManager.Instance.LoadAsset<Sprite>($"{ASSET_PREFIX}{potionTID}");
-            _potionNameTextUI.text = DataTable.Instance.GetPotionData(potionTID).Name;
-            _salesVolumeTextUI.text = SalesManager.Instance.Sales.TotalSalesVolumeDict[potionTID].ToString("N0");
+            _potionImage.sprite = loadedSprite;
         }
-        gameObject.SetActive(true);
     }
 }

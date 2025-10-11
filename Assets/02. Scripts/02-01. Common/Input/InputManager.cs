@@ -16,6 +16,9 @@ public class InputManager : MonoBehaviourSingleton<InputManager>
     private string _actionMapUI = "UI";
     public string ActionMapUI => _actionMapUI;
 
+    private const string POINT = "Point";
+    private const string CLICK = "Click";
+
     // Player
     public event Action<bool> OnInteractChanged;
     public event Action OnPickupEvent;
@@ -52,14 +55,15 @@ public class InputManager : MonoBehaviourSingleton<InputManager>
 
     private void SwitchMap(string mapToDisable, string mapToEnable)
     {
-        _playerInput.actions.FindActionMap(mapToDisable, true)?.Disable();
+        var fromMap = _playerInput.actions.FindActionMap(mapToDisable, true);
+        fromMap.Disable();
         _playerInput.SwitchCurrentActionMap(mapToEnable);
-        
+        // UI 모드에서 Player 모드로 전환될 때, UI 클릭을 계속 허용하기 위해
+        // 비활성화된 UI 액션 맵의 마우스 관련 액션을 다시 활성화합니다.
         if (mapToDisable == _actionMapUI)
         {
-            var fromMap = _playerInput.actions.FindActionMap(mapToDisable, true);
-            fromMap.FindAction("Point", false)?.Enable();
-            fromMap.FindAction("Click", false)?.Enable();
+            fromMap.FindAction(POINT, false)?.Enable();
+            fromMap.FindAction(CLICK, false)?.Enable();
         }
 
         OnChangeInputMode?.Invoke();

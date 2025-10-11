@@ -54,6 +54,14 @@ public class InputManager : MonoBehaviourSingleton<InputManager>
     {
         _playerInput.actions.FindActionMap(mapToDisable, true)?.Disable();
         _playerInput.SwitchCurrentActionMap(mapToEnable);
+        
+        if (mapToDisable == _actionMapUI)
+        {
+            var fromMap = _playerInput.actions.FindActionMap(mapToDisable, true);
+            fromMap.FindAction("Point", false)?.Enable();
+            fromMap.FindAction("Click", false)?.Enable();
+        }
+
         OnChangeInputMode?.Invoke();
     }
 

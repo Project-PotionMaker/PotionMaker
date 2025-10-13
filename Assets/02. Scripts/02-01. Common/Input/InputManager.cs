@@ -10,11 +10,14 @@ public class InputManager : MonoBehaviourSingleton<InputManager>
     private PlayerInput _playerInput;
     public PlayerInput PlayerInput => _playerInput;
 
-    private string _actionMapPlayer = "Player";
-    public string ActionMapPlayer => _actionMapPlayer;
+    private const string ACRION_MAP_PlAYER = "Player";
+    public string ActionMapPlayer => ACRION_MAP_PlAYER;
 
-    private string _actionMapUI = "UI";
-    public string ActionMapUI => _actionMapUI;
+    private const string ACTION_MAP_UI = "UI";
+    public string ActionMapUI => ACTION_MAP_UI;
+
+    private const string POINT = "Point";
+    private const string CLICK = "Click";
 
     // Player
     public event Action<bool> OnInteractChanged;
@@ -42,18 +45,27 @@ public class InputManager : MonoBehaviourSingleton<InputManager>
 
     public void ChangeToUIInput()
     {
-        SwitchMap(_actionMapPlayer, _actionMapUI);
+        SwitchMap(ACRION_MAP_PlAYER, ACTION_MAP_UI);
     }
 
     public void ChangeToPlayerInput()
     {
-        SwitchMap(_actionMapUI, _actionMapPlayer);
+        SwitchMap(ACTION_MAP_UI, ACRION_MAP_PlAYER);
     }
 
     private void SwitchMap(string mapToDisable, string mapToEnable)
     {
-        _playerInput.actions.FindActionMap(mapToDisable, true)?.Disable();
+        var fromMap = _playerInput.actions.FindActionMap(mapToDisable, true);
+        fromMap.Disable();
         _playerInput.SwitchCurrentActionMap(mapToEnable);
+        // UI 모드에서 Player 모드로 전환될 때, UI 클릭을 계속 허용하기 위해
+        // 비활성화된 UI 액션 맵의 마우스 관련 액션을 다시 활성화합니다.
+        if (mapToDisable == ACTION_MAP_UI)
+        {
+            fromMap.FindAction(POINT, false)?.Enable();
+            fromMap.FindAction(CLICK, false)?.Enable();
+        }
+
         OnChangeInputMode?.Invoke();
     }
 

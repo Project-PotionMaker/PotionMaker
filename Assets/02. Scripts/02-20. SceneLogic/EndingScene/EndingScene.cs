@@ -10,7 +10,7 @@ public class EndingScene : MonoBehaviour
     private GameObject _doorRight;
 
     [SerializeField]
-    private float duration;
+    private float _duration;
 
     public void OpenDoor()
     {
@@ -26,9 +26,9 @@ public class EndingScene : MonoBehaviour
         Quaternion rightEndRotation = rightStartRotation * Quaternion.Euler(0, 90f, 0);
 
         float elapsedTime = 0f;
-        while (elapsedTime < duration)
+        while (elapsedTime < _duration)
         {
-            float t = elapsedTime / duration;
+            float t = elapsedTime / _duration;
             _doorLeft.transform.rotation = Quaternion.Slerp(leftStartRotation, leftEndRotation, t);
             _doorRight.transform.rotation = Quaternion.Slerp(rightStartRotation, rightEndRotation, t);
 

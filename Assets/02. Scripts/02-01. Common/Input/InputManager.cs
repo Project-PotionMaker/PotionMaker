@@ -18,6 +18,7 @@ public class InputManager : MonoBehaviourSingleton<InputManager>
 
     private const string POINT = "Point";
     private const string CLICK = "Click";
+    private const string READY = "Ready";
 
     // Player
     public event Action<bool> OnInteractChanged;
@@ -64,6 +65,10 @@ public class InputManager : MonoBehaviourSingleton<InputManager>
         {
             fromMap.FindAction(POINT, false)?.Enable();
             fromMap.FindAction(CLICK, false)?.Enable();
+        }
+        else
+        {
+            fromMap.FindAction(READY,false)?.Enable();
         }
 
         OnChangeInputMode?.Invoke();

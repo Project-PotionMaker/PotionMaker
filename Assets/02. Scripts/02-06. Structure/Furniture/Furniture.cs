@@ -206,6 +206,11 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
                 TargetRpcOnInteract(sender, true);
                 return;
             }
+            if(_data.SpecialStructureType == ESpecialStructureType.Practice)
+            {
+                TargetRpcOnInteract(sender, true);
+                return;
+            }
 
             ServerRotateModel();
             success = true;
@@ -384,6 +389,11 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
                 && PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
             {
                 GameSceneUIManager.Instance?.OpenMarketPopup();
+            }
+            if (success && Data.SpecialStructureType == ESpecialStructureType.Practice
+                && PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
+            {
+                GameSceneUIManager.Instance?.OpenPracticePopup();
             }
         }
     }

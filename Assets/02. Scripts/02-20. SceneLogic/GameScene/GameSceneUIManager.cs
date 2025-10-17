@@ -17,6 +17,10 @@ public class GameSceneUIManager : MonoBehaviourSingleton<GameSceneUIManager>
     [SerializeField]
     private GameObject _popupSettingsIngame;
 
+    [SerializeField]
+    private GameObject _popupPractice;
+    public GameObject PopupPractice => _popupPractice;
+
     protected override void Awake()
     {
         base.Awake();
@@ -77,6 +81,11 @@ public class GameSceneUIManager : MonoBehaviourSingleton<GameSceneUIManager>
         OpenPopup(_popupSettingsIngame);
     }
 
+    public void OpenPracticePopup()
+    {
+        OpenPopup(_popupPractice);
+    }
+
     public void ClosePopup(GameObject popup)
     {
         if (_popupStack.TryPeek(out GameObject latestPopup) && ReferenceEquals(latestPopup, popup))
@@ -103,6 +112,13 @@ public class GameSceneUIManager : MonoBehaviourSingleton<GameSceneUIManager>
                     selector.enabled = true;
                 }
             }
+        }
+    }
+    public void CloseAllPopups()
+    {
+        while (_popupStack.Count > 0)
+        {
+            CloseLatestPopup();
         }
     }
 }

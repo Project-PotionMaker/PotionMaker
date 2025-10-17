@@ -33,4 +33,16 @@ public class EndingPlayer : MonoBehaviour
             transform.Translate(Vector3.forward * _movementSpeed * Time.deltaTime, Space.Self);
         }
     }
+
+    public void StopWalking()
+    {
+        _playerAnimator.SetBool(nameof(EPlayerAnimationParameter.IsMove), false);
+        _playerAnimator.SetBool(nameof(EPlayerAnimationParameter.HasHeldItem), true);
+    }
+
+    public void Attack()
+    {
+        _playerAnimator.SetBool(nameof(EPlayerAnimationParameter.HasHeldItem), false);
+        _playerAnimator.SetTrigger(nameof(EPlayerAnimationParameter.Ping));
+    }
 }

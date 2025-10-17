@@ -19,18 +19,19 @@ public class EndingPlayer : MonoBehaviour
         _playerAnimator = GetComponent<Animator>();
         _playerAnimator.SetBool(nameof(EPlayerAnimationParameter.IsMove), true);
     }
-
-    private void Update()
+    private void Start()
     {
-        Move();
+        StartCoroutine(Coroutine_Move());
     }
 
-    private void Move()
+    private IEnumerator Coroutine_Move()
     {
-        _timer += Time.deltaTime;
-        if (_timer < _movementDuration)
+        float timer = 0f;
+        while (timer < _movementDuration)
         {
             transform.Translate(Vector3.forward * _movementSpeed * Time.deltaTime, Space.Self);
+            timer += Time.deltaTime;
+            yield return null;
         }
     }
 

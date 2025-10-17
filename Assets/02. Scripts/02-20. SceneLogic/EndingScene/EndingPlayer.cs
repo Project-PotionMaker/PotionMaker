@@ -35,13 +35,13 @@ public class EndingPlayer : MonoBehaviour
         }
     }
 
-    public void StopWalking()
+    public void PlayAnimationWhenStopWalking()
     {
         _playerAnimator.SetBool(nameof(EPlayerAnimationParameter.IsMove), false);
         _playerAnimator.SetBool(nameof(EPlayerAnimationParameter.HasHeldItem), true);
     }
 
-    public void Attack()
+    public void PlayAnimationOnOpenDoor()
     {
         _playerAnimator.SetBool(nameof(EPlayerAnimationParameter.HasHeldItem), false);
         _playerAnimator.SetTrigger(nameof(EPlayerAnimationParameter.Ping));

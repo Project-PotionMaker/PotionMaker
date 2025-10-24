@@ -540,12 +540,16 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
                 {
                     TooltipManager.Instance.ShowTooltip(ETooltipPanel.MarketPreparing);
                 }
+                else if(Data.SpecialStructureType == ESpecialStructureType.Practice)
+                {
+                    TooltipManager.Instance.ShowTooltip(ETooltipPanel.PracticePreparing);
+                }
                 else
                 {
                     TooltipManager.Instance.ShowTooltip(ETooltipPanel.CommonPreparing);
                 }
             }
-            if (currentPhase == EPhaseType.ServingPhase)
+            if (currentPhase == EPhaseType.ServingPhase || currentPhase == EPhaseType.PracticingPhase)
             {
                 if (Data.SpecialStructureType == ESpecialStructureType.Casher)
                 {
@@ -563,7 +567,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
             {
                 TooltipManager.Instance.ShowTooltip(ETooltipPanel.CommonPreparing);
             }
-            if (currentPhase == EPhaseType.ServingPhase)
+            if (currentPhase == EPhaseType.ServingPhase || currentPhase == EPhaseType.PracticingPhase)
             {
                 TooltipManager.Instance.ShowTooltip(ETooltipPanel.CommonServing);
             }

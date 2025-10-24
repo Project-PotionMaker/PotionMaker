@@ -208,7 +208,8 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
             }
             if(_data.SpecialStructureType == ESpecialStructureType.Practice)
             {
-                TargetRpcOnInteract(sender, true);
+
+                RpcOnInteract();
                 return;
             }
 
@@ -390,11 +391,6 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
             {
                 GameSceneUIManager.Instance?.OpenMarketPopup();
             }
-            if (success && Data.SpecialStructureType == ESpecialStructureType.Practice
-                && PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
-            {
-                GameSceneUIManager.Instance?.OpenPracticePopup();
-            }
         }
     }
 
@@ -420,6 +416,20 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
             player.GetAbility<PlayerPickupAbility>().ReceiveDroppedItem(success);
         }
     }
+    #endregion
+
+    #region ClientRPC
+
+    [ClientRpc]
+    private void RpcOnInteract()
+    {
+        if (GameSceneUIManager.Instance != null)
+        {
+            GameSceneUIManager.Instance.CloseAllPopups();
+            GameSceneUIManager.Instance.OpenPracticePopup();
+        }
+    }
+
     #endregion
 
     #region Public Interface (IGridItemHandler)

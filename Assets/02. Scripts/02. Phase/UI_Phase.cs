@@ -173,10 +173,9 @@ public class UI_Phase : MonoBehaviour
 
     private void ReadyToNextPaseVote()
     {
-        if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
-        {
-            StartVote();
-        }
+
+        StartVote();
+        
         _checkBoxes.SetActive(true);
     }
 

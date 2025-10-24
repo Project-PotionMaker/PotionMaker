@@ -1,3 +1,4 @@
+using Mirror;
 using System;
 using UnityEngine;
 
@@ -16,21 +17,31 @@ public class UI_PracticePopup : MonoBehaviour
     {
         PopedUp?.Invoke();
         _voteSystem.enabled = true;
-        VoteManager.Instance.OnVoteDone += EnterPracticingPhase;
-        VoteManager.Instance.OnVoteDone += StopVote;
+        if (NetworkServer.active) 
+        {
+            VoteManager.Instance.OnVoteDone += EnterPracticingPhase;
+            VoteManager.Instance.OnVoteDone += StopVote;
+        }
+
     }
 
     private void OnDisable()
     {
-        _voteSystem.enabled = false;
+        StopVote();
         PopedDown?.Invoke();
     }
+
     private void StopVote()
     {
+        Debug.Log("호출횟수카운트용");
         _voteSystem.enabled = false;
-        VoteManager.Instance.OnVoteDone -= EnterPracticingPhase;
-        VoteManager.Instance.OnVoteDone -= StopVote;
-        GameSceneUIManager.Instance.CloseAllPopups();
+        if(NetworkServer.active)
+        {
+            VoteManager.Instance.OnVoteDone -= EnterPracticingPhase;
+            VoteManager.Instance.OnVoteDone -= StopVote;
+        }
+
+        PopupSyncronizer.Instance.CloseAllPopupsSynced();
     }
 
     private void EnterPracticingPhase()

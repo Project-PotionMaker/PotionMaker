@@ -6,8 +6,8 @@ public class UI_PracticePopup : MonoBehaviour
 {
     private UI_VoteSystem _voteSystem;
 
-    public event Action PopedUp;
-    public event Action PopedDown;
+    public event Action OnPoppedUp;
+    public event Action OnPoppedDown;
     private void Awake()
     {
         _voteSystem = GetComponent<UI_VoteSystem>();
@@ -15,7 +15,7 @@ public class UI_PracticePopup : MonoBehaviour
 
     private void OnEnable()
     {
-        PopedUp?.Invoke();
+        OnPoppedUp?.Invoke();
         _voteSystem.enabled = true;
         if (NetworkServer.active) 
         {
@@ -28,12 +28,11 @@ public class UI_PracticePopup : MonoBehaviour
     private void OnDisable()
     {
         StopVote();
-        PopedDown?.Invoke();
+        OnPoppedDown?.Invoke();
     }
 
     private void StopVote()
     {
-        Debug.Log("호출횟수카운트용");
         _voteSystem.enabled = false;
         if(NetworkServer.active)
         {

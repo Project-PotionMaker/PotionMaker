@@ -81,9 +81,9 @@ public class UI_Phase : MonoBehaviour
         preparingPhase.OnPhaseEntered += StartVote;
 
         UI_PracticePopup practicePopup = GameSceneUIManager.Instance.PopupPractice.GetComponent<UI_PracticePopup>();
-        practicePopup.PopedUp += ReadyToPracticeVote;
-        practicePopup.PopedDown += ReadyToNextPaseVote;
-        ReadyToNextPaseVote();
+        practicePopup.OnPoppedUp += ReadyToPracticeVote;
+        practicePopup.OnPoppedDown += ReadyToNextPhaseVote;
+        ReadyToNextPhaseVote();
 
         PracticingPhase practicingPhase = (PracticingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase];
         practicingPhase.OnPhaseEntered += ChangeTextPracticeEnd;
@@ -171,7 +171,7 @@ public class UI_Phase : MonoBehaviour
         _checkBoxes.SetActive(false);
     }
 
-    private void ReadyToNextPaseVote()
+    private void ReadyToNextPhaseVote()
     {
 
         StartVote();
@@ -189,7 +189,7 @@ public class UI_Phase : MonoBehaviour
         {
             PhaseManager.Instance.ServerTransitionPhase(EPhaseType.ServingPhase);
         }
-        if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
+        else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
         {
             PhaseManager.Instance.ServerTransitionPhase(EPhaseType.PreparingPhase);
         }

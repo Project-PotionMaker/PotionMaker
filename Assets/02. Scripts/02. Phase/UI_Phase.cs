@@ -181,7 +181,7 @@ public class UI_Phase : MonoBehaviour
 
     private void NextPhase()
     {
-        if(NetworkServer.active == false)
+        if (NetworkServer.active == false)
         {
             return;
         }

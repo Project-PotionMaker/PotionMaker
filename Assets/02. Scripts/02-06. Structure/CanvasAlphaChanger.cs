@@ -26,9 +26,4 @@ public class CanvasAlphaChanger : MonoBehaviour
         _thisCanvasGroup.DOKill();
         _thisCanvasGroup.DOFade(0f, 0.25f);
     }
-
-    void OnDisable()
-    {
-        _thisCanvasGroup.DOKill();
-    }
 }

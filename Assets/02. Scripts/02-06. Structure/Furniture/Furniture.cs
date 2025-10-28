@@ -206,7 +206,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
                 TargetRpcOnInteract(sender, true);
                 return;
             }
-            if(_data.SpecialStructureType == ESpecialStructureType.Practice)
+            if (_data.SpecialStructureType == ESpecialStructureType.Practice)
             {
 
                 RpcOnInteract();
@@ -540,7 +540,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
                 {
                     TooltipManager.Instance.ShowTooltip(ETooltipPanel.MarketPreparing);
                 }
-                else if(Data.SpecialStructureType == ESpecialStructureType.Practice)
+                else if (Data.SpecialStructureType == ESpecialStructureType.Practice)
                 {
                     TooltipManager.Instance.ShowTooltip(ETooltipPanel.PracticePreparing);
                 }

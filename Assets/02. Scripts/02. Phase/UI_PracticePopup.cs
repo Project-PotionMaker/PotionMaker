@@ -34,7 +34,7 @@ public class UI_PracticePopup : MonoBehaviour
     private void StopVote()
     {
         _voteSystem.enabled = false;
-        if(NetworkServer.active)
+        if (NetworkServer.active)
         {
             VoteManager.Instance.OnVoteDone -= EnterPracticingPhase;
             VoteManager.Instance.OnVoteDone -= StopVote;

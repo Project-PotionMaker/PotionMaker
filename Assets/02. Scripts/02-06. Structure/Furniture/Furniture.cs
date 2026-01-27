@@ -206,6 +206,12 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
                 TargetRpcOnInteract(sender, true);
                 return;
             }
+            if (_data.SpecialStructureType == ESpecialStructureType.Practice)
+            {
+
+                RpcOnInteract();
+                return;
+            }
 
             ServerRotateModel();
             success = true;
@@ -412,6 +418,20 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
     }
     #endregion
 
+    #region ClientRPC
+
+    [ClientRpc]
+    private void RpcOnInteract()
+    {
+        if (GameSceneUIManager.Instance != null)
+        {
+            GameSceneUIManager.Instance.CloseAllPopups();
+            GameSceneUIManager.Instance.OpenPracticePopup();
+        }
+    }
+
+    #endregion
+
     #region Public Interface (IGridItemHandler)
     private void ActivateModelForTID(int tid)
     {
@@ -520,12 +540,16 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
                 {
                     TooltipManager.Instance.ShowTooltip(ETooltipPanel.MarketPreparing);
                 }
+                else if (Data.SpecialStructureType == ESpecialStructureType.Practice)
+                {
+                    TooltipManager.Instance.ShowTooltip(ETooltipPanel.PracticePreparing);
+                }
                 else
                 {
                     TooltipManager.Instance.ShowTooltip(ETooltipPanel.CommonPreparing);
                 }
             }
-            if (currentPhase == EPhaseType.ServingPhase)
+            if (currentPhase == EPhaseType.ServingPhase || currentPhase == EPhaseType.PracticingPhase)
             {
                 if (Data.SpecialStructureType == ESpecialStructureType.Casher)
                 {
@@ -543,7 +567,7 @@ public class Furniture : NetworkBehaviour, IGridItemHandler, IRefundable, ICusto
             {
                 TooltipManager.Instance.ShowTooltip(ETooltipPanel.CommonPreparing);
             }
-            if (currentPhase == EPhaseType.ServingPhase)
+            if (currentPhase == EPhaseType.ServingPhase || currentPhase == EPhaseType.PracticingPhase)
             {
                 TooltipManager.Instance.ShowTooltip(ETooltipPanel.CommonServing);
             }

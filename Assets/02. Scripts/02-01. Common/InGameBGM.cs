@@ -17,8 +17,10 @@ public class InGameBGM : MonoBehaviour
                 AudioManager.Instance.PlayBGM(EBGMAudioType.IngamePreparingPhase);
                 break;
             case EPhaseType.ServingPhase:
+            case EPhaseType.PracticingPhase:
                 AudioManager.Instance.PlayBGM(EBGMAudioType.IngameServingPhase);
                 break;
+
         }
     }
 

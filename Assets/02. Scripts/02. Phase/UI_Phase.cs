@@ -34,6 +34,8 @@ public class UI_Phase : MonoBehaviour
     private CanvasGroup _readyPanelGroup; 
     [SerializeField] 
     private CanvasGroup _alertPanelGroup;
+    [SerializeField]
+    private GameObject _checkBoxes;
 
     private const float READY_HIDE_OFFSET = 200f;
     private const float PLAYER_HIDE_OFFSET = 60f;
@@ -77,7 +79,11 @@ public class UI_Phase : MonoBehaviour
         PreparingPhase preparingPhase = (PreparingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.PreparingPhase];
         preparingPhase.OnPhaseEntered += ChangeTextStartDay;
         preparingPhase.OnPhaseEntered += StartVote;
-        StartVote();
+
+        UI_PracticePopup practicePopup = GameSceneUIManager.Instance.PopupPractice.GetComponent<UI_PracticePopup>();
+        practicePopup.OnPoppedUp += ReadyToPracticeVote;
+        practicePopup.OnPoppedDown += ReadyToNextPhaseVote;
+        ReadyToNextPhaseVote();
 
         PracticingPhase practicingPhase = (PracticingPhase)PhaseManager.Instance.PhaseDictionary[EPhaseType.PracticingPhase];
         practicingPhase.OnPhaseEntered += ChangeTextPracticeEnd;
@@ -159,13 +165,34 @@ public class UI_Phase : MonoBehaviour
         VoteManager.Instance.OnVoteDone -= StopVote;
     }
 
+    private void ReadyToPracticeVote()
+    {
+        StopVote();
+        _checkBoxes.SetActive(false);
+    }
+
+    private void ReadyToNextPhaseVote()
+    {
+
+        StartVote();
+        
+        _checkBoxes.SetActive(true);
+    }
+
     private void NextPhase()
     {
-        if(NetworkServer.active == false)
+        if (NetworkServer.active == false)
         {
             return;
         }
-        PhaseManager.Instance.ServerTransitionPhase(EPhaseType.ServingPhase);
+        if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PreparingPhase)
+        {
+            PhaseManager.Instance.ServerTransitionPhase(EPhaseType.ServingPhase);
+        }
+        else if (PhaseManager.Instance.CurrentPhase.PhaseType == EPhaseType.PracticingPhase)
+        {
+            PhaseManager.Instance.ServerTransitionPhase(EPhaseType.PreparingPhase);
+        }
     }
 
     private void ResetPlayerPanel()

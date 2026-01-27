@@ -7,7 +7,8 @@ public enum ETooltipPanel
     CommonPreparing,
     CommonServing,
     MarketPreparing,
-    MarketServing
+    MarketServing,
+    PracticePreparing
 }
 
 public class UI_Tooltip : MonoBehaviour
@@ -20,6 +21,8 @@ public class UI_Tooltip : MonoBehaviour
     private RectTransform _preparingMarketPanel;
     [SerializeField]
     private RectTransform _servingMarketPanel;
+    [SerializeField]
+    private RectTransform _preparingPracticePanel;
 
 
     private RectTransform _currentPanel;
@@ -59,6 +62,9 @@ public class UI_Tooltip : MonoBehaviour
                 break;
             case ETooltipPanel.MarketServing:
                 _nextPanel = _servingMarketPanel;
+                break;
+            case ETooltipPanel.PracticePreparing:
+                _nextPanel = _preparingPracticePanel;
                 break;
         }
 
